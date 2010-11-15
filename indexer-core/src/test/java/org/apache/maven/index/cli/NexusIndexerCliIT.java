@@ -46,7 +46,7 @@ public class NexusIndexerCliIT
                     out.write( line.getBytes() );
                     out.write( "\n".getBytes() );
                 }
-                catch( IOException e )
+                catch ( IOException e )
                 {
                     throw new RuntimeException( e.getMessage(), e );
                 }
@@ -65,7 +65,7 @@ public class NexusIndexerCliIT
             cmd.createArg().setValue( new File( System.getProperty( "indexerJar" ) ).getCanonicalPath() );
             return cmd;
         }
-        catch( IOException e )
+        catch ( IOException e )
         {
             throw new RuntimeException( e );
         }
@@ -75,7 +75,7 @@ public class NexusIndexerCliIT
     protected int execute( String... args )
     {
         Commandline cmd = createCommandLine();
-        for( String arg : args )
+        for ( String arg : args )
         {
             cmd.createArg().setValue( arg );
         }
@@ -83,7 +83,7 @@ public class NexusIndexerCliIT
         {
             return CommandLineUtils.executeCommandLine( cmd, sout, sout );
         }
-        catch( CommandLineException e )
+        catch ( CommandLineException e )
         {
             return -1;
         }

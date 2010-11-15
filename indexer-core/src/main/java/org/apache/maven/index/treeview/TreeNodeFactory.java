@@ -19,17 +19,16 @@
 package org.apache.maven.index.treeview;
 
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.IndexingContext;
 
 public interface TreeNodeFactory
 {
-    IndexingContext getIndexingContext();
+    String getRepositoryId();
 
-    TreeNode createGNode( IndexTreeView tview, String path, String name );
+    TreeNode createGNode( IndexTreeView tview, TreeViewRequest request, String path, String name );
 
-    TreeNode createANode( IndexTreeView tview, ArtifactInfo ai, String path );
+    TreeNode createANode( IndexTreeView tview, TreeViewRequest request, ArtifactInfo ai, String path );
 
-    TreeNode createVNode( IndexTreeView tview, ArtifactInfo ai, String path );
+    TreeNode createVNode( IndexTreeView tview, TreeViewRequest request, ArtifactInfo ai, String path );
 
-    TreeNode createArtifactNode( IndexTreeView tview, ArtifactInfo ai, String path );
+    TreeNode createArtifactNode( IndexTreeView tview, TreeViewRequest request, ArtifactInfo ai, String path );
 }

@@ -33,8 +33,8 @@ public enum SearchType
     SCORED,
 
     /**
-     * Exact search types are usually meant for applications filtering index content for some exact filtering
-     * condition even in a "future proof" way (example with packaging "maven-archetype" vs "foo-archetype-maven").
+     * Exact search types are usually meant for applications filtering index content for some exact filtering condition
+     * even in a "future proof" way (example with packaging "maven-archetype" vs "foo-archetype-maven").
      */
     EXACT;
 

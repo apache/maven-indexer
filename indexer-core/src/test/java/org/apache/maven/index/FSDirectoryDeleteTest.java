@@ -30,76 +30,67 @@ public class FSDirectoryDeleteTest
     extends AbstractIndexCreatorHelper
 {
     protected NexusIndexer nexusIndexer;
-    
+
     protected File repo = new File( getBasedir(), "src/test/nexus-13" );
-    
+
     protected IndexingContext context;
-    protected File indexDirFile = super.getDirectory("fsdirectorytest/one" ); 
+
+    protected File indexDirFile = super.getDirectory( "fsdirectorytest/one" );
+
     protected Directory indexDir;
-    
+
     protected IndexingContext otherContext;
-    protected File otherIndexDirFile = super.getDirectory("fsdirectorytest/other" ); 
+
+    protected File otherIndexDirFile = super.getDirectory( "fsdirectorytest/other" );
+
     protected Directory otherIndexDir;
-    
+
     @Override
     protected void setUp()
         throws Exception
     {
         super.setUp();
-        
+
         nexusIndexer = lookup( NexusIndexer.class );
-        
+
         indexDir = FSDirectory.getDirectory( indexDirFile );
-        
-        context = nexusIndexer.addIndexingContext(
-            "one",
-            "nexus-13",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
-        
+
+        context = nexusIndexer.addIndexingContext( "one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS );
+
         nexusIndexer.scan( context );
-        
+
         otherIndexDir = FSDirectory.getDirectory( otherIndexDirFile );
-        
-        otherContext = nexusIndexer.addIndexingContext(
-            "other",
-            "nexus-13",
-            repo,
-            otherIndexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
-        
+
+        otherContext =
+            nexusIndexer.addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );
+
         nexusIndexer.scan( otherContext );
     }
-    
+
     @Override
     protected void tearDown()
         throws Exception
     {
         super.tearDown();
-        
+
         nexusIndexer.removeIndexingContext( context, true );
-        
+
         nexusIndexer.removeIndexingContext( otherContext, true );
-        
+
         super.deleteDirectory( indexDirFile );
-        
+
         super.deleteDirectory( otherIndexDirFile );
     }
-    
+
     public void testIndexAndDelete()
         throws Exception
     {
         context.getIndexReader().maxDoc();
-        
+
         otherContext.getIndexReader().maxDoc();
-        
+
         context.replace( otherIndexDir );
-        
+
         context.merge( otherIndexDir );
     }
 }

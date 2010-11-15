@@ -28,31 +28,35 @@ import java.io.InputStream;
  * 
  * @author Eugene Kuleshov
  */
-public interface ResourceFetcher 
+public interface ResourceFetcher
 {
     /**
      * Connect and start transfer session
      */
-    void connect( String id, String url ) throws IOException;
-    
+    void connect( String id, String url )
+        throws IOException;
+
     /**
      * Disconnect and complete transfer session
      */
-    void disconnect() throws IOException;
-    
+    void disconnect()
+        throws IOException;
+
     /**
      * Retrieves file
      * 
      * @param name a name of resource to retrieve
-     * @param targetFile a target file to save retrieved resource to 
+     * @param targetFile a target file to save retrieved resource to
      */
     @Deprecated
-    void retrieve( String name, File targetFile ) throws IOException, FileNotFoundException;
+    void retrieve( String name, File targetFile )
+        throws IOException, FileNotFoundException;
 
     /**
      * Retrieves resource as InputStream
      * 
      * @param name a name of resource to retrieve
      */
-    InputStream retrieve( String name ) throws IOException, FileNotFoundException;
+    InputStream retrieve( String name )
+        throws IOException, FileNotFoundException;
 }

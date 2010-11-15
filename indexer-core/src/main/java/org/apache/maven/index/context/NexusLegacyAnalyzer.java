@@ -27,11 +27,12 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.maven.index.ArtifactInfo;
 
-/** 
- * A Nexus specific <a href="http://lucene.apache.org/java/2_4_0/api/core/org/apache/lucene/analysis/Analyzer.html">Lucene Analyzer</a>
- * used to produce legacy index transfer format
+/**
+ * A Nexus specific <a
+ * href="http://lucene.apache.org/java/2_4_0/api/core/org/apache/lucene/analysis/Analyzer.html">Lucene Analyzer</a> used
+ * to produce legacy index transfer format
  * 
- * @author Jason van Zyl 
+ * @author Jason van Zyl
  */
 public class NexusLegacyAnalyzer
     extends Analyzer

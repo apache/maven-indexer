@@ -27,7 +27,7 @@ public class MatchHighlightRequest
     private final Query query;
 
     private final MatchHighlightMode highlightMode;
-    
+
     public MatchHighlightRequest( Field field, Query query, MatchHighlightMode highlightMode )
     {
         this.field = field;

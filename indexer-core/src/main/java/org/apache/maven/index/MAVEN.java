@@ -28,8 +28,8 @@ public interface MAVEN
     /** Maven namespace */
     public static final String MAVEN_NAMESPACE = "urn:maven#";
 
-    public static final Field REPOSITORY_ID =
-        new Field( null, MAVEN_NAMESPACE, "repositoryId", "Artifact Repository ID" );
+    public static final Field REPOSITORY_ID = new Field( null, MAVEN_NAMESPACE, "repositoryId",
+        "Artifact Repository ID" );
 
     public static final Field GROUP_ID = new Field( null, MAVEN_NAMESPACE, "groupId", "Group ID" );
 
@@ -53,8 +53,8 @@ public interface MAVEN
     public static final Field DESCRIPTION = new Field( null, MAVEN_NAMESPACE, "name", "Description" );
 
     // LAST_MODIFIED: Artifact Last Modified Timestamp (UTC millis)
-    public static final Field LAST_MODIFIED =
-        new Field( null, MAVEN_NAMESPACE, "lastModified", "Last Modified Timestamp" );
+    public static final Field LAST_MODIFIED = new Field( null, MAVEN_NAMESPACE, "lastModified",
+        "Last Modified Timestamp" );
 
     // SHA1: Artifact SHA1 checksum.
     public static final Field SHA1 = new Field( null, MAVEN_NAMESPACE, "sha1", "SHA1 checksum" );

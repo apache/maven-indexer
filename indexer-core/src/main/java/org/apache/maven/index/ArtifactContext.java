@@ -45,13 +45,11 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
- * An artifact context used to provide information about artifact during
- * scanning. It is passed to the {@link IndexCreator}, which can populate
- * {@link ArtifactInfo} for the given artifact.
+ * An artifact context used to provide information about artifact during scanning. It is passed to the
+ * {@link IndexCreator}, which can populate {@link ArtifactInfo} for the given artifact.
  * 
  * @see IndexCreator#populateArtifactInfo(ArtifactContext)
  * @see NexusIndexer#scan(IndexingContext)
- * 
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
@@ -88,7 +86,7 @@ public class ArtifactContext
     {
         return pom;
     }
-    
+
     public Model getPomModel()
     {
         // First check for local pom file
@@ -141,10 +139,10 @@ public class ArtifactContext
                 }
             }
         }
-        
+
         return null;
     }
-    
+
     public File getArtifact()
     {
         return artifact;
@@ -165,12 +163,12 @@ public class ArtifactContext
         return gav;
     }
 
-    public List<Exception> getErrors() 
+    public List<Exception> getErrors()
     {
         return errors;
     }
-    
-    public void addError(Exception e) 
+
+    public void addError( Exception e )
     {
         errors.add( e );
     }
@@ -181,35 +179,34 @@ public class ArtifactContext
     public Document createDocument( IndexingContext context )
     {
         Document doc = new Document();
-    
+
         // unique key
-        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(),
-            Store.YES, Index.UN_TOKENIZED ) );
-    
+        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), Store.YES, Index.UN_TOKENIZED ) );
+
         doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
             Long.toString( System.currentTimeMillis() ), Store.YES, Index.NO ) );
-        
+
         for ( IndexCreator indexCreator : context.getIndexCreators() )
         {
-            try 
+            try
             {
                 indexCreator.populateArtifactInfo( this );
-            } 
-            catch ( IOException ex ) 
+            }
+            catch ( IOException ex )
             {
                 addError( ex );
             }
         }
-    
+
         // need a second pass in case index creators updated document attributes
         for ( IndexCreator indexCreator : context.getIndexCreators() )
         {
             indexCreator.updateDocument( getArtifactInfo(), doc );
         }
-    
+
         return doc;
     }
-    
+
     public static class ModelReader
     {
         public Model readModel( InputStream pom )
@@ -220,14 +217,14 @@ public class ArtifactContext
             }
 
             Model model = new Model();
-            
+
             Xpp3Dom dom = readPomInputStream( pom );
-            
+
             if ( dom == null )
             {
                 return null;
             }
-            
+
             if ( dom.getChild( "packaging" ) != null )
             {
                 model.setPackaging( dom.getChild( "packaging" ).getValue() );
@@ -237,7 +234,7 @@ public class ArtifactContext
             {
                 model.setPackaging( null );
             }
-            
+
             if ( dom.getChild( "name" ) != null )
             {
                 model.setName( dom.getChild( "name" ).getValue() );
@@ -250,7 +247,7 @@ public class ArtifactContext
 
             return model;
         }
-    
+
         private Xpp3Dom readPomInputStream( InputStream is )
         {
             Reader r = new InputStreamReader( is );
@@ -274,7 +271,7 @@ public class ArtifactContext
                 {
                 }
             }
-            
+
             return null;
         }
     }

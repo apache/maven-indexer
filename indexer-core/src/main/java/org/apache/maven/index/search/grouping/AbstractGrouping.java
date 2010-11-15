@@ -55,7 +55,7 @@ public abstract class AbstractGrouping
         if ( group == null )
         {
             group = new ArtifactInfoGroup( key, comparator );
-            
+
             result.put( key, group );
         }
 

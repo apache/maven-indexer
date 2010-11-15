@@ -65,7 +65,7 @@ class DefaultScannerListener
     private int count = 0;
 
     DefaultScannerListener( IndexingContext context, //
-                            IndexerEngine indexerEngine, boolean update, // 
+                            IndexerEngine indexerEngine, boolean update, //
                             ArtifactScanningListener listener )
     {
         this.context = context;

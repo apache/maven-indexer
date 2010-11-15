@@ -26,7 +26,7 @@ import java.util.List;
 public class Field
 {
     public static final String NOT_PRESENT = "N/P";
-    
+
     private final Field parent;
 
     private final String namespace;

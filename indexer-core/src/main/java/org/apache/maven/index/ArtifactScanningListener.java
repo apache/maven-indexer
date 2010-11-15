@@ -31,7 +31,7 @@ public interface ArtifactScanningListener
     void scanningStarted( IndexingContext ctx );
 
     void scanningFinished( IndexingContext ctx, ScanningResult result );
-    
+
     void artifactError( ArtifactContext ac, Exception e );
 
 }

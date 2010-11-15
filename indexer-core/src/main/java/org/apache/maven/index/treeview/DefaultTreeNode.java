@@ -27,13 +27,13 @@ public class DefaultTreeNode
     extends AbstractTreeNode
 {
     /**
-     * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation. 
+     * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation.
      * 
      * @param tview
      * @param factory
      */
-    public DefaultTreeNode( IndexTreeView tview, TreeNodeFactory factory )
+    public DefaultTreeNode( IndexTreeView tview, TreeViewRequest request )
     {
-        super( tview, factory );
+        super( tview, request );
     }
 }

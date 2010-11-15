@@ -74,7 +74,7 @@ public class UniqueGAArtifactFilterPostprocessor
         if ( repositoriesIgnored )
         {
             ai.context = null;
-            
+
             ai.repository = null;
         }
     }

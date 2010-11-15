@@ -45,20 +45,11 @@ public class JarFileContentsIndexCreatorTest
     public void test_nexus_2318_indexJarWithClasses()
         throws Exception
     {
-        File artifact = new File(
-            getBasedir(),
-            "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" );
+        File artifact = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" );
 
-        File pom = new File(
-            getBasedir(),
-            "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+        File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo(
-            "test",
-            "aopalliance",
-            "aopalliance",
-            "1.0",
-            null );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
@@ -70,20 +61,12 @@ public class JarFileContentsIndexCreatorTest
     public void test_nexus_2318_indexJarWithSources()
         throws Exception
     {
-        File artifact = new File(
-            getBasedir(),
-            "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar" );
+        File artifact =
+            new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar" );
 
-        File pom = new File(
-            getBasedir(),
-            "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+        File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo(
-            "test",
-            "aopalliance",
-            "aopalliance",
-            "1.0",
-            null );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
@@ -91,6 +74,5 @@ public class JarFileContentsIndexCreatorTest
 
         assertNull( "Classes should be null", artifactContext.getArtifactInfo().classNames );
     }
-
 
 }

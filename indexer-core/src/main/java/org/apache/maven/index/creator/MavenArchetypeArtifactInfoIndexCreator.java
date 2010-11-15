@@ -48,8 +48,8 @@ public class MavenArchetypeArtifactInfoIndexCreator
 
     private static final String MAVEN_ARCHETYPE_PACKAGING = "maven-archetype";
 
-    private static final String[] ARCHETYPE_XML_LOCATIONS =
-        { "META-INF/maven/archetype.xml", "META-INF/archetype.xml", "META-INF/maven/archetype-metadata.xml" };
+    private static final String[] ARCHETYPE_XML_LOCATIONS = { "META-INF/maven/archetype.xml", "META-INF/archetype.xml",
+        "META-INF/maven/archetype-metadata.xml" };
 
     public void populateArtifactInfo( ArtifactContext ac )
     {

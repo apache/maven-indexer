@@ -51,78 +51,80 @@ public class DefaultIncrementalHandler
 {
     public List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
         throws IOException
-    {   
+    {
         getLogger().debug( "Handling Incremental Updates" );
-        
+
         if ( !validateProperties( properties ) )
         {
             getLogger().debug( "Invalid properties found, resetting them and doing no incremental packing." );
             return null;
         }
-        
+
         // Get the list of document ids that have been added since the last time
         // the index ran
-        List<Integer> chunk = getIndexChunk( request, parse( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) ) );
+        List<Integer> chunk =
+            getIndexChunk( request, parse( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) ) );
 
         getLogger().debug( "Found " + chunk.size() + " differences to put in incremental index." );
-        
+
         // if no documents, then we dont need to do anything, no changes
         if ( chunk.size() > 0 )
         {
             updateProperties( properties, request );
         }
-        
+
         cleanUpIncrementalChunks( request, properties );
-        
+
         return chunk;
     }
-    
-    public List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties, Properties remoteProperties )
+
+    public List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
+                                                      Properties remoteProperties )
         throws IOException
-    {        
+    {
         List<String> filenames = null;
         // If we have local properties, will parse and see what we need to download
         if ( canRetrieveAllChunks( localProperties, remoteProperties ) )
         {
             filenames = new ArrayList<String>();
-            
+
             int maxCounter = Integer.parseInt( remoteProperties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) );
             int currentCounter = Integer.parseInt( localProperties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) );
-            
+
             // Start with the next one
             currentCounter++;
-            
+
             while ( currentCounter <= maxCounter )
             {
                 filenames.add( IndexingContext.INDEX_FILE + "." + currentCounter++ + ".gz" );
             }
         }
-        
+
         return filenames;
     }
-    
+
     private boolean validateProperties( Properties properties )
     {
         if ( properties == null || properties.isEmpty() )
         {
             return false;
         }
-        
+
         if ( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) == null )
         {
             return false;
         }
-        
+
         if ( parse( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) ) == null )
         {
             return false;
         }
-        
+
         initializeProperties( properties );
-        
+
         return true;
     }
-    
+
     public void initializeProperties( Properties properties )
     {
         if ( properties.getProperty( IndexingContext.INDEX_CHAIN_ID ) == null )
@@ -130,33 +132,33 @@ public class DefaultIncrementalHandler
             properties.setProperty( IndexingContext.INDEX_CHAIN_ID, Long.toString( new Date().getTime() ) );
             properties.remove( IndexingContext.INDEX_CHUNK_COUNTER );
         }
-        
+
         if ( properties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) == null )
         {
             properties.setProperty( IndexingContext.INDEX_CHUNK_COUNTER, "0" );
         }
     }
 
-    // Note Toni: 
+    // Note Toni:
     private List<Integer> getIndexChunk( IndexPackingRequest request, Date timestamp )
         throws IOException
-    {           
+    {
         List<Integer> chunk = new ArrayList<Integer>();
-    
+
         IndexReader r = request.getContext().getIndexReader();
-    
+
         for ( int i = 0; i < r.maxDoc(); i++ )
         {
             if ( !r.isDeleted( i ) )
             {
                 Document d = r.document( i );
-    
+
                 String lastModified = d.get( ArtifactInfo.LAST_MODIFIED );
-    
+
                 if ( lastModified != null )
                 {
                     Date t = new Date( Long.parseLong( lastModified ) );
-                    
+
                     // Only add documents that were added after the last time we indexed
                     if ( t.after( timestamp ) )
                     {
@@ -165,96 +167,95 @@ public class DefaultIncrementalHandler
                 }
             }
         }
-    
+
         return chunk;
     }
-    
+
     private void updateProperties( Properties properties, IndexPackingRequest request )
         throws IOException
-    {        
+    {
         Set<Object> keys = new HashSet<Object>( properties.keySet() );
-        Map<Integer,String> dataMap = new TreeMap<Integer, String>(); 
-        
+        Map<Integer, String> dataMap = new TreeMap<Integer, String>();
+
         // First go through and retrieve all keys and their values
         for ( Object key : keys )
         {
-            String sKey = ( String ) key;
-            
+            String sKey = (String) key;
+
             if ( sKey.startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) )
-            {                
+            {
                 Integer count = Integer.valueOf( sKey.substring( IndexingContext.INDEX_CHUNK_PREFIX.length() ) );
                 String value = properties.getProperty( sKey );
-                
-                dataMap.put( count, value );                
+
+                dataMap.put( count, value );
                 properties.remove( key );
             }
         }
-        
-        String val = ( String ) properties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER );
-        
+
+        String val = (String) properties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER );
+
         int i = 0;
-        //Next put the items back in w/ proper keys
+        // Next put the items back in w/ proper keys
         for ( Integer key : dataMap.keySet() )
         {
-            //make sure to end if we reach limit, 0 based
+            // make sure to end if we reach limit, 0 based
             if ( i >= ( request.getMaxIndexChunks() - 1 ) )
             {
                 break;
             }
-              
+
             properties.put( IndexingContext.INDEX_CHUNK_PREFIX + ( key + 1 ), dataMap.get( key ) );
-            
+
             i++;
         }
-        
+
         int nextValue = Integer.parseInt( val ) + 1;
-        
-        //Now put the new one in, and update the counter
+
+        // Now put the new one in, and update the counter
         properties.put( IndexingContext.INDEX_CHUNK_PREFIX + "0", Integer.toString( nextValue ) );
         properties.put( IndexingContext.INDEX_CHUNK_COUNTER, Integer.toString( nextValue ) );
     }
-    
+
     private void cleanUpIncrementalChunks( IndexPackingRequest request, Properties properties )
         throws IOException
     {
-        File[] files = request.getTargetDir().listFiles( new FilenameFilter(){
+        File[] files = request.getTargetDir().listFiles( new FilenameFilter()
+        {
             public boolean accept( File dir, String name )
             {
                 String[] parts = name.split( "\\." );
-                
-                if ( parts.length == 3 
-                    && parts[0].equals( IndexingContext.INDEX_FILE )
-                    && parts[2].equals( "gz" ))
+
+                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE ) && parts[2].equals( "gz" ) )
                 {
                     return true;
                 }
-                
+
                 return false;
-            }            
-        });
-        
-        for ( int i = 0 ; i < files.length ; i++ )
+            }
+        } );
+
+        for ( int i = 0; i < files.length; i++ )
         {
             String[] parts = files[i].getName().split( "\\." );
-            
+
             boolean found = false;
-            for ( Entry<Object,Object> entry : properties.entrySet() )
+            for ( Entry<Object, Object> entry : properties.entrySet() )
             {
-                if ( entry.getKey().toString().startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) 
+                if ( entry.getKey().toString().startsWith( IndexingContext.INDEX_CHUNK_PREFIX )
                     && entry.getValue().equals( parts[1] ) )
                 {
                     found = true;
                     break;
                 }
             }
-            
+
             if ( !found )
             {
                 files[i].delete();
             }
         }
     }
-    
+
     private Date parse( String s )
     {
         try
@@ -268,7 +269,7 @@ public class DefaultIncrementalHandler
             return null;
         }
     }
-    
+
     private boolean canRetrieveAllChunks( Properties localProps, Properties remoteProps )
     {
         // no localprops, cant retrieve chunks
@@ -276,39 +277,37 @@ public class DefaultIncrementalHandler
         {
             return false;
         }
-        
+
         String localChainId = localProps.getProperty( IndexingContext.INDEX_CHAIN_ID );
         String remoteChainId = remoteProps.getProperty( IndexingContext.INDEX_CHAIN_ID );
-        
-        //If no chain id, or not the same, do whole download
-        if ( StringUtils.isEmpty( localChainId )
-            || !localChainId.equals( remoteChainId ) )
+
+        // If no chain id, or not the same, do whole download
+        if ( StringUtils.isEmpty( localChainId ) || !localChainId.equals( remoteChainId ) )
         {
             return false;
         }
-        
+
         String counterProp = localProps.getProperty( IndexingContext.INDEX_CHUNK_COUNTER );
-        
+
         // no counter, cant retrieve chunks
         // not a number, cant retrieve chunks
-        if ( StringUtils.isEmpty( counterProp ) 
-            || !StringUtils.isNumeric( counterProp ) )
+        if ( StringUtils.isEmpty( counterProp ) || !StringUtils.isNumeric( counterProp ) )
         {
             return false;
         }
-        
+
         int currentLocalCounter = Integer.parseInt( counterProp );
-        
+
         // check remote props for existence of next chunk after local
         // if we find it, then we are ok to retrieve the rest of the chunks
         for ( Object key : remoteProps.keySet() )
         {
-            String sKey = ( String ) key;
-            
+            String sKey = (String) key;
+
             if ( sKey.startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) )
             {
                 String value = remoteProps.getProperty( sKey );
-                
+
                 // If we have the current counter, or the next counter, we are good to go
                 if ( Integer.toString( currentLocalCounter ).equals( value )
                     || Integer.toString( currentLocalCounter + 1 ).equals( value ) )
@@ -317,7 +316,7 @@ public class DefaultIncrementalHandler
                 }
             }
         }
-        
+
         return false;
     }
 }

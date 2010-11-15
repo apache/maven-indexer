@@ -219,7 +219,7 @@ public class M1GavCalculatorTest
 
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/castor/jars/castor-0.9.9-xml.jar", path );
-        
+
         gav = gavCalculator.pathToGav( "/org.slf4j/poms/slf4j-log4j12-1.4.3.pom" );
 
         assertEquals( "org.slf4j", gav.getGroupId() );
@@ -238,8 +238,6 @@ public class M1GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/org.slf4j/poms/slf4j-log4j12-1.4.3.pom", path );
 
-
-        
         // TODO: fix this!
         /* There is an "Oh" letter at the end, not a zero! */
         gav = gavCalculator.pathToGav( "/xpp3/poms/xpp3_min-1.1.3.4.O.pom" );
@@ -262,10 +260,10 @@ public class M1GavCalculatorTest
     }
 
     public void testNEXUS1336()
-    	throws Exception 
+        throws Exception
     {
-      Gav gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar" );
-    	
+        Gav gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar" );
+
         assertEquals( "castor", gav.getGroupId() );
         assertEquals( "castor-ejb", gav.getArtifactId() );
         assertEquals( "1.0.7-SNAPSHOT", gav.getVersion() );
@@ -281,7 +279,7 @@ public class M1GavCalculatorTest
 
         String path = gavCalculator.gavToPath( gav );
         assertEquals( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar", path );
-        
+
         gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7.jar" );
 
         assertEquals( "castor", gav.getGroupId() );
@@ -299,7 +297,7 @@ public class M1GavCalculatorTest
 
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/castor/jars/castor-ejb-1.0.7.jar", path );
-        
+
         gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar.sha1" );
 
         assertEquals( "castor", gav.getGroupId() );
@@ -317,7 +315,7 @@ public class M1GavCalculatorTest
 
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar.sha1", path );
-        
+
         gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7-client.jar" );
 
         assertEquals( "castor", gav.getGroupId() );
@@ -336,7 +334,7 @@ public class M1GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/castor/ejbs/castor-ejb-1.0.7-client.jar", path );
     }
-    
+
     public void testGavExtreme()
         throws Exception
     {

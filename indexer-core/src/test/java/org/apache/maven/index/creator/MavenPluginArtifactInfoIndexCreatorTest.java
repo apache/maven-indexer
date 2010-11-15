@@ -48,21 +48,17 @@ public class MavenPluginArtifactInfoIndexCreatorTest
     public void testMavenPluginInfo()
         throws Exception
     {
-        File artifact = new File(
-            getBasedir(),
-            "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar" );
+        File artifact =
+            new File( getBasedir(),
+                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar" );
 
-        File pom = new File(
-            getBasedir(),
-            "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom" );
+        File pom =
+            new File( getBasedir(),
+                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo(
-            "test",
-            "org.apache.maven.plugins",
-            "maven-dependency-plugin",
-            "2.0",
-            null );
-        
+        ArtifactInfo artifactInfo =
+            new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null );
+
         artifactInfo.packaging = "maven-plugin";
         artifactInfo.fextension = "jar";
 

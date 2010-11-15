@@ -61,7 +61,7 @@ public class Nexus3293TimestampSnapshotTest
         // {
         // Document doc = indexReader.document( i );
         // System.err.println( i + " : " + doc.get( ArtifactInfo.UINFO));
-        //          
+        //
         // }
         return indexer;
     }
@@ -71,13 +71,9 @@ public class Nexus3293TimestampSnapshotTest
     {
         NexusIndexer indexer = prepare();
 
-        File artifact =
-            new File( getBasedir(),
-                      "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar" );
+        File artifact = new File( getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar" );
 
-        File pom =
-            new File( getBasedir(),
-                      "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+        File pom = new File( getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
         ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null );
 
@@ -106,15 +102,14 @@ public class Nexus3293TimestampSnapshotTest
 
         File artifact =
             new File( getBasedir(),
-                      "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar" );
+                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar" );
 
         File pom =
             new File( getBasedir(),
-                      "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom" );
+                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom" );
 
-        
         ArtifactContextProducer artifactContextProducer = lookup( ArtifactContextProducer.class );
-        
+
         ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifact );
 
         indexer.addArtifactToIndex( artifactContext, context );

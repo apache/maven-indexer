@@ -20,10 +20,11 @@ package org.apache.maven.index.locator;
 
 import java.io.File;
 
-/** 
+/**
  * An sha1 locator to locate the sha1 file relative to POM.
  * 
- * @author Jason van Zyl */
+ * @author Jason van Zyl
+ */
 public class Sha1Locator
     implements Locator
 {

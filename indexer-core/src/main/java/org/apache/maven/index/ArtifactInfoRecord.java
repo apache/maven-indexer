@@ -51,19 +51,15 @@ public class ArtifactInfoRecord
     /**
      * Unique groupId, artifactId, version, classifier, extension (or packaging). Stored, indexed untokenized
      */
-    public static final IndexerField FLD_UINFO =
-        new IndexerField( NEXUS.UINFO, IndexerFieldVersion.V1, "u", "Artifact UINFO (as keyword, stored)", Store.YES,
-                          Index.UN_TOKENIZED );
+    public static final IndexerField FLD_UINFO = new IndexerField( NEXUS.UINFO, IndexerFieldVersion.V1, "u",
+        "Artifact UINFO (as keyword, stored)", Store.YES, Index.UN_TOKENIZED );
 
     /**
      * Del: contains UINFO to mark record as deleted (needed for incremental updates!). The original document IS
      * removed, but this marker stays on index to note that fact.
      */
-    public static final IndexerField FLD_DELETED =
-        new IndexerField( NEXUS.DELETED, IndexerFieldVersion.V1, "del",
-                          "Deleted field, will contain UINFO if document is deleted from index (not indexed, stored)",
-                          Store.YES, Index.NO );
-
-
+    public static final IndexerField FLD_DELETED = new IndexerField( NEXUS.DELETED, IndexerFieldVersion.V1, "del",
+        "Deleted field, will contain UINFO if document is deleted from index (not indexed, stored)", Store.YES,
+        Index.NO );
 
 }

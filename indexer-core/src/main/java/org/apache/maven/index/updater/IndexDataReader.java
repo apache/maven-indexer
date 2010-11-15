@@ -38,7 +38,7 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * An index data reader used to parse transfer index format.
- *
+ * 
  * @author Eugene Kuleshov
  */
 public class IndexDataReader
@@ -208,7 +208,8 @@ public class IndexDataReader
                     {
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
-                    chararr[chararr_count++] = (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) << 0 ) );
+                    chararr[chararr_count++] =
+                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) << 0 ) );
                     break;
 
                 default:
@@ -255,12 +256,10 @@ public class IndexDataReader
     /**
      * Reads index content by using a visitor. <br>
      * The visitor is called for each read documents after it has been populated with Lucene fields.
-     *
+     * 
      * @param visitor an index data visitor
      * @param context indexing context
-     *
      * @return statistics about read data
-     *
      * @throws IOException in case of an IO exception during index file access
      */
     public IndexDataReadResult readIndex( final IndexDataReadVisitor visitor, final IndexingContext context )
@@ -272,7 +271,7 @@ public class IndexDataReader
 
         Date date = null;
 
-        if( timestamp != -1 )
+        if ( timestamp != -1 )
         {
             date = new Date( timestamp );
         }
@@ -280,7 +279,7 @@ public class IndexDataReader
         int n = 0;
 
         Document doc;
-        while( ( doc = readDocument() ) != null )
+        while ( ( doc = readDocument() ) != null )
         {
             visitor.visitDocument( IndexUtils.updateDocument( doc, context, false ) );
 
@@ -301,7 +300,7 @@ public class IndexDataReader
 
         /**
          * Called on each read document. The document is already populated with fields.
-         *
+         * 
          * @param document read document
          */
         void visitDocument( Document document );

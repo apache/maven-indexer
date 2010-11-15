@@ -37,7 +37,7 @@ public class UniqueArtifactFilterPostprocessor
     private final Set<Field> uniqueFields = new HashSet<Field>();
 
     private final Set<String> gas = new HashSet<String>();
-    
+
     public UniqueArtifactFilterPostprocessor()
     {
     }
@@ -82,7 +82,7 @@ public class UniqueArtifactFilterPostprocessor
             }
         }
     }
-    
+
     public void addField( Field field )
     {
         uniqueFields.add( field );

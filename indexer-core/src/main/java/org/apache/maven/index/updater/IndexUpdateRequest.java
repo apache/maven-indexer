@@ -25,13 +25,16 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.fs.Locker;
 
 /**
+ * Request to update indexes.
+ * 
  * @author Eugene Kuleshov
+ * @author cstamas
  */
 public class IndexUpdateRequest
 {
     private final IndexingContext context;
 
-    private ResourceFetcher resourceFetcher;
+    private final ResourceFetcher resourceFetcher;
 
     private DocumentFilter documentFilter;
 
@@ -45,9 +48,13 @@ public class IndexUpdateRequest
 
     private boolean cacheOnly;
 
-    public IndexUpdateRequest( IndexingContext context )
+    public IndexUpdateRequest( final IndexingContext context, final ResourceFetcher resourceFetcher )
     {
+        assert context != null : "Context to be updated cannot be null!";
+        assert resourceFetcher != null : "ResourceFetcher has to be provided!";
+
         this.context = context;
+        this.resourceFetcher = resourceFetcher;
         this.forceFullUpdate = false;
     }
 
@@ -69,16 +76,6 @@ public class IndexUpdateRequest
     public void setDocumentFilter( DocumentFilter documentFilter )
     {
         this.documentFilter = documentFilter;
-    }
-
-    /**
-     * If null, the default wagon manager will be used, incorporating the ProxyInfo and TransferListener if supplied
-     * 
-     * @param resourceFetcher
-     */
-    public void setResourceFetcher( ResourceFetcher resourceFetcher )
-    {
-        this.resourceFetcher = resourceFetcher;
     }
 
     public void setForceFullUpdate( boolean forceFullUpdate )

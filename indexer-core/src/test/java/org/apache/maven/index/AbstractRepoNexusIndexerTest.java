@@ -412,7 +412,7 @@ public abstract class AbstractRepoNexusIndexerTest
             }
         }
 
-        // 
+        //
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> onePage = response.getResults();
 

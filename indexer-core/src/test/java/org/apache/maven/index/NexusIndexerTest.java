@@ -87,7 +87,8 @@ public class NexusIndexerTest
         q = indexer.constructQuery( MAVEN.GROUP_ID, "commons-loggin*", SearchType.SCORED );
 
         // g:commons-loggin* (groupId:commons groupId:loggin*)
-        assertEquals( "g:commons-loggin* ((+groupId:commons +groupId:loggin*) groupId:\"commons loggin\")", q.toString() );
+        assertEquals( "g:commons-loggin* ((+groupId:commons +groupId:loggin*) groupId:\"commons loggin\")",
+            q.toString() );
 
         // keyword search against field stored in both ways (tokenized/untokenized)
         q = indexer.constructQuery( MAVEN.GROUP_ID, "commons-logging", SearchType.EXACT );
@@ -107,7 +108,9 @@ public class NexusIndexerTest
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.SCORED );
 
-        assertEquals( "(a:commons-logging a:commons-logging*^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")", q.toString() );
+        assertEquals(
+            "(a:commons-logging a:commons-logging*^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
+            q.toString() );
 
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
@@ -544,7 +547,7 @@ public class NexusIndexerTest
         NexusIndexer indexer = lookup( NexusIndexer.class );
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = super.getDirectory("index/test");
+        File indexDir = super.getDirectory( "index/test" );
         super.deleteDirectory( indexDir );
 
         File repo = new File( getBasedir(), "src/test/repo" );

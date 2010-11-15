@@ -56,7 +56,7 @@ public class ArtifactLocator
         {
             // need to read the pom model to get packaging
             Model model = new ModelReader().readModel( new FileInputStream( source ) );
-            
+
             if ( model == null )
             {
                 return null;

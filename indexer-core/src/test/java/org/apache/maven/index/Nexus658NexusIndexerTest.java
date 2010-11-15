@@ -40,14 +40,8 @@ public class Nexus658NexusIndexerTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        context = nexusIndexer.addIndexingContext(
-            "nexus-658",
-            "nexus-658",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
+        context =
+            nexusIndexer.addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
@@ -56,7 +50,7 @@ public class Nexus658NexusIndexerTest
     {
         Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.sonatype.nexus" );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        Collection<ArtifactInfo> r = response.getResults(); 
+        Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 4, r.size() );
 
         List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
@@ -90,7 +84,7 @@ public class Nexus658NexusIndexerTest
         assertEquals( "bundle", ai3.classifier );
         assertEquals( ArtifactAvailablility.NOT_AVAILABLE, ai3.sourcesExists );
         assertEquals( "nexus-658", ai3.repository );
-        
+
         // g a v p c #3
         ArtifactInfo ai4 = list.get( 3 );
         assertEquals( "org.sonatype.nexus", ai4.groupId );

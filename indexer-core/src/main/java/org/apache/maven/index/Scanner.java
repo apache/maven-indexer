@@ -20,13 +20,13 @@ package org.apache.maven.index;
 
 /**
  * An abstraction for scanning content of the artifact repositories
- *  
+ * 
  * @author Jason van Zyl
  */
 public interface Scanner
 {
     /**
-     * Scan repository artifacts and populate {@link ScanningResult} 
+     * Scan repository artifacts and populate {@link ScanningResult}
      */
     ScanningResult scan( ScanningRequest request );
 }

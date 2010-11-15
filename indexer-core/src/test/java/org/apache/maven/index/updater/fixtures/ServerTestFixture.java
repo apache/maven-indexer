@@ -146,7 +146,7 @@ public class ServerTestFixture
             catch ( URISyntaxException e )
             {
                 resp.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH );
+                    "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH );
                 return;
             }
 

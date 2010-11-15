@@ -23,7 +23,7 @@ import java.io.File;
 /**
  * A metadata locator to locate the Maven 2 artifact metadata relative to its POM.
  * 
- * @author Jason van Zyl 
+ * @author Jason van Zyl
  */
 public class MetadataLocator
     implements Locator

@@ -54,14 +54,7 @@ public class Nexus13NexusIndexerTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        context = nexusIndexer.addIndexingContext(
-            "nexus-13",
-            "nexus-13",
-            repo,
-            indexDir,
-            null,
-            null,
-            FULL_CREATORS );
+        context = nexusIndexer.addIndexingContext( "nexus-13", "nexus-13", repo, indexDir, null, null, FULL_CREATORS );
         nexusIndexer.scan( context );
     }
 
@@ -70,12 +63,12 @@ public class Nexus13NexusIndexerTest
     {
         {
             Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "cisco" );
-    
+
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
-            Map<String, ArtifactInfoGroup> r = response.getResults(); 
+            Map<String, ArtifactInfoGroup> r = response.getResults();
             assertEquals( r.toString(), 4, r.size() );
-    
+
             assertTrue( r.containsKey( "cisco.infra.dft : dma.plugin.utils" ) );
             assertTrue( r.containsKey( "cisco.infra.dft : dma.pom.enforcer" ) );
             assertTrue( r.containsKey( "cisco.infra.dft : maven-dma-mgmt-plugin" ) );
@@ -86,11 +79,12 @@ public class Nexus13NexusIndexerTest
             Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*dft.plugin.utils" );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
-            Map<String, ArtifactInfoGroup> r = response.getResults(); 
+            Map<String, ArtifactInfoGroup> r = response.getResults();
             assertEquals( r.toString(), 1, r.size() );
-    
+
             assertTrue( r.containsKey( "cisco.infra.dft : dma.plugin.utils" ) );
-            assertEquals( "cisco.infra.dft : dma.plugin.utils", r.get( "cisco.infra.dft : dma.plugin.utils" ).getGroupKey() );
+            assertEquals( "cisco.infra.dft : dma.plugin.utils",
+                r.get( "cisco.infra.dft : dma.plugin.utils" ).getGroupKey() );
         }
     }
 
@@ -106,7 +100,7 @@ public class Nexus13NexusIndexerTest
         Query q = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        Collection<ArtifactInfo> r = response.getResults(); 
+        Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 1, r.size() );
 
         ArtifactInfo ai = r.iterator().next();
@@ -125,22 +119,13 @@ public class Nexus13NexusIndexerTest
         Thread.sleep( 1000L );
 
         Directory indexDir = new RAMDirectory();
-        
-        IndexingContext newContext = nexusIndexer.addIndexingContext(
-            "test-new",
-            "nexus-13",
-            null,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
-        
+
+        IndexingContext newContext =
+            nexusIndexer.addIndexingContext( "test-new", "nexus-13", null, indexDir, null, null, DEFAULT_CREATORS );
+
         Directory newIndexDir = new RAMDirectory();
-        
-        DefaultIndexUpdater.unpackIndexArchive(
-            new ByteArrayInputStream( os.toByteArray() ),
-            newIndexDir,
-            newContext );
+
+        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, newContext );
         newContext.replace( newIndexDir );
 
         assertEquals( 0, newContext.getTimestamp().getTime() - context.getTimestamp().getTime() );
@@ -152,7 +137,7 @@ public class Nexus13NexusIndexerTest
         Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "cisco" );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q, newContext ) );
-        Collection<ArtifactInfo> r = response.getResults(); 
+        Collection<ArtifactInfo> r = response.getResults();
 
         assertEquals( 10, r.size() );
 
@@ -169,7 +154,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.version );
 
         assertEquals( "nexus-13", ai.repository );
-        
+
         newContext.close( true );
     }
 
@@ -188,7 +173,7 @@ public class Nexus13NexusIndexerTest
         Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "cisco.infra" );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        Collection<ArtifactInfo> r = response.getResults(); 
+        Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 10, r.size() );
 
         List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
@@ -215,7 +200,7 @@ public class Nexus13NexusIndexerTest
 
         GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
         GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
-        Map<String, ArtifactInfoGroup> r = response.getResults(); 
+        Map<String, ArtifactInfoGroup> r = response.getResults();
         assertEquals( 8, r.size() );
 
         ArtifactInfoGroup ig = r.values().iterator().next();
@@ -245,7 +230,7 @@ public class Nexus13NexusIndexerTest
 
         GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
         GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
-        Map<String, ArtifactInfoGroup> r = response.getResults(); 
+        Map<String, ArtifactInfoGroup> r = response.getResults();
 
         assertEquals( 1, r.size() );
 
@@ -271,7 +256,9 @@ public class Nexus13NexusIndexerTest
 
         // Using a file
 
-        File artifact = new File( repo, "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar" );
+        File artifact =
+            new File( repo,
+                "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar" );
 
         ai = nexusIndexer.identify( artifact );
 

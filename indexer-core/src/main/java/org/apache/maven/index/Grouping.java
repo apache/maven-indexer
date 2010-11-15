@@ -20,12 +20,10 @@ package org.apache.maven.index;
 
 import java.util.Map;
 
-
 /**
  * A grouping criteria for grouped searches.
  * 
  * @see NexusIndexer#searchGrouped(GroupedSearchRequest)
- * 
  * @author Tamas Cservenak
  */
 public interface Grouping

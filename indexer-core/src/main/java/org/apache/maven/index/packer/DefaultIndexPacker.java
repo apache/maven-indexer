@@ -68,10 +68,9 @@ public class DefaultIndexPacker
 {
     @Requirement( role = IncrementalHandler.class )
     IncrementalHandler incrementalHandler;
-    
+
     public void packIndex( IndexPackingRequest request )
-        throws IOException,
-            IllegalArgumentException
+        throws IOException, IllegalArgumentException
     {
         if ( request.getTargetDir() == null )
         {
@@ -83,13 +82,13 @@ public class DefaultIndexPacker
             if ( !request.getTargetDir().isDirectory() )
             {
                 throw new IllegalArgumentException( //
-                    String.format( "Specified target path %s is not a directory", request
-                        .getTargetDir().getAbsolutePath() ) );
+                    String.format( "Specified target path %s is not a directory",
+                        request.getTargetDir().getAbsolutePath() ) );
             }
             if ( !request.getTargetDir().canWrite() )
             {
-                throw new IllegalArgumentException( String.format( "Specified target path %s is not writtable", request
-                    .getTargetDir().getAbsolutePath() ) );
+                throw new IllegalArgumentException( String.format( "Specified target path %s is not writtable",
+                    request.getTargetDir().getAbsolutePath() ) );
             }
         }
         else
@@ -99,23 +98,23 @@ public class DefaultIndexPacker
                 throw new IllegalArgumentException( "Can't create " + request.getTargetDir().getAbsolutePath() );
             }
         }
-        
+
         // These are all of the files we'll be dealing with (except for the incremental chunks of course)
         File legacyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".zip" );
         File v1File = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".gz" );
 
         Properties info = null;
-        
+
         try
         {
             // Note that for incremental indexes to work properly, a valid index.properties file
             // must be present
             info = readIndexProperties( request );
-            
+
             if ( request.isCreateIncrementalChunks() )
             {
                 List<Integer> chunk = incrementalHandler.getIncrementalUpdates( request, info );
-                
+
                 if ( chunk == null )
                 {
                     getLogger().debug( "Problem with Chunks, forcing regeneration of whole index" );
@@ -127,19 +126,20 @@ public class DefaultIndexPacker
                 }
                 else
                 {
-                    File file = new File( request.getTargetDir(), //
-                        IndexingContext.INDEX_FILE + "." + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
-                    
+                    File file =
+                        new File( request.getTargetDir(), //
+                            IndexingContext.INDEX_FILE + "." + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER )
+                                + ".gz" );
+
                     writeIndexData( request.getContext(), //
-                        chunk,
-                        file );
-                    
+                        chunk, file );
+
                     if ( request.isCreateChecksumFiles() )
                     {
                         FileUtils.fileWrite(
                             new File( file.getParentFile(), file.getName() + ".sha1" ).getAbsolutePath(),
                             DigesterUtils.getSha1Digest( file ) );
-                
+
                         FileUtils.fileWrite(
                             new File( file.getParentFile(), file.getName() + ".md5" ).getAbsolutePath(),
                             DigesterUtils.getMd5Digest( file ) );
@@ -153,21 +153,21 @@ public class DefaultIndexPacker
             info = new Properties();
             incrementalHandler.initializeProperties( info );
         }
-        
+
         Date timestamp = request.getContext().getTimestamp();
-        
+
         if ( timestamp == null )
         {
             timestamp = new Date( 0 ); // never updated
         }
-        
+
         if ( request.getFormats().contains( IndexPackingRequest.IndexFormat.FORMAT_LEGACY ) )
-        {           
+        {
             info.setProperty( IndexingContext.INDEX_LEGACY_TIMESTAMP, format( timestamp ) );
-            
+
             writeIndexArchive( request.getContext(), legacyFile );
 
-            if ( request.isCreateChecksumFiles() )  
+            if ( request.isCreateChecksumFiles() )
             {
                 FileUtils.fileWrite(
                     new File( legacyFile.getParentFile(), legacyFile.getName() + ".sha1" ).getAbsolutePath(),
@@ -178,48 +178,46 @@ public class DefaultIndexPacker
                     DigesterUtils.getMd5Digest( legacyFile ) );
             }
         }
-    
+
         if ( request.getFormats().contains( IndexPackingRequest.IndexFormat.FORMAT_V1 ) )
         {
             info.setProperty( IndexingContext.INDEX_TIMESTAMP, format( timestamp ) );
-            
+
             writeIndexData( request.getContext(), null, v1File );
 
             if ( request.isCreateChecksumFiles() )
             {
-                FileUtils.fileWrite(
-                    new File( v1File.getParentFile(), v1File.getName() + ".sha1" ).getAbsolutePath(),
+                FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".sha1" ).getAbsolutePath(),
                     DigesterUtils.getSha1Digest( v1File ) );
 
-                FileUtils.fileWrite(
-                    new File( v1File.getParentFile(), v1File.getName() + ".md5" ).getAbsolutePath(),
+                FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".md5" ).getAbsolutePath(),
                     DigesterUtils.getMd5Digest( v1File ) );
             }
         }
-        
+
         writeIndexProperties( request, info );
     }
-    
+
     private Properties readIndexProperties( IndexPackingRequest request )
         throws IOException
     {
         File file = null;
-        
+
         if ( request.isUseTargetProperties() )
         {
             file = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".properties" );
         }
         else
         {
-            file = new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );    
+            file = new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );
         }
-        
+
         Properties properties = new Properties();
-        
+
         FileInputStream fos = null;
-        
+
         try
-        {            
+        {
             fos = new FileInputStream( file );
             properties.load( fos );
         }
@@ -230,10 +228,10 @@ public class DefaultIndexPacker
                 fos.close();
             }
         }
-        
+
         return properties;
     }
-    
+
     void writeIndexArchive( IndexingContext context, File targetArchive )
         throws IOException
     {
@@ -288,9 +286,7 @@ public class DefaultIndexPacker
     }
 
     static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context )
-        throws CorruptIndexException,
-            LockObtainFailedException,
-            IOException
+        throws CorruptIndexException, LockObtainFailedException, IOException
     {
         IndexWriter w = null;
         try
@@ -438,9 +434,10 @@ public class DefaultIndexPacker
     void writeIndexProperties( IndexPackingRequest request, Properties info )
         throws IOException
     {
-        File propertyFile = new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );
+        File propertyFile =
+            new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );
         File targetPropertyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".properties" );
-        
+
         info.setProperty( IndexingContext.INDEX_ID, request.getContext().getId() );
 
         OutputStream os = null;
@@ -455,7 +452,7 @@ public class DefaultIndexPacker
         {
             IOUtil.close( os );
         }
-        
+
         try
         {
             os = new FileOutputStream( targetPropertyFile );
@@ -466,7 +463,7 @@ public class DefaultIndexPacker
         {
             IOUtil.close( os );
         }
-        
+
         if ( request.isCreateChecksumFiles() )
         {
             FileUtils.fileWrite(

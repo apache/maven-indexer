@@ -20,10 +20,11 @@ package org.apache.maven.index.locator;
 
 import java.io.File;
 
-/** 
+/**
  * A signature locator to locate the signature file relative to POM.
  * 
- * @author Jason van Zyl */
+ * @author Jason van Zyl
+ */
 public class SignatureLocator
     implements Locator
 {

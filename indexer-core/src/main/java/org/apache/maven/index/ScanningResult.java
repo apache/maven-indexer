@@ -23,13 +23,13 @@ import java.util.List;
 
 /**
  * A scanning result holds result of repository scan
- *  
- * @author Jason van Zyl 
+ * 
+ * @author Jason van Zyl
  */
 public class ScanningResult
 {
     private int totalFiles = 0;
-    
+
     private int deletedFiles = 0;
 
     private List<Exception> exceptions = new ArrayList<Exception>();
@@ -38,18 +38,18 @@ public class ScanningResult
     {
         this.totalFiles = totalFiles;
     }
-    
-    public void setDeletedFiles(int deletedFiles) 
+
+    public void setDeletedFiles( int deletedFiles )
     {
         this.deletedFiles = deletedFiles;
     }
-    
+
     public int getTotalFiles()
     {
         return totalFiles;
     }
-    
-    public int getDeletedFiles() 
+
+    public int getDeletedFiles()
     {
         return deletedFiles;
     }

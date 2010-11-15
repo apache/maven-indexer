@@ -41,7 +41,6 @@ public interface IndexPacker
      * @throws IOException on lethal IO problem
      */
     void packIndex( IndexPackingRequest request )
-        throws IOException,
-            IllegalArgumentException;
+        throws IOException, IllegalArgumentException;
 
 }

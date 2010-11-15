@@ -40,7 +40,7 @@ public class AbstractIndexCreatorHelper
     public List<IndexCreator> FULL_CREATORS;
 
     public List<IndexCreator> MIN_CREATORS;
-    
+
     Random rand = new Random();
 
     @Override
@@ -63,36 +63,38 @@ public class AbstractIndexCreatorHelper
         DEFAULT_CREATORS.add( min );
         DEFAULT_CREATORS.add( mavenPlugin );
         DEFAULT_CREATORS.add( mavenArchetype );
-        
+
         FULL_CREATORS.add( min );
         FULL_CREATORS.add( mavenPlugin );
         FULL_CREATORS.add( mavenArchetype );
         FULL_CREATORS.add( jar );
     }
-    
-    protected void deleteDirectory(File dir) throws IOException
+
+    protected void deleteDirectory( File dir )
+        throws IOException
     {
-        FileUtils.deleteDirectory(dir);
+        FileUtils.deleteDirectory( dir );
     }
-    
-    protected File getDirectory(String name)
+
+    protected File getDirectory( String name )
     {
         // pick random output location
-        
-        File outputFolder = new File( getBasedir(), "target/tests/"+name +"-"+ rand.nextLong() + "/" );
+
+        File outputFolder = new File( getBasedir(), "target/tests/" + name + "-" + rand.nextLong() + "/" );
         outputFolder.delete();
         assertFalse( outputFolder.exists() );
         return outputFolder;
     }
-    
-    public void testDirectory() throws IOException
+
+    public void testDirectory()
+        throws IOException
     {
-      File dir = this.getDirectory("foo");
-      assert(dir.getAbsolutePath().contains("foo"));
-      this.deleteDirectory(dir);
-      assertFalse(dir.exists());
-      
-      File dir2 = this.getDirectory("foo");
-      assertFalse("Directories aren't unique",dir.getCanonicalPath().equals(dir2.getCanonicalPath()));
+        File dir = this.getDirectory( "foo" );
+        assert ( dir.getAbsolutePath().contains( "foo" ) );
+        this.deleteDirectory( dir );
+        assertFalse( dir.exists() );
+
+        File dir2 = this.getDirectory( "foo" );
+        assertFalse( "Directories aren't unique", dir.getCanonicalPath().equals( dir2.getCanonicalPath() ) );
     }
 }

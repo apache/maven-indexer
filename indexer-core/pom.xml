@@ -26,6 +26,9 @@
     <wagon.version>1.0-beta-6</wagon.version>
   </properties>
 
+  <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
+    UNWORKABLE! -->
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>

@@ -52,14 +52,8 @@ public class IndexDataTest
     {
         indexDir = new RAMDirectory();
 
-        context = nexusIndexer.addIndexingContext(
-            "test-default",
-            "test",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
+        context =
+            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         // assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -92,14 +86,8 @@ public class IndexDataTest
     {
         indexDir = new RAMDirectory();
 
-        context = nexusIndexer.addIndexingContext(
-            "test-default",
-            "test",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
+        context =
+            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -144,8 +132,7 @@ public class IndexDataTest
     }
 
     private Map<String, ArtifactInfo> readIndex( IndexReader r1 )
-        throws CorruptIndexException,
-            IOException
+        throws CorruptIndexException, IOException
     {
         Map<String, ArtifactInfo> map = new HashMap<String, ArtifactInfo>();
 

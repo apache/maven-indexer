@@ -39,14 +39,8 @@ public class Nexus645NexusIndexerTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        context = nexusIndexer.addIndexingContext(
-            "nexus-645",
-            "nexus-645",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
+        context =
+            nexusIndexer.addIndexingContext( "nexus-645", "nexus-645", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
@@ -55,7 +49,7 @@ public class Nexus645NexusIndexerTest
     {
         Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.codehaus.tycho" );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        Collection<ArtifactInfo> r = response.getResults(); 
+        Collection<ArtifactInfo> r = response.getResults();
 
         assertEquals( 3, r.size() );
 

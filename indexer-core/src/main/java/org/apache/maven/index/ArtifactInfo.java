@@ -155,7 +155,7 @@ public class ArtifactInfo
 
     @Deprecated
     private transient ArtifactVersion artifactVersion;
-    
+
     private transient float luceneScore;
 
     public String classifier;

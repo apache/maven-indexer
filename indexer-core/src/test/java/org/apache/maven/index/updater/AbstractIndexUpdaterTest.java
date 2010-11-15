@@ -37,7 +37,7 @@ public abstract class AbstractIndexUpdaterTest
     extends AbstractIndexCreatorHelper
 {
     File testBasedir;
- 
+
     File repoDir;
 
     File indexDir;
@@ -60,13 +60,13 @@ public abstract class AbstractIndexUpdaterTest
     {
         super.setUp();
 
-        testBasedir = new File( getBasedir() , "/target/indexUpdater" );
+        testBasedir = new File( getBasedir(), "/target/indexUpdater" );
         testBasedir.mkdirs();
-        
-        repoDir =  new File( getBasedir() , "/target/indexUpdaterRepoDir" );
+
+        repoDir = new File( getBasedir(), "/target/indexUpdaterRepoDir" );
         repoDir.mkdirs();
 
-        indexDir = super.getDirectory("indexerUpdater");
+        indexDir = super.getDirectory( "indexerUpdater" );
         indexDir.mkdirs();
 
         indexer = lookup( NexusIndexer.class );
@@ -75,14 +75,9 @@ public abstract class AbstractIndexUpdaterTest
 
         packer = lookup( IndexPacker.class );
 
-        context = indexer.addIndexingContext(
-            repositoryId,
-            repositoryId,
-            repoDir,
-            indexDir,
-            repositoryUrl,
-            null,
-            MIN_CREATORS );
+        context =
+            indexer.addIndexingContext( repositoryId, repositoryId, repoDir, indexDir, repositoryUrl, null,
+                MIN_CREATORS );
     }
 
     @Override
@@ -90,40 +85,29 @@ public abstract class AbstractIndexUpdaterTest
         throws Exception
     {
         super.tearDown();
-        
+
         // this one closes it too
         indexer.removeIndexingContext( context, true );
 
         FileUtils.forceDelete( testBasedir );
-        
+
         FileUtils.forceDelete( repoDir );
 
         FileUtils.forceDelete( indexDir );
     }
-    
-    
+
     protected ArtifactContext createArtifactContext( String repositoryId, String groupId, String artifactId,
-        String version, String classifier ) throws IllegalArtifactCoordinateException
+                                                     String version, String classifier )
+        throws IllegalArtifactCoordinateException
     {
         String path = createPath( groupId, artifactId, version, classifier );
         File pomFile = new File( path + ".pom" );
         File artifact = new File( path + ".jar" );
         File metadata = null;
         ArtifactInfo artifactInfo = new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier );
-        Gav gav = new Gav(
-            groupId,
-            artifactId,
-            version,
-            classifier,
-            "jar",
-            null,
-            null,
-            artifact.getName(),
-            false,
-            false,
-            null,
-            false,
-            null );
+        Gav gav =
+            new Gav( groupId, artifactId, version, classifier, "jar", null, null, artifact.getName(), false, false,
+                null, false, null );
         return new ArtifactContext( pomFile, artifact, metadata, artifactInfo, gav );
     }
 

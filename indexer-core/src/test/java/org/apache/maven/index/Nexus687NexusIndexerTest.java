@@ -30,9 +30,7 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.NexusIndexer;
 
 /**
- * @author Juven Xu
- *  
- * http://issues.sonatype.org/browse/NEXUS-687
+ * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
  */
 public class Nexus687NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -43,14 +41,8 @@ public class Nexus687NexusIndexerTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        context = nexusIndexer.addIndexingContext(
-            "nexus-687",
-            "nexus-687",
-            repo,
-            indexDir,
-            null,
-            null,
-            DEFAULT_CREATORS );
+        context =
+            nexusIndexer.addIndexingContext( "nexus-687", "nexus-687", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 

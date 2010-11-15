@@ -110,7 +110,7 @@ public class IndexerField
 
     public boolean isStored()
     {
-        return !(Store.NO.equals( storeMethod ));
+        return !( Store.NO.equals( storeMethod ) );
     }
 
     public Field toField( String value )

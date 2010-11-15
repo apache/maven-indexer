@@ -24,7 +24,7 @@ import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
 
 /**
- * A POM locator to locate POM artifact. 
+ * A POM locator to locate POM artifact.
  */
 public class PomLocator
     implements GavHelpedLocator

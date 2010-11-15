@@ -70,8 +70,7 @@ public class NexusArchetypeDataSourceTest
         }
         else
         {
-            File indexDirFile =
-            	super.getDirectory("index/test");
+            File indexDirFile = super.getDirectory( "index/test" );
 
             super.deleteDirectory( indexDirFile );
 

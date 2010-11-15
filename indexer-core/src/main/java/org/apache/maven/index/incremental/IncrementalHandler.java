@@ -25,14 +25,14 @@ import java.util.Properties;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 
-
 public interface IncrementalHandler
 {
     List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
         throws IOException;
-    
-    List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties, Properties remoteProperties )
+
+    List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
+                                               Properties remoteProperties )
         throws IOException;
-    
+
     void initializeProperties( Properties properties );
 }

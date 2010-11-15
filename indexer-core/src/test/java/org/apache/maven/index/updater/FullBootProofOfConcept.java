@@ -118,11 +118,11 @@ public class FullBootProofOfConcept
 
         IndexingContext ctx =
             new DefaultIndexingContext( repositoryId, repositoryId, basedir, basedir, repositoryUrl, indexUrl,
-                                        creators, true );
+                creators, true );
 
-        // craft the Wagon based ResourceFetcher manually
-        
-        TransferListener tl =  new TransferListener()
+        // craft the Wagon based Resource
+
+        TransferListener tl = new TransferListener()
         {
 
             private int col = 0;
@@ -180,14 +180,12 @@ public class FullBootProofOfConcept
                 System.out.println( "[DEBUG]: " + message );
             }
         };
-        
+
         WagonHelper wh = new WagonHelper( container );
-        
+
         WagonFetcher wf = wh.getWagonResourceFetcher( tl, null, null );
-        
-        IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx );
-        
-        updateRequest.setResourceFetcher( wf );
+
+        IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, wf );
 
         container.lookup( IndexUpdater.class ).fetchAndUpdateIndex( updateRequest );
     }

@@ -28,7 +28,7 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * A search engine used to perform searches trough repository indexes.
- *
+ * 
  * @author Eugene Kuleshov
  * @author Jason van Zyl
  * @author Tamas Cservenak
@@ -54,7 +54,8 @@ public interface SearchEngine
     /**
      * Do the search only on searchable contexts
      */
-    public IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request, Collection<IndexingContext> indexingContexts )
+    public IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
+                                                       Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**
@@ -75,7 +76,7 @@ public interface SearchEngine
      * Do the search in all contexts, no matter if the context is searchable or not
      */
     public IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
-                                                    Collection<IndexingContext> indexingContexts )
+                                                            Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**

@@ -39,22 +39,26 @@ public abstract class AbstractNexusIndexerCliTest
     extends PlexusTestCase
 {
 
-	private static final long rand = new Random().nextLong();
-	/*    private static final String DEST_DIR = new File( getBasedir(), "target/tests/clitest/output-"+rand ).getAbsolutePath();
+    private static final long rand = new Random().nextLong();
 
-    private static final String INDEX_DIR = new File( getBasedir(), "target/tests/clitest/index-"+rand ).getAbsolutePath();
+    /*
+     * private static final String DEST_DIR = new File( getBasedir(), "target/tests/clitest/output-"+rand
+     * ).getAbsolutePath(); private static final String INDEX_DIR = new File( getBasedir(),
+     * "target/tests/clitest/index-"+rand ).getAbsolutePath(); private static final String UNPACK_DIR = new File(
+     * getBasedir(), "target/tests/clitest/unpack-"+rand ).getAbsolutePath(); private static final String TEST_REPO =
+     * new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
+     */
+    private static final String DEST_DIR =
+        new File( getBasedir(), "target/tests/clitest-" + rand + "/output" ).getAbsolutePath();
 
-    private static final String UNPACK_DIR = new File( getBasedir(), "target/tests/clitest/unpack-"+rand ).getAbsolutePath();
+    private static final String INDEX_DIR =
+        new File( getBasedir(), "target/tests/clitest-" + rand + "/index" ).getAbsolutePath();
+
+    private static final String UNPACK_DIR =
+        new File( getBasedir(), "target/tests/clitest-" + rand + "/unpack" ).getAbsolutePath();
 
     private static final String TEST_REPO = new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
-*/
-    private static final String DEST_DIR = new File( getBasedir(), "target/tests/clitest-"+rand+"/output" ).getAbsolutePath();
 
-    private static final String INDEX_DIR = new File( getBasedir(), "target/tests/clitest-"+rand+"/index" ).getAbsolutePath();
-
-    private static final String UNPACK_DIR = new File( getBasedir(), "target/tests/clitest-"+rand+"/unpack" ).getAbsolutePath();
-
-    private static final String TEST_REPO = new File( getBasedir(), "src/test/repo" ).getAbsolutePath();	
     protected OutputStream out;
 
     @Override
@@ -204,7 +208,7 @@ public abstract class AbstractNexusIndexerCliTest
     {
         int code =
             execute( "-r", new File( "target/undexinting/repo/to/try/what/will/happen/here" ).getCanonicalPath(), "-i",
-                     INDEX_DIR, "-d", DEST_DIR );
+                INDEX_DIR, "-d", DEST_DIR );
         String output = out.toString();
         assertEquals( output, 1, code );
     }
@@ -226,7 +230,7 @@ public abstract class AbstractNexusIndexerCliTest
 
             context =
                 indexer.addIndexingContext( "index", "index", new File( TEST_REPO ), new File( indexDir ), null, null,
-                                            indexCreators );
+                    indexCreators );
 
             assertFalse( "No index file was generated", new File( indexDir ).list().length == 0 );
 
@@ -238,11 +242,11 @@ public abstract class AbstractNexusIndexerCliTest
         }
         finally
         {
-        	if (context !=null)
-        	{
-            indexer.removeIndexingContext( context, true );
+            if ( context != null )
+            {
+                indexer.removeIndexingContext( context, true );
+            }
         }
-    }
     }
 
     protected abstract int execute( String... args );

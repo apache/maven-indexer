@@ -22,7 +22,7 @@ import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
- * A legacy document updater used to produce legacy Lucene index documents. 
+ * A legacy document updater used to produce legacy Lucene index documents.
  * 
  * @author Eugene Kuleshov
  */
@@ -30,9 +30,8 @@ public interface LegacyDocumentUpdater
 {
 
     /**
-     * Update a legacy Lucene <code>Document</code> from the <code>ArtifactInfo</code>. 
+     * Update a legacy Lucene <code>Document</code> from the <code>ArtifactInfo</code>.
      */
     void updateLegacyDocument( ArtifactInfo ai, Document doc );
-    
-}
 
+}

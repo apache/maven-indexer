@@ -21,7 +21,7 @@ package org.apache.maven.index.locator;
 import java.io.File;
 
 /**
- * An artifact locator used to locate repository "elements" relative to some file. 
+ * An artifact locator used to locate repository "elements" relative to some file.
  * 
  * @author Jason van Zyl
  */

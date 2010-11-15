@@ -35,7 +35,7 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 public class TrackingFetcher
     extends DefaultIndexUpdater.FileFetcher
 {
-    
+
     private final ArrayList<String> resources = new ArrayList<String>();
 
     public TrackingFetcher( File basedir )
@@ -50,7 +50,7 @@ public class TrackingFetcher
         resources.add( name );
         return super.retrieve( name );
     }
-    
+
     @Override
     public void retrieve( String name, File targetFile )
         throws IOException, FileNotFoundException

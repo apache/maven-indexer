@@ -22,8 +22,8 @@ import java.io.File;
 
 /**
  * A JavaDoc locator to locate the JavaDoc bundle relative to POM.
- *  
- * @author Jason van Zyl 
+ * 
+ * @author Jason van Zyl
  */
 public class JavadocLocator
     implements Locator
@@ -34,6 +34,6 @@ public class JavadocLocator
     public File locate( File source )
     {
         String path = source.getAbsolutePath();
-        return new File( path.substring( 0, path.length()-4 ).concat( "-javadoc.jar" ) );
+        return new File( path.substring( 0, path.length() - 4 ).concat( "-javadoc.jar" ) );
     }
 }

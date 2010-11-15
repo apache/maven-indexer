@@ -66,7 +66,7 @@ public class SubPathReindexTest
         ai = nexusIndexer.identify( artifact );
 
         assertNull( "Should not be able to identify it!", ai );
-        
+
         // Using a file: this one should be known
         artifact = new File( repo, "org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar" );
 

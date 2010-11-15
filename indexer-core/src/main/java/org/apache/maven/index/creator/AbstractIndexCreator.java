@@ -23,8 +23,8 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * An abstract base class for {@link IndexCreator} implementations.
- *  
- * @author Jason van Zyl 
+ * 
+ * @author Jason van Zyl
  */
 public abstract class AbstractIndexCreator
     extends AbstractLogEnabled

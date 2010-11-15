@@ -20,7 +20,7 @@ package org.apache.maven.index.fs;
 
 /**
  * This object represents acquired filesystem lock.
- *  
+ * 
  * @author igor
  */
 public interface Lock

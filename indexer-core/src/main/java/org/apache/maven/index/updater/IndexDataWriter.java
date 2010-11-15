@@ -90,7 +90,7 @@ public class IndexDataWriter
         throws IOException
     {
         dos.writeByte( VERSION );
-        
+
         Date timestamp = context.getTimestamp();
         dos.writeLong( timestamp == null ? -1 : timestamp.getTime() );
     }

@@ -236,11 +236,11 @@ public class DefaultQueryCreator
                     Term t = new Term( indexerField.getKey(), query );
 
                     bq.add( new TermQuery( t ), Occur.SHOULD );
-                    
+
                     PrefixQuery pq = new PrefixQuery( t );
                     pq.setBoost( 0.8f );
-                    
-                    bq.add( pq , Occur.SHOULD );
+
+                    bq.add( pq, Occur.SHOULD );
 
                     return bq;
                 }
@@ -280,7 +280,7 @@ public class DefaultQueryCreator
                     BooleanQuery q1 = new BooleanQuery();
 
                     q1.add( qp.parse( qpQuery ), Occur.SHOULD );
-                    
+
                     if ( qpQuery.contains( " " ) )
                     {
                         q1.add( qp.parse( "\"" + qpQuery + "\"" ), Occur.SHOULD );

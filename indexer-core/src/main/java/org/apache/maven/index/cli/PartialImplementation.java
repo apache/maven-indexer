@@ -23,11 +23,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * An {@link java.lang.reflect.InvocationHandler} that can be extended with methods from the proxied interface.
- * While invocation it will look for a method within itself that matches the signature of the invoked peoxy method.
- * If found the method will be invoked and result returned, otherwise an {@link UnsupportedOperationException} will be
- * thrown.
- *
+ * An {@link java.lang.reflect.InvocationHandler} that can be extended with methods from the proxied interface. While
+ * invocation it will look for a method within itself that matches the signature of the invoked peoxy method. If found
+ * the method will be invoked and result returned, otherwise an {@link UnsupportedOperationException} will be thrown.
+ * 
  * @author Alin Dreghiciu
  */
 public class PartialImplementation
@@ -42,15 +41,15 @@ public class PartialImplementation
             final Method localMethod = getClass().getMethod( method.getName(), method.getParameterTypes() );
             return localMethod.invoke( this, args );
         }
-        catch( NoSuchMethodException e )
+        catch ( NoSuchMethodException e )
         {
             throw new UnsupportedOperationException( "Method " + method.getName() + "() is not supported" );
         }
-        catch( IllegalAccessException e )
+        catch ( IllegalAccessException e )
         {
             throw new UnsupportedOperationException( "Method " + method.getName() + "() is not supported" );
         }
-        catch( InvocationTargetException e )
+        catch ( InvocationTargetException e )
         {
             throw e.getCause();
         }
