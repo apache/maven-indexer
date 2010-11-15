@@ -84,7 +84,7 @@ under the License.
   </scm>
 
   <properties>
-    <sisu-inject-plexus.version>1.4.2</sisu-inject-plexus.version>
+    <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
     <plexus-component-metadata.version>1.5.4</plexus-component-metadata.version>
   </properties>
 
