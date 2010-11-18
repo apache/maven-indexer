@@ -75,6 +75,16 @@ under the License.
       </roles>
       <timezone>-5</timezone>
     </developer>
+    <developer>
+      <id>bdemers</id>
+      <name>Brian Demers</name>
+      <email>bdemers@sonatype.com</email>
+      <organization>Sonatype</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>-5</timezone>
+    </developer>
   </developers>
 
   <scm>
