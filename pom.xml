@@ -17,8 +17,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -29,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
+  <version>3.1.0</version>
   <packaging>pom</packaging>
 
   <name>Maven :: Indexer</name>
@@ -88,9 +87,9 @@ under the License.
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-3.1.0</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-3.1.0</developerConnection>
+    <url>http://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-3.1.0</url>
   </scm>
 
   <properties>
@@ -147,19 +146,6 @@ under the License.
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.1</version>
-        <executions>
-          <execution>
-            <id>attach-sources</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
