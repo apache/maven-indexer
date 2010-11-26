@@ -57,7 +57,6 @@ public class DefaultNexusIndexer
     extends AbstractLogEnabled
     implements NexusIndexer
 {
-    private static final char[] DIGITS = "0123456789abcdef".toCharArray();
 
     @Requirement
     private Scanner scanner;
@@ -503,7 +502,26 @@ public class DefaultNexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
+    @Deprecated
+    public ArtifactInfo identify( String field, String query )
+        throws IOException
+    {
+        return identify( new TermQuery( new Term( field, query ) ) );
+    }
+
+    public ArtifactInfo identify( Field field, String query )
+        throws IOException
+    {
+        return identify( constructQuery( field, query, SearchType.EXACT ) );
+    }
+
     public ArtifactInfo identify( File artifact )
+        throws IOException
+    {
+        return identify( artifact, indexingContexts.values() );
+    }
+
+    public ArtifactInfo identify( File artifact, Collection<IndexingContext> contexts )
         throws IOException
     {
         FileInputStream is = null;
@@ -525,9 +543,9 @@ public class DefaultNexusIndexer
 
             byte[] digest = sha1.digest();
 
-            // String sha1 = new Sha1Digester().calc( artifact );
+            Query q = constructQuery( MAVEN.SHA1, encode( digest ), SearchType.EXACT );
 
-            return identify( MAVEN.SHA1, encode( digest ) );
+            return identify( q, contexts );
         }
         catch ( NoSuchAlgorithmException ex )
         {
@@ -537,35 +555,6 @@ public class DefaultNexusIndexer
         {
             IOUtil.close( is );
         }
-
-    }
-
-    private static String encode( byte[] digest )
-    {
-        char[] buff = new char[digest.length * 2];
-
-        int n = 0;
-
-        for ( byte b : digest )
-        {
-            buff[n++] = DIGITS[( 0xF0 & b ) >> 4];
-            buff[n++] = DIGITS[0x0F & b];
-        }
-
-        return new String( buff );
-    }
-
-    @Deprecated
-    public ArtifactInfo identify( String field, String query )
-        throws IOException
-    {
-        return identify( new TermQuery( new Term( field, query ) ) );
-    }
-
-    public ArtifactInfo identify( Field field, String query )
-        throws IOException
-    {
-        return identify( queryCreator.constructQuery( field, query, SearchType.EXACT ) );
     }
 
     public ArtifactInfo identify( Query query )
@@ -591,4 +580,22 @@ public class DefaultNexusIndexer
         }
     }
 
+    // ==
+
+    private static final char[] DIGITS = "0123456789abcdef".toCharArray();
+
+    private static String encode( byte[] digest )
+    {
+        char[] buff = new char[digest.length * 2];
+
+        int n = 0;
+
+        for ( byte b : digest )
+        {
+            buff[n++] = DIGITS[( 0xF0 & b ) >> 4];
+            buff[n++] = DIGITS[0x0F & b];
+        }
+
+        return new String( buff );
+    }
 }

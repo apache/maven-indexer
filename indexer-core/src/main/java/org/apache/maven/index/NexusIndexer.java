@@ -423,14 +423,17 @@ public interface NexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
-    ArtifactInfo identify( File artifact )
-        throws IOException;
-
     @Deprecated
     ArtifactInfo identify( String field, String query )
         throws IOException;
 
     ArtifactInfo identify( Field field, String query )
+        throws IOException;
+
+    ArtifactInfo identify( File artifact )
+        throws IOException;
+
+    ArtifactInfo identify( File artifact, Collection<IndexingContext> contexts )
         throws IOException;
 
     ArtifactInfo identify( Query query )
