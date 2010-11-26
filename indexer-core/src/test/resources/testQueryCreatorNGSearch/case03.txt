@@ -1,6 +1,4 @@
-### Searched for field urn:maven#groupId (with 2 registered index fields) using query "commons" (QC create LQL "(g:commons g:commons*^0.8) (groupId:commons*)")
-test :: commons-cli:commons-cli:1.0:null:jar
-test :: commons-cli:commons-cli:1.0:sources:jar
+### Searched for field urn:maven#groupId (with 2 registered index fields) using query "commons" (QC create LQL "groupId:commons*")
 test :: commons-logging:commons-logging:1.1:null:jar
 test :: commons-logging:commons-logging:1.1:sources:jar
 test :: commons-logging:commons-logging:1.0.4:null:jar
@@ -14,4 +12,6 @@ test :: commons-logging:commons-logging:1.0.1:null:jar
 test :: commons-logging:commons-logging:1.0.1:javadoc:jar
 test :: commons-logging:commons-logging:1.0:null:jar
 test :: commons-logging:commons-logging:1.0:javadoc:jar
+test :: commons-cli:commons-cli:1.0:null:jar
+test :: commons-cli:commons-cli:1.0:sources:jar
 ### TOTAL:15 (response said 15)

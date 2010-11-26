@@ -18,16 +18,20 @@
  */
 package org.apache.maven.index;
 
+import java.io.IOException;
+import java.io.StringReader;
+
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -288,9 +292,12 @@ public class DefaultQueryCreator
 
                     Query q2 = null;
 
+                    int termCount = countTerms( indexerField, query );
+
                     // try with KW only if the processed query in qpQuery does not have spaces!
-                    if ( !query.contains( " " ) )
+                    if ( !query.contains( " " ) && termCount > 1 )
                     {
+                        // get the KW field
                         IndexerField keywordField = selectIndexerField( indexerField.getOntology(), SearchType.EXACT );
 
                         if ( keywordField.isKeyword() )
@@ -397,5 +404,31 @@ public class DefaultQueryCreator
         }
 
         return new WildcardQuery( new Term( field, q ) );
+    }
+
+    // ==
+
+    private NexusAnalyzer nexusAnalyzer = new NexusAnalyzer();
+
+    protected int countTerms( final IndexerField indexerField, final String query )
+    {
+        try
+        {
+            TokenStream ts = nexusAnalyzer.reusableTokenStream( indexerField.getKey(), new StringReader( query ) );
+
+            int result = 0;
+
+            while ( ts.next() != null )
+            {
+                result++;
+            }
+
+            return result;
+        }
+        catch ( IOException e )
+        {
+            // will not happen
+            return 1;
+        }
     }
 }

@@ -1,0 +1,9 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.one</groupId>
+  <artifactId>this_solution</artifactId>
+  <version>1.0</version>
+  <packaging>pom</packaging>
+  
+</project>
