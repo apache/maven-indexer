@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>18-SNAPSHOT</version>
+    <version>18</version>
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
