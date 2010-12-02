@@ -38,6 +38,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.component.annotations.Component;
@@ -269,7 +270,7 @@ public class DefaultNexusIndexer
 
             if ( update )
             {
-                Directory.copy( context.getIndexDirectory(), directory, false );
+                IndexUtils.copyDirectory( context.getIndexDirectory(), directory );
             }
 
             tmpContext = new DefaultIndexingContext( context.getId() + "-tmp", //

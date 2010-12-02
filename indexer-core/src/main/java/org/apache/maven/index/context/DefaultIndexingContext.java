@@ -151,7 +151,7 @@ public class DefaultIndexingContext
 
         this.indexDirectoryFile = indexDirectoryFile;
 
-        this.indexDirectory = FSDirectory.getDirectory( indexDirectoryFile );
+        this.indexDirectory = FSDirectory.getDirectory(  indexDirectoryFile );
 
         prepareIndex( reclaimIndex );
     }
@@ -191,9 +191,9 @@ public class DefaultIndexingContext
             try
             {
                 // unlock the dir forcibly
-                if ( IndexReader.isLocked( indexDirectory ) )
+                if ( IndexWriter.isLocked( indexDirectory ) )
                 {
-                    IndexReader.unlock( indexDirectory );
+                    IndexWriter.unlock( indexDirectory );
                 }
 
                 checkAndUpdateIndexDescriptor( reclaimIndex );
@@ -238,9 +238,9 @@ public class DefaultIndexingContext
             indexWriter = null;
 
             // unlock the dir forcibly
-            if ( IndexReader.isLocked( indexDirectory ) )
+            if ( IndexWriter.isLocked( indexDirectory ) )
             {
-                IndexReader.unlock( indexDirectory );
+                IndexWriter.unlock( indexDirectory );
             }
 
             indexDirectory.close();
@@ -313,7 +313,7 @@ public class DefaultIndexingContext
     {
         Document hdr = new Document();
 
-        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
         hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES, Field.Index.NO ) );
 
@@ -460,7 +460,8 @@ public class DefaultIndexingContext
                     indexReader.close();
                 }
 
-                indexReader = IndexReader.open( indexDirectory );
+                // TODO: I think ReadOnly should be okay here! We should move all our W ops against IndexWriter
+                indexReader = IndexReader.open( indexDirectory, false );
             }
 
             return indexReader;
@@ -599,18 +600,20 @@ public class DefaultIndexingContext
     {
         synchronized ( indexLock )
         {
+            Date ts = IndexUtils.getTimestamp( directory );
+
             closeReaders();
 
             deleteIndexFiles();
 
             Directory.copy( directory, indexDirectory, false );
+            // We do it manually here, since we do want delete to happen 1st
+            // IndexUtils.copyDirectory( directory, indexDirectory );
 
             // reclaim the index as mine
             storeDescriptor();
 
-            timestamp = IndexUtils.getTimestamp( directory );
-
-            IndexUtils.updateTimestamp( indexDirectory, getTimestamp() );
+            updateTimestamp( true, ts );
 
             optimize();
         }
@@ -631,7 +634,7 @@ public class DefaultIndexingContext
 
             IndexSearcher s = getIndexSearcher();
 
-            IndexReader r = IndexReader.open( directory );
+            IndexReader r = IndexReader.open( directory, true );
 
             try
             {

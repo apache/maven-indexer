@@ -46,6 +46,19 @@ public class IndexUtils
 {
     public static final String TIMESTAMP_FILE = "timestamp";
 
+    // Directory
+
+    public static void copyDirectory( Directory source, Directory target )
+        throws IOException
+    {
+        // perform plain copy (but semantic changes between Lucene 2.4 and 2.9 exists, so timestmap file will be not
+        // copied in 2.9)
+        Directory.copy( source, target, false );
+
+        Date ts = getTimestamp( source );
+        updateTimestamp( target, ts );
+    }
+
     // timestamp
 
     public static ArtifactInfo constructArtifactInfo( Document doc, IndexingContext context )

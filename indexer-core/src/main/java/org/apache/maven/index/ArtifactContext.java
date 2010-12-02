@@ -181,7 +181,7 @@ public class ArtifactContext
         Document doc = new Document();
 
         // unique key
-        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), Store.YES, Index.UN_TOKENIZED ) );
+        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), Store.YES, Index.NOT_ANALYZED ) );
 
         doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
             Long.toString( System.currentTimeMillis() ), Store.YES, Index.NO ) );

@@ -52,7 +52,7 @@ public class ArtifactInfoRecord
      * Unique groupId, artifactId, version, classifier, extension (or packaging). Stored, indexed untokenized
      */
     public static final IndexerField FLD_UINFO = new IndexerField( NEXUS.UINFO, IndexerFieldVersion.V1, "u",
-        "Artifact UINFO (as keyword, stored)", Store.YES, Index.UN_TOKENIZED );
+        "Artifact UINFO (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
 
     /**
      * Del: contains UINFO to mark record as deleted (needed for incremental updates!). The original document IS

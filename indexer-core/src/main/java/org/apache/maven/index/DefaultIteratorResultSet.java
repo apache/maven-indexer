@@ -27,7 +27,6 @@ import java.util.List;
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -338,7 +337,11 @@ public class DefaultIteratorResultSet
 
         maxNumFragments = Math.max( 1, maxNumFragments ); // sanity check
 
-        TextFragment[] frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
+        TextFragment[] frag;
+        // Lucene 2.9.x
+        // try
+        // {
+        frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
 
         // Get text
         ArrayList<String> fragTexts = new ArrayList<String>( maxNumFragments );
@@ -352,6 +355,13 @@ public class DefaultIteratorResultSet
         }
 
         return fragTexts;
+        // }
+        // catch ( InvalidTokenOffsetsException e )
+        // {
+        // // TODO: huh? Logging this? Or what?
+        // return Collections.emptyList();
+        // }
+
     }
 
     protected IndexingContext getIndexingContextForPointer( Document doc, int docPtr )

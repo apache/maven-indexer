@@ -88,9 +88,12 @@ public class DefaultIndexUpdaterTest
         assertEquals( tempContent.toString(), 2, tempContent.size() );
 
         // RAMDirectory is closed with context, forcing timestamp update
-        IndexUtils.updateTimestamp( tempContext.getIndexDirectory(), tempContext.getTimestamp() );
+        tempContext.updateTimestamp( true );
 
-        RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory() );
+        // A change in RAMDirectory and Directory behavior in general: it will copy the Index files ONLY
+        // So we must make sure that timestamp file is transferred correctly.
+        RAMDirectory tempDir2 = new RAMDirectory();
+        IndexUtils.copyDirectory( tempContext.getIndexDirectory(), tempDir2 );
 
         Date newIndexTimestamp = tempContext.getTimestamp();
 

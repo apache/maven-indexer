@@ -418,6 +418,8 @@ public class DefaultQueryCreator
 
             int result = 0;
 
+            // Lucene 2.9
+            // while ( ts.incrementToken() )
             while ( ts.next() != null )
             {
                 result++;
