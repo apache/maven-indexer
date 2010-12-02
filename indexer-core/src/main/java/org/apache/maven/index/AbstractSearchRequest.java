@@ -62,6 +62,13 @@ public class AbstractSearchRequest
      */
     private List<MatchHighlightRequest> matchHighlightRequests;
 
+    /**
+     * Should Lucene Explanations be added to resulting ArtifactInfo's attributes (keyed as
+     * org.apache.lucene.search.Explanation.class.getName())? Warning: calculating these are costly operation, and
+     * should not be used in production systems (maybe on some "debug" like UI or so).
+     */
+    private boolean luceneExplain = false;
+
     public AbstractSearchRequest( Query query )
     {
         this( query, null );
@@ -188,5 +195,15 @@ public class AbstractSearchRequest
     public void setMatchHighlightRequests( List<MatchHighlightRequest> matchHighlightRequests )
     {
         this.matchHighlightRequests = matchHighlightRequests;
+    }
+
+    public boolean isLuceneExplain()
+    {
+        return luceneExplain;
+    }
+
+    public void setLuceneExplain( boolean luceneExplain )
+    {
+        this.luceneExplain = luceneExplain;
     }
 }

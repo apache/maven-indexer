@@ -350,7 +350,7 @@ public class DefaultIndexUpdater
         try
         {
             r = IndexReader.open( sourcedir );
-            w = new IndexWriter( targetdir, false, new NexusAnalyzer(), true );
+            w = new NexusIndexWriter( targetdir, new NexusAnalyzer(), true );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
@@ -404,7 +404,7 @@ public class DefaultIndexUpdater
         try
         {
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
-            w = new IndexWriter( directory, new NexusAnalyzer() );
+            w = new NexusIndexWriter( directory, new NexusAnalyzer(), true );
 
             w.optimize();
 

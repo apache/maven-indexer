@@ -24,6 +24,7 @@ import junit.framework.Assert;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 
 public class Nexus3881NexusIndexerTest
@@ -50,9 +51,18 @@ public class Nexus3881NexusIndexerTest
         bq.add( q1, Occur.SHOULD );
         bq.add( q2, Occur.SHOULD );
 
-        IteratorSearchResponse response = nexusIndexer.searchIterator( new IteratorSearchRequest( bq ) );
+        IteratorSearchRequest request = new IteratorSearchRequest( bq );
+        request.setLuceneExplain( true );
+        
+        IteratorSearchResponse response = nexusIndexer.searchIterator( request );
 
         Assert.assertEquals( "All artifacts has 'solution' in their GA!", 4, response.getTotalHits() );
+        
+        // for (ArtifactInfo ai : response) {
+        // System.out.println(ai.toString());
+        // System.out.println(ai.getAttributes().get( Explanation.class.getName() ));
+        // System.out.println();
+        // }
 
         float firstRel = response.getResults().next().getLuceneScore();
 

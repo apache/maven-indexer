@@ -40,15 +40,11 @@ public class NexusIndexWriter
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
-        this( directory, analyzer, create, false /* autoCommit */);
-    }
-
-    public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create, boolean autoCommit )
-        throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-        super( directory, autoCommit, analyzer, create );
+        super( directory, analyzer, create, MaxFieldLength.LIMITED );
 
         this.closed = false;
+
+        // setSimilarity( new NexusSimilarity() );
     }
 
     @Override

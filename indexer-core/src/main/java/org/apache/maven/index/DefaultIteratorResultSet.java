@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -190,10 +191,12 @@ public class DefaultIteratorResultSet
             {
                 // uncomment this to have explainations too
                 // WARNING: NOT FOR PRODUCTION SYSTEMS, THIS IS VERY COSTLY OPERATION
-                // For debugging only
-                //
-                // result.getAttributes().put( Explanation.class.getName(),
-                // indexSearcher.explain( searchRequest.getQuery(), hits.id( pointer ) ).toString() );
+                // For debugging only!!!
+                if ( searchRequest.isLuceneExplain() )
+                {
+                    result.getAttributes().put( Explanation.class.getName(),
+                        indexSearcher.explain( searchRequest.getQuery(), hits.id( pointer ) ).toString() );
+                }
 
                 result.setLuceneScore( hits.score( pointer ) );
 

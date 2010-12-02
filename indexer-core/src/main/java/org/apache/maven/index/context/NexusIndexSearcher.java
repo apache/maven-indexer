@@ -40,12 +40,20 @@ public class NexusIndexSearcher
         this( indexingContext, indexingContext.getIndexReader() );
     }
 
+    public NexusIndexSearcher( final IndexReader reader )
+        throws IOException
+    {
+        this( null, reader );
+    }
+
     public NexusIndexSearcher( final IndexingContext indexingContext, final IndexReader reader )
         throws IOException
     {
         super( reader );
 
         this.indexingContext = indexingContext;
+
+        // setSimilarity( new NexusSimilarity() );
     }
 
     public IndexingContext getIndexingContext()

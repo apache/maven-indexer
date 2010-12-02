@@ -37,6 +37,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.NexusIndexSearcher;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -326,7 +327,7 @@ public class DefaultSearchEngine
         MultiReader multiReader =
             new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
 
-        IndexSearcher indexSearcher = new IndexSearcher( multiReader );
+        IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
 
         // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed patch
         // did come in faster! -- Thanks)

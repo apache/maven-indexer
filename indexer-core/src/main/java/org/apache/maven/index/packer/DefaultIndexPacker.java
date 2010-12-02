@@ -45,6 +45,7 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.NexusIndexWriter;
 import org.apache.maven.index.context.NexusLegacyAnalyzer;
 import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
@@ -291,7 +292,7 @@ public class DefaultIndexPacker
         IndexWriter w = null;
         try
         {
-            w = new IndexWriter( targetdir, false, new NexusLegacyAnalyzer(), true );
+            w = new NexusIndexWriter( targetdir, new NexusLegacyAnalyzer(), true );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
