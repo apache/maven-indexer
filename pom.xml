@@ -92,6 +92,11 @@ under the License.
     <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
   </scm>
 
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MINDEXER</url>
+  </issueManagement>
+
   <properties>
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
     <plexus-component-metadata.version>1.5.5</plexus-component-metadata.version>
