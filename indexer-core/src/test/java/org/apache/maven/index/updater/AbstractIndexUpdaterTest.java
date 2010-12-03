@@ -20,11 +20,17 @@ package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import org.apache.lucene.search.Query;
 import org.apache.maven.index.AbstractIndexCreatorHelper;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IteratorSearchRequest;
+import org.apache.maven.index.IteratorSearchResponse;
+import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.SearchType;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
@@ -123,6 +129,34 @@ public abstract class AbstractIndexUpdaterTest
         IndexPackingRequest request = new IndexPackingRequest( context, targetDir );
         request.setUseTargetProperties( true );
         packer.packIndex( request );
+    }
+
+    protected void searchFor( String groupId, int expected, IndexingContext context )
+        throws IOException, Exception
+    {
+        Query q = indexer.constructQuery( MAVEN.GROUP_ID, groupId, SearchType.EXACT );
+
+        IteratorSearchRequest req;
+
+        if ( context != null )
+        {
+            req = new IteratorSearchRequest( q, context );
+        }
+        else
+        {
+            req = new IteratorSearchRequest( q );
+        }
+
+        IteratorSearchResponse response = indexer.searchIterator( req );
+
+        ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( response.getTotalHits() );
+
+        for ( ArtifactInfo ai : response )
+        {
+            ais.add( ai );
+        }
+
+        assertEquals( ais.toString(), expected, ais.size() );
     }
 
 }

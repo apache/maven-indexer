@@ -404,7 +404,7 @@ public class DefaultIndexUpdater
         try
         {
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
-            w = new NexusIndexWriter( directory, new NexusAnalyzer(), true );
+            w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
             w.optimize();
 
