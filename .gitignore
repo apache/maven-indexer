@@ -1,0 +1,20 @@
+# Ignores for Maven Indexer
+# Language is Java
+# Build tool is Apache Maven 3
+
+# Maven related (and some plugins)
+target/
+*.ser
+*.ec
+
+# Eclipse related
+.classpath
+.project
+.settings/
+
+# Intellij
+*.ipr
+
+# Other
+.svn/
+bin/
