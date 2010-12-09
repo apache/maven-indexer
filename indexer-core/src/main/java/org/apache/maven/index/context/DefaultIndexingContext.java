@@ -513,9 +513,6 @@ public class DefaultIndexingContext
 
             // warm up
             warmUp();
-
-            // mark readers as refreshed
-            hasCommits = false;
         }
         finally
         {
@@ -528,8 +525,8 @@ public class DefaultIndexingContext
     {
         try
         {
-            // TODO: figure this out better
-            getIndexSearcher().search( new TermQuery( new Term( "g", "org" ) ), 1000 );
+            // TODO: figure this out better and non blocking
+            getIndexSearcher().search( new TermQuery( new Term( "g", "org.apache" ) ), 1000 );
         }
         catch ( IOException e )
         {
@@ -584,8 +581,6 @@ public class DefaultIndexingContext
         }
     }
 
-    private volatile boolean hasCommits = false;
-
     public void commit()
         throws IOException
     {
@@ -596,13 +591,12 @@ public class DefaultIndexingContext
 
             try
             {
-                IndexWriter w = getIndexWriter();
-
                 try
                 {
-                    w.commit();
-
-                    hasCommits = true;
+                    synchronized ( this )
+                    {
+                        getIndexWriter().commit();
+                    }
                 }
                 catch ( CorruptIndexException e )
                 {
