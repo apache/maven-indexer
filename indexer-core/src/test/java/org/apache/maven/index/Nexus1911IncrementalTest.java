@@ -39,6 +39,8 @@ public class Nexus1911IncrementalTest
 
     IndexingContext context;
 
+    IndexingContext reindexedContext;
+
     IndexPacker packer;
 
     File indexDir;
@@ -63,7 +65,8 @@ public class Nexus1911IncrementalTest
 
         File repo = new File( reposTargetDir, "repo" );
         repo.mkdirs();
-        context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        reindexedContext =
+            context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
         indexer.scan( context );
     }
 
@@ -73,6 +76,7 @@ public class Nexus1911IncrementalTest
     {
         indexer.removeIndexingContext( context, true );
         super.deleteDirectory( this.reposTargetDir );
+        super.deleteDirectory( this.indexDir );
         super.tearDown();
     }
 
@@ -237,7 +241,7 @@ public class Nexus1911IncrementalTest
 
         FileUtils.copyDirectoryStructure( src, reposTargetDir );
 
-        indexer.scan( context );
+        indexer.scan( reindexedContext );
 
         packer.packIndex( request );
     }

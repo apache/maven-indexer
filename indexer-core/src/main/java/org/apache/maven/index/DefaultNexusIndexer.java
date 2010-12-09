@@ -40,6 +40,7 @@ import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -186,6 +187,17 @@ public class DefaultNexusIndexer
         return context;
     }
 
+    public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                                     boolean searchable, Collection<IndexingContext> contexts )
+        throws IOException
+    {
+        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, searchable, contexts );
+
+        indexingContexts.put( context.getId(), context );
+
+        return context;
+    }
+
     public void removeIndexingContext( IndexingContext context, boolean deleteFiles )
         throws IOException
     {
@@ -242,6 +254,12 @@ public class DefaultNexusIndexer
         throws IOException
     {
         File repositoryDirectory = context.getRepository();
+
+        if ( repositoryDirectory == null )
+        {
+            // nothing to scan
+            return;
+        }
 
         if ( !repositoryDirectory.exists() )
         {

@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +42,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.packer.DefaultIndexPacker;
@@ -52,7 +54,6 @@ import org.codehaus.plexus.util.StringUtils;
 public class NexusIndexerTest
     extends AbstractIndexCreatorHelper
 {
-
     private IndexingContext context;
 
     public void testQueryCreatorNG()
@@ -108,11 +109,9 @@ public class NexusIndexerTest
         assertNull( q );
     }
 
-    public void testQueryCreatorNGSearch()
+    public void performQueryCreatorNGSearch( NexusIndexer indexer, IndexingContext context )
         throws Exception
     {
-        NexusIndexer indexer = prepare();
-
         String qstr = null;
         Query q = null;
 
@@ -126,7 +125,7 @@ public class NexusIndexerTest
         qstr = "commons-logg";
         q = indexer.constructQuery( MAVEN.GROUP_ID, qstr, SearchType.SCORED );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -139,7 +138,7 @@ public class NexusIndexerTest
         qstr = "commons logg";
         q = indexer.constructQuery( MAVEN.GROUP_ID, qstr, SearchType.SCORED );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -151,7 +150,7 @@ public class NexusIndexerTest
         qstr = "commons";
         q = indexer.constructQuery( MAVEN.GROUP_ID, qstr, SearchType.SCORED );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -163,7 +162,7 @@ public class NexusIndexerTest
         qstr = "log";
         q = indexer.constructQuery( MAVEN.GROUP_ID, qstr, SearchType.SCORED );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -176,7 +175,7 @@ public class NexusIndexerTest
         qstr = "1.0";
         q = indexer.constructQuery( MAVEN.VERSION, "1.0", SearchType.SCORED );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -188,7 +187,7 @@ public class NexusIndexerTest
         qstr = "1.0";
         q = indexer.constructQuery( MAVEN.VERSION, qstr, SearchType.EXACT );
 
-        req = new IteratorSearchRequest( q );
+        req = new IteratorSearchRequest( q, context );
 
         res = indexer.searchIterator( req );
 
@@ -214,13 +213,33 @@ public class NexusIndexerTest
         bq.add( c, Occur.MUST_NOT );
 
         // invoking the old method (was present since day 1), that will return the match only and if only there is 1 hit
-        ArtifactInfo ai = indexer.identify( bq );
+        ArtifactInfo ai = indexer.identify( bq, Collections.singletonList( context ) );
 
         // null means not "identified", so we want non-null response
         assertTrue( ai != null );
 
         // we assure we found what we wanted
         assertEquals( "commons-logging:commons-logging:1.0.4:null:jar", ai.toString() );
+    }
+
+    public void testQueryCreatorNGSearch()
+        throws Exception
+    {
+        NexusIndexer indexer = prepare();
+
+        performQueryCreatorNGSearch( indexer, context );
+    }
+
+    public void testQueryCreatorNGSearchOnMergedContext()
+        throws Exception
+    {
+        NexusIndexer indexer = prepare();
+
+        IndexingContext mergedContext =
+            new MergedIndexingContext( "test", "merged", context.getRepository(), true,
+                Collections.singletonList( context ) );
+
+        performQueryCreatorNGSearch( indexer, mergedContext );
     }
 
     /**

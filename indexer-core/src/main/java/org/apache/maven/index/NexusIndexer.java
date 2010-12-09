@@ -185,6 +185,10 @@ public interface NexusIndexer
                                         List<? extends IndexCreator> indexers, boolean reclaimIndexOwnership )
         throws IOException, UnsupportedExistingLuceneIndexException;
 
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
+                                              Collection<IndexingContext> contexts )
+        throws IOException;
+
     /**
      * Removes the indexing context from Nexus indexer, closes it and deletes (if specified) the index files.
      * 
