@@ -159,6 +159,8 @@ class DefaultScannerListener
 
         try
         {
+            context.commit();
+
             context.optimize();
 
             context.setRootGroups( groups );
@@ -285,6 +287,11 @@ class DefaultScannerListener
                     getLogger().warn( "Failed to remove deleted artifact from Search Engine.", e );
                 }
             }
+        }
+
+        if ( deleted > 0 )
+        {
+            context.commit();
         }
 
         result.setDeletedFiles( deleted );

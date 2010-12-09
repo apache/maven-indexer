@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -150,6 +149,17 @@ public interface IndexingContext
         throws IOException;
 
     /**
+     * Returns a number that represents the "size" useful for doing comparisons between contexts (which one has more
+     * data indexed?). The number return does not represent the count of ArtifactInfos, neither other "meaningful" info,
+     * it is purely to be used for inter-context comparisons only!
+     * 
+     * @return
+     * @throws IOException
+     */
+    int getSize()
+        throws IOException;
+
+    /**
      * Returns the Lucene IndexReader of this context.
      * 
      * @return reader
@@ -165,17 +175,6 @@ public interface IndexingContext
      * @throws IOException
      */
     IndexSearcher getIndexSearcher()
-        throws IOException;
-
-    /**
-     * Returns the ReadOnly IndexSearcher of this context. IndexingContext will manage this searcher in similar way as
-     * the RW readers. -- THIS IS NOT YET FULLY DONE, DO NOT USE IT!
-     * 
-     * @return
-     * @throws IOException
-     * @deprecated Do not use it yet! Not done!
-     */
-    IndexSearcher getReadOnlyIndexSearcher()
         throws IOException;
 
     /**
@@ -203,10 +202,38 @@ public interface IndexingContext
     Analyzer getAnalyzer();
 
     /**
+     * Commits changes to context, eventually refreshing readers/searchers too.
+     * 
+     * @throws IOException
+     */
+    void commit()
+        throws IOException;
+
+    /**
+     * Rolls back changes to context, eventually refreshing readers/searchers too.
+     * 
+     * @throws IOException
+     */
+    void rollback()
+        throws IOException;
+
+    /**
      * Optimizes index
      */
     void optimize()
-        throws CorruptIndexException, IOException;
+        throws IOException;
+
+    /**
+     * Performs a shared locking on this context, guaranteeing that no IndexReader/Searcher/Writer close will occur. But
+     * the cost of it is potentially blocking other threads, so stay in critical region locking this context as less as
+     * possible.
+     */
+    void lock();
+
+    /**
+     * Releases the shared lock on this context.
+     */
+    void unlock();
 
     /**
      * Shuts down this context.

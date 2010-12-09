@@ -263,7 +263,13 @@ public interface NexusIndexer
     public void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
+    public void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context )
+        throws IOException;
+
     public void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context )
+        throws IOException;
+
+    public void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context )
         throws IOException;
 
     // ----------------------------------------------------------------------------

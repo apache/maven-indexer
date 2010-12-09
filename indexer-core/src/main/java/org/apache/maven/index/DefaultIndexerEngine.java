@@ -60,21 +60,42 @@ public class DefaultIndexerEngine
     public void update( IndexingContext context, ArtifactContext ac )
         throws IOException
     {
-        Document d = ac.createDocument( context );
-
-        if ( d != null )
+        if ( ac != null && ac.getGav() != null )
         {
+            Document d = ac.createDocument( context );
+
+            if ( d != null )
+            {
+                IndexWriter w = context.getIndexWriter();
+
+                w.updateDocument( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ), d );
+
+                updateGroups( context, ac );
+
+                context.updateTimestamp();
+            }
+        }
+    }
+
+    public void remove( IndexingContext context, ArtifactContext ac )
+        throws IOException
+    {
+        if ( ac != null )
+        {
+            String uinfo = ac.getArtifactInfo().getUinfo();
+            // add artifact deletion marker
+            Document doc = new Document();
+            doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
+            doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
+                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
             IndexWriter w = context.getIndexWriter();
-
-            w.updateDocument( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ), d );
-
-            updateGroups( context, ac );
-
-            w.commit();
-
+            w.addDocument( doc );
+            w.deleteDocuments( new Term( ArtifactInfo.UINFO, uinfo ) );
             context.updateTimestamp();
         }
     }
+
+    // ==
 
     private void updateGroups( IndexingContext context, ArtifactContext ac )
         throws IOException
@@ -94,24 +115,4 @@ public class DefaultIndexerEngine
             context.setAllGroups( allGroups );
         }
     }
-
-    public void remove( IndexingContext context, ArtifactContext ac )
-        throws IOException
-    {
-        if ( ac != null )
-        {
-            String uinfo = ac.getArtifactInfo().getUinfo();
-            // add artifact deletion marker
-            Document doc = new Document();
-            doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
-            doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
-            IndexWriter w = context.getIndexWriter();
-            w.addDocument( doc );
-            w.deleteDocuments( new Term( ArtifactInfo.UINFO, uinfo ) );
-            w.commit();
-            context.updateTimestamp();
-        }
-    }
-
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.maven.index;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.lucene.search.Query;
@@ -30,7 +32,7 @@ import org.apache.lucene.search.Query;
  */
 public class IteratorSearchResponse
     extends AbstractSearchResponse
-    implements Iterable<ArtifactInfo>
+    implements Iterable<ArtifactInfo>, Closeable
 {
     private final IteratorResultSet results;
 
@@ -49,6 +51,12 @@ public class IteratorSearchResponse
     public IteratorResultSet iterator()
     {
         return getResults();
+    }
+
+    public void close()
+        throws IOException
+    {
+        getResults().close();
     }
 
     /**
@@ -88,6 +96,11 @@ public class IteratorSearchResponse
         public int getTotalProcessedArtifactInfoCount()
         {
             return 0;
+        }
+
+        public void close()
+            throws IOException
+        {
         }
     };
 

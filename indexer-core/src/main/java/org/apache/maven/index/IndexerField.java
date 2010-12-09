@@ -105,7 +105,7 @@ public class IndexerField
 
     public boolean isKeyword()
     {
-        return isIndexed() && !Index.TOKENIZED.equals( indexMethod );
+        return isIndexed() && !Index.ANALYZED.equals( indexMethod );
     }
 
     public boolean isStored()
@@ -115,13 +115,23 @@ public class IndexerField
 
     public Field toField( String value )
     {
+        Field result;
+
         if ( getTermVector() != null )
         {
-            return new Field( getKey(), value, getStoreMethod(), getIndexMethod(), getTermVector() );
+            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod(), getTermVector() );
         }
         else
         {
-            return new Field( getKey(), value, getStoreMethod(), getIndexMethod() );
+            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod() );
         }
+
+        // if ( isKeyword() )
+        // {
+        // result.setOmitNorms( true );
+        // result.setOmitTf( true );
+        // }
+
+        return result;
     }
 }

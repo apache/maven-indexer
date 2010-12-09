@@ -209,7 +209,7 @@ public class DefaultIndexUpdater
 
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
-                timestamp = DefaultIndexUpdater.unpackIndexData( is, directory, //
+                timestamp = unpackIndexData( is, directory, //
                     updateRequest.getIndexingContext() );
             }
             else

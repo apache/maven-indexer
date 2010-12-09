@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -42,7 +44,6 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -68,8 +69,6 @@ public class DefaultIndexingContext
     private static final String VERSION = "1.0";
 
     private static final Term DESCRIPTOR_TERM = new Term( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS );
-
-    private Object indexLock = new Object();
 
     private Directory indexDirectory;
 
@@ -107,10 +106,15 @@ public class DefaultIndexingContext
      */
     private GavCalculator gavCalculator;
 
-    private DefaultIndexingContext( String id, String repositoryId,
+    private ReadWriteLock indexMaintenanceLock = new ReentrantReadWriteLock();
+
+    private DefaultIndexingContext( String id,
+                                    String repositoryId,
                                     File repository, //
                                     String repositoryUrl, String indexUpdateUrl,
-                                    List<? extends IndexCreator> indexCreators )
+                                    List<? extends IndexCreator> indexCreators, Directory indexDirectory,
+                                    boolean reclaimIndex )
+        throws UnsupportedExistingLuceneIndexException, IOException
     {
         this.id = id;
 
@@ -130,6 +134,8 @@ public class DefaultIndexingContext
 
         this.indexCreators = indexCreators;
 
+        this.indexDirectory = indexDirectory;
+
         // eh?
         // Guice does NOT initialize these, and we have to do manually?
         // While in Plexus, all is well, but when in guice-shim,
@@ -140,6 +146,10 @@ public class DefaultIndexingContext
         }
 
         this.gavCalculator = new M2GavCalculator();
+
+        openAndWarmup();
+
+        prepareIndex( reclaimIndex );
     }
 
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -147,13 +157,11 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators );
+        // TODO: use niofsdirectory
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
+            FSDirectory.getDirectory( indexDirectoryFile ), reclaimIndex );
 
         this.indexDirectoryFile = indexDirectoryFile;
-
-        this.indexDirectory = FSDirectory.getDirectory(  indexDirectoryFile );
-
-        prepareIndex( reclaimIndex );
     }
 
     public DefaultIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
@@ -161,16 +169,32 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators );
-
-        this.indexDirectory = indexDirectory;
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, reclaimIndex );
 
         if ( indexDirectory instanceof FSDirectory )
         {
             this.indexDirectoryFile = ( (FSDirectory) indexDirectory ).getFile();
         }
+    }
 
-        prepareIndex( reclaimIndex );
+    public void lock()
+    {
+        indexMaintenanceLock.readLock().lock();
+    }
+
+    public void unlock()
+    {
+        indexMaintenanceLock.readLock().unlock();
+    }
+
+    public void lockExclusively()
+    {
+        indexMaintenanceLock.writeLock().lock();
+    }
+
+    public void unlockExclusively()
+    {
+        indexMaintenanceLock.writeLock().unlock();
     }
 
     public Directory getIndexDirectory()
@@ -223,19 +247,7 @@ public class DefaultIndexingContext
     {
         if ( deleteExisting )
         {
-            if ( indexReader != null )
-            {
-                indexReader.close();
-            }
-
-            indexReader = null;
-
-            if ( indexWriter != null && !indexWriter.isClosed() )
-            {
-                indexWriter.close();
-            }
-
-            indexWriter = null;
+            closeReaders();
 
             // unlock the dir forcibly
             if ( IndexWriter.isLocked( indexDirectory ) )
@@ -243,20 +255,15 @@ public class DefaultIndexingContext
                 IndexWriter.unlock( indexDirectory );
             }
 
-            indexDirectory.close();
-            FileUtils.deleteDirectory( indexDirectoryFile );
-            indexDirectoryFile.mkdirs();
+            deleteIndexFiles();
 
-            indexDirectory = FSDirectory.getDirectory( indexDirectoryFile );
+            openAndWarmup();
         }
 
         if ( StringUtils.isEmpty( getRepositoryId() ) )
         {
             throw new IllegalArgumentException( "The repositoryId cannot be null when creating new repository!" );
         }
-
-        // create empty idx and store descriptor
-        new NexusIndexWriter( getIndexDirectory(), new NexusAnalyzer(), true ).close();
 
         storeDescriptor();
     }
@@ -271,40 +278,44 @@ public class DefaultIndexingContext
             return;
         }
 
-        Hits hits = getIndexSearcher().search( new TermQuery( DESCRIPTOR_TERM ) );
-
-        if ( hits == null || hits.length() == 0 )
+        // check for descriptor if this is not a "virgin" index
+        if ( getIndexReader().numDocs() > 0 )
         {
-            throw new UnsupportedExistingLuceneIndexException( "The existing index has no NexusIndexer descriptor" );
-        }
+            Hits hits = getIndexSearcher().search( new TermQuery( DESCRIPTOR_TERM ) );
 
-        Document descriptor = hits.doc( 0 );
+            if ( hits == null || hits.length() == 0 )
+            {
+                throw new UnsupportedExistingLuceneIndexException( "The existing index has no NexusIndexer descriptor" );
+            }
 
-        if ( hits.length() != 1 )
-        {
-            storeDescriptor();
-            return;
-        }
+            Document descriptor = hits.doc( 0 );
 
-        String[] h = StringUtils.split( descriptor.get( FLD_IDXINFO ), ArtifactInfo.FS );
-        // String version = h[0];
-        String repoId = h[1];
+            if ( hits.length() != 1 )
+            {
+                storeDescriptor();
+                return;
+            }
 
-        // // compare version
-        // if ( !VERSION.equals( version ) )
-        // {
-        // throw new UnsupportedExistingLuceneIndexException(
-        // "The existing index has version [" + version + "] and not [" + VERSION + "] version!" );
-        // }
+            String[] h = StringUtils.split( descriptor.get( FLD_IDXINFO ), ArtifactInfo.FS );
+            // String version = h[0];
+            String repoId = h[1];
 
-        if ( getRepositoryId() == null )
-        {
-            repositoryId = repoId;
-        }
-        else if ( !getRepositoryId().equals( repoId ) )
-        {
-            throw new UnsupportedExistingLuceneIndexException( "The existing index is for repository " //
-                + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
+            // // compare version
+            // if ( !VERSION.equals( version ) )
+            // {
+            // throw new UnsupportedExistingLuceneIndexException(
+            // "The existing index has version [" + version + "] and not [" + VERSION + "] version!" );
+            // }
+
+            if ( getRepositoryId() == null )
+            {
+                repositoryId = repoId;
+            }
+            else if ( !getRepositoryId().equals( repoId ) )
+            {
+                throw new UnsupportedExistingLuceneIndexException( "The existing index is for repository " //
+                    + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
+            }
         }
     }
 
@@ -383,6 +394,12 @@ public class DefaultIndexingContext
         return timestamp;
     }
 
+    public int getSize()
+        throws IOException
+    {
+        return getIndexReader().numDocs();
+    }
+
     public String getRepositoryId()
     {
         return repositoryId;
@@ -415,143 +432,284 @@ public class DefaultIndexingContext
         return new NexusAnalyzer();
     }
 
-    public IndexWriter getIndexWriter()
+    protected void openAndWarmup()
         throws IOException
     {
-        synchronized ( indexLock )
+        indexMaintenanceLock.writeLock().lock();
+
+        try
         {
-            if ( indexWriter == null || indexWriter.isClosed() )
+            // IndexWriter (close)
+            if ( indexWriter != null )
             {
-                indexWriter = new NexusIndexWriter( getIndexDirectory(), new NexusAnalyzer(), false );
-
-                indexWriter.setRAMBufferSizeMB( 2 );
-
-                indexWriter.setMergeScheduler( new SerialMergeScheduler() );
+                indexWriter.close();
+            }
+            // IndexSearcher (close only, since we did supply this.indexReader explicitly)
+            if ( indexSearcher != null )
+            {
+                indexSearcher.close();
+            }
+            // IndexReader
+            if ( indexReader != null )
+            {
+                indexReader.close();
             }
 
-            return indexWriter;
+            // IndexWriter open
+            final boolean create = !IndexReader.indexExists( indexDirectory );
+
+            indexWriter = new NexusIndexWriter( getIndexDirectory(), new NexusAnalyzer(), create );
+
+            indexWriter.setRAMBufferSizeMB( 2 );
+
+            indexWriter.setMergeScheduler( new SerialMergeScheduler() );
+
+            openAndWarmupReaders( false );
+        }
+        finally
+        {
+            indexMaintenanceLock.writeLock().unlock();
         }
     }
 
-    protected boolean isIndexWriterDirty()
+    protected void openAndWarmupReaders( boolean justTry )
+        throws IOException
     {
-        synchronized ( indexLock )
+        if ( indexReader != null && indexReader.isCurrent() )
         {
-            if ( indexWriter == null || indexWriter.isClosed() )
+            return;
+        }
+
+        if ( justTry )
+        {
+            if ( !indexMaintenanceLock.writeLock().tryLock() )
             {
-                return false;
+                return;
             }
-            else
+        }
+        else
+        {
+            indexMaintenanceLock.writeLock().lock();
+        }
+
+        try
+        {
+            // IndexSearcher (close only, since we did supply this.indexReader explicitly)
+            if ( indexSearcher != null )
             {
-                return indexWriter.hasUncommittedChanges();
+                indexSearcher.close();
             }
+            // IndexReader
+            if ( indexReader != null )
+            {
+                indexReader.close();
+            }
+
+            // IndexReader open
+            indexReader = IndexReader.open( indexDirectory, true );
+
+            // IndexSearcher open
+            indexSearcher = new NexusIndexSearcher( this );
+
+            // warm up
+            warmUp();
+
+            // mark readers as refreshed
+            hasCommits = false;
+        }
+        finally
+        {
+            indexMaintenanceLock.writeLock().unlock();
+        }
+    }
+
+    protected void warmUp()
+        throws IOException
+    {
+        try
+        {
+            // TODO: figure this out better
+            getIndexSearcher().search( new TermQuery( new Term( "g", "org" ) ), 1000 );
+        }
+        catch ( IOException e )
+        {
+            close( false );
+
+            throw e;
+        }
+    }
+
+    public IndexWriter getIndexWriter()
+        throws IOException
+    {
+        lock();
+
+        try
+        {
+            return indexWriter;
+        }
+        finally
+        {
+            unlock();
         }
     }
 
     public IndexReader getIndexReader()
         throws IOException
     {
-        synchronized ( indexLock )
+        lock();
+
+        try
         {
-            if ( indexReader == null || ( !indexReader.isCurrent() && !isIndexWriterDirty() ) )
-            {
-                if ( indexReader != null )
-                {
-                    indexReader.close();
-                }
-
-                // TODO: I think ReadOnly should be okay here! We should move all our W ops against IndexWriter
-                indexReader = IndexReader.open( indexDirectory, false );
-            }
-
             return indexReader;
+        }
+        finally
+        {
+            unlock();
         }
     }
 
     public IndexSearcher getIndexSearcher()
         throws IOException
     {
-        synchronized ( indexLock )
+        lock();
+
+        try
         {
-            if ( indexSearcher == null || getIndexReader() != indexSearcher.getIndexReader() )
-            {
-                if ( indexSearcher != null )
-                {
-                    indexSearcher.close();
-
-                    // the reader was supplied explicitly
-                    indexSearcher.getIndexReader().close();
-                }
-
-                indexSearcher = new NexusIndexSearcher( this );
-            }
-
             return indexSearcher;
+        }
+        finally
+        {
+            unlock();
         }
     }
 
-    @Deprecated
-    public IndexSearcher getReadOnlyIndexSearcher()
+    private volatile boolean hasCommits = false;
+
+    public void commit()
         throws IOException
     {
-        return getIndexSearcher();
+        // TODO: detect is writer "dirty"?
+        if ( true )
+        {
+            lock();
 
-        // using RO IndexReader in this way just causes to _double_ the file handles Nexus
-        // uses to read/maintain the Lucene Indexes (once for UPDATE, once for Searches).
-        // The performance gain (no lock contention) is currently too small for the price of
-        // doubled file handles. We will have to resolve this later.
+            try
+            {
+                IndexWriter w = getIndexWriter();
 
-        // disabled for now, see getReadOnlyIndexSearcher() method for explanation
-        // synchronized ( indexLock )
-        // {
-        // if ( readOnlyIndexSearcher == null || !readOnlyIndexSearcher.getIndexReader().isCurrent() )
-        // {
-        // if ( readOnlyIndexSearcher != null )
-        // {
-        // readOnlyIndexSearcher.close();
-        //
-        // // the reader was supplied explicitly
-        // readOnlyIndexSearcher.getIndexReader().close();
-        // }
-        //
-        // readOnlyIndexSearcher = new NexusIndexSearcher( this, IndexReader.open( indexDirectory, true ) );
-        // }
-        //
-        // return readOnlyIndexSearcher;
-        // }
+                try
+                {
+                    w.commit();
+
+                    hasCommits = true;
+                }
+                catch ( CorruptIndexException e )
+                {
+                    close( false );
+
+                    throw e;
+                }
+                catch ( IOException e )
+                {
+                    close( false );
+
+                    throw e;
+                }
+            }
+            finally
+            {
+                unlock();
+            }
+
+            // TODO: define some treshold or requirement
+            // for reopening readers (is expensive)
+            // For example: by inserting 1 record among 1M, do we really want to reopen?
+            if ( true )
+            {
+                openAndWarmupReaders( true );
+            }
+        }
+    }
+
+    public void rollback()
+        throws IOException
+    {
+        // detect is writer "dirty"?
+        if ( true )
+        {
+            lockExclusively();
+
+            try
+            {
+                IndexWriter w = getIndexWriter();
+
+                try
+                {
+                    w.rollback();
+                }
+                catch ( CorruptIndexException e )
+                {
+                    close( false );
+
+                    throw e;
+                }
+                catch ( IOException e )
+                {
+                    close( false );
+
+                    throw e;
+                }
+            }
+            finally
+            {
+                unlockExclusively();
+            }
+        }
     }
 
     public void optimize()
         throws CorruptIndexException, IOException
     {
-        IndexWriter w = getIndexWriter();
+        lockExclusively();
 
         try
         {
-            w.optimize();
+            IndexWriter w = getIndexWriter();
 
-            w.commit();
+            try
+            {
+                w.optimize();
+
+                commit();
+            }
+            catch ( CorruptIndexException e )
+            {
+                close( false );
+
+                throw e;
+            }
+            catch ( IOException e )
+            {
+                close( false );
+
+                throw e;
+            }
         }
-        catch ( CorruptIndexException e )
+        finally
         {
-            w.close();
-
-            throw e;
-        }
-        catch ( IOException e )
-        {
-            w.close();
-
-            throw e;
+            unlockExclusively();
         }
     }
 
     public void close( boolean deleteFiles )
         throws IOException
     {
-        if ( indexDirectory != null )
+        lockExclusively();
+
+        try
         {
-            synchronized ( indexLock )
+            if ( indexDirectory != null )
             {
                 IndexUtils.updateTimestamp( indexDirectory, getTimestamp() );
 
@@ -564,20 +722,28 @@ public class DefaultIndexingContext
 
                 indexDirectory.close();
             }
-        }
 
-        // TODO: this will prevent from reopening them, but needs better solution
-        indexDirectory = null;
+            // TODO: this will prevent from reopening them, but needs better solution
+            indexDirectory = null;
+        }
+        finally
+        {
+            unlockExclusively();
+        }
     }
 
     public void purge()
         throws IOException
     {
-        synchronized ( indexLock )
+        lockExclusively();
+
+        try
         {
             closeReaders();
 
             deleteIndexFiles();
+
+            openAndWarmup();
 
             try
             {
@@ -592,13 +758,18 @@ public class DefaultIndexingContext
 
             updateTimestamp( true, null );
         }
+        finally
+        {
+            unlockExclusively();
+        }
     }
 
-    // XXX need some locking for reader/writer
     public void replace( Directory directory )
         throws IOException
     {
-        synchronized ( indexLock )
+        lockExclusively();
+
+        try
         {
             Date ts = IndexUtils.getTimestamp( directory );
 
@@ -610,12 +781,18 @@ public class DefaultIndexingContext
             // We do it manually here, since we do want delete to happen 1st
             // IndexUtils.copyDirectory( directory, indexDirectory );
 
+            openAndWarmup();
+
             // reclaim the index as mine
             storeDescriptor();
 
             updateTimestamp( true, ts );
 
             optimize();
+        }
+        finally
+        {
+            unlockExclusively();
         }
     }
 
@@ -628,7 +805,9 @@ public class DefaultIndexingContext
     public void merge( Directory directory, DocumentFilter filter )
         throws IOException
     {
-        synchronized ( indexLock )
+        lockExclusively();
+
+        try
         {
             IndexWriter w = getIndexWriter();
 
@@ -685,7 +864,7 @@ public class DefaultIndexingContext
             {
                 r.close();
 
-                w.commit();
+                commit();
             }
 
             rebuildGroups();
@@ -703,6 +882,10 @@ public class DefaultIndexingContext
             }
 
             optimize();
+        }
+        finally
+        {
+            unlockExclusively();
         }
     }
 
@@ -722,9 +905,6 @@ public class DefaultIndexingContext
         {
             indexSearcher.close();
 
-            // the reader was supplied explicitly
-            indexSearcher.getIndexReader().close();
-
             indexSearcher = null;
         }
         if ( indexReader != null )
@@ -733,16 +913,6 @@ public class DefaultIndexingContext
 
             indexReader = null;
         }
-
-        // if ( readOnlyIndexSearcher != null )
-        // {
-        // readOnlyIndexSearcher.close();
-        //
-        // // the reader was supplied explicitly
-        // readOnlyIndexSearcher.getIndexReader().close();
-        //
-        // readOnlyIndexSearcher = null;
-        // }
     }
 
     public GavCalculator getGavCalculator()
@@ -760,38 +930,76 @@ public class DefaultIndexingContext
     public void rebuildGroups()
         throws IOException
     {
-        synchronized ( indexLock )
+        lockExclusively();
+
+        try
         {
             IndexUtils.rebuildGroups( this );
         }
+        finally
+        {
+            unlockExclusively();
+        }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.apache.maven.index.context.IndexingContext#getAllGroups()
-     */
     public Set<String> getAllGroups()
         throws IOException
     {
-        return IndexUtils.getAllGroups( this );
+        lock();
+
+        try
+        {
+            return IndexUtils.getAllGroups( this );
+        }
+        finally
+        {
+            unlock();
+        }
     }
 
     public void setAllGroups( Collection<String> groups )
         throws IOException
     {
-        IndexUtils.setAllGroups( this, groups );
+        lockExclusively();
+
+        try
+        {
+            IndexUtils.setAllGroups( this, groups );
+        }
+        finally
+        {
+            unlockExclusively();
+        }
     }
 
     public Set<String> getRootGroups()
         throws IOException
     {
-        return IndexUtils.getRootGroups( this );
+        lock();
+
+        try
+        {
+            return IndexUtils.getRootGroups( this );
+        }
+        finally
+        {
+            unlock();
+        }
     }
 
     public void setRootGroups( Collection<String> groups )
         throws IOException
     {
-        IndexUtils.setRootGroups( this, groups );
+        lockExclusively();
+
+        try
+        {
+            IndexUtils.setRootGroups( this, groups );
+        }
+        finally
+        {
+            unlockExclusively();
+        }
     }
 
     @Override

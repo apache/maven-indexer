@@ -97,7 +97,7 @@ public class IndexUtils
         Document document = new Document();
 
         // unique key
-        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
         if ( updateLastModified || doc.getField( ArtifactInfo.LAST_MODIFIED ) == null )
         {
@@ -287,7 +287,7 @@ public class IndexUtils
         w.updateDocument( new Term( groupField, groupFieldValue ),
             createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
 
-        w.commit();
+        context.commit();
     }
 
     static Document createGroupsDocument( Collection<String> groups, String field, String fieldValue, String listField )
@@ -295,7 +295,7 @@ public class IndexUtils
         Document groupDoc = new Document();
 
         groupDoc.add( new Field( field, //
-            fieldValue, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+            fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
         groupDoc.add( new Field( listField, //
             ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );

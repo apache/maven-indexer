@@ -139,93 +139,102 @@ public class DefaultIndexTreeView
 
         IteratorSearchResponse artifacts = getArtifacts( root, request );
 
-        for ( ArtifactInfo ai : artifacts )
+        try
         {
-            String versionKey = Type.V + ":" + ai.artifactId + ":" + ai.version;
-
-            TreeNode versionResource = folders.get( versionKey );
-
-            if ( versionResource == null )
+            for ( ArtifactInfo ai : artifacts )
             {
-                String artifactKey = Type.A + ":" + ai.artifactId;
+                String versionKey = Type.V + ":" + ai.artifactId + ":" + ai.version;
 
-                TreeNode artifactResource = folders.get( artifactKey );
+                TreeNode versionResource = folders.get( versionKey );
 
-                if ( artifactResource == null )
+                if ( versionResource == null )
                 {
-                    TreeNode groupParentResource = root;
+                    String artifactKey = Type.A + ":" + ai.artifactId;
 
-                    TreeNode groupResource = root;
+                    TreeNode artifactResource = folders.get( artifactKey );
 
-                    // here comes the twist: we have to search for parent G node
-                    String partialGroupId = null;
-
-                    String[] groupIdElems = ai.groupId.split( "\\." );
-
-                    for ( String groupIdElem : groupIdElems )
+                    if ( artifactResource == null )
                     {
-                        if ( partialGroupId == null )
+                        TreeNode groupParentResource = root;
+
+                        TreeNode groupResource = root;
+
+                        // here comes the twist: we have to search for parent G node
+                        String partialGroupId = null;
+
+                        String[] groupIdElems = ai.groupId.split( "\\." );
+
+                        for ( String groupIdElem : groupIdElems )
                         {
-                            partialGroupId = groupIdElem;
-                        }
-                        else
-                        {
-                            partialGroupId = partialGroupId + "." + groupIdElem;
-                        }
-
-                        String groupKey = Type.G + ":" + partialGroupId;
-
-                        groupResource = folders.get( groupKey );
-
-                        // it needs to be created only if not found (is null) and is _below_ groupParentResource
-                        if ( groupResource == null
-                            && groupParentResource.getPath().length() < getPathForAi( ai, MAVEN.GROUP_ID ).length() )
-                        {
-                            String gNodeName =
-                                partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
-                                    partialGroupId.lastIndexOf( '.' ) + 1, partialGroupId.length() ) : partialGroupId;
-
-                            groupResource =
-                                request.getFactory().createGNode( this, request,
-                                    "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
-
-                            groupParentResource.getChildren().add( groupResource );
-
-                            folders.put( groupKey, groupResource );
-
-                            groupParentResource = groupResource;
-                        }
-                        else if ( groupResource != null )
-                        {
-                            // we found it as already existing, break if this is the node we want
-                            if ( groupResource.getPath().equals( getPathForAi( ai, MAVEN.GROUP_ID ) ) )
+                            if ( partialGroupId == null )
                             {
-                                break;
+                                partialGroupId = groupIdElem;
+                            }
+                            else
+                            {
+                                partialGroupId = partialGroupId + "." + groupIdElem;
                             }
 
-                            groupParentResource = groupResource;
+                            String groupKey = Type.G + ":" + partialGroupId;
+
+                            groupResource = folders.get( groupKey );
+
+                            // it needs to be created only if not found (is null) and is _below_ groupParentResource
+                            if ( groupResource == null
+                                && groupParentResource.getPath().length() < getPathForAi( ai, MAVEN.GROUP_ID ).length() )
+                            {
+                                String gNodeName =
+                                    partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
+                                        partialGroupId.lastIndexOf( '.' ) + 1, partialGroupId.length() )
+                                        : partialGroupId;
+
+                                groupResource =
+                                    request.getFactory().createGNode( this, request,
+                                        "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
+
+                                groupParentResource.getChildren().add( groupResource );
+
+                                folders.put( groupKey, groupResource );
+
+                                groupParentResource = groupResource;
+                            }
+                            else if ( groupResource != null )
+                            {
+                                // we found it as already existing, break if this is the node we want
+                                if ( groupResource.getPath().equals( getPathForAi( ai, MAVEN.GROUP_ID ) ) )
+                                {
+                                    break;
+                                }
+
+                                groupParentResource = groupResource;
+                            }
                         }
+
+                        artifactResource =
+                            request.getFactory().createANode( this, request, ai, getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+
+                        groupParentResource.getChildren().add( artifactResource );
+
+                        folders.put( artifactKey, artifactResource );
                     }
 
-                    artifactResource =
-                        request.getFactory().createANode( this, request, ai, getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+                    versionResource =
+                        request.getFactory().createVNode( this, request, ai, getPathForAi( ai, MAVEN.VERSION ) );
 
-                    groupParentResource.getChildren().add( artifactResource );
+                    artifactResource.getChildren().add( versionResource );
 
-                    folders.put( artifactKey, artifactResource );
+                    folders.put( versionKey, versionResource );
                 }
 
-                versionResource =
-                    request.getFactory().createVNode( this, request, ai, getPathForAi( ai, MAVEN.VERSION ) );
+                String nodePath = getPathForAi( ai, null );
 
-                artifactResource.getChildren().add( versionResource );
-
-                folders.put( versionKey, versionResource );
+                versionResource.getChildren().add(
+                    request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
             }
-
-            String nodePath = getPathForAi( ai, null );
-
-            versionResource.getChildren().add( request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
+        }
+        finally
+        {
+            artifacts.close();
         }
 
         if ( !request.hasFieldHints() )
@@ -372,6 +381,10 @@ public class DefaultIndexTreeView
         {
             return result;
         }
+        else
+        {
+            result.close();
+        }
 
         // 2nd try, lets consider path a group + artifactId, we must ensure there is at least one / but not as root
 
@@ -389,6 +402,10 @@ public class DefaultIndexTreeView
             if ( result.getTotalHits() > 0 )
             {
                 return result;
+            }
+            else
+            {
+                result.close();
             }
 
             // 3rd try, let's consider path a group + artifactId + version. There is no 100% way to detect this!
@@ -411,6 +428,10 @@ public class DefaultIndexTreeView
                 if ( result.getTotalHits() > 0 )
                 {
                     return result;
+                }
+                else
+                {
+                    result.close();
                 }
             }
             catch ( StringIndexOutOfBoundsException e )

@@ -19,7 +19,6 @@
 package org.apache.maven.index.context;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
@@ -59,28 +58,5 @@ public class NexusIndexWriter
     public boolean isClosed()
     {
         return closed;
-    }
-
-    public boolean hasUncommittedChanges()
-    {
-        try
-        {
-            Field pendingCommit = IndexWriter.class.getDeclaredField( "pendingCommit" );
-
-            pendingCommit.setAccessible( true );
-
-            return pendingCommit.get( this ) != null;
-        }
-        catch ( Exception x )
-        {
-            if ( x instanceof RuntimeException )
-            {
-                throw (RuntimeException) x;
-            }
-            else
-            {
-                throw new RuntimeException( "Could not access the \"IndexWriter.pendingCommit\" field!", x );
-            }
-        }
     }
 }

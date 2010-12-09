@@ -336,6 +336,22 @@ public class DefaultNexusIndexer
         if ( ac != null )
         {
             indexerEngine.update( context, ac );
+
+            context.commit();
+        }
+    }
+
+    public void addArtifactsToIndex( Collection<ArtifactContext> ac, IndexingContext context )
+        throws IOException
+    {
+        if ( ac != null && !ac.isEmpty() )
+        {
+            for ( ArtifactContext actx : ac )
+            {
+                indexerEngine.update( context, actx );
+            }
+
+            context.commit();
         }
     }
 
@@ -348,6 +364,22 @@ public class DefaultNexusIndexer
         if ( ac != null )
         {
             indexerEngine.remove( context, ac );
+
+            context.commit();
+        }
+    }
+
+    public void deleteArtifactsFromIndex( Collection<ArtifactContext> ac, IndexingContext context )
+        throws IOException
+    {
+        if ( ac != null && !ac.isEmpty() )
+        {
+            for ( ArtifactContext actx : ac )
+            {
+                indexerEngine.remove( context, actx );
+
+                context.commit();
+            }
         }
     }
 
@@ -569,15 +601,23 @@ public class DefaultNexusIndexer
     {
         IteratorSearchResponse result = searcher.searchIteratorPaged( new IteratorSearchRequest( query ), contexts );
 
-        // TODO: this implementation is flakey: case a) 0 hits is okay, b) 1 hit is okay, c1) >1 hits and all same GAVs
-        // -- okay but which source repo will be used? c2) >1 hits, and different GAVs --- huh?
-        if ( result.getTotalHits() > 0 )
+        try
         {
-            return result.getResults().next();
+            // TODO: this implementation is flakey: case a) 0 hits is okay, b) 1 hit is okay, c1) >1 hits and all same
+            // GAVs
+            // -- okay but which source repo will be used? c2) >1 hits, and different GAVs --- huh?
+            if ( result.getTotalHits() > 0 )
+            {
+                return result.getResults().next();
+            }
+            else
+            {
+                return null;
+            }
         }
-        else
+        finally
         {
-            return null;
+            result.close();
         }
     }
 

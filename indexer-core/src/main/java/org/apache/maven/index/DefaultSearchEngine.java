@@ -148,8 +148,8 @@ public class DefaultSearchEngine
         return searchGrouped( request, indexingContexts, true );
     }
 
-    private GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
-                                                 Collection<IndexingContext> indexingContexts, boolean ignoreContext )
+    protected GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
+                                                   Collection<IndexingContext> indexingContexts, boolean ignoreContext )
         throws IOException
     {
         TreeMap<String, ArtifactInfoGroup> result =
@@ -189,76 +189,17 @@ public class DefaultSearchEngine
                               Query query, int from, int aiCount )
         throws IOException
     {
-        Hits hits =
-            context.getIndexSearcher().search( query, new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
+        context.lock();
 
-        if ( hits == null || hits.length() == 0 )
+        try
         {
-            return 0;
-        }
+            Hits hits =
+                context.getIndexSearcher().search( query,
+                    new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
 
-        if ( req.isHitLimited() && hits.length() > req.getResultHitLimit() )
-        {
-            return AbstractSearchResponse.LIMIT_EXCEEDED;
-        }
-
-        int hitCount = hits.length();
-
-        int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
-
-        // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
-        for ( int i = start; i < hits.length(); i++ )
-        {
-            Document doc = hits.doc( i );
-
-            ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
-
-            if ( artifactInfo != null )
+            if ( hits == null || hits.length() == 0 )
             {
-                artifactInfo.repository = context.getRepositoryId();
-
-                artifactInfo.context = context.getId();
-
-                result.add( artifactInfo );
-
-                if ( req.isHitLimited() && result.size() > req.getResultHitLimit() )
-                {
-                    // we hit limit, back out now !!
-                    return AbstractSearchResponse.LIMIT_EXCEEDED;
-                }
-            }
-        }
-
-        return hitCount;
-    }
-
-    protected int searchGrouped( AbstractSearchRequest req, Map<String, ArtifactInfoGroup> result, Grouping grouping,
-                                 IndexingContext context, Query query )
-        throws IOException
-    {
-        Hits hits =
-            context.getIndexSearcher().search( query, new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
-
-        if ( hits != null && hits.length() != 0 )
-        {
-            int hitCount = hits.length();
-
-            for ( int i = 0; i < hits.length(); i++ )
-            {
-                ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( hits.doc( i ), context );
-
-                if ( artifactInfo != null )
-                {
-                    artifactInfo.repository = context.getRepositoryId();
-
-                    artifactInfo.context = context.getId();
-
-                    if ( !grouping.addArtifactInfo( result, artifactInfo ) )
-                    {
-                        // fix the hitCount accordingly
-                        hitCount--;
-                    }
-                }
+                return 0;
             }
 
             if ( req.isHitLimited() && hits.length() > req.getResultHitLimit() )
@@ -266,11 +207,90 @@ public class DefaultSearchEngine
                 return AbstractSearchResponse.LIMIT_EXCEEDED;
             }
 
+            int hitCount = hits.length();
+
+            int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
+
+            // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
+            for ( int i = start; i < hits.length(); i++ )
+            {
+                Document doc = hits.doc( i );
+
+                ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
+
+                if ( artifactInfo != null )
+                {
+                    artifactInfo.repository = context.getRepositoryId();
+
+                    artifactInfo.context = context.getId();
+
+                    result.add( artifactInfo );
+
+                    if ( req.isHitLimited() && result.size() > req.getResultHitLimit() )
+                    {
+                        // we hit limit, back out now !!
+                        return AbstractSearchResponse.LIMIT_EXCEEDED;
+                    }
+                }
+            }
+
             return hitCount;
         }
-        else
+        finally
         {
-            return 0;
+            context.unlock();
+        }
+    }
+
+    protected int searchGrouped( AbstractSearchRequest req, Map<String, ArtifactInfoGroup> result, Grouping grouping,
+                                 IndexingContext context, Query query )
+        throws IOException
+    {
+        context.lock();
+
+        try
+        {
+            Hits hits =
+                context.getIndexSearcher().search( query,
+                    new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
+
+            if ( hits != null && hits.length() != 0 )
+            {
+                int hitCount = hits.length();
+
+                for ( int i = 0; i < hits.length(); i++ )
+                {
+                    ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( hits.doc( i ), context );
+
+                    if ( artifactInfo != null )
+                    {
+                        artifactInfo.repository = context.getRepositoryId();
+
+                        artifactInfo.context = context.getId();
+
+                        if ( !grouping.addArtifactInfo( result, artifactInfo ) )
+                        {
+                            // fix the hitCount accordingly
+                            hitCount--;
+                        }
+                    }
+                }
+
+                if ( req.isHitLimited() && hits.length() > req.getResultHitLimit() )
+                {
+                    return AbstractSearchResponse.LIMIT_EXCEEDED;
+                }
+
+                return hitCount;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        finally
+        {
+            context.unlock();
         }
     }
 
@@ -305,37 +325,66 @@ public class DefaultSearchEngine
             request.setCount( IteratorSearchRequest.UNDEFINED );
         }
 
-        // to not change the API all away, but we need stable ordering here
-        // filter for those 1st, that take part in here
-        ArrayList<IndexingContext> contexts = new ArrayList<IndexingContext>( indexingContexts.size() );
-
-        for ( IndexingContext ctx : indexingContexts )
+        try
         {
-            if ( ignoreContext || ctx.isSearchable() )
+            // to not change the API all away, but we need stable ordering here
+            // filter for those 1st, that take part in here
+            ArrayList<IndexingContext> contexts = new ArrayList<IndexingContext>( indexingContexts.size() );
+
+            for ( IndexingContext ctx : indexingContexts )
             {
-                contexts.add( ctx );
+                if ( ignoreContext || ctx.isSearchable() )
+                {
+                    contexts.add( ctx );
+
+                    ctx.lock();
+                }
+            }
+
+            ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( contexts.size() );
+
+            for ( IndexingContext ctx : contexts )
+            {
+                contextsToSearch.add( ctx.getIndexReader() );
+            }
+
+            MultiReader multiReader =
+                new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
+
+            IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
+
+            // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed
+            // patch
+            // did come in faster! -- Thanks)
+            Hits hits =
+                indexSearcher.search( request.getQuery(), new Sort( new SortField[] { SortField.FIELD_SCORE,
+                    new SortField( null, SortField.DOC, false ) } ) );
+
+            return new IteratorSearchResponse( request.getQuery(), hits.length(), new DefaultIteratorResultSet(
+                request, indexSearcher, contexts, hits ) );
+        }
+        catch ( Throwable e )
+        {
+            // perform cleaup, otherwise DefaultIteratorResultSet will do it
+            for ( IndexingContext ctx : indexingContexts )
+            {
+                if ( ignoreContext || ctx.isSearchable() )
+                {
+                    ctx.unlock();
+                }
+            }
+
+            if ( e instanceof IOException )
+            {
+                throw (IOException) e;
+            }
+            else
+            {
+                // wrap it
+                IOException ex = new IOException( e.getMessage(), e );
+
+                throw ex;
             }
         }
-
-        ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( contexts.size() );
-
-        for ( IndexingContext ctx : contexts )
-        {
-            contextsToSearch.add( ctx.getIndexReader() );
-        }
-
-        MultiReader multiReader =
-            new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
-
-        IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
-
-        // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed patch
-        // did come in faster! -- Thanks)
-        Hits hits =
-            indexSearcher.search( request.getQuery(), new Sort( new SortField[] { SortField.FIELD_SCORE,
-                new SortField( null, SortField.DOC, false ) } ) );
-
-        return new IteratorSearchResponse( request.getQuery(), hits.length(), new DefaultIteratorResultSet( request,
-            indexSearcher, contexts, hits ) );
     }
 }

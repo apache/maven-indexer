@@ -18,6 +18,7 @@
  */
 package org.apache.maven.index;
 
+import java.io.Closeable;
 import java.util.Iterator;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Iterator;
  * @author cstamas
  */
 public interface IteratorResultSet
-    extends Iterator<ArtifactInfo>, Iterable<ArtifactInfo>
+    extends Iterator<ArtifactInfo>, Iterable<ArtifactInfo>, Closeable
 {
     /**
      * Returns the up-to-date number of the actual number of loaded Lucene Documents that were converted into

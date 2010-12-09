@@ -58,6 +58,7 @@ public class Nexus3881NexusIndexerTest
 
         Assert.assertEquals( "All artifacts has 'solution' in their GA!", 4, response.getTotalHits() );
         
+
         // for (ArtifactInfo ai : response) {
         // System.out.println(ai.toString());
         // System.out.println(ai.getAttributes().get( Explanation.class.getName() ));

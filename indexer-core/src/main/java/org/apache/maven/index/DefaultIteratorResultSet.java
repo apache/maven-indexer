@@ -127,6 +127,11 @@ public class DefaultIteratorResultSet
         this.maxRecPointer = from + count;
 
         ai = createNextAi();
+
+        if ( ai == null )
+        {
+            cleanUp();
+        }
     }
 
     public boolean hasNext()
@@ -148,6 +153,13 @@ public class DefaultIteratorResultSet
 
             throw new IllegalStateException( "Cannot fetch next ArtifactInfo!", e );
         }
+        finally
+        {
+            if ( ai == null )
+            {
+                cleanUp();
+            }
+        }
 
         return result;
     }
@@ -162,9 +174,29 @@ public class DefaultIteratorResultSet
         return this;
     }
 
+    public void close()
+    {
+        cleanUp();
+    }
+
     public int getTotalProcessedArtifactInfoCount()
     {
         return processedArtifactInfoCount;
+    }
+
+    @Override
+    public void finalize()
+        throws Throwable
+    {
+        super.finalize();
+
+        if ( !cleanedUp )
+        {
+            System.err.println( "#WARNING: Lock leaking from " + getClass().getName() + " for query "
+                + searchRequest.getQuery().toString() );
+
+            cleanUp();
+        }
     }
 
     // ==
@@ -228,6 +260,23 @@ public class DefaultIteratorResultSet
         }
 
         return result;
+    }
+
+    private volatile boolean cleanedUp = false;
+
+    protected synchronized void cleanUp()
+    {
+        if ( cleanedUp )
+        {
+            return;
+        }
+
+        for ( IndexingContext ctx : contexts )
+        {
+            ctx.unlock();
+        }
+
+        this.cleanedUp = true;
     }
 
     /**
