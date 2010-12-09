@@ -1,21 +1,19 @@
-Indexer Core
-============
-
-Former Nexus Indexer, now Apache Maven Indexer.
+Indexer Core Notes
+==================
 
 MINDEXER-2 related Index core changes
-=====================================
+-------------------------------------
 
 New locking semantics introduced to be able to cope with multithreaded processing. This mostly affects server-like apps integrating the indexer, not as much IDEs.
 
 IndexContext new methods:
 
-commit/rollback -- for commiting changes, but also reopening readers/searchers if appropriate.
-lock/unlock -- to perform shared locking, guaranteeing no reader/searcher reopen will occur.
+* commit/rollback -- for commiting changes, but also reopening readers/searchers if appropriate.
+* lock/unlock -- to perform shared locking, guaranteeing no reader/searcher reopen will occur.
 
 IteratorSearchResult/IteratorResultSet new methods:
 
-both become Closeable. If you do NOT consume all of iterator (when automatic cleanup happens), you have to explicitly call result.close() to release locks!
+* both become Closeable. If you do NOT consume all of iterator (when automatic cleanup happens), you have to explicitly call result.close() to release locks!
 
 Others:
 
