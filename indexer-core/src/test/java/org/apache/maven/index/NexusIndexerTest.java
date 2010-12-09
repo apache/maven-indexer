@@ -43,6 +43,7 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.MergedIndexingContext;
+import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.packer.DefaultIndexPacker;
@@ -237,7 +238,7 @@ public class NexusIndexerTest
 
         IndexingContext mergedContext =
             new MergedIndexingContext( "test", "merged", context.getRepository(), true,
-                Collections.singletonList( context ) );
+                new StaticContextMemberProvider( Collections.singletonList( context ) ) );
 
         performQueryCreatorNGSearch( indexer, mergedContext );
     }

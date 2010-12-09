@@ -36,11 +36,13 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.MergedIndexingContext;
+import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -191,7 +193,20 @@ public class DefaultNexusIndexer
                                                      boolean searchable, Collection<IndexingContext> contexts )
         throws IOException
     {
-        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, searchable, contexts );
+        IndexingContext context =
+            new MergedIndexingContext( id, repositoryId, repository, searchable, new StaticContextMemberProvider(
+                contexts ) );
+
+        indexingContexts.put( context.getId(), context );
+
+        return context;
+    }
+
+    public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                                     boolean searchable, ContextMemberProvider membersProvider )
+        throws IOException
+    {
+        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, searchable, membersProvider );
 
         indexingContexts.put( context.getId(), context );
 

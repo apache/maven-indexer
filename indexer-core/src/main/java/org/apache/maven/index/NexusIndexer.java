@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.cli.NexusIndexerCli;
+import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -187,6 +188,10 @@ public interface NexusIndexer
 
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
                                               Collection<IndexingContext> contexts )
+        throws IOException;
+
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
+                                              ContextMemberProvider membersProvider )
         throws IOException;
 
     /**

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -35,7 +34,7 @@ public class MergedIndexingContext
 
     private final File repository;
 
-    private final List<IndexingContext> members;
+    private final ContextMemberProvider membersProvider;
 
     private final GavCalculator gavCalculator;
 
@@ -46,15 +45,13 @@ public class MergedIndexingContext
     private boolean searchable;
 
     public MergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
-                                  Collection<IndexingContext> contexts )
+                                  ContextMemberProvider membersProvider )
         throws IOException
     {
-        assert contexts != null : "Collection of member contexts cannot be null!";
-
         this.id = id;
         this.repositoryId = repositoryId;
         this.repository = repository;
-        this.members = Collections.unmodifiableList( new ArrayList<IndexingContext>( contexts ) );
+        this.membersProvider = membersProvider;
         this.gavCalculator = new M2GavCalculator();
         this.directory = new RAMDirectory();
         this.directoryFile = File.createTempFile( "merged-index", ".dir" );
@@ -63,9 +60,9 @@ public class MergedIndexingContext
         this.searchable = searchable;
     }
 
-    protected List<IndexingContext> getMembers()
+    protected Collection<IndexingContext> getMembers()
     {
-        return members;
+        return membersProvider.getMembers();
     }
 
     public String getId()
@@ -157,7 +154,7 @@ public class MergedIndexingContext
     public IndexReader getIndexReader()
         throws IOException
     {
-        List<IndexingContext> members = getMembers();
+        Collection<IndexingContext> members = getMembers();
 
         ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( members.size() );
 
