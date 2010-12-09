@@ -381,8 +381,8 @@ public class DefaultSearchEngine
             else
             {
                 // wrap it
-                IOException ex = new IOException( e.getMessage(), e );
-
+                IOException ex = new IOException( e.getMessage() );
+                ex.initCause( e );
                 throw ex;
             }
         }
