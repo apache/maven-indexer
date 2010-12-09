@@ -16,3 +16,5 @@ https://issues.sonatype.org/browse/NEXUS
 Mailing lists: Maven Users and Maven Developers list from
 http://maven.apache.org/mail-lists.html
 
+CI:
+https://grid.sonatype.org/ci/job/maven-indexer/
