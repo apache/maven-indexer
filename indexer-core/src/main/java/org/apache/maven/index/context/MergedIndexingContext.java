@@ -53,8 +53,8 @@ public class MergedIndexingContext
         this.repository = repository;
         this.membersProvider = membersProvider;
         this.gavCalculator = new M2GavCalculator();
-        this.directory = new RAMDirectory();
-        this.directoryFile = File.createTempFile( "merged-index", ".dir" );
+        this.directory = new RAMDirectory(); // needed since publisher requires it, but is not used
+        this.directoryFile = File.createTempFile( "merged-index", ".dir" ); // neded since publisher requires it, but is not used
         this.directoryFile.delete();
         this.directoryFile.mkdirs();
         this.searchable = searchable;
