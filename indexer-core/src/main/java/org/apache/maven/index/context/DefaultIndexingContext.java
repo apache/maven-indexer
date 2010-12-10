@@ -20,9 +20,11 @@ package org.apache.maven.index.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -108,6 +110,8 @@ public class DefaultIndexingContext
 
     private ReadWriteLock indexMaintenanceLock = new ReentrantReadWriteLock();
 
+    private Thread bottleWarmerThread;
+
     private DefaultIndexingContext( String id,
                                     String repositoryId,
                                     File repository, //
@@ -150,6 +154,8 @@ public class DefaultIndexingContext
         openAndWarmup();
 
         prepareIndex( reclaimIndex );
+
+        installBottleWarmer();
     }
 
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -435,44 +441,35 @@ public class DefaultIndexingContext
     protected void openAndWarmup()
         throws IOException
     {
-        indexMaintenanceLock.writeLock().lock();
-
-        try
+        // IndexWriter (close)
+        if ( indexWriter != null )
         {
-            // IndexWriter (close)
-            if ( indexWriter != null )
-            {
-                indexWriter.close();
-            }
-            // IndexSearcher (close only, since we did supply this.indexReader explicitly)
-            if ( indexSearcher != null )
-            {
-                indexSearcher.close();
-            }
-            // IndexReader
-            if ( indexReader != null )
-            {
-                indexReader.close();
-            }
-
-            // IndexWriter open
-            final boolean create = !IndexReader.indexExists( indexDirectory );
-
-            indexWriter = new NexusIndexWriter( getIndexDirectory(), new NexusAnalyzer(), create );
-
-            indexWriter.setRAMBufferSizeMB( 2 );
-
-            indexWriter.setMergeScheduler( new SerialMergeScheduler() );
-
-            openAndWarmupReaders( false );
+            indexWriter.close();
         }
-        finally
+        // IndexSearcher (close only, since we did supply this.indexReader explicitly)
+        if ( indexSearcher != null )
         {
-            indexMaintenanceLock.writeLock().unlock();
+            indexSearcher.close();
         }
+        // IndexReader
+        if ( indexReader != null )
+        {
+            indexReader.close();
+        }
+
+        // IndexWriter open
+        final boolean create = !IndexReader.indexExists( indexDirectory );
+
+        indexWriter = new NexusIndexWriter( getIndexDirectory(), new NexusAnalyzer(), create );
+
+        indexWriter.setRAMBufferSizeMB( 2 );
+
+        indexWriter.setMergeScheduler( new SerialMergeScheduler() );
+
+        openAndWarmupReaders();
     }
 
-    protected void openAndWarmupReaders( boolean justTry )
+    protected void openAndWarmupReaders()
         throws IOException
     {
         if ( indexReader != null && indexReader.isCurrent() )
@@ -480,17 +477,16 @@ public class DefaultIndexingContext
             return;
         }
 
-        if ( justTry )
-        {
-            if ( !indexMaintenanceLock.writeLock().tryLock() )
-            {
-                return;
-            }
-        }
-        else
-        {
-            indexMaintenanceLock.writeLock().lock();
-        }
+        // IndexReader open
+        IndexReader newIndexReader = IndexReader.open( indexDirectory, true );
+
+        // IndexSearcher open, but with new reader
+        NexusIndexSearcher newIndexSearcher = new NexusIndexSearcher( this, newIndexReader );
+
+        // warm up
+        warmUp( newIndexSearcher );
+
+        lockExclusively();
 
         try
         {
@@ -505,28 +501,23 @@ public class DefaultIndexingContext
                 indexReader.close();
             }
 
-            // IndexReader open
-            indexReader = IndexReader.open( indexDirectory, true );
+            indexReader = newIndexReader;
 
-            // IndexSearcher open
-            indexSearcher = new NexusIndexSearcher( this );
-
-            // warm up
-            warmUp();
+            indexSearcher = newIndexSearcher;
         }
         finally
         {
-            indexMaintenanceLock.writeLock().unlock();
+            unlockExclusively();
         }
     }
 
-    protected void warmUp()
+    protected void warmUp( NexusIndexSearcher searcher )
         throws IOException
     {
         try
         {
             // TODO: figure this out better and non blocking
-            getIndexSearcher().search( new TermQuery( new Term( "g", "org.apache" ) ), 1000 );
+            searcher.search( new TermQuery( new Term( "g", "org.apache" ) ), 1000 );
         }
         catch ( IOException e )
         {
@@ -587,15 +578,91 @@ public class DefaultIndexingContext
         // TODO: detect is writer "dirty"?
         if ( true )
         {
+            if ( BLOCKING_COMMIT )
+            {
+                lockExclusively();
+            }
+            else
+            {
+                lock();
+            }
+
+            try
+            {
+                doCommit( BLOCKING_COMMIT );
+            }
+            finally
+            {
+                if ( BLOCKING_COMMIT )
+                {
+                    unlockExclusively();
+                }
+                else
+                {
+                    unlock();
+                }
+            }
+        }
+    }
+
+    protected void doCommit( boolean blocking )
+        throws IOException
+    {
+        try
+        {
+            // TODO: is this needed? Why not put the commit() call into synchronized
+            // since all callers of doCommit() aside of commit() already possess exclusive lock
+            synchronized ( this )
+            {
+                getIndexWriter().commit();
+            }
+
+            // TODO: define some treshold or requirement
+            // for reopening readers (is expensive)
+            // For example: by inserting 1 record among 1M, do we really want to reopen?
+            if ( true )
+            {
+                if ( blocking )
+                {
+                    openAndWarmupReaders();
+                }
+                else
+                {
+                    flagNeedsReopen();
+                }
+            }
+        }
+        catch ( CorruptIndexException e )
+        {
+            close( false );
+
+            throw e;
+        }
+        catch ( IOException e )
+        {
+            close( false );
+
+            throw e;
+        }
+    }
+
+    public void rollback()
+        throws IOException
+    {
+        // detect is writer "dirty"?
+        if ( true )
+        {
             lock();
 
             try
             {
+                IndexWriter w = getIndexWriter();
+
                 try
                 {
                     synchronized ( this )
                     {
-                        getIndexWriter().commit();
+                        w.rollback();
                     }
                 }
                 catch ( CorruptIndexException e )
@@ -615,50 +682,6 @@ public class DefaultIndexingContext
             {
                 unlock();
             }
-
-            // TODO: define some treshold or requirement
-            // for reopening readers (is expensive)
-            // For example: by inserting 1 record among 1M, do we really want to reopen?
-            if ( true )
-            {
-                openAndWarmupReaders( true );
-            }
-        }
-    }
-
-    public void rollback()
-        throws IOException
-    {
-        // detect is writer "dirty"?
-        if ( true )
-        {
-            lockExclusively();
-
-            try
-            {
-                IndexWriter w = getIndexWriter();
-
-                try
-                {
-                    w.rollback();
-                }
-                catch ( CorruptIndexException e )
-                {
-                    close( false );
-
-                    throw e;
-                }
-                catch ( IOException e )
-                {
-                    close( false );
-
-                    throw e;
-                }
-            }
-            finally
-            {
-                unlockExclusively();
-            }
         }
     }
 
@@ -675,7 +698,7 @@ public class DefaultIndexingContext
             {
                 w.optimize();
 
-                commit();
+                doCommit( true );
             }
             catch ( CorruptIndexException e )
             {
@@ -718,6 +741,7 @@ public class DefaultIndexingContext
             }
 
             // TODO: this will prevent from reopening them, but needs better solution
+            // Needed to make bottleWarmerThread die off
             indexDirectory = null;
         }
         finally
@@ -858,7 +882,7 @@ public class DefaultIndexingContext
             {
                 r.close();
 
-                commit();
+                doCommit( true );
             }
 
             rebuildGroups();
@@ -928,7 +952,36 @@ public class DefaultIndexingContext
 
         try
         {
-            IndexUtils.rebuildGroups( this );
+            IndexReader r = getIndexReader();
+
+            Set<String> rootGroups = new LinkedHashSet<String>();
+            Set<String> allGroups = new LinkedHashSet<String>();
+
+            int numDocs = r.maxDoc();
+
+            for ( int i = 0; i < numDocs; i++ )
+            {
+                if ( r.isDeleted( i ) )
+                {
+                    continue;
+                }
+
+                Document d = r.document( i );
+
+                String uinfo = d.get( ArtifactInfo.UINFO );
+
+                if ( uinfo != null )
+                {
+                    ArtifactInfo info = IndexUtils.constructArtifactInfo( d, this );
+                    rootGroups.add( info.getRootGroup() );
+                    allGroups.add( info.groupId );
+                }
+            }
+
+            setRootGroups( rootGroups );
+            setAllGroups( allGroups );
+
+            optimize();
         }
         finally
         {
@@ -943,7 +996,7 @@ public class DefaultIndexingContext
 
         try
         {
-            return IndexUtils.getAllGroups( this );
+            return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
         }
         finally
         {
@@ -958,7 +1011,9 @@ public class DefaultIndexingContext
 
         try
         {
-            IndexUtils.setAllGroups( this, groups );
+            setGroups( groups, ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
+
+            doCommit( true );
         }
         finally
         {
@@ -973,7 +1028,7 @@ public class DefaultIndexingContext
 
         try
         {
-            return IndexUtils.getRootGroups( this );
+            return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
         }
         finally
         {
@@ -988,12 +1043,60 @@ public class DefaultIndexingContext
 
         try
         {
-            IndexUtils.setRootGroups( this, groups );
+            setGroups( groups, ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
+
+            doCommit( true );
         }
         finally
         {
             unlockExclusively();
         }
+    }
+
+    protected Set<String> getGroups( String field, String filedValue, String listField )
+        throws IOException, CorruptIndexException
+    {
+        Hits hits = getIndexSearcher().search( new TermQuery( new Term( field, filedValue ) ) );
+
+        Set<String> groups = new LinkedHashSet<String>( Math.max( 10, hits.length() ) );
+
+        if ( hits.length() > 0 )
+        {
+            Document doc = hits.doc( 0 );
+
+            String groupList = doc.get( listField );
+
+            if ( groupList != null )
+            {
+                groups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
+            }
+        }
+
+        return groups;
+    }
+
+    protected void setGroups( Collection<String> groups, String groupField, String groupFieldValue,
+                              String groupListField )
+        throws IOException, CorruptIndexException
+    {
+        IndexWriter w = getIndexWriter();
+
+        w.updateDocument( new Term( groupField, groupFieldValue ),
+            createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
+    }
+
+    protected Document createGroupsDocument( Collection<String> groups, String field, String fieldValue,
+                                             String listField )
+    {
+        Document groupDoc = new Document();
+
+        groupDoc.add( new Field( field, //
+            fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+
+        groupDoc.add( new Field( listField, //
+            ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
+
+        return groupDoc;
     }
 
     @Override
@@ -1002,4 +1105,63 @@ public class DefaultIndexingContext
         return id + " : " + timestamp;
     }
 
+    // ==
+
+    private volatile boolean needsReaderReopen = false;
+
+    protected void flagNeedsReopen()
+    {
+        needsReaderReopen = true;
+    }
+
+    protected void unflagNeedsReopen()
+    {
+        needsReaderReopen = false;
+    }
+
+    protected boolean isReopenNeeded()
+    {
+        return needsReaderReopen;
+    }
+
+    protected void installBottleWarmer()
+    {
+        Runnable bottleWarmer = new Runnable()
+        {
+            public void run()
+            {
+                // die off when context is closed
+                while ( indexDirectory != null )
+                {
+                    try
+                    {
+                        if ( isReopenNeeded() )
+                        {
+                            openAndWarmupReaders();
+
+                            unflagNeedsReopen();
+                        }
+
+                        Thread.sleep( 1000 );
+                    }
+                    catch ( Exception e )
+                    {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        bottleWarmerThread = new Thread( bottleWarmer, "Index-BottleWarmer" );
+        bottleWarmerThread.setDaemon( true );
+        bottleWarmerThread.start();
+    }
+
+    /**
+     * A flag useful for tests, to make this IndexingContext implementation blocking. If this flag is true, context will
+     * block the commit() calls and will return from it when Lucene commit done AND all the readers are reopened and are
+     * current. TODO: this is currently inherently unsafe (is not final), and is meant to be used in Unit tests only!
+     * Think something and tie this knot properly.
+     */
+    public static boolean BLOCKING_COMMIT = false;
 }

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
@@ -68,6 +69,8 @@ public class AbstractIndexCreatorHelper
         FULL_CREATORS.add( mavenPlugin );
         FULL_CREATORS.add( mavenArchetype );
         FULL_CREATORS.add( jar );
+        
+        DefaultIndexingContext.BLOCKING_COMMIT = true;
     }
 
     protected void deleteDirectory( File dir )

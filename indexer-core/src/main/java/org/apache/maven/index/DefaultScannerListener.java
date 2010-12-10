@@ -159,8 +159,6 @@ class DefaultScannerListener
 
         try
         {
-            context.commit();
-
             context.optimize();
 
             context.setRootGroups( groups );
