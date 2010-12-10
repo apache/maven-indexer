@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.Assert;
 
 import org.apache.lucene.search.Query;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 
 public class ConcurrentUseTest
@@ -19,6 +20,9 @@ public class ConcurrentUseTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
+        // This IS concurrent test, so here, unlike all other UTs, we DO want to have async commits
+        DefaultIndexingContext.BLOCKING_COMMIT = false;
+
         context =
             nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
@@ -64,6 +68,10 @@ public class ConcurrentUseTest
         Assert.assertFalse( "Not all thread did clean job!", thereWereProblems );
 
         context.commit();
+
+        // sleep more than bottleWarmer does, to be sure commit and reopen happened
+        // BottleWarmer sleeps 1000 millis
+        Thread.sleep( 2000 );
 
         //
 
