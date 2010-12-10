@@ -36,6 +36,7 @@ import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.aether.util.version.GenericVersionScheme;
 import org.sonatype.aether.version.InvalidVersionSpecificationException;
 import org.sonatype.aether.version.Version;
+import org.sonatype.aether.version.VersionScheme;
 
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
@@ -209,6 +210,8 @@ public class ArtifactInfo
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
 
+    private final VersionScheme versionScheme = new GenericVersionScheme();
+
     public ArtifactInfo()
     {
     }
@@ -226,24 +229,14 @@ public class ArtifactInfo
     {
         if ( artifactVersion == null )
         {
-            GenericVersionScheme scheme = new GenericVersionScheme();
-
             try
             {
-                artifactVersion = scheme.parseVersion( version );
+                artifactVersion = versionScheme.parseVersion( version );
             }
             catch ( InvalidVersionSpecificationException e )
             {
                 // will not happen, only with version ranges but we should not have those
                 // we handle POM versions here, not dependency versions
-                try
-                {
-                    artifactVersion = scheme.parseVersion( "0.0" );
-                }
-                catch ( InvalidVersionSpecificationException e1 )
-                {
-                    // noo
-                }
             }
         }
 
