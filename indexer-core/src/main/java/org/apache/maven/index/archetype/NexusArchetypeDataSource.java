@@ -30,7 +30,9 @@ import org.apache.maven.archetype.source.ArchetypeDataSourceException;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -56,13 +58,9 @@ public class NexusArchetypeDataSource
         {
             Map<String, String> repositories = getRepositoryMap();
 
-            Query pq = indexer.constructQuery( ArtifactInfo.PACKAGING, "^maven-archetype$" );
+            Query pq = indexer.constructQuery( MAVEN.PACKAGING, "maven-archetype", SearchType.EXACT );
 
             FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
-
-            // cstamas: old code was this
-            // FlatSearchRequest searchRequest = new FlatSearchRequest( //
-            // new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) ) );
 
             FlatSearchResponse searchResponse = indexer.searchFlat( searchRequest );
 
@@ -107,11 +105,4 @@ public class NexusArchetypeDataSource
     {
         // TODO maybe update index
     }
-
-    // cstamas removed. is this needed? Settings is in maven-core and it brings a lot of deps to manage
-    // public void updateCatalog( Properties properties, Archetype archetype, Settings settings )
-    // {
-    // TODO maybe update index
-    // }
-
 }

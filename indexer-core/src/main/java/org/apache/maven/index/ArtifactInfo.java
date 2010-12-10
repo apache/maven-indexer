@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.artifact.versioning.ArtifactVersion;
-import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.artifact.VersionUtils;
@@ -35,6 +33,9 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.codehaus.plexus.util.StringUtils;
+import org.sonatype.aether.util.version.GenericVersionScheme;
+import org.sonatype.aether.version.InvalidVersionSpecificationException;
+import org.sonatype.aether.version.Version;
 
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
@@ -153,8 +154,7 @@ public class ArtifactInfo
 
     public String version;
 
-    @Deprecated
-    private transient ArtifactVersion artifactVersion;
+    private transient Version artifactVersion;
 
     private transient float luceneScore;
 
@@ -222,13 +222,31 @@ public class ArtifactInfo
         this.classifier = classifier;
     }
 
-    @Deprecated
-    public ArtifactVersion getArtifactVersion()
+    public Version getArtifactVersion()
     {
         if ( artifactVersion == null )
         {
-            artifactVersion = new DefaultArtifactVersion( version );
+            GenericVersionScheme scheme = new GenericVersionScheme();
+
+            try
+            {
+                artifactVersion = scheme.parseVersion( version );
+            }
+            catch ( InvalidVersionSpecificationException e )
+            {
+                // will not happen, only with version ranges but we should not have those
+                // we handle POM versions here, not dependency versions
+                try
+                {
+                    artifactVersion = scheme.parseVersion( "0.0" );
+                }
+                catch ( InvalidVersionSpecificationException e1 )
+                {
+                    // noo
+                }
+            }
         }
+
         return artifactVersion;
     }
 
@@ -464,7 +482,6 @@ public class ArtifactInfo
     static class VersionComparator
         implements Comparator<ArtifactInfo>
     {
-        @SuppressWarnings( "unchecked" )
         public int compare( ArtifactInfo f1, ArtifactInfo f2 )
         {
             int n = f1.groupId.compareTo( f2.groupId );

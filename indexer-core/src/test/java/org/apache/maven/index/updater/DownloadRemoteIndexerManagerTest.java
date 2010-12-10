@@ -34,10 +34,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexingContext;
+import org.codehaus.plexus.util.FileUtils;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Response;
 import org.mortbay.jetty.Server;
@@ -169,7 +169,7 @@ public class DownloadRemoteIndexerManagerTest
             FileUtils.forceDelete( destination );
             lastMod = indexFile.lastModified();
         }
-        FileUtils.copyDirectory( source, destination, false );
+        FileUtils.copyDirectory( source, destination );
         long lastMod2 = indexFile.lastModified();
         assertTrue( lastMod < lastMod2 );
 
