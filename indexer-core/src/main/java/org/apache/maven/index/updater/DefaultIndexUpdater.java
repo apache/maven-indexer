@@ -376,7 +376,8 @@ public class DefaultIndexUpdater
         IndexReader r = null;
         try
         {
-            r = IndexReader.open( directory );
+            // explicitly RW reader needed
+            r = IndexReader.open( directory, false );
 
             int numDocs = r.maxDoc();
 
