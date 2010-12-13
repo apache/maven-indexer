@@ -433,9 +433,16 @@ public class DefaultNexusIndexer
     // ----------------------------------------------------------------------------
 
     public Query constructQuery( Field field, String query, SearchType type )
-        throws ParseException
+        throws IllegalArgumentException
     {
-        return queryCreator.constructQuery( field, query, type );
+        try
+        {
+            return queryCreator.constructQuery( field, query, type );
+        }
+        catch ( ParseException e )
+        {
+            throw new IllegalArgumentException( e );
+        }
     }
 
     // ----------------------------------------------------------------------------
@@ -443,7 +450,7 @@ public class DefaultNexusIndexer
     // ----------------------------------------------------------------------------
 
     public ArtifactInfo identify( Field field, String query )
-        throws ParseException, IOException
+        throws IllegalArgumentException, IOException
     {
         return identify( constructQuery( field, query, SearchType.EXACT ) );
     }
@@ -483,11 +490,6 @@ public class DefaultNexusIndexer
         catch ( NoSuchAlgorithmException ex )
         {
             throw new IOException( "Unable to calculate digest" );
-        }
-        catch ( ParseException e )
-        {
-            // will not happen
-            return null;
         }
         finally
         {

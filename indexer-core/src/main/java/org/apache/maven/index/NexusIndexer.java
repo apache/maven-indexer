@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.cli.NexusIndexerCli;
@@ -313,7 +312,7 @@ public interface NexusIndexer
      * @return
      */
     Query constructQuery( Field field, String query, SearchType type )
-        throws ParseException;
+        throws IllegalArgumentException;
 
     // throws ParseException;
 
@@ -322,7 +321,7 @@ public interface NexusIndexer
     // ----------------------------------------------------------------------------
 
     ArtifactInfo identify( Field field, String query )
-        throws ParseException, IOException;
+        throws IllegalArgumentException, IOException;
 
     ArtifactInfo identify( File artifact )
         throws IOException;

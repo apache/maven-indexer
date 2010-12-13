@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.search.grouping.GAGrouping;
 
@@ -184,7 +183,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
                 fail( "Input is invalid, query cannot start with *!" );
             }
-            catch ( ParseException e )
+            catch ( IllegalArgumentException e )
             {
                 // good, now let's do it again with good input:
                 q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "logging", SearchType.SCORED );
@@ -216,7 +215,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
                 fail( "Input is invalid, query cannot start with *!" );
             }
-            catch ( ParseException e )
+            catch ( IllegalArgumentException e )
             {
                 // good, now let's do it again with good input:
                 // Note: since queries are really parsed now, the leading "-" is wrong too
@@ -266,7 +265,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
                 fail( "Input is invalid, query cannot start with *!" );
             }
-            catch ( ParseException e )
+            catch ( IllegalArgumentException e )
             {
                 // good, now let's do it again with good input:
                 // NOTE: without crappy prefix search (that caused zillion other problems, original input does not work)
@@ -334,7 +333,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
                 fail( "Input is invalid, query cannot start with *!" );
             }
-            catch ( ParseException e )
+            catch ( IllegalArgumentException e )
             {
                 // good, now let's do it again with good input:
                 q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "slf4*", SearchType.SCORED );
