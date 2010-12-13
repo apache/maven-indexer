@@ -24,10 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 
 /**
  * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
@@ -49,7 +45,7 @@ public class Nexus687NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "xstream" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "xstream", SearchType.SCORED );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
 

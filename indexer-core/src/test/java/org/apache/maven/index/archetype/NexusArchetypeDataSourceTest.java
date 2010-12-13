@@ -29,12 +29,8 @@ import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.source.ArchetypeDataSource;
 import org.apache.maven.index.AbstractIndexCreatorHelper;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.archetype.NexusArchetypeDataSource;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.apache.maven.index.updater.IndexUpdater;
-import org.codehaus.plexus.util.FileUtils;
 
 public class NexusArchetypeDataSourceTest
     extends AbstractIndexCreatorHelper
@@ -43,7 +39,7 @@ public class NexusArchetypeDataSourceTest
 
     private NexusIndexer nexusIndexer;
 
-    private IndexUpdater indexUpdater;
+    // private IndexUpdater indexUpdater;
 
     private NexusArchetypeDataSource nexusArchetypeDataSource;
 
@@ -60,7 +56,7 @@ public class NexusArchetypeDataSourceTest
     {
         nexusIndexer = lookup( NexusIndexer.class );
 
-        indexUpdater = lookup( IndexUpdater.class );
+        // indexUpdater = lookup( IndexUpdater.class );
 
         Directory indexDir = null;
 
@@ -74,7 +70,7 @@ public class NexusArchetypeDataSourceTest
 
             super.deleteDirectory( indexDirFile );
 
-            indexDir = FSDirectory.getDirectory( indexDirFile );
+            indexDir = FSDirectory.open( indexDirFile );
         }
 
         File repo = new File( getBasedir(), "src/test/repo" );

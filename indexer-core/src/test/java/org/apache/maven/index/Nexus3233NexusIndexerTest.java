@@ -42,7 +42,7 @@ public class Nexus3233NexusIndexerTest
         throws Exception
     {
         // POM1
-        ArtifactInfo ai = nexusIndexer.identify( ArtifactInfo.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );
+        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );
 
         assertNotNull( ai );
 
@@ -53,7 +53,7 @@ public class Nexus3233NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.version );
 
         // POM2
-        ai = nexusIndexer.identify( ArtifactInfo.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
+        ai = nexusIndexer.identify( MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
 
         assertNotNull( ai );
 

@@ -24,10 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus645NexusIndexerTest
@@ -47,7 +43,7 @@ public class Nexus645NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.codehaus.tycho" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org.codehaus.tycho", SearchType.SCORED );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
 
@@ -90,5 +86,4 @@ public class Nexus645NexusIndexerTest
         assertEquals( "nexus-645", ai.repository );
         assertEquals( "zip", ai.fextension );
     }
-
 }

@@ -18,14 +18,14 @@
  */
 package org.apache.maven.index.cli;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.lang.reflect.Proxy;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -48,12 +48,12 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.tools.cli.AbstractCli;
+import org.codehaus.plexus.util.IOUtil;
 
 /**
  * A command line tool that can be used to index local Maven repository.
@@ -413,7 +413,7 @@ public class NexusIndexerCli
 
         long tstart = System.currentTimeMillis();
 
-        final FSDirectory directory = FSDirectory.getDirectory( outputFolder );
+        final FSDirectory directory = FSDirectory.open( outputFolder );
 
         final List<IndexCreator> indexers = getIndexers( cli, plexus );
 

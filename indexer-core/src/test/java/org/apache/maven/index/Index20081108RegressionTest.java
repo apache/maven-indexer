@@ -70,7 +70,7 @@ public class Index20081108RegressionTest
         assertEquals( 31, context.getIndexReader().numDocs() );
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+            Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
             FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
             assertEquals( response.getResults().toString(), 2, response.getTotalHits() );
 
@@ -149,7 +149,7 @@ public class Index20081108RegressionTest
     public void testSearchFlatPaged()
         throws Exception
     {
-        FlatSearchRequest request = new FlatSearchRequest( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" ) );
+        FlatSearchRequest request = new FlatSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED ) );
 
         request.setStart( 0 );
 
@@ -170,7 +170,7 @@ public class Index20081108RegressionTest
         // ----------------------------------------------------------------------------
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-logg*" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logg*", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -189,7 +189,7 @@ public class Index20081108RegressionTest
 
         {
             // numbers and "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "jcl104-over-slf4*" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "jcl104-over-slf4*", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -215,7 +215,7 @@ public class Index20081108RegressionTest
 
         int pageSize = 4;
 
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
 
         FlatSearchRequest req = new FlatSearchRequest( q );
 
@@ -263,7 +263,7 @@ public class Index20081108RegressionTest
         throws Exception
     {
         // we have 14 artifact for this search
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
         FlatSearchRequest request = new FlatSearchRequest( q );
 
         FlatSearchResponse response1 = nexusIndexer.searchFlat( request );

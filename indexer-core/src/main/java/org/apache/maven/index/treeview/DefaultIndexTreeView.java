@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -497,16 +498,37 @@ public class DefaultIndexTreeView
         Query versionQ = null;
 
         // minimum must have
-        groupIdQ = getNexusIndexer().constructQuery( MAVEN.GROUP_ID, g, SearchType.EXACT );
+        try
+        {
+            groupIdQ = getNexusIndexer().constructQuery( MAVEN.GROUP_ID, g, SearchType.EXACT );
+        }
+        catch ( ParseException e )
+        {
+            // will not happen
+        }
 
         if ( StringUtils.isNotBlank( a ) )
         {
-            artifactIdQ = getNexusIndexer().constructQuery( MAVEN.ARTIFACT_ID, a, SearchType.EXACT );
+            try
+            {
+                artifactIdQ = getNexusIndexer().constructQuery( MAVEN.ARTIFACT_ID, a, SearchType.EXACT );
+            }
+            catch ( ParseException e )
+            {
+                // will not happen
+            }
         }
 
         if ( StringUtils.isNotBlank( v ) )
         {
-            versionQ = getNexusIndexer().constructQuery( MAVEN.VERSION, v, SearchType.EXACT );
+            try
+            {
+                versionQ = getNexusIndexer().constructQuery( MAVEN.VERSION, v, SearchType.EXACT );
+            }
+            catch ( ParseException e )
+            {
+                // will not happen
+            }
         }
 
         BooleanQuery q = new BooleanQuery();

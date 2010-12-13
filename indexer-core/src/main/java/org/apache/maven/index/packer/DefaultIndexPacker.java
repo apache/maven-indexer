@@ -267,7 +267,7 @@ public class DefaultIndexPacker
 
         indexDir.mkdirs();
 
-        FSDirectory fdir = FSDirectory.getDirectory( indexDir );
+        FSDirectory fdir = FSDirectory.open( indexDir );
 
         try
         {
@@ -320,7 +320,7 @@ public class DefaultIndexPacker
         }
 
         Document document = new Document();
-        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
         for ( IndexCreator ic : context.getIndexCreators() )
         {
@@ -342,7 +342,7 @@ public class DefaultIndexPacker
             zos = new ZipOutputStream( os );
             zos.setLevel( 9 );
 
-            String[] names = directory.list();
+            String[] names = directory.listAll();
 
             boolean savedTimestamp = false;
 

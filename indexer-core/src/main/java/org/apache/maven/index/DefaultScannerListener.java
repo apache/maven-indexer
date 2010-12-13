@@ -28,10 +28,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
-import org.apache.maven.index.artifact.VersionUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -240,11 +239,11 @@ class DefaultScannerListener
 
         for ( String uinfo : uinfos )
         {
-            Term term = new Term( ArtifactInfo.UINFO, uinfo );
+            TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
 
-            Hits hits = context.getIndexSearcher().search( new TermQuery( term ) );
+            context.getIndexSearcher().search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
 
-            if ( hits.length() > 0 )
+            if ( collector.getTotalHits() > 0 )
             {
                 String[] ra = ArtifactInfo.FS_PATTERN.split( uinfo );
 
@@ -273,7 +272,7 @@ class DefaultScannerListener
                 {
                     ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
 
-                    for ( int i = 0; i < hits.length(); i++ )
+                    for ( int i = 0; i < collector.getTotalHits(); i++ )
                     {
                         indexerEngine.remove( context, ac );
 

@@ -34,29 +34,11 @@ import org.apache.lucene.store.LockObtainFailedException;
 public class NexusIndexWriter
     extends IndexWriter
 {
-    private boolean closed;
-
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
         super( directory, analyzer, create, MaxFieldLength.LIMITED );
 
-        this.closed = false;
-
         // setSimilarity( new NexusSimilarity() );
-    }
-
-    @Override
-    public void close()
-        throws CorruptIndexException, IOException
-    {
-        super.close();
-
-        this.closed = true;
-    }
-
-    public boolean isClosed()
-    {
-        return closed;
     }
 }

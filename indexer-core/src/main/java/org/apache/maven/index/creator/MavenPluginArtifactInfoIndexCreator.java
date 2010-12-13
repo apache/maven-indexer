@@ -60,10 +60,10 @@ public class MavenPluginArtifactInfoIndexCreator
     private static final String MAVEN_PLUGIN_PACKAGING = "maven-plugin";
 
     public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField( MAVEN.PLUGIN_PREFIX, IndexerFieldVersion.V1,
-        "px", "MavenPlugin prefix (as keyword, stored)", Store.YES, Index.UN_TOKENIZED );
+        "px", "MavenPlugin prefix (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
-        "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.TOKENIZED );
+        "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.ANALYZED );
 
     public void populateArtifactInfo( ArtifactContext ac )
     {

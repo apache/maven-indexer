@@ -38,6 +38,8 @@ import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.MAVEN;
+import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.IOUtil;
@@ -62,7 +64,7 @@ public class DefaultIndexUpdaterTest
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
             context );
 
-        Query q = indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-lang" );
+        Query q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-lang", SearchType.SCORED );
 
         FlatSearchResponse response1 = indexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> content1 = response1.getResults();
@@ -114,7 +116,7 @@ public class DefaultIndexUpdaterTest
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
             context );
 
-        Query q = indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-lang" );
+        Query q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-lang", SearchType.SCORED );
 
         {
             FlatSearchResponse response1 = indexer.searchFlat( new FlatSearchRequest( q ) );
@@ -196,7 +198,7 @@ public class DefaultIndexUpdaterTest
             context.merge( tempDir2 );
         }
 
-        Query q = indexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-lang" );
+        Query q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-lang", SearchType.SCORED );
 
         FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> content2 = response.getResults();

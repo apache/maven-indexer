@@ -34,13 +34,15 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexFileNameFilter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.SerialMergeScheduler;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
@@ -151,8 +153,6 @@ public class DefaultIndexingContext
 
         this.gavCalculator = new M2GavCalculator();
 
-        openAndWarmup();
-
         prepareIndex( reclaimIndex );
 
         installBottleWarmer();
@@ -163,9 +163,8 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, UnsupportedExistingLuceneIndexException
     {
-        // TODO: use niofsdirectory
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
-            FSDirectory.getDirectory( indexDirectoryFile ), reclaimIndex );
+            FSDirectory.open( indexDirectoryFile ), reclaimIndex );
 
         this.indexDirectoryFile = indexDirectoryFile;
     }
@@ -226,6 +225,8 @@ public class DefaultIndexingContext
                     IndexWriter.unlock( indexDirectory );
                 }
 
+                openAndWarmup();
+
                 checkAndUpdateIndexDescriptor( reclaimIndex );
             }
             catch ( IOException e )
@@ -262,9 +263,9 @@ public class DefaultIndexingContext
             }
 
             deleteIndexFiles();
-
-            openAndWarmup();
         }
+
+        openAndWarmup();
 
         if ( StringUtils.isEmpty( getRepositoryId() ) )
         {
@@ -287,40 +288,45 @@ public class DefaultIndexingContext
         // check for descriptor if this is not a "virgin" index
         if ( getIndexReader().numDocs() > 0 )
         {
-            Hits hits = getIndexSearcher().search( new TermQuery( DESCRIPTOR_TERM ) );
+            TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
 
-            if ( hits == null || hits.length() == 0 )
+            getIndexSearcher().search( new TermQuery( DESCRIPTOR_TERM ), collector );
+
+            if ( collector.getTotalHits() == 0 )
             {
                 throw new UnsupportedExistingLuceneIndexException( "The existing index has no NexusIndexer descriptor" );
             }
 
-            Document descriptor = hits.doc( 0 );
-
-            if ( hits.length() != 1 )
+            if ( collector.getTotalHits() > 1 )
             {
+                // eh? this is buggy index it seems, just iron it out then
                 storeDescriptor();
                 return;
             }
-
-            String[] h = StringUtils.split( descriptor.get( FLD_IDXINFO ), ArtifactInfo.FS );
-            // String version = h[0];
-            String repoId = h[1];
-
-            // // compare version
-            // if ( !VERSION.equals( version ) )
-            // {
-            // throw new UnsupportedExistingLuceneIndexException(
-            // "The existing index has version [" + version + "] and not [" + VERSION + "] version!" );
-            // }
-
-            if ( getRepositoryId() == null )
+            else
             {
-                repositoryId = repoId;
-            }
-            else if ( !getRepositoryId().equals( repoId ) )
-            {
-                throw new UnsupportedExistingLuceneIndexException( "The existing index is for repository " //
-                    + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
+                // good, we have one descriptor as should
+                Document descriptor = getIndexSearcher().doc( collector.topDocs().scoreDocs[0].doc );
+                String[] h = StringUtils.split( descriptor.get( FLD_IDXINFO ), ArtifactInfo.FS );
+                // String version = h[0];
+                String repoId = h[1];
+
+                // // compare version
+                // if ( !VERSION.equals( version ) )
+                // {
+                // throw new UnsupportedExistingLuceneIndexException(
+                // "The existing index has version [" + version + "] and not [" + VERSION + "] version!" );
+                // }
+
+                if ( getRepositoryId() == null )
+                {
+                    repositoryId = repoId;
+                }
+                else if ( !getRepositoryId().equals( repoId ) )
+                {
+                    throw new UnsupportedExistingLuceneIndexException( "The existing index is for repository " //
+                        + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
+                }
             }
         }
     }
@@ -344,13 +350,18 @@ public class DefaultIndexingContext
     private void deleteIndexFiles()
         throws IOException
     {
-        String[] names = indexDirectory.list();
+        String[] names = indexDirectory.listAll();
 
         if ( names != null )
         {
+            IndexFileNameFilter filter = IndexFileNameFilter.getFilter();
+
             for ( int i = 0; i < names.length; i++ )
             {
-                indexDirectory.deleteFile( names[i] );
+                if ( filter.accept( null, names[i] ) )
+                {
+                    indexDirectory.deleteFile( names[i] );
+                }
             }
         }
 
@@ -445,16 +456,22 @@ public class DefaultIndexingContext
         if ( indexWriter != null )
         {
             indexWriter.close();
+
+            indexWriter = null;
         }
         // IndexSearcher (close only, since we did supply this.indexReader explicitly)
         if ( indexSearcher != null )
         {
             indexSearcher.close();
+
+            indexSearcher = null;
         }
         // IndexReader
         if ( indexReader != null )
         {
             indexReader.close();
+
+            indexReader = null;
         }
 
         // IndexWriter open
@@ -831,20 +848,22 @@ public class DefaultIndexingContext
 
             IndexSearcher s = getIndexSearcher();
 
-            IndexReader r = IndexReader.open( directory, true );
+            IndexReader directoryReader = IndexReader.open( directory, true );
+
+            TopScoreDocCollector collector = null;
 
             try
             {
-                int numDocs = r.maxDoc();
+                int numDocs = directoryReader.maxDoc();
 
                 for ( int i = 0; i < numDocs; i++ )
                 {
-                    if ( r.isDeleted( i ) )
+                    if ( directoryReader.isDeleted( i ) )
                     {
                         continue;
                     }
 
-                    Document d = r.document( i );
+                    Document d = directoryReader.document( i );
 
                     if ( filter != null && !filter.accept( d ) )
                     {
@@ -855,9 +874,11 @@ public class DefaultIndexingContext
 
                     if ( uinfo != null )
                     {
-                        Hits hits = s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ) );
+                        collector = TopScoreDocCollector.create( 1, false );
 
-                        if ( hits.length() == 0 )
+                        s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
+
+                        if ( collector.getTotalHits() == 0 )
                         {
                             w.addDocument( IndexUtils.updateDocument( d, this, false ) );
                         }
@@ -880,7 +901,7 @@ public class DefaultIndexingContext
             }
             finally
             {
-                r.close();
+                directoryReader.close();
 
                 doCommit( true );
             }
@@ -912,10 +933,7 @@ public class DefaultIndexingContext
     {
         if ( indexWriter != null )
         {
-            if ( !indexWriter.isClosed() )
-            {
-                indexWriter.close();
-            }
+            indexWriter.close();
 
             indexWriter = null;
         }
@@ -1056,13 +1074,17 @@ public class DefaultIndexingContext
     protected Set<String> getGroups( String field, String filedValue, String listField )
         throws IOException, CorruptIndexException
     {
-        Hits hits = getIndexSearcher().search( new TermQuery( new Term( field, filedValue ) ) );
+        TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
 
-        Set<String> groups = new LinkedHashSet<String>( Math.max( 10, hits.length() ) );
+        getIndexSearcher().search( new TermQuery( new Term( field, filedValue ) ), collector );
 
-        if ( hits.length() > 0 )
+        TopDocs topDocs = collector.topDocs();
+
+        Set<String> groups = new LinkedHashSet<String>( Math.max( 10, topDocs.totalHits ) );
+
+        if ( topDocs.totalHits > 0 )
         {
-            Document doc = hits.doc( 0 );
+            Document doc = getIndexSearcher().doc( topDocs.scoreDocs[0].doc );
 
             String groupList = doc.get( listField );
 

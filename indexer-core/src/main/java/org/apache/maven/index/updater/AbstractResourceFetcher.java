@@ -27,7 +27,6 @@ import java.io.InputStream;
 public abstract class AbstractResourceFetcher
     implements ResourceFetcher
 {
-
     public InputStream retrieve( String name )
         throws IOException, FileNotFoundException
     {

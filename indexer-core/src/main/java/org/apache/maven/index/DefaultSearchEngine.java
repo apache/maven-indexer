@@ -30,11 +30,10 @@ import java.util.TreeSet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexSearcher;
@@ -193,28 +192,30 @@ public class DefaultSearchEngine
 
         try
         {
-            Hits hits =
-                context.getIndexSearcher().search( query,
-                    new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
+            TopScoreDocCollector collector = TopScoreDocCollector.create( req.getResultHitLimit(), true );
 
-            if ( hits == null || hits.length() == 0 )
+            context.getIndexSearcher().search( query, collector );
+
+            if ( collector.getTotalHits() == 0 )
             {
                 return 0;
             }
 
-            if ( req.isHitLimited() && hits.length() > req.getResultHitLimit() )
+            if ( req.isHitLimited() && collector.getTotalHits() > req.getResultHitLimit() )
             {
                 return AbstractSearchResponse.LIMIT_EXCEEDED;
             }
 
-            int hitCount = hits.length();
+            ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+
+            int hitCount = scoreDocs.length;
 
             int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
 
             // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
-            for ( int i = start; i < hits.length(); i++ )
+            for ( int i = start; i < scoreDocs.length; i++ )
             {
-                Document doc = hits.doc( i );
+                Document doc = context.getIndexSearcher().doc( scoreDocs[i].doc );
 
                 ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
@@ -250,17 +251,26 @@ public class DefaultSearchEngine
 
         try
         {
-            Hits hits =
-                context.getIndexSearcher().search( query,
-                    new Sort( new SortField( ArtifactInfo.UINFO, SortField.STRING ) ) );
+            TopScoreDocCollector collector = TopScoreDocCollector.create( req.getResultHitLimit(), true );
 
-            if ( hits != null && hits.length() != 0 )
+            context.getIndexSearcher().search( query, collector );
+
+            if ( collector.getTotalHits() > 0 )
             {
-                int hitCount = hits.length();
-
-                for ( int i = 0; i < hits.length(); i++ )
+                if ( req.isHitLimited() && collector.getTotalHits() > req.getResultHitLimit() )
                 {
-                    ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( hits.doc( i ), context );
+                    return AbstractSearchResponse.LIMIT_EXCEEDED;
+                }
+
+                ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+
+                int hitCount = scoreDocs.length;
+
+                for ( int i = 0; i < scoreDocs.length; i++ )
+                {
+                    Document doc = context.getIndexSearcher().doc( scoreDocs[i].doc );
+
+                    ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
                     if ( artifactInfo != null )
                     {
@@ -274,11 +284,6 @@ public class DefaultSearchEngine
                             hitCount--;
                         }
                     }
-                }
-
-                if ( req.isHitLimited() && hits.length() > req.getResultHitLimit() )
-                {
-                    return AbstractSearchResponse.LIMIT_EXCEEDED;
                 }
 
                 return hitCount;
@@ -356,12 +361,12 @@ public class DefaultSearchEngine
             // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed
             // patch
             // did come in faster! -- Thanks)
-            Hits hits =
-                indexSearcher.search( request.getQuery(), new Sort( new SortField[] { SortField.FIELD_SCORE,
-                    new SortField( null, SortField.DOC, false ) } ) );
+            TopScoreDocCollector hits = TopScoreDocCollector.create( request.getResultHitLimit(), true );
 
-            return new IteratorSearchResponse( request.getQuery(), hits.length(), new DefaultIteratorResultSet(
-                request, indexSearcher, contexts, hits ) );
+            indexSearcher.search( request.getQuery(), hits );
+
+            return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(), new DefaultIteratorResultSet(
+                request, indexSearcher, contexts, hits.topDocs() ) );
         }
         catch ( Throwable e )
         {

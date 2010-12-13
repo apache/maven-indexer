@@ -21,10 +21,10 @@ package org.apache.maven.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.cli.NexusIndexerCli;
@@ -130,14 +130,6 @@ public interface NexusIndexer
         throws IOException;
 
     /**
-     * @deprecated use {@link #addIndexingContext(String, String, File, Directory, String, String, List)}
-     */
-    IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
-                                        String repositoryUrl, String indexUpdateUrl,
-                                        List<? extends IndexCreator> indexers, boolean reclaimIndexOwnership )
-        throws IOException, UnsupportedExistingLuceneIndexException;
-
-    /**
      * Adds an indexing context to Nexus indexer.
      * 
      * @param id the ID of the context.
@@ -177,14 +169,6 @@ public interface NexusIndexer
                                               String repositoryUrl, String indexUpdateUrl,
                                               List<? extends IndexCreator> indexers )
         throws IOException;
-
-    /**
-     * @deprecated use {@link #addIndexingContext(String, String, File, Directory, String, String, List)} instead
-     */
-    IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
-                                        String repositoryUrl, String indexUpdateUrl,
-                                        List<? extends IndexCreator> indexers, boolean reclaimIndexOwnership )
-        throws IOException, UnsupportedExistingLuceneIndexException;
 
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
                                               Collection<IndexingContext> contexts )
@@ -286,41 +270,6 @@ public interface NexusIndexer
     // ----------------------------------------------------------------------------
 
     /**
-     * Searches all searchable contexts know to Nexus indexer and merge the results. The default comparator will be used
-     * (VersionComparator) to sort the results.
-     * 
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    Collection<ArtifactInfo> searchFlat( Query query )
-        throws IOException;
-
-    /**
-     * Will search the given context. The default comparator will be used (VersionComparator) to sort the results.
-     * 
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    Collection<ArtifactInfo> searchFlat( Query query, IndexingContext context )
-        throws IOException;
-
-    /**
-     * Searches all searchable contexts know to Nexus indexer and merge the results. The given comparator will be used
-     * to sort the results.
-     * 
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    Collection<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, Query query )
-        throws IOException;
-
-    /**
-     * Searches the given context. The given comparator will be used to sort the results.
-     * 
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    Collection<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, Query query,
-                                         IndexingContext context )
-        throws IOException;
-
-    /**
      * Searches according the request parameters.
      * 
      * @param request
@@ -341,63 +290,6 @@ public interface NexusIndexer
         throws IOException;
 
     /**
-     * Searches all searchable contexts know to Nexus indexer and merge the results.
-     * 
-     * @param grouping
-     * @param query
-     * @return
-     * @throws IOException
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Query query )
-        throws IOException;
-
-    /**
-     * Searches the given context.
-     * 
-     * @param grouping
-     * @param query
-     * @param context
-     * @return
-     * @throws IOException
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Query query, IndexingContext context )
-        throws IOException;
-
-    /**
-     * Searches all searchable contexts know to Nexus indexer and merge the results.
-     * 
-     * @param grouping
-     * @param groupKeyComparator
-     * @param query
-     * @return
-     * @throws IOException
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Comparator<String> groupKeyComparator, Query query )
-        throws IOException;
-
-    /**
-     * Searches the given context.
-     * 
-     * @param grouping
-     * @param groupKeyComparator
-     * @param query
-     * @param context
-     * @return
-     * @throws IOException
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Comparator<String> groupKeyComparator,
-                                                  Query query, IndexingContext context )
-        throws IOException;
-
-    /**
      * Searches according the request parameters.
      * 
      * @param request
@@ -412,16 +304,6 @@ public interface NexusIndexer
     // ----------------------------------------------------------------------------
 
     /**
-     * A convenience method to construct Lucene query for given field name and query text.
-     * 
-     * @param field a field name, one of the fields declared in {@link ArtifactInfo}
-     * @param query a query text
-     * @see DefaultQueryCreator
-     * @deprecated Use {@link #constructQuery(Field, String, SearchType)} instead.
-     */
-    Query constructQuery( String field, String query );
-
-    /**
      * Helper method to construct Lucene query for given field without need for knowledge (on caller side) HOW is a
      * field indexed, and WHAT query is needed to achieve that.
      * 
@@ -430,7 +312,8 @@ public interface NexusIndexer
      * @param type
      * @return
      */
-    Query constructQuery( Field field, String query, SearchType type );
+    Query constructQuery( Field field, String query, SearchType type )
+        throws ParseException;
 
     // throws ParseException;
 
@@ -438,12 +321,8 @@ public interface NexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
-    @Deprecated
-    ArtifactInfo identify( String field, String query )
-        throws IOException;
-
     ArtifactInfo identify( Field field, String query )
-        throws IOException;
+        throws ParseException, IOException;
 
     ArtifactInfo identify( File artifact )
         throws IOException;

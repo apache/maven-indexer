@@ -52,7 +52,8 @@ public interface QueryCreator
      * @return
      * @throws ParseException if query parsing is unsuccesful.
      */
-    Query constructQuery( Field field, String query, SearchType type );
+    Query constructQuery( Field field, String query, SearchType type )
+        throws ParseException;
 
     /**
      * Deprecated. Avoid it's use! Constructs query against <b>single</b> field, using it's "best effort" approach to

@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import org.apache.lucene.analysis.Token;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.highlight.Fragmenter;
 
 public class OneLineFragmenter
@@ -67,5 +68,17 @@ public class OneLineFragmenter
     public void setText( String text )
     {
         this.text = text;
+    }
+
+    public boolean isNewFragment()
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public void start( String arg0, TokenStream arg1 )
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

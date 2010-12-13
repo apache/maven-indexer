@@ -24,7 +24,6 @@ import junit.framework.Assert;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.Query;
 
 public class Nexus3881NexusIndexerTest

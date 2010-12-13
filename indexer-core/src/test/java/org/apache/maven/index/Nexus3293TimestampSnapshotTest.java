@@ -24,17 +24,10 @@ import java.util.Set;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.ArtifactContextProducer;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.M2GavCalculator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 public class Nexus3293TimestampSnapshotTest

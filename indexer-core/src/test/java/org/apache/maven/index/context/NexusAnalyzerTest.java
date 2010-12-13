@@ -22,15 +22,12 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import org.apache.lucene.analysis.Token;
-import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 
 public class NexusAnalyzerTest
@@ -57,21 +54,17 @@ public class NexusAnalyzerTest
     protected void runAndCompare( IndexerField indexerField, String text, String[] expected )
         throws IOException
     {
-        TokenStream ts = nexusAnalyzer.reusableTokenStream( indexerField.getKey(), new StringReader( text ) );
+        Tokenizer ts = (Tokenizer) nexusAnalyzer.reusableTokenStream( indexerField.getKey(), new StringReader( text ) );
 
         ArrayList<String> tokenList = new ArrayList<String>();
 
         if ( !indexerField.isKeyword() )
         {
-            final Token reusableToken = new Token();
-
-            Token token = ts.next( reusableToken );
-
-            while ( token != null )
+            while ( ts.incrementToken() )
             {
-                tokenList.add( token.term() );
+                TermAttribute term = ts.getAttribute( TermAttribute.class );
 
-                token = ts.next( reusableToken );
+                tokenList.add( term.term() );
             }
         }
         else

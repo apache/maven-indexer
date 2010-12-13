@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.maven.index.context.IndexingContext;
 
@@ -129,12 +129,11 @@ public class IndexDataWriter
     public void writeDocument( Document document )
         throws IOException
     {
-        @SuppressWarnings( "unchecked" )
-        List<Field> fields = document.getFields();
+        List<Fieldable> fields = document.getFields();
 
         int fieldCount = 0;
 
-        for ( Field field : fields )
+        for ( Fieldable field : fields )
         {
             if ( field.isStored() )
             {
@@ -144,7 +143,7 @@ public class IndexDataWriter
 
         dos.writeInt( fieldCount );
 
-        for ( Field field : fields )
+        for ( Fieldable field : fields )
         {
             if ( field.isStored() )
             {
@@ -153,13 +152,13 @@ public class IndexDataWriter
         }
     }
 
-    public void writeField( Field field )
+    public void writeField( Fieldable field )
         throws IOException
     {
         int flags = ( field.isIndexed() ? F_INDEXED : 0 ) //
             + ( field.isTokenized() ? F_TOKENIZED : 0 ) //
-            + ( field.isStored() ? F_STORED : 0 ) //
-            + ( field.isCompressed() ? F_COMPRESSED : 0 );
+            + ( field.isStored() ? F_STORED : 0 ); //
+        // + ( false ? F_COMPRESSED : 0 ); // Compressed not supported anymore
 
         String name = field.name();
         String value = field.stringValue();

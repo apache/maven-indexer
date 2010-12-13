@@ -24,11 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactAvailablility;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus658NexusIndexerTest
@@ -48,7 +43,7 @@ public class Nexus658NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org.sonatype.nexus" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org.sonatype.nexus", SearchType.SCORED );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 4, r.size() );

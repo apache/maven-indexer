@@ -54,8 +54,8 @@ public abstract class AbstractNexusIndexerTest
     protected void tearDown()
         throws Exception
     {
-        super.tearDown();
         unprepareNexusIndexer( nexusIndexer );
+        super.tearDown();
         // TODO: Brian reported, does not work on Windows because of left open files?
         // FileUtils.deleteDirectory( indexDir );
     }

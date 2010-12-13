@@ -26,10 +26,11 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
+import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.PlexusTestCase;
@@ -234,7 +235,7 @@ public abstract class AbstractNexusIndexerCliTest
 
             assertFalse( "No index file was generated", new File( indexDir ).list().length == 0 );
 
-            Query query = indexer.constructQuery( ArtifactInfo.GROUP_ID, "ch.marcus-schulte.maven" );
+            Query query = indexer.constructQuery( MAVEN.GROUP_ID, "ch.marcus-schulte.maven", SearchType.SCORED );
 
             FlatSearchRequest request = new FlatSearchRequest( query );
             FlatSearchResponse response = indexer.searchFlat( request );

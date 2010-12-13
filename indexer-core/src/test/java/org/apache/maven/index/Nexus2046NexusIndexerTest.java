@@ -46,7 +46,9 @@ public class Nexus2046NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "*" );
+        // Since 4.0 the original query become illegal
+        // Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*", SearchType.SCORED );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org.maven.ide", SearchType.SCORED );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
 

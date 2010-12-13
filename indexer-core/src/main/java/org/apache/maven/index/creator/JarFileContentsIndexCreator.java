@@ -49,7 +49,7 @@ public class JarFileContentsIndexCreator
     public static final String ID = "jarContent";
 
     public static final IndexerField FLD_CLASSNAMES = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V3,
-        "classnames", "Artifact Classes (tokenized)", Store.NO, Index.TOKENIZED );
+        "classnames", "Artifact Classes (tokenized)", Store.NO, Index.ANALYZED );
 
     /**
      * NexusAnalyzer makes exception with this field only, to keep backward compatibility with old consumers of
@@ -57,7 +57,7 @@ public class JarFileContentsIndexCreator
      * registered BEFORE FLD_CLASSNAMES_KW!
      */
     public static final IndexerField FLD_CLASSNAMES_KW = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V1,
-        "c", "Artifact Classes (tokenized on newlines only)", Store.COMPRESS, Index.TOKENIZED );
+        "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
 
     public void populateArtifactInfo( ArtifactContext artifactContext )
         throws IOException
@@ -144,8 +144,7 @@ public class JarFileContentsIndexCreator
 
             StringBuilder sb = new StringBuilder();
 
-            @SuppressWarnings( "unchecked" )
-            Enumeration en = jar.entries();
+            Enumeration<?> en = jar.entries();
             while ( en.hasMoreElements() )
             {
                 ZipEntry e = (ZipEntry) en.nextElement();

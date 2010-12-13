@@ -28,11 +28,12 @@ import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Explanation;
-import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Formatter;
 import org.apache.lucene.search.highlight.Highlighter;
+import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.apache.lucene.search.highlight.QueryScorer;
 import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.highlight.TextFragment;
@@ -71,7 +72,7 @@ public class DefaultIteratorResultSet
 
     private final List<MatchHighlightRequest> matchHighlightRequests;
 
-    private final Hits hits;
+    private final TopDocs hits;
 
     private final int from;
 
@@ -86,7 +87,7 @@ public class DefaultIteratorResultSet
     private ArtifactInfo ai;
 
     protected DefaultIteratorResultSet( final IteratorSearchRequest request, final IndexSearcher indexSearcher,
-                                        final List<IndexingContext> contexts, final Hits hits )
+                                        final List<IndexingContext> contexts, final TopDocs hits )
         throws IOException
     {
         this.searchRequest = request;
@@ -211,26 +212,25 @@ public class DefaultIteratorResultSet
         // b) pointer advanced over more documents that user requested
         // c) pointer advanced over more documents that hits has
         // or we found what we need
-        while ( ( result == null ) && ( pointer < maxRecPointer ) && ( pointer < hits.length() ) )
+        while ( ( result == null ) && ( pointer < maxRecPointer ) && ( pointer < hits.scoreDocs.length ) )
         {
-            Document doc = hits.doc( pointer );
+            Document doc = indexSearcher.doc( hits.scoreDocs[pointer].doc );
 
-            IndexingContext context = getIndexingContextForPointer( doc, hits.id( pointer ) );
+            IndexingContext context = getIndexingContextForPointer( doc, hits.scoreDocs[pointer].doc );
 
             result = IndexUtils.constructArtifactInfo( doc, context );
 
             if ( result != null )
             {
-                // uncomment this to have explainations too
                 // WARNING: NOT FOR PRODUCTION SYSTEMS, THIS IS VERY COSTLY OPERATION
                 // For debugging only!!!
                 if ( searchRequest.isLuceneExplain() )
                 {
                     result.getAttributes().put( Explanation.class.getName(),
-                        indexSearcher.explain( searchRequest.getQuery(), hits.id( pointer ) ).toString() );
+                        indexSearcher.explain( searchRequest.getQuery(), hits.scoreDocs[pointer].doc ).toString() );
                 }
 
-                result.setLuceneScore( hits.score( pointer ) );
+                result.setLuceneScore( hits.scoreDocs[pointer].score );
 
                 result.repository = context.getRepositoryId();
 
@@ -390,30 +390,27 @@ public class DefaultIteratorResultSet
         maxNumFragments = Math.max( 1, maxNumFragments ); // sanity check
 
         TextFragment[] frag;
-        // Lucene 2.9.x
-        // try
-        // {
-        frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
-
         // Get text
         ArrayList<String> fragTexts = new ArrayList<String>( maxNumFragments );
 
-        for ( int i = 0; i < frag.length; i++ )
+        try
         {
-            if ( ( frag[i] != null ) && ( frag[i].getScore() > 0 ) )
+            frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
+
+            for ( int i = 0; i < frag.length; i++ )
             {
-                fragTexts.add( frag[i].toString() );
+                if ( ( frag[i] != null ) && ( frag[i].getScore() > 0 ) )
+                {
+                    fragTexts.add( frag[i].toString() );
+                }
             }
+        }
+        catch ( InvalidTokenOffsetsException e )
+        {
+            // empty?
         }
 
         return fragTexts;
-        // }
-        // catch ( InvalidTokenOffsetsException e )
-        // {
-        // // TODO: huh? Logging this? Or what?
-        // return Collections.emptyList();
-        // }
-
     }
 
     protected IndexingContext getIndexingContextForPointer( Document doc, int docPtr )

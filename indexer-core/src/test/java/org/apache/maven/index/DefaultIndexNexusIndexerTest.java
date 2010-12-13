@@ -169,7 +169,7 @@ public class DefaultIndexNexusIndexerTest
 
         File newIndex = new File( getBasedir(), "target/test-new" );
 
-        Directory newIndexDir = FSDirectory.getDirectory( newIndex );
+        Directory newIndexDir = FSDirectory.open( newIndex );
 
         DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
 
@@ -182,7 +182,7 @@ public class DefaultIndexNexusIndexerTest
 
         // make sure context has the same artifacts
 
-        Query query = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query query = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         FlatSearchRequest request = new FlatSearchRequest( query, newContext );
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
@@ -208,7 +208,7 @@ public class DefaultIndexNexusIndexerTest
 
         newContext.close( false );
 
-        newIndexDir = FSDirectory.getDirectory( newIndex );
+        newIndexDir = FSDirectory.open( newIndex );
 
         DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
 
@@ -249,7 +249,7 @@ public class DefaultIndexNexusIndexerTest
     public void testBrokenJar()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "brokenjar" );
+        Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED );
 
         FlatSearchRequest searchRequest = new FlatSearchRequest( q );
 
@@ -270,7 +270,7 @@ public class DefaultIndexNexusIndexerTest
     public void testMissingPom()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "missingpom" );
+        Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED );
 
         FlatSearchRequest searchRequest = new FlatSearchRequest( q );
 

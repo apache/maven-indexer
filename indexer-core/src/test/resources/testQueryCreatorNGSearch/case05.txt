@@ -9,12 +9,11 @@ test :: commons-logging:commons-logging:1.0:javadoc:jar
 test :: commons-cli:commons-cli:1.0:null:jar
 test :: commons-cli:commons-cli:1.0:sources:jar
 test :: brokenjar:brokenjar:1.0:null:jar
-test :: ch.marcus-schulte.maven:hivedoc-plugin:1.0.0:null:maven-plugin
-test :: org.terracotta.forge:forge-parent:1.0.5:null:pom
 test :: org.terracotta.forge:archetype-parent:1.0.1:null:pom
 test :: commons-logging:commons-logging:1.0.1:null:jar
 test :: commons-logging:commons-logging:1.0.1:javadoc:jar
 test :: org.terracotta.maven.archetypes:pojo-archetype:1.0.3:null:maven-archetype
+test :: org.terracotta.forge:forge-parent:1.0.5:null:pom
 test :: org.apache.directory.server:apacheds-schema-archetype:1.0.2:null:maven-archetype
 test :: commons-logging:commons-logging:1.0.4:null:jar
 test :: commons-logging:commons-logging:1.0.4:sources:jar
@@ -23,4 +22,5 @@ test :: commons-logging:commons-logging:1.0.3:null:jar
 test :: commons-logging:commons-logging:1.0.3:javadoc:jar
 test :: commons-logging:commons-logging:1.0.2:null:jar
 test :: commons-logging:commons-logging:1.0.2:javadoc:jar
+test :: ch.marcus-schulte.maven:hivedoc-plugin:1.0.0:null:maven-plugin
 ### TOTAL:24 (response said 24)

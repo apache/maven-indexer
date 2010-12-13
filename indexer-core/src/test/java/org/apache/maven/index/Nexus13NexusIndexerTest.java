@@ -32,13 +32,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.ArtifactInfoGroup;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.GroupedSearchRequest;
-import org.apache.maven.index.GroupedSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -62,7 +55,7 @@ public class Nexus13NexusIndexerTest
         throws Exception
     {
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "cisco" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "cisco", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
@@ -76,7 +69,7 @@ public class Nexus13NexusIndexerTest
         }
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*dft.plugin.utils" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "dft.plugin.utils", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -134,7 +127,7 @@ public class Nexus13NexusIndexerTest
 
         // make sure context has the same artifacts
 
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "cisco" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "cisco", SearchType.SCORED );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q, newContext ) );
         Collection<ArtifactInfo> r = response.getResults();
@@ -170,7 +163,7 @@ public class Nexus13NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "cisco.infra" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "cisco.infra", SearchType.SCORED );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
@@ -196,7 +189,7 @@ public class Nexus13NexusIndexerTest
         // ----------------------------------------------------------------------------
         //
         // ----------------------------------------------------------------------------
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "cisco.infra" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "cisco.infra", SearchType.SCORED );
 
         GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
         GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
@@ -226,7 +219,7 @@ public class Nexus13NexusIndexerTest
         // Artifacts with "problematic" names
         // ----------------------------------------------------------------------------
 
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "dma.integr*" );
+        Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "dma.integr*", SearchType.SCORED );
 
         GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
         GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
@@ -244,7 +237,7 @@ public class Nexus13NexusIndexerTest
     public void testIdentify()
         throws Exception
     {
-        ArtifactInfo ai = nexusIndexer.identify( ArtifactInfo.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8" );
+        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8" );
 
         assertNotNull( ai );
 

@@ -320,7 +320,7 @@ public class NexusIndexerTest
     {
         NexusIndexer indexer = prepare();
 
-        Query q = indexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query q = indexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         IteratorSearchRequest request = new IteratorSearchRequest( q );
 
@@ -339,7 +339,7 @@ public class NexusIndexerTest
     {
         NexusIndexer indexer = prepare();
 
-        Query q = indexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query q = indexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         IteratorSearchRequest request = new IteratorSearchRequest( q, new ArtifactInfoFilter()
         {
@@ -367,7 +367,7 @@ public class NexusIndexerTest
         NexusIndexer indexer = prepare();
 
         {
-            Query q = indexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+            Query q = indexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = indexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();

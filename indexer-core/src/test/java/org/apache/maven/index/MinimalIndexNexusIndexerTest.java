@@ -45,7 +45,7 @@ public class MinimalIndexNexusIndexerTest
     public void testNEXUS2712()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "com.adobe.flexunit" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT );// WAS SCORED
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
 

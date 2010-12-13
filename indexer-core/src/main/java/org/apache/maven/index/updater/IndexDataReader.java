@@ -120,14 +120,13 @@ public class IndexDataReader
         if ( ( flags & IndexDataWriter.F_INDEXED ) > 0 )
         {
             boolean isTokenized = ( flags & IndexDataWriter.F_TOKENIZED ) > 0;
-            index = isTokenized ? Index.TOKENIZED : Index.UN_TOKENIZED;
+            index = isTokenized ? Index.ANALYZED : Index.NOT_ANALYZED;
         }
 
         Store store = Store.NO;
         if ( ( flags & IndexDataWriter.F_STORED ) > 0 )
         {
-            boolean isCompressed = ( flags & IndexDataWriter.F_COMPRESSED ) > 0;
-            store = isCompressed ? Store.COMPRESS : Store.YES;
+            store = Store.YES;
         }
 
         String name = dis.readUTF();

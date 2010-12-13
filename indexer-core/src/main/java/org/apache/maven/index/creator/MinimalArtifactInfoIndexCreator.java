@@ -68,40 +68,40 @@ public class MinimalArtifactInfoIndexCreator
         "Artifact INFO (not indexed, stored)", Store.YES, Index.NO );
 
     public static final IndexerField FLD_GROUP_ID_KW = new IndexerField( MAVEN.GROUP_ID, IndexerFieldVersion.V1, "g",
-        "Artifact GroupID (as keyword)", Store.NO, Index.UN_TOKENIZED );
+        "Artifact GroupID (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_GROUP_ID = new IndexerField( MAVEN.GROUP_ID, IndexerFieldVersion.V3,
-        "groupId", "Artifact GroupID (tokenized)", Store.NO, Index.TOKENIZED );
+        "groupId", "Artifact GroupID (tokenized)", Store.NO, Index.ANALYZED );
 
     public static final IndexerField FLD_ARTIFACT_ID_KW = new IndexerField( MAVEN.ARTIFACT_ID, IndexerFieldVersion.V1,
-        "a", "Artifact ArtifactID (as keyword)", Store.NO, Index.UN_TOKENIZED );
+        "a", "Artifact ArtifactID (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_ARTIFACT_ID = new IndexerField( MAVEN.ARTIFACT_ID, IndexerFieldVersion.V3,
-        "artifactId", "Artifact ArtifactID (tokenized)", Store.NO, Index.TOKENIZED );
+        "artifactId", "Artifact ArtifactID (tokenized)", Store.NO, Index.ANALYZED );
 
     public static final IndexerField FLD_VERSION_KW = new IndexerField( MAVEN.VERSION, IndexerFieldVersion.V1, "v",
-        "Artifact Version (as keyword)", Store.NO, Index.UN_TOKENIZED );
+        "Artifact Version (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_VERSION = new IndexerField( MAVEN.VERSION, IndexerFieldVersion.V3, "version",
-        "Artifact Version (tokenized)", Store.NO, Index.TOKENIZED );
+        "Artifact Version (tokenized)", Store.NO, Index.ANALYZED );
 
     public static final IndexerField FLD_PACKAGING = new IndexerField( MAVEN.PACKAGING, IndexerFieldVersion.V1, "p",
-        "Artifact Packaging (as keyword)", Store.NO, Index.UN_TOKENIZED );
+        "Artifact Packaging (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_CLASSIFIER = new IndexerField( MAVEN.CLASSIFIER, IndexerFieldVersion.V1, "l",
-        "Artifact classifier (as keyword)", Store.NO, Index.UN_TOKENIZED );
+        "Artifact classifier (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_NAME = new IndexerField( MAVEN.NAME, IndexerFieldVersion.V1, "n",
-        "Artifact name (tokenized, stored)", Store.YES, Index.TOKENIZED );
+        "Artifact name (tokenized, stored)", Store.YES, Index.ANALYZED );
 
     public static final IndexerField FLD_DESCRIPTION = new IndexerField( MAVEN.DESCRIPTION, IndexerFieldVersion.V1,
-        "d", "Artifact description (tokenized, stored)", Store.YES, Index.TOKENIZED );
+        "d", "Artifact description (tokenized, stored)", Store.YES, Index.ANALYZED );
 
     public static final IndexerField FLD_LAST_MODIFIED = new IndexerField( MAVEN.LAST_MODIFIED, IndexerFieldVersion.V1,
         "m", "Artifact last modified (not indexed, stored)", Store.YES, Index.NO );
 
     public static final IndexerField FLD_SHA1 = new IndexerField( MAVEN.SHA1, IndexerFieldVersion.V1, "1",
-        "Artifact SHA1 checksum (as keyword, stored)", Store.YES, Index.UN_TOKENIZED );
+        "Artifact SHA1 checksum (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
 
     private Locator jl = new JavadocLocator();
 
@@ -301,7 +301,7 @@ public class MinimalArtifactInfoIndexCreator
         // legacy!
         if ( ai.prefix != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.prefix, Field.Store.YES, Field.Index.UN_TOKENIZED ) );
+            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.prefix, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
         }
 
         if ( ai.goals != null )
@@ -311,7 +311,7 @@ public class MinimalArtifactInfoIndexCreator
         }
 
         doc.removeField( ArtifactInfo.GROUP_ID );
-        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.groupId, Field.Store.NO, Field.Index.UN_TOKENIZED ) );
+        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.groupId, Field.Store.NO, Field.Index.NOT_ANALYZED ) );
     }
 
     public boolean updateArtifactInfo( Document doc, ArtifactInfo ai )

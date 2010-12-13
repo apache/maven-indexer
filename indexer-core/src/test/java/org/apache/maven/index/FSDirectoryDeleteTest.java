@@ -22,9 +22,7 @@ import java.io.File;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.util.FileUtils;
 
 public class FSDirectoryDeleteTest
     extends AbstractIndexCreatorHelper
@@ -53,13 +51,13 @@ public class FSDirectoryDeleteTest
 
         nexusIndexer = lookup( NexusIndexer.class );
 
-        indexDir = FSDirectory.getDirectory( indexDirFile );
+        indexDir = FSDirectory.open( indexDirFile );
 
         context = nexusIndexer.addIndexingContext( "one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( context );
 
-        otherIndexDir = FSDirectory.getDirectory( otherIndexDirFile );
+        otherIndexDir = FSDirectory.open( otherIndexDirFile );
 
         otherContext =
             nexusIndexer.addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );

@@ -46,7 +46,12 @@ public class Nexus1179NexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "*" );
+        // Since 4.0 this query become illegal
+        // This test only performs search and expects to have all the "problematic" ones found too, to prove
+        // they are indexed
+        // Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*", SearchType.SCORED );
+        // So, we found the "common denominator" and thats version
+        Query q = nexusIndexer.constructQuery( MAVEN.VERSION, "1", SearchType.SCORED );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
 

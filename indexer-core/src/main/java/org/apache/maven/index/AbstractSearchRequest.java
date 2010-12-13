@@ -28,6 +28,8 @@ public class AbstractSearchRequest
 {
     public static final int UNDEFINED = -1;
 
+    public static final int UNDEFINED_HIT_LIMIT = 1000;
+
     private Query query;
 
     private List<IndexingContext> contexts;
@@ -87,7 +89,8 @@ public class AbstractSearchRequest
 
         this.count = UNDEFINED;
 
-        this.resultHitLimit = UNDEFINED;
+        // TODO: rethink use cases and find better way to provide this value!
+        this.resultHitLimit = UNDEFINED_HIT_LIMIT;
     }
 
     public Query getQuery()
@@ -117,7 +120,7 @@ public class AbstractSearchRequest
 
     public boolean isHitLimited()
     {
-        return getResultHitLimit() != UNDEFINED;
+        return getResultHitLimit() != UNDEFINED_HIT_LIMIT;
     }
 
     public int getStart()

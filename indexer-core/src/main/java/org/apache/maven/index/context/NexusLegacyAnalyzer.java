@@ -25,6 +25,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.util.Version;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
@@ -37,8 +38,7 @@ import org.apache.maven.index.ArtifactInfo;
 public class NexusLegacyAnalyzer
     extends Analyzer
 {
-
-    private static Analyzer DEFAULT_ANALYZER = new StandardAnalyzer();
+    private static Analyzer DEFAULT_ANALYZER = new StandardAnalyzer( Version.LUCENE_30 );
 
     @Override
     public TokenStream tokenStream( String field, final Reader reader )

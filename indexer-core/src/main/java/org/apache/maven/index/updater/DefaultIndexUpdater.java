@@ -197,7 +197,7 @@ public class DefaultIndexUpdater
         indexDir.delete();
         indexDir.mkdirs();
 
-        FSDirectory directory = FSDirectory.getDirectory( indexDir );
+        FSDirectory directory = FSDirectory.open( indexDir );
 
         BufferedInputStream is = null;
 
@@ -280,7 +280,7 @@ public class DefaultIndexUpdater
 
         indexDir.mkdirs();
 
-        FSDirectory fdir = FSDirectory.getDirectory( indexDir );
+        FSDirectory fdir = FSDirectory.open( indexDir );
 
         try
         {

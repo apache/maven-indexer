@@ -23,17 +23,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.ContextMemberProvider;
@@ -122,21 +119,6 @@ public class DefaultNexusIndexer
         return context;
     }
 
-    @Deprecated
-    public IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
-                                               String repositoryUrl, String indexUpdateUrl,
-                                               List<? extends IndexCreator> indexers, boolean reclaimIndexOwnership )
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        IndexingContext context =
-            new DefaultIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
-                indexers, reclaimIndexOwnership );
-
-        indexingContexts.put( context.getId(), context );
-
-        return context;
-    }
-
     public IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
                                                String repositoryUrl, String indexUpdateUrl,
                                                List<? extends IndexCreator> indexers )
@@ -170,21 +152,6 @@ public class DefaultNexusIndexer
         {
             // will not be thrown
         }
-
-        return context;
-    }
-
-    @Deprecated
-    public IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
-                                               String repositoryUrl, String indexUpdateUrl,
-                                               List<? extends IndexCreator> indexers, boolean reclaimIndexOwnership )
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        IndexingContext context =
-            new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl, indexUpdateUrl,
-                indexers, reclaimIndexOwnership );
-
-        indexingContexts.put( context.getId(), context );
 
         return context;
     }
@@ -299,7 +266,7 @@ public class DefaultNexusIndexer
         IndexingContext tmpContext = null;
         try
         {
-            FSDirectory directory = FSDirectory.getDirectory( tmpDir );
+            FSDirectory directory = FSDirectory.open( tmpDir );
 
             if ( update )
             {
@@ -420,47 +387,6 @@ public class DefaultNexusIndexer
     // Searching
     // ----------------------------------------------------------------------------
 
-    /**
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    @Deprecated
-    public Collection<ArtifactInfo> searchFlat( Query query )
-        throws IOException
-    {
-        return searchFlat( ArtifactInfo.VERSION_COMPARATOR, query );
-    }
-
-    /**
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    @Deprecated
-    public Collection<ArtifactInfo> searchFlat( Query query, IndexingContext context )
-        throws IOException
-    {
-        return searchFlat( ArtifactInfo.VERSION_COMPARATOR, query, context );
-    }
-
-    /**
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    @Deprecated
-    public Collection<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, Query query )
-        throws IOException
-    {
-        return searcher.searchFlat( artifactInfoComparator, indexingContexts.values(), query );
-    }
-
-    /**
-     * @deprecated use {@link #searchFlat(FlatSearchRequest)} instead
-     */
-    @Deprecated
-    public Collection<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, Query query,
-                                                IndexingContext context )
-        throws IOException
-    {
-        return searcher.searchFlat( artifactInfoComparator, context, query );
-    }
-
     public FlatSearchResponse searchFlat( FlatSearchRequest request )
         throws IOException
     {
@@ -487,54 +413,6 @@ public class DefaultNexusIndexer
         }
     }
 
-    /**
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    @Deprecated
-    public Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Query query )
-        throws IOException
-    {
-        return searchGrouped( grouping, String.CASE_INSENSITIVE_ORDER, query );
-    }
-
-    /**
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    @Deprecated
-    public Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Query query, IndexingContext context )
-        throws IOException
-    {
-        return searchGrouped( grouping, String.CASE_INSENSITIVE_ORDER, query, context );
-    }
-
-    /**
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    @Deprecated
-    public Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Comparator<String> groupKeyComparator,
-                                                         Query query )
-        throws IOException
-    {
-        return searcher.searchGrouped( new GroupedSearchRequest( query, grouping, groupKeyComparator ),
-            indexingContexts.values() ).getResults();
-    }
-
-    /**
-     * @deprecated use {@link #searchGrouped(GroupedSearchRequest)
-
-     */
-    @Deprecated
-    public Map<String, ArtifactInfoGroup> searchGrouped( Grouping grouping, Comparator<String> groupKeyComparator,
-                                                         Query query, IndexingContext context )
-        throws IOException
-    {
-        return searcher.searchGrouped( new GroupedSearchRequest( query, grouping, groupKeyComparator ),
-            Arrays.asList( new IndexingContext[] { context } ) ).getResults();
-    }
-
     public GroupedSearchResponse searchGrouped( GroupedSearchRequest request )
         throws IOException
     {
@@ -554,12 +432,8 @@ public class DefaultNexusIndexer
     // Query construction
     // ----------------------------------------------------------------------------
 
-    public Query constructQuery( String field, String query )
-    {
-        return queryCreator.constructQuery( field, query );
-    }
-
     public Query constructQuery( Field field, String query, SearchType type )
+        throws ParseException
     {
         return queryCreator.constructQuery( field, query, type );
     }
@@ -568,15 +442,8 @@ public class DefaultNexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
-    @Deprecated
-    public ArtifactInfo identify( String field, String query )
-        throws IOException
-    {
-        return identify( new TermQuery( new Term( field, query ) ) );
-    }
-
     public ArtifactInfo identify( Field field, String query )
-        throws IOException
+        throws ParseException, IOException
     {
         return identify( constructQuery( field, query, SearchType.EXACT ) );
     }
@@ -616,6 +483,11 @@ public class DefaultNexusIndexer
         catch ( NoSuchAlgorithmException ex )
         {
             throw new IOException( "Unable to calculate digest" );
+        }
+        catch ( ParseException e )
+        {
+            // will not happen
+            return null;
         }
         finally
         {

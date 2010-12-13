@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -78,7 +79,7 @@ public class FullIndexNexusIndexerTest
         throws Exception
     {
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "com/thoughtworks/qdox" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "com/thoughtworks/qdox", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -92,7 +93,7 @@ public class FullIndexNexusIndexerTest
         }
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "com.thoughtworks.qdox" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "com.thoughtworks.qdox", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -105,7 +106,7 @@ public class FullIndexNexusIndexerTest
         }
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "thoughtworks" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "thoughtworks", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -118,7 +119,7 @@ public class FullIndexNexusIndexerTest
 
         {
             // an implicit class name wildcard
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "Logger" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "Logger", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -136,7 +137,7 @@ public class FullIndexNexusIndexerTest
 
         {
             // a lower case search
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "logger" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "logger", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -153,7 +154,9 @@ public class FullIndexNexusIndexerTest
 
         {
             // explicit class name wildcard without terminator
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*.Logger" );
+            // Since 4.0 query starting with * is illegal
+            // Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "*.Logger", SearchType.SCORED );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, ".Logger", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -167,7 +170,9 @@ public class FullIndexNexusIndexerTest
 
         {
             // explicit class name wildcard with terminator
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*.Logger " );
+            // Since 4.0 query starting with * is illegal
+            // Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "*.Logger ", SearchType.SCORED );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, ".Logger ", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
@@ -181,16 +186,21 @@ public class FullIndexNexusIndexerTest
 
         {
             // a class name wildcard
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*Logger" );
+            // Since 4.0 query starting with * is illegal
+            // Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "*Logger", SearchType.SCORED );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "Logger", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals( r.toString(), 3, r.size() );
+            // Results are less, since no PREFIX searches anymore!
+            // assertEquals( r.toString(), 3, r.size() );
+            assertEquals( r.toString(), 2, r.size() );
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
-            ArtifactInfoGroup ig1 = it.next();
-            assertEquals( r.toString(), "commons-logging", ig1.getGroupKey() ); // Jdk14Logger and LogKitLogger
+            // Results are less, since no PREFIX searches anymore!
+            // ArtifactInfoGroup ig1 = it.next();
+            // assertEquals( r.toString(), "commons-logging", ig1.getGroupKey() ); // Jdk14Logger and LogKitLogger
 
             ArtifactInfoGroup ig2 = it.next();
             assertEquals( r.toString(), "org.slf4j", ig2.getGroupKey() );
@@ -202,7 +212,8 @@ public class FullIndexNexusIndexerTest
         {
             // exact class name
             Query q =
-                nexusIndexer.constructQuery( ArtifactInfo.NAMES, "org/apache/commons/logging/LogConfigurationException" );
+                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org/apache/commons/logging/LogConfigurationException",
+                    SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -213,7 +224,8 @@ public class FullIndexNexusIndexerTest
         {
             // implicit class name pattern
             Query q =
-                nexusIndexer.constructQuery( ArtifactInfo.NAMES, "org.apache.commons.logging.LogConfigurationException" );
+                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org.apache.commons.logging.LogConfigurationException",
+                    SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -224,8 +236,8 @@ public class FullIndexNexusIndexerTest
         {
             // exact class name
             Query q =
-                nexusIndexer.constructQuery( ArtifactInfo.NAMES,
-                    "^org.apache.commons.logging.LogConfigurationException$" );
+                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org.apache.commons.logging.LogConfigurationException",
+                    SearchType.EXACT );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -235,7 +247,7 @@ public class FullIndexNexusIndexerTest
 
         {
             // package name prefix
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "^org.apache.commons.logging" );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org.apache.commons.logging", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -244,12 +256,15 @@ public class FullIndexNexusIndexerTest
         }
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.NAMES, "*slf4j*Logg*" );
+            // Since 4.0, queries cannot start with '*'
+            // Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "*slf4j*Logg*", SearchType.SCORED );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "slf4j.Logg*", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals( r.toString(), 2, r.size() );
+            // Error is fixed, see below
+            assertEquals( r.toString(), 1, r.size() );
 
             {
                 ArtifactInfoGroup ig = r.values().iterator().next();
@@ -266,17 +281,18 @@ public class FullIndexNexusIndexerTest
                 assertEquals( "1.4.1", ai2.version );
             }
 
-            {
-                // This was error, since slf4j-log4j12 DOES NOT HAVE any class for this search!
-                ArtifactInfoGroup ig = r.get( "org.slf4j : slf4j-log4j12" );
-                ArrayList<ArtifactInfo> list = new ArrayList<ArtifactInfo>( ig.getArtifactInfos() );
-                assertEquals( list.toString(), 1, list.size() );
-
-                ArtifactInfo ai = list.get( 0 );
-                assertEquals( "org.slf4j", ai.groupId );
-                assertEquals( "slf4j-log4j12", ai.artifactId );
-                assertEquals( "1.4.1", ai.version );
-            }
+            // this is fixed now, no more false hit
+            // {
+            // // This was error, since slf4j-log4j12 DOES NOT HAVE any class for this search!
+            // ArtifactInfoGroup ig = r.get( "org.slf4j : slf4j-log4j12" );
+            // ArrayList<ArtifactInfo> list = new ArrayList<ArtifactInfo>( ig.getArtifactInfos() );
+            // assertEquals( list.toString(), 1, list.size() );
+            //
+            // ArtifactInfo ai = list.get( 0 );
+            // assertEquals( "org.slf4j", ai.groupId );
+            // assertEquals( "slf4j-log4j12", ai.artifactId );
+            // assertEquals( "1.4.1", ai.version );
+            // }
         }
     }
 
@@ -333,7 +349,7 @@ public class FullIndexNexusIndexerTest
 
         File newIndex = new File( getBasedir(), "target/test-new" );
 
-        Directory newIndexDir = FSDirectory.getDirectory( newIndex );
+        Directory newIndexDir = FSDirectory.open( newIndex );
 
         DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
 
@@ -346,7 +362,7 @@ public class FullIndexNexusIndexerTest
 
         // make sure context has the same artifacts
 
-        Query query = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query query = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         FlatSearchRequest request = new FlatSearchRequest( query, newContext );
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
@@ -372,7 +388,7 @@ public class FullIndexNexusIndexerTest
 
         newContext.close( false );
 
-        newIndexDir = FSDirectory.getDirectory( newIndex );
+        newIndexDir = FSDirectory.open( newIndex );
 
         DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
 
@@ -413,7 +429,7 @@ public class FullIndexNexusIndexerTest
     public void testBrokenJar()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "brokenjar" );
+        Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED );
 
         FlatSearchRequest searchRequest = new FlatSearchRequest( q );
 
@@ -434,7 +450,7 @@ public class FullIndexNexusIndexerTest
     public void testMissingPom()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "missingpom" );
+        Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED );
 
         FlatSearchRequest searchRequest = new FlatSearchRequest( q );
 
@@ -456,6 +472,7 @@ public class FullIndexNexusIndexerTest
     // ==
 
     protected IteratorSearchRequest createHighlightedRequest( Field field, String text, SearchType type )
+        throws ParseException
     {
         Query q = nexusIndexer.constructQuery( field, text, type );
 

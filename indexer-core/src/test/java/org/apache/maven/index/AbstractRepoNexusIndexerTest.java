@@ -28,15 +28,8 @@ import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.ArtifactInfoGroup;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.GroupedSearchRequest;
-import org.apache.maven.index.GroupedSearchResponse;
 import org.apache.maven.index.search.grouping.GAGrouping;
 
 public abstract class AbstractRepoNexusIndexerTest
@@ -85,7 +78,8 @@ public abstract class AbstractRepoNexusIndexerTest
     public void testSearchFlatPaged()
         throws Exception
     {
-        FlatSearchRequest request = new FlatSearchRequest( nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" ) );
+        FlatSearchRequest request =
+            new FlatSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED ) );
 
         request.setStart( 0 );
 
@@ -99,7 +93,7 @@ public abstract class AbstractRepoNexusIndexerTest
     public void testSearchFlat()
         throws Exception
     {
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
 
@@ -128,7 +122,7 @@ public abstract class AbstractRepoNexusIndexerTest
         // ----------------------------------------------------------------------------
         //
         // ----------------------------------------------------------------------------
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "qdox" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
         GroupedSearchResponse response = nexusIndexer.searchGrouped( new GroupedSearchRequest( q, new GAGrouping() ) );
 
@@ -162,7 +156,7 @@ public abstract class AbstractRepoNexusIndexerTest
     {
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-logg*" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logg*", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -181,7 +175,20 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "*logging" );
+            // New in 4.0! constructquery do throw error on wrong input! I left in old call and checking it fails,
+            // and then added "new" call with proper query syntax!
+            Query q;
+            try
+            {
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*logging", SearchType.SCORED );
+
+                fail( "Input is invalid, query cannot start with *!" );
+            }
+            catch ( ParseException e )
+            {
+                // good, now let's do it again with good input:
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "logging", SearchType.SCORED );
+            }
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -200,7 +207,21 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "*-logging" );
+            // New in 4.0! constructquery do throw error on wrong input! I left in old call and checking it fails,
+            // and then added "new" call with proper query syntax!
+            Query q;
+            try
+            {
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*-logging", SearchType.SCORED );
+
+                fail( "Input is invalid, query cannot start with *!" );
+            }
+            catch ( ParseException e )
+            {
+                // good, now let's do it again with good input:
+                // Note: since queries are really parsed now, the leading "-" is wrong too
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "logging", SearchType.SCORED );
+            }
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -219,7 +240,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "comm*-logg*" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "comm*-logg*", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -238,7 +259,19 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "*mmons-log*" );
+            Query q;
+            try
+            {
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*mmons-log*", SearchType.SCORED );
+
+                fail( "Input is invalid, query cannot start with *!" );
+            }
+            catch ( ParseException e )
+            {
+                // good, now let's do it again with good input:
+                // NOTE: without crappy prefix search (that caused zillion other problems, original input does not work)
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-log*", SearchType.SCORED );
+            }
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -257,7 +290,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             // "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "commons-" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -279,7 +312,7 @@ public abstract class AbstractRepoNexusIndexerTest
         }
 
         {
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "logging-commons" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "logging-commons", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -287,12 +320,25 @@ public abstract class AbstractRepoNexusIndexerTest
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals( r.toString(), 0, r.size() );
+            // since 4.0 we do handle this
+            // assertEquals( r.toString(), 0, r.size() );
+            assertEquals( r.toString(), 1, r.size() );
         }
 
         {
             // numbers and "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "*slf4*" );
+            Query q;
+            try
+            {
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*slf4*", SearchType.SCORED );
+
+                fail( "Input is invalid, query cannot start with *!" );
+            }
+            catch ( ParseException e )
+            {
+                // good, now let's do it again with good input:
+                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "slf4*", SearchType.SCORED );
+            }
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -317,7 +363,7 @@ public abstract class AbstractRepoNexusIndexerTest
         }
         {
             // numbers and "-" in the name
-            Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "jcl104-over-slf4*" );
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "jcl104-over-slf4*", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -336,7 +382,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
     // public void testConstructQuery()
     // {
-    // Query q = nexusIndexer.constructQuery( ArtifactInfo.ARTIFACT_ID, "jcl104-over-slf4*" );
+    // Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "jcl104-over-slf4*" );
     //
     // assertEquals( "+a:jcl104 +a:over +a:slf4*", q.toString() );
     //
@@ -345,7 +391,7 @@ public abstract class AbstractRepoNexusIndexerTest
     public void testIdentify()
         throws Exception
     {
-        ArtifactInfo ai = nexusIndexer.identify( ArtifactInfo.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
+        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
 
         assertNotNull( ai );
 
@@ -379,7 +425,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
         int pageSize = 4;
 
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
 
         FlatSearchRequest req = new FlatSearchRequest( q );
 
@@ -426,7 +472,7 @@ public abstract class AbstractRepoNexusIndexerTest
         throws Exception
     {
         // we have 14 artifact for this search
-        Query q = nexusIndexer.constructQuery( ArtifactInfo.GROUP_ID, "org" );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
         FlatSearchRequest request = new FlatSearchRequest( q );
 
         FlatSearchResponse response1 = nexusIndexer.searchFlat( request );
@@ -480,12 +526,12 @@ public abstract class AbstractRepoNexusIndexerTest
         }
 
         // {
-        // Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "jar" ) );
+        // Query query = new TermQuery( new Term( MAVEN.PACKAGING, "jar" ) );
         // FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
         // assertEquals(response.getResults().toString(), 22, response.getTotalHits());
         // }
         {
-            Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "tar.gz" ) );
+            Query query = nexusIndexer.constructQuery( MAVEN.PACKAGING, "tar.gz", SearchType.EXACT );
             FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 
@@ -494,7 +540,7 @@ public abstract class AbstractRepoNexusIndexerTest
             assertEquals( "tar.gz", ai.fextension );
         }
         {
-            Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "zip" ) );
+            Query query = nexusIndexer.constructQuery( MAVEN.PACKAGING, "zip", SearchType.EXACT );
             FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 

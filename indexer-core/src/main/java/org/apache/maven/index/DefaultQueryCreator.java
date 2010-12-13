@@ -32,6 +32,7 @@ import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.util.Version;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -91,6 +92,7 @@ public class DefaultQueryCreator
     }
 
     public Query constructQuery( final Field field, final String query, final SearchType type )
+        throws ParseException
     {
         if ( type == null )
         {
@@ -122,7 +124,7 @@ public class DefaultQueryCreator
         }
         else
         {
-            QueryParser qp = new QueryParser( field, new NexusAnalyzer() );
+            QueryParser qp = new QueryParser( Version.LUCENE_24, field, new NexusAnalyzer() );
 
             // small cheap trick
             // if a query is not "expert" (does not contain field:val kind of expression)
@@ -161,6 +163,7 @@ public class DefaultQueryCreator
 
     public Query constructQuery( final Field field, final IndexerField indexerField, final String query,
                                  final SearchType type )
+        throws ParseException
     {
         if ( indexerField == null )
         {
@@ -178,6 +181,11 @@ public class DefaultQueryCreator
                     + " was tried. Please review your code or consider adding this field to index!" );
 
             return null;
+        }
+
+        if ( query.startsWith( "*" ) || query.startsWith( "?" ) )
+        {
+            throw new ParseException( "Query cannot start with '*' or '?'!" );
         }
 
         if ( Field.NOT_PRESENT.equals( query ) )
@@ -202,15 +210,33 @@ public class DefaultQueryCreator
             }
             else if ( !indexerField.isKeyword() && indexerField.isStored() )
             {
-                getLogger().warn(
-                    type.toString()
-                        + " type of querying for non-keyword (but stored) field "
-                        + indexerField.getOntology().toString()
-                        + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is currently unsupported." );
+                // TODO: resolve this better! Decouple QueryCreator and IndexCreators!
+                // This is a hack/workaround here
+                if ( JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.equals( indexerField ) )
+                {
+                    if ( query.startsWith( "/" ) )
+                    {
+                        return new TermQuery( new Term( indexerField.getKey(), query.toLowerCase().replaceAll( "\\.",
+                            "/" ) ) );
+                    }
+                    else
+                    {
+                        return new TermQuery( new Term( indexerField.getKey(), "/"
+                            + query.toLowerCase().replaceAll( "\\.", "/" ) ) );
+                    }
+                }
+                else
+                {
+                    getLogger().warn(
+                        type.toString()
+                            + " type of querying for non-keyword (but stored) field "
+                            + indexerField.getOntology().toString()
+                            + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is currently unsupported." );
 
-                // will never succeed (unless we supply him "filter" too, but that would kill performance)
-                // and is possible with stored fields only
-                return null;
+                    // will never succeed (unless we supply him "filter" too, but that would kill performance)
+                    // and is possible with stored fields only
+                    return null;
+                }
             }
             else
             {
@@ -226,7 +252,15 @@ public class DefaultQueryCreator
         }
         else if ( SearchType.SCORED.equals( type ) )
         {
-            if ( indexerField.isKeyword() )
+            if ( JarFileContentsIndexCreator.FLD_CLASSNAMES.equals( indexerField ) )
+            {
+                String qpQuery = query.toLowerCase().replaceAll( "\\.", " " ).replaceAll( "/", " " );
+                // tokenization should happen against the field!
+                QueryParser qp = new QueryParser( Version.LUCENE_30, indexerField.getKey(), new NexusAnalyzer() );
+                qp.setDefaultOperator( Operator.AND );
+                return qp.parse( qpQuery );
+            }
+            else if ( indexerField.isKeyword() )
             {
                 // no tokenization should happen against the field!
                 if ( query.contains( "*" ) || query.contains( "?" ) )
@@ -255,7 +289,7 @@ public class DefaultQueryCreator
                 String qpQuery = query;
 
                 // tokenization should happen against the field!
-                QueryParser qp = new QueryParser( indexerField.getKey(), new NexusAnalyzer() );
+                QueryParser qp = new QueryParser( Version.LUCENE_30, indexerField.getKey(), new NexusAnalyzer() );
                 qp.setDefaultOperator( Operator.AND );
 
                 // small cheap trick
@@ -264,15 +298,15 @@ public class DefaultQueryCreator
                 // since Lucene does not support multi-terms WITH wildcards.
                 // So, here, we "mimic" NexusAnalyzer (this should be fixed!)
                 // but do this with PRESERVING original query!
-                if ( qpQuery.matches( ".*(\\.|-|_).*" ) )
+                if ( qpQuery.matches( ".*(\\.|-|_|/).*" ) )
                 {
                     qpQuery =
-                        qpQuery.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X",
-                            "*" );
+                        qpQuery.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_|/", " " ).replaceAll( "X",
+                            "*" ).replaceAll( " \\* ", "" ).replaceAll( "^\\* ", "" ).replaceAll( " \\*$", "" );
                 }
 
-                // "fix" it with trailing "*" if not there
-                if ( !qpQuery.endsWith( "*" ) )
+                // "fix" it with trailing "*" if not there, but only if it not ends with a space
+                if ( !qpQuery.endsWith( "*" ) && !qpQuery.endsWith( " " ) )
                 {
                     qpQuery += "*";
                 }
@@ -323,11 +357,14 @@ public class DefaultQueryCreator
                 }
                 catch ( ParseException e )
                 {
-                    getLogger().debug(
-                        "Query parsing with \"legacy\" method, we got ParseException from QueryParser: "
-                            + e.getMessage() );
+                    // TODO: we are not falling back anymore to legacy!
+                    throw e;
 
-                    return legacyConstructQuery( indexerField.getKey(), query );
+                    // getLogger().debug(
+                    // "Query parsing with \"legacy\" method, we got ParseException from QueryParser: "
+                    // + e.getMessage() );
+                    //
+                    // return legacyConstructQuery( indexerField.getKey(), query );
                 }
             }
         }
@@ -418,9 +455,7 @@ public class DefaultQueryCreator
 
             int result = 0;
 
-            // Lucene 2.9
-            // while ( ts.incrementToken() )
-            while ( ts.next() != null )
+            while ( ts.incrementToken() )
             {
                 result++;
             }

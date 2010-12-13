@@ -76,9 +76,9 @@ public class DownloadRemoteIndexerManagerTest
             public void handle( String target, HttpServletRequest request, HttpServletResponse response, int dispatch )
                 throws IOException, ServletException
             {
-                System.out.print( "JETTY: " + target );
+//                System.out.print( "JETTY: " + target );
                 super.handle( target, request, response, dispatch );
-                System.out.println( "  ::  " + ( (Response) response ).getStatus() );
+//                System.out.println( "  ::  " + ( (Response) response ).getStatus() );
             }
         };
         resource_handler.setResourceBase( fakeCentral.getAbsolutePath() );
@@ -86,7 +86,7 @@ public class DownloadRemoteIndexerManagerTest
         handlers.setHandlers( new Handler[] { resource_handler, new DefaultHandler() } );
         server.setHandler( handlers );
 
-        System.out.print( "JETTY Started on port: " + port );
+//        System.out.print( "JETTY Started on port: " + port );
         server.start();
 
         // make context "fake central"
