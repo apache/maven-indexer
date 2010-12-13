@@ -390,8 +390,12 @@ public abstract class AbstractRepoNexusIndexerTest
     public void testIdentify()
         throws Exception
     {
-        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
+        Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
+        
+        assertEquals( 1, ais.size() );
 
+        ArtifactInfo ai = ais.iterator().next();
+        
         assertNotNull( ai );
 
         assertEquals( "qdox", ai.groupId );
@@ -404,7 +408,11 @@ public abstract class AbstractRepoNexusIndexerTest
 
         File artifact = new File( repo, "qdox/qdox/1.5/qdox-1.5.jar" );
 
-        ai = nexusIndexer.identify( artifact );
+        ais = nexusIndexer.identify( artifact );
+        
+        assertEquals( 1, ais.size() );
+        
+        ai = ais.iterator().next();
 
         assertNotNull( "Can't identify qdox-1.5.jar", ai );
 

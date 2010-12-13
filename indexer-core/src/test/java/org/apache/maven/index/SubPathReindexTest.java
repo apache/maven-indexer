@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Set;
 
 public class SubPathReindexTest
@@ -75,22 +76,22 @@ public class SubPathReindexTest
     public void testIdentify()
         throws Exception
     {
-        ArtifactInfo ai;
+        Collection<ArtifactInfo> ais;
         File artifact;
 
         // Using a file: this one should be unknown
         artifact = new File( repo, "qdox/qdox/1.5/qdox-1.5.jar" );
 
-        ai = nexusIndexer.identify( artifact );
+        ais = nexusIndexer.identify( artifact );
 
-        assertNull( "Should not be able to identify it!", ai );
+        assertTrue( "Should not be able to identify it!", ais.isEmpty() );
 
         // Using a file: this one should be known
         artifact = new File( repo, "org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar" );
 
-        ai = nexusIndexer.identify( artifact );
+        ais = nexusIndexer.identify( artifact );
 
-        assertNotNull( "Should not be able to identify it!", ai );
+        assertEquals( "Should not be able to identify it!", 1, ais.size() );
     }
 
 }

@@ -214,7 +214,11 @@ public class NexusIndexerTest
         bq.add( c, Occur.MUST_NOT );
 
         // invoking the old method (was present since day 1), that will return the match only and if only there is 1 hit
-        ArtifactInfo ai = indexer.identify( bq, Collections.singletonList( context ) );
+        Collection<ArtifactInfo> ais = indexer.identify( bq, Collections.singletonList( context ) );
+
+        assertEquals( 1, ais.size() );
+
+        ArtifactInfo ai = ais.iterator().next();
 
         // null means not "identified", so we want non-null response
         assertTrue( ai != null );
@@ -438,7 +442,11 @@ public class NexusIndexerTest
 
         // Search using SHA1 to find qdox 1.5
 
-        ArtifactInfo ai = nexus.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
+        Collection<ArtifactInfo> ais = nexus.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
+
+        assertEquals( 1, ais.size() );
+
+        ArtifactInfo ai = ais.iterator().next();
 
         assertNotNull( ai );
 
@@ -454,7 +462,11 @@ public class NexusIndexerTest
 
         File artifact = new File( getBasedir(), "src/test/repo/qdox/qdox/1.5/qdox-1.5.jar" );
 
-        ai = nexus.identify( artifact );
+        ais = nexus.identify( artifact );
+
+        assertEquals( 1, ais.size() );
+
+        ai = ais.iterator().next();
 
         assertNotNull( ai );
 

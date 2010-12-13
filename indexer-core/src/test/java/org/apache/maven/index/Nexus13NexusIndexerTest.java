@@ -237,7 +237,11 @@ public class Nexus13NexusIndexerTest
     public void testIdentify()
         throws Exception
     {
-        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8" );
+        Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8" );
+
+        assertEquals( 1, ais.size() );
+
+        ArtifactInfo ai = ais.iterator().next();
 
         assertNotNull( ai );
 
@@ -253,7 +257,11 @@ public class Nexus13NexusIndexerTest
             new File( repo,
                 "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar" );
 
-        ai = nexusIndexer.identify( artifact );
+        ais = nexusIndexer.identify( artifact );
+        
+        assertEquals( 1, ais.size() );
+
+        ai = ais.iterator().next();
 
         assertNotNull( ai );
 

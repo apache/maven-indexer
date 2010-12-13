@@ -317,22 +317,23 @@ public interface NexusIndexer
     // throws ParseException;
 
     // ----------------------------------------------------------------------------
-    // Identification
+    // Identification 
+    // Since 4.0: Indexer does not make any assumptions, it is caller call to decide what to do with multiple results
     // ----------------------------------------------------------------------------
 
-    ArtifactInfo identify( Field field, String query )
+    Collection<ArtifactInfo> identify( Field field, String query )
         throws IllegalArgumentException, IOException;
 
-    ArtifactInfo identify( File artifact )
+    Collection<ArtifactInfo> identify( File artifact )
         throws IOException;
 
-    ArtifactInfo identify( File artifact, Collection<IndexingContext> contexts )
+    Collection<ArtifactInfo> identify( File artifact, Collection<IndexingContext> contexts )
         throws IOException;
 
-    ArtifactInfo identify( Query query )
+    Collection<ArtifactInfo> identify( Query query )
         throws IOException;
 
-    ArtifactInfo identify( Query query, Collection<IndexingContext> contexts )
+    Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
         throws IOException;
 
 }

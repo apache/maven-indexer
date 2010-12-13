@@ -19,9 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
-
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.NexusIndexer;
+import java.util.Collection;
 
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
 public class Nexus3233NexusIndexerTest
@@ -42,7 +40,11 @@ public class Nexus3233NexusIndexerTest
         throws Exception
     {
         // POM1
-        ArtifactInfo ai = nexusIndexer.identify( MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );
+        Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );
+
+        assertEquals( 1, ais.size() );
+
+        ArtifactInfo ai = ais.iterator().next();
 
         assertNotNull( ai );
 
@@ -53,7 +55,11 @@ public class Nexus3233NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.version );
 
         // POM2
-        ai = nexusIndexer.identify( MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
+        ais = nexusIndexer.identify( MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
+
+        assertEquals( 1, ais.size() );
+
+        ai = ais.iterator().next();
 
         assertNotNull( ai );
 

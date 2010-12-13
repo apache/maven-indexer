@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -449,19 +450,19 @@ public class DefaultNexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
-    public ArtifactInfo identify( Field field, String query )
+    public Collection<ArtifactInfo> identify( Field field, String query )
         throws IllegalArgumentException, IOException
     {
         return identify( constructQuery( field, query, SearchType.EXACT ) );
     }
 
-    public ArtifactInfo identify( File artifact )
+    public Collection<ArtifactInfo> identify( File artifact )
         throws IOException
     {
         return identify( artifact, indexingContexts.values() );
     }
 
-    public ArtifactInfo identify( File artifact, Collection<IndexingContext> contexts )
+    public Collection<ArtifactInfo> identify( File artifact, Collection<IndexingContext> contexts )
         throws IOException
     {
         FileInputStream is = null;
@@ -497,30 +498,27 @@ public class DefaultNexusIndexer
         }
     }
 
-    public ArtifactInfo identify( Query query )
+    public Collection<ArtifactInfo> identify( Query query )
         throws IOException
     {
         return identify( query, indexingContexts.values() );
     }
 
-    public ArtifactInfo identify( Query query, Collection<IndexingContext> contexts )
+    public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
         throws IOException
     {
         IteratorSearchResponse result = searcher.searchIteratorPaged( new IteratorSearchRequest( query ), contexts );
 
         try
         {
-            // TODO: this implementation is flakey: case a) 0 hits is okay, b) 1 hit is okay, c1) >1 hits and all same
-            // GAVs
-            // -- okay but which source repo will be used? c2) >1 hits, and different GAVs --- huh?
-            if ( result.getTotalHits() > 0 )
+            ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( result.getTotalHits() );
+
+            for ( ArtifactInfo ai : result )
             {
-                return result.getResults().next();
+                ais.add( ai );
             }
-            else
-            {
-                return null;
-            }
+
+            return ais;
         }
         finally
         {
