@@ -173,22 +173,6 @@ public class DefaultIndexUpdater
         return result;
     }
 
-    public Properties fetchIndexProperties( final IndexingContext context, final ResourceFetcher fetcher )
-        throws IOException
-    {
-        fetcher.connect( context.getId(), context.getIndexUpdateUrl() );
-        try
-        {
-            Properties properties = downloadIndexProperties( fetcher );
-            storeIndexProperties( context.getIndexDirectoryFile(), properties );
-            return properties;
-        }
-        finally
-        {
-            fetcher.disconnect();
-        }
-    }
-
     private Date loadIndexDirectory( final IndexUpdateRequest updateRequest, final ResourceFetcher fetcher,
                                      final boolean merge, final String remoteIndexFile )
         throws IOException
@@ -417,11 +401,9 @@ public class DefaultIndexUpdater
         }
     }
 
-    private Properties loadIndexProperties( final File indexDirectoryFile )
+    private Properties loadIndexProperties( final File indexDirectoryFile, final String remoteIndexPropertiesName )
     {
-        String remoteIndexProperties = IndexingContext.INDEX_FILE + ".properties";
-
-        File indexProperties = new File( indexDirectoryFile, remoteIndexProperties );
+        File indexProperties = new File( indexDirectoryFile, remoteIndexPropertiesName );
 
         FileInputStream fis = null;
 
@@ -447,28 +429,11 @@ public class DefaultIndexUpdater
         return null;
     }
 
-    private Properties downloadIndexProperties( final ResourceFetcher fetcher )
+    private void storeIndexProperties( final File dir, final String indexPropertiesName, final Properties properties )
         throws IOException
     {
-        InputStream fis = fetcher.retrieve( IndexingContext.INDEX_FILE + ".properties" );
-        try
-        {
-            Properties properties = new Properties();
+        File file = new File( dir, indexPropertiesName );
 
-            properties.load( fis );
-
-            return properties;
-        }
-        finally
-        {
-            IOUtil.close( fis );
-        }
-    }
-
-    private void storeIndexProperties( final File dir, final Properties properties )
-        throws IOException
-    {
-        File file = new File( dir, IndexingContext.INDEX_FILE + ".properties" );
         if ( properties != null )
         {
             OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) );
@@ -484,6 +449,25 @@ public class DefaultIndexUpdater
         else
         {
             file.delete();
+        }
+    }
+
+    private Properties downloadIndexProperties( final ResourceFetcher fetcher )
+        throws IOException
+    {
+        InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
+
+        try
+        {
+            Properties properties = new Properties();
+
+            properties.load( fis );
+
+            return properties;
+        }
+        finally
+        {
+            IOUtil.close( fis );
         }
     }
 
@@ -580,21 +564,17 @@ public class DefaultIndexUpdater
     {
         protected final File dir;
 
-        private Properties properties;
+        protected Properties properties;
 
         protected IndexAdaptor( File dir )
         {
             this.dir = dir;
         }
 
-        public Properties getProperties()
-        {
-            if ( properties == null )
-            {
-                properties = loadIndexProperties( dir );
-            }
-            return properties;
-        }
+        public abstract Properties getProperties();
+
+        public abstract void storeProperties()
+            throws IOException;
 
         public abstract void addIndexChunk( ResourceFetcher source, String filename )
             throws IOException;
@@ -614,7 +594,7 @@ public class DefaultIndexUpdater
         public void commit()
             throws IOException
         {
-            storeIndexProperties( dir, properties );
+            storeProperties();
         }
     }
 
@@ -627,6 +607,21 @@ public class DefaultIndexUpdater
         {
             super( updateRequest.getIndexingContext().getIndexDirectoryFile() );
             this.updateRequest = updateRequest;
+        }
+
+        public Properties getProperties()
+        {
+            if ( properties == null )
+            {
+                properties = loadIndexProperties( dir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
+            }
+            return properties;
+        }
+
+        public void storeProperties()
+            throws IOException
+        {
+            storeIndexProperties( dir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE, properties );
         }
 
         public Date getTimestamp()
@@ -645,6 +640,15 @@ public class DefaultIndexUpdater
         {
             return loadIndexDirectory( updateRequest, source, false, filename );
         }
+
+        public void commit()
+            throws IOException
+        {
+            super.commit();
+            
+            updateRequest.getIndexingContext().commit();
+        }
+
     }
 
     private class LocalCacheIndexAdaptor
@@ -662,6 +666,21 @@ public class DefaultIndexUpdater
         {
             super( dir );
             this.result = result;
+        }
+
+        public Properties getProperties()
+        {
+            if ( properties == null )
+            {
+                properties = loadIndexProperties( dir, IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
+            }
+            return properties;
+        }
+
+        public void storeProperties()
+            throws IOException
+        {
+            storeIndexProperties( dir, IndexingContext.INDEX_REMOTE_PROPERTIES_FILE, properties );
         }
 
         public Date getTimestamp()
@@ -778,11 +797,15 @@ public class DefaultIndexUpdater
                                       IndexAdaptor target )
         throws IOException
     {
-        Date targetTimestamp = target.getTimestamp();
-
         if ( !updateRequest.isForceFullUpdate() )
         {
             Properties localProperties = target.getProperties();
+            Date localTimestamp = null;
+
+            if ( localProperties != null )
+            {
+                localTimestamp = getTimestamp( localProperties, IndexingContext.INDEX_TIMESTAMP );
+            }
 
             // this will download and store properties in the target, so next run
             // target.getProperties() will retrieve it
@@ -812,11 +835,18 @@ public class DefaultIndexUpdater
                 updateTimestamp = getTimestamp( remoteProperties, IndexingContext.INDEX_LEGACY_TIMESTAMP );
             }
 
-            // if incremental cant be done for whatever reason, simply use old logic of
-            // checking the timestamp, if the same, nothing to do
-            if ( updateTimestamp != null && targetTimestamp != null && !updateTimestamp.after( targetTimestamp ) )
+            // fallback to timestamp comparison, but try with one coming from local properties, and if not possible (is
+            // null)
+            // fallback to context timestamp
+            if ( localTimestamp != null )
             {
-                return null; // index is up to date
+                // if we have localTimestamp
+                // if incremental cant be done for whatever reason, simply use old logic of
+                // checking the timestamp, if the same, nothing to do
+                if ( updateTimestamp != null && localTimestamp != null && !updateTimestamp.after( localTimestamp ) )
+                {
+                    return null; // index is up to date
+                }
             }
         }
         else
@@ -827,7 +857,7 @@ public class DefaultIndexUpdater
 
         try
         {
-            Date timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE + ".gz" );
+            Date timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".gz" );
             if ( source instanceof LocalIndexCacheFetcher )
             {
                 // local cache has inverse organization compared to remote indexes,
@@ -842,7 +872,7 @@ public class DefaultIndexUpdater
         catch ( IOException ex )
         {
             // try to look for legacy index transfer format
-            return target.setIndexFile( source, IndexingContext.INDEX_FILE + ".zip" );
+            return target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".zip" );
         }
     }
 

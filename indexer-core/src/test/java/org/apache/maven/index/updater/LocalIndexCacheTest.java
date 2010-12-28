@@ -252,8 +252,8 @@ public class LocalIndexCacheTest
             public InputStream retrieve( String name )
                 throws IOException, java.io.FileNotFoundException
             {
-                if ( name.equals( IndexingContext.INDEX_FILE + ".gz" )
-                    || name.equals( IndexingContext.INDEX_FILE + ".zip" ) )
+                if ( name.equals( IndexingContext.INDEX_FILE_PREFIX + ".gz" )
+                    || name.equals( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) )
                 {
                     throw new IOException();
                 }

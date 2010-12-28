@@ -46,7 +46,13 @@ public interface IndexingContext
      * Standard name of the full repository index that is used when clients requesting index information have nothing to
      * start with.
      */
-    public static final String INDEX_FILE = "nexus-maven-repository-index";
+    public static final String INDEX_FILE_PREFIX = "nexus-maven-repository-index";
+
+    public static final String INDEX_REMOTE_PROPERTIES_FILE = INDEX_FILE_PREFIX + ".properties";
+
+    public static final String INDEX_UPDATER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-updater.properties";
+
+    public static final String INDEX_PACKER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-packer.properties";
 
     /**
      * A prefix used for all index property names
@@ -313,4 +319,10 @@ public interface IndexingContext
     void rebuildGroups()
         throws IOException;
 
+    /**
+     * Returns true if this context is receiving updates from remote via IndexUpdater.
+     * 
+     * @return
+     */
+    boolean isReceivingUpdates();
 }

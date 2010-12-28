@@ -169,12 +169,12 @@ public interface NexusIndexer
                                               List<? extends IndexCreator> indexers )
         throws IOException;
 
-    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
-                                              Collection<IndexingContext> contexts )
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
+                                              boolean searchable, Collection<IndexingContext> contexts )
         throws IOException;
 
-    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
-                                              ContextMemberProvider membersProvider )
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
+                                              boolean searchable, ContextMemberProvider membersProvider )
         throws IOException;
 
     /**
@@ -317,7 +317,7 @@ public interface NexusIndexer
     // throws ParseException;
 
     // ----------------------------------------------------------------------------
-    // Identification 
+    // Identification
     // Since 4.0: Indexer does not make any assumptions, it is caller call to decide what to do with multiple results
     // ----------------------------------------------------------------------------
 

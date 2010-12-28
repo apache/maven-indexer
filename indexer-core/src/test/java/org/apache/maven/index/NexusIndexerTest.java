@@ -240,8 +240,10 @@ public class NexusIndexerTest
     {
         NexusIndexer indexer = prepare();
 
+        File indexMergedDir = super.getDirectory( "index/testMerged" );
+
         IndexingContext mergedContext =
-            new MergedIndexingContext( "test", "merged", context.getRepository(), true,
+            new MergedIndexingContext( "test", "merged", context.getRepository(), indexMergedDir, true,
                 new StaticContextMemberProvider( Collections.singletonList( context ) ) );
 
         performQueryCreatorNGSearch( indexer, mergedContext );

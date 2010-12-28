@@ -101,8 +101,8 @@ public class DefaultIndexPacker
         }
 
         // These are all of the files we'll be dealing with (except for the incremental chunks of course)
-        File legacyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".zip" );
-        File v1File = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".gz" );
+        File legacyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE_PREFIX + ".zip" );
+        File v1File = new File( request.getTargetDir(), IndexingContext.INDEX_FILE_PREFIX + ".gz" );
 
         Properties info = null;
 
@@ -129,8 +129,8 @@ public class DefaultIndexPacker
                 {
                     File file =
                         new File( request.getTargetDir(), //
-                            IndexingContext.INDEX_FILE + "." + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER )
-                                + ".gz" );
+                            IndexingContext.INDEX_FILE_PREFIX + "."
+                                + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
 
                     writeIndexData( request.getContext(), //
                         chunk, file );
@@ -206,11 +206,12 @@ public class DefaultIndexPacker
 
         if ( request.isUseTargetProperties() )
         {
-            file = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".properties" );
+            file = new File( request.getTargetDir(), IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
         }
         else
         {
-            file = new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );
+            file =
+                new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
         }
 
         Properties properties = new Properties();
@@ -436,8 +437,8 @@ public class DefaultIndexPacker
         throws IOException
     {
         File propertyFile =
-            new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_FILE + ".properties" );
-        File targetPropertyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE + ".properties" );
+            new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
+        File targetPropertyFile = new File( request.getTargetDir(), IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
 
         info.setProperty( IndexingContext.INDEX_ID, request.getContext().getId() );
 

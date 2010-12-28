@@ -15,7 +15,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
 
@@ -26,7 +26,7 @@ import org.apache.maven.index.artifact.M2GavCalculator;
  * @author cstamas
  */
 public class MergedIndexingContext
-    implements IndexingContext
+    extends AbstractIndexingContext
 {
     private final String id;
 
@@ -40,12 +40,12 @@ public class MergedIndexingContext
 
     private final Directory directory;
 
-    private final File directoryFile;
+    private File directoryFile;
 
     private boolean searchable;
 
-    public MergedIndexingContext( String id, String repositoryId, File repository, boolean searchable,
-                                  ContextMemberProvider membersProvider )
+    private MergedIndexingContext( ContextMemberProvider membersProvider, String id, String repositoryId,
+                                   File repository, Directory indexDirectory, boolean searchable )
         throws IOException
     {
         this.id = id;
@@ -53,11 +53,29 @@ public class MergedIndexingContext
         this.repository = repository;
         this.membersProvider = membersProvider;
         this.gavCalculator = new M2GavCalculator();
-        this.directory = new RAMDirectory(); // needed since publisher requires it, but is not used
-        this.directoryFile = File.createTempFile( "merged-index", ".dir" ); // neded since publisher requires it, but is not used
-        this.directoryFile.delete();
-        this.directoryFile.mkdirs();
+        this.directory = indexDirectory;
         this.searchable = searchable;
+    }
+
+    public MergedIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
+                                  boolean searchable, ContextMemberProvider membersProvider )
+        throws IOException
+    {
+        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile ), searchable );
+
+        this.directoryFile = indexDirectoryFile;
+    }
+
+    public MergedIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
+                                  boolean searchable, ContextMemberProvider membersProvider )
+        throws IOException
+    {
+        this( membersProvider, id, repositoryId, repository, indexDirectory, searchable );
+
+        if ( indexDirectory instanceof FSDirectory )
+        {
+            this.directoryFile = ( (FSDirectory) indexDirectory ).getFile();
+        }
     }
 
     protected Collection<IndexingContext> getMembers()

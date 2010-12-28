@@ -19,8 +19,10 @@
 package org.apache.maven.index.updater;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
@@ -68,7 +70,6 @@ public class WagonHelper
     }
 
     public static class WagonFetcher
-        extends AbstractResourceFetcher
         implements ResourceFetcher
     {
         private final TransferListener listener;
@@ -155,6 +156,23 @@ public class WagonHelper
                     logError( "Failed to close connection", ex );
                 }
             }
+        }
+
+        public InputStream retrieve( String name )
+            throws IOException, FileNotFoundException
+        {
+            final File target = File.createTempFile( name, "" );
+            retrieve( name, target );
+            return new FileInputStream( target )
+            {
+                @Override
+                public void close()
+                    throws IOException
+                {
+                    super.close();
+                    target.delete();
+                }
+            };
         }
 
         public void retrieve( final String name, final File targetFile )

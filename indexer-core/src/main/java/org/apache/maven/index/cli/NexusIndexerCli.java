@@ -399,7 +399,7 @@ public class NexusIndexerCli
     {
         final String indexDirectoryName = cli.getOptionValue( INDEX, "." );
         final File indexFolder = new File( indexDirectoryName ).getCanonicalFile();
-        final File indexArchive = new File( indexFolder, IndexingContext.INDEX_FILE + ".gz" );
+        final File indexArchive = new File( indexFolder, IndexingContext.INDEX_FILE_PREFIX + ".gz" );
 
         final String outputDirectoryName = cli.getOptionValue( TARGET_DIR, "." );
         final File outputFolder = new File( outputDirectoryName ).getCanonicalFile();

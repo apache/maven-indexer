@@ -96,7 +96,7 @@ public class DefaultIncrementalHandler
 
             while ( currentCounter <= maxCounter )
             {
-                filenames.add( IndexingContext.INDEX_FILE + "." + currentCounter++ + ".gz" );
+                filenames.add( IndexingContext.INDEX_FILE_PREFIX + "." + currentCounter++ + ".gz" );
             }
         }
 
@@ -225,7 +225,7 @@ public class DefaultIncrementalHandler
             {
                 String[] parts = name.split( "\\." );
 
-                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE ) && parts[2].equals( "gz" ) )
+                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals( "gz" ) )
                 {
                     return true;
                 }

@@ -158,12 +158,13 @@ public class DefaultNexusIndexer
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-                                                     boolean searchable, Collection<IndexingContext> contexts )
+                                                     File indexDirectory, boolean searchable,
+                                                     Collection<IndexingContext> contexts )
         throws IOException
     {
         IndexingContext context =
-            new MergedIndexingContext( id, repositoryId, repository, searchable, new StaticContextMemberProvider(
-                contexts ) );
+            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                new StaticContextMemberProvider( contexts ) );
 
         indexingContexts.put( context.getId(), context );
 
@@ -171,10 +172,12 @@ public class DefaultNexusIndexer
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-                                                     boolean searchable, ContextMemberProvider membersProvider )
+                                                     File indexDirectory, boolean searchable,
+                                                     ContextMemberProvider membersProvider )
         throws IOException
     {
-        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, searchable, membersProvider );
+        IndexingContext context =
+            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable, membersProvider );
 
         indexingContexts.put( context.getId(), context );
 

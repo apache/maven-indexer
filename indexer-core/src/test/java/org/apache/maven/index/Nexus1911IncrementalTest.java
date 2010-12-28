@@ -94,11 +94,11 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".zip" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".properties" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE + ".1.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE + ".2.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
         Assert.assertNotNull( props );
 
@@ -123,11 +123,11 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".zip" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".properties" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".1.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE + ".2.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
         Assert.assertNotNull( props );
 
@@ -153,12 +153,12 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".zip" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".properties" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".1.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".2.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE + ".3.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
         Assert.assertNotNull( props );
 
@@ -185,12 +185,12 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".zip" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".properties" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".1.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".2.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".3.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
         Assert.assertNotNull( props );
 
@@ -219,13 +219,13 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".zip" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".properties" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE + ".1.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".2.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".3.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE + ".4.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
+        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".4.gz" ) );
 
         Assert.assertNotNull( props );
 
@@ -272,7 +272,7 @@ public class Nexus1911IncrementalTest
 
         for ( int i = 0; i < files.length; i++ )
         {
-            if ( ( IndexingContext.INDEX_FILE + ".properties" ).equalsIgnoreCase( files[i].getName() ) )
+            if ( ( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ).equalsIgnoreCase( files[i].getName() ) )
             {
                 propertyFile = files[i];
                 break;

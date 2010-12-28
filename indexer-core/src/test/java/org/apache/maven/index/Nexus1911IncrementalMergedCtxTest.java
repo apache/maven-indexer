@@ -1,5 +1,6 @@
 package org.apache.maven.index;
 
+import java.io.File;
 import java.util.Collections;
 
 import org.apache.maven.index.context.IndexingContext;
@@ -9,6 +10,8 @@ public class Nexus1911IncrementalMergedCtxTest
 {
     IndexingContext member;
 
+    File indexMergedDir;
+
     @Override
     protected void setUp()
         throws Exception
@@ -17,8 +20,10 @@ public class Nexus1911IncrementalMergedCtxTest
 
         member = context;
 
+        indexMergedDir = super.getDirectory( "index/nexus-1911-merged" );
+
         context =
-            indexer.addMergedIndexingContext( "merged", "merged", member.getRepository(), false,
+            indexer.addMergedIndexingContext( "merged", "merged", member.getRepository(), indexMergedDir, false,
                 Collections.singletonList( member ) );
     }
 
@@ -27,9 +32,9 @@ public class Nexus1911IncrementalMergedCtxTest
         throws Exception
     {
         indexer.removeIndexingContext( context, true );
-        
+
         context = member;
-        
+
         super.tearDown();
     }
 }

@@ -122,14 +122,14 @@ class DefaultScannerListener
                 listener.artifactDiscovered( ac );
             }
 
-            // if ( adding )
-            // {
-            indexerEngine.index( context, ac );
-            // }
-            // else
-            // {
-            // indexerEngine.update( context, ac );
-            // }
+            if ( adding )
+            {
+                indexerEngine.index( context, ac );
+            }
+            else
+            {
+                indexerEngine.update( context, ac );
+            }
 
             for ( Exception e : ac.getErrors() )
             {
@@ -164,7 +164,7 @@ class DefaultScannerListener
 
             context.setAllGroups( allGroups );
 
-            if ( update )
+            if ( update && !context.isReceivingUpdates() )
             {
                 removeDeletedArtifacts( context, result );
             }

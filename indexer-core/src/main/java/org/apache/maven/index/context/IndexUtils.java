@@ -38,6 +38,8 @@ public class IndexUtils
 {
     public static final String TIMESTAMP_FILE = "timestamp";
 
+    private static final int BUFFER_SIZE = 16384;
+
     // Directory
 
     public static void copyDirectory( Directory source, Directory target )
@@ -47,8 +49,57 @@ public class IndexUtils
         // copied in 2.9)
         Directory.copy( source, target, false );
 
+        copyFile( source, target, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
+        copyFile( source, target, IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
+
         Date ts = getTimestamp( source );
         updateTimestamp( target, ts );
+    }
+
+    public static boolean copyFile( Directory source, Directory target, String name )
+        throws IOException
+    {
+        return copyFile( source, target, name, name );
+    }
+
+    public static boolean copyFile( Directory source, Directory target, String srcName, String targetName )
+        throws IOException
+    {
+        if ( !source.fileExists( srcName ) )
+        {
+            return false;
+        }
+
+        byte[] buf = new byte[BUFFER_SIZE];
+
+        IndexInput is = null;
+        IndexOutput os = null;
+
+        try
+        {
+            is = source.openInput( srcName );
+
+            os = target.createOutput( targetName );
+
+            // and copy to dest directory
+            long len = is.length();
+            long readCount = 0;
+            while ( readCount < len )
+            {
+                int toRead = readCount + BUFFER_SIZE > len ? (int) ( len - readCount ) : BUFFER_SIZE;
+                is.readBytes( buf, 0, toRead );
+                os.writeBytes( buf, toRead );
+                readCount += toRead;
+            }
+
+            return true;
+        }
+        finally
+        {
+            close( os );
+
+            close( is );
+        }
     }
 
     // timestamp

@@ -57,7 +57,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @author Tamas Cservenak
  */
 public class DefaultIndexingContext
-    implements IndexingContext
+    extends AbstractIndexingContext
 {
     /**
      * A standard location for indices served up by a webserver.
@@ -262,7 +262,7 @@ public class DefaultIndexingContext
                 IndexWriter.unlock( indexDirectory );
             }
 
-            deleteIndexFiles();
+            deleteIndexFiles( true );
         }
 
         openAndWarmup();
@@ -347,7 +347,7 @@ public class DefaultIndexingContext
         w.commit();
     }
 
-    private void deleteIndexFiles()
+    private void deleteIndexFiles( boolean full )
         throws IOException
     {
         String[] names = indexDirectory.listAll();
@@ -362,6 +362,19 @@ public class DefaultIndexingContext
                 {
                     indexDirectory.deleteFile( names[i] );
                 }
+            }
+        }
+
+        if ( full )
+        {
+            if ( indexDirectory.fileExists( INDEX_PACKER_PROPERTIES_FILE ) )
+            {
+                indexDirectory.deleteFile( INDEX_PACKER_PROPERTIES_FILE );
+            }
+
+            if ( indexDirectory.fileExists( INDEX_UPDATER_PROPERTIES_FILE ) )
+            {
+                indexDirectory.deleteFile( INDEX_UPDATER_PROPERTIES_FILE );
             }
         }
 
@@ -751,7 +764,7 @@ public class DefaultIndexingContext
 
                 if ( deleteFiles )
                 {
-                    deleteIndexFiles();
+                    deleteIndexFiles( true );
                 }
 
                 indexDirectory.close();
@@ -776,7 +789,7 @@ public class DefaultIndexingContext
         {
             closeReaders();
 
-            deleteIndexFiles();
+            deleteIndexFiles( true );
 
             openAndWarmup();
 
@@ -810,11 +823,9 @@ public class DefaultIndexingContext
 
             closeReaders();
 
-            deleteIndexFiles();
+            deleteIndexFiles( false );
 
-            Directory.copy( directory, indexDirectory, false );
-            // We do it manually here, since we do want delete to happen 1st
-            // IndexUtils.copyDirectory( directory, indexDirectory );
+            IndexUtils.copyDirectory( directory, indexDirectory );
 
             openAndWarmup();
 

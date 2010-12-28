@@ -19,10 +19,7 @@
 package org.apache.maven.index.updater;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Properties;
 
-import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 
 /**
@@ -54,14 +51,9 @@ import org.apache.maven.index.packer.IndexPacker;
  */
 public interface IndexUpdater
 {
-    Properties fetchIndexProperties( IndexingContext context, ResourceFetcher fetcher )
-        throws IOException;
-
     /**
      * @return IndexUpdateResult
      */
     IndexUpdateResult fetchAndUpdateIndex( IndexUpdateRequest updateRequest )
         throws IOException;
-
-    Date getTimestamp( Properties properties, String key );
 }

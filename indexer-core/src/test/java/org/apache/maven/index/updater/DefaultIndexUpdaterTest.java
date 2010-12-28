@@ -293,17 +293,24 @@ public class DefaultIndexUpdaterTest
 
         final IndexingContext tempContext = mockery.mock( IndexingContext.class );
 
+        final Properties localProps = new Properties();
+        localProps.setProperty( IndexingContext.INDEX_CHUNK_COUNTER, "1" );
+        localProps.setProperty( IndexingContext.INDEX_CHAIN_ID, "someid" );
+        localProps.setProperty( IndexingContext.INDEX_TIMESTAMP, "20081125010000.000 -0600" );
+
         mockery.checking( new Expectations()
         {
             {
                 allowing( tempContext ).getIndexDirectoryFile();
-                will( new ReturnValueAction( testBasedir ) );
+                will( new IndexDirectoryFileAction( localProps, testBasedir ) );
 
                 allowing( tempContext ).getTimestamp();
                 will( returnValue( contextTimestamp ) );
 
                 allowing( tempContext ).getId();
                 will( returnValue( repositoryId ) );
+
+                allowing( tempContext ).commit();
 
                 allowing( tempContext ).getIndexUpdateUrl();
                 will( returnValue( indexUrl ) );
@@ -314,7 +321,7 @@ public class DefaultIndexUpdaterTest
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -369,13 +376,17 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexUpdateUrl();
                 will( returnValue( indexUrl ) );
 
+                allowing( tempContext ).commit();
+
                 allowing( tempContext ).getIndexCreators();
                 will( returnValue( DEFAULT_CREATORS ) );
+
+                allowing( tempContext ).commit();
 
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -391,7 +402,7 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexDirectoryFile();
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ) );
@@ -437,13 +448,15 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexUpdateUrl();
                 will( returnValue( indexUrl ) );
 
+                allowing( tempContext ).commit();
+
                 allowing( tempContext ).getIndexCreators();
                 will( returnValue( DEFAULT_CREATORS ) );
 
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -465,10 +478,10 @@ public class DefaultIndexUpdaterTest
                 will( new IndexDirectoryFileAction( localProps, testBasedir ) );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".2.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".3.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
@@ -516,13 +529,15 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexUpdateUrl();
                 will( returnValue( indexUrl ) );
 
+                allowing( tempContext ).commit();
+
                 allowing( tempContext ).getIndexCreators();
                 will( returnValue( DEFAULT_CREATORS ) );
 
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -541,14 +556,14 @@ public class DefaultIndexUpdaterTest
                 } );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".2.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -596,10 +611,12 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexCreators();
                 will( returnValue( DEFAULT_CREATORS ) );
 
+                allowing( tempContext ).commit();
+
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -621,17 +638,17 @@ public class DefaultIndexUpdaterTest
                 will( new IndexDirectoryFileAction( localProps, testBasedir ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 // could create index archive there and verify that it is merged correctly
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".1.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".2.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".3.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -677,13 +694,15 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getIndexUpdateUrl();
                 will( returnValue( indexUrl ) );
 
+                allowing( tempContext ).commit();
+
                 allowing( tempContext ).getIndexCreators();
                 will( returnValue( DEFAULT_CREATORS ) );
 
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -704,15 +723,15 @@ public class DefaultIndexUpdaterTest
                 never( tempContext ).getIndexDirectoryFile();
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".1.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".2.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
                 never( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".3.gz" ) );
+                    with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
-                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE + ".gz" ) );
+                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
@@ -757,6 +776,8 @@ public class DefaultIndexUpdaterTest
                 allowing( tempContext ).getTimestamp();
                 will( returnValue( contextTimestamp ) );
 
+                allowing( tempContext ).commit();
+
                 allowing( tempContext ).getId();
                 will( returnValue( repositoryId ) );
 
@@ -769,7 +790,7 @@ public class DefaultIndexUpdaterTest
                 oneOf( mockFetcher ).connect( repositoryId, indexUrl );
 
                 oneOf( mockFetcher ).retrieve( //
-                    with( IndexingContext.INDEX_FILE + ".properties" ) );
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
                 will( new PropertiesAction()
                 {
                     @Override
@@ -784,11 +805,11 @@ public class DefaultIndexUpdaterTest
 
                 never( tempContext ).getIndexDirectoryFile();
 
-                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE + ".gz" ) );
+                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
 
                 will( throwException( new IOException() ) );
 
-                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE + ".zip" ) );
+                oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
 
                 will( returnValue( newInputStream( "/index-updater/server-root/legacy/nexus-maven-repository-index.zip" ) ) );
 
@@ -854,7 +875,7 @@ public class DefaultIndexUpdaterTest
         {
             basedir.mkdirs();
 
-            this.file = new File( basedir, IndexingContext.INDEX_FILE + ".properties" );
+            this.file = new File( basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
 
             FileOutputStream fos = null;
             try
