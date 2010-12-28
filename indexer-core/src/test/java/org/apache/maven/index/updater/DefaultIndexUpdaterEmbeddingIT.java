@@ -67,6 +67,8 @@ public class DefaultIndexUpdaterEmbeddingIT
                     null ) );
 
             updater.fetchAndUpdateIndex( updateRequest );
+            
+            ctx.close( false );
         }
         finally
         {
@@ -104,6 +106,8 @@ public class DefaultIndexUpdaterEmbeddingIT
                     }, null ) );
 
             updater.fetchAndUpdateIndex( updateRequest );
+            
+            ctx.close( false );
         }
         finally
         {
@@ -141,6 +145,8 @@ public class DefaultIndexUpdaterEmbeddingIT
                     }, null ) );
 
             updater.fetchAndUpdateIndex( updateRequest );
+            
+            ctx.close( false );
         }
         finally
         {
@@ -178,6 +184,8 @@ public class DefaultIndexUpdaterEmbeddingIT
                     }, null ) );
 
             updater.fetchAndUpdateIndex( updateRequest );
+            
+            ctx.close( false );
         }
         finally
         {
@@ -233,6 +241,8 @@ public class DefaultIndexUpdaterEmbeddingIT
             {
                 System.out.println( "Operation timed out due to short connection timeout, as expected." );
             }
+            
+            ctx.close( false );
         }
         finally
         {
@@ -288,6 +298,8 @@ public class DefaultIndexUpdaterEmbeddingIT
             {
                 System.out.println( "Operation timed out due to short transaction timeout, as expected." );
             }
+            
+            ctx.close( false );
         }
         finally
         {
@@ -330,6 +342,8 @@ public class DefaultIndexUpdaterEmbeddingIT
             {
                 System.out.println( "Operation timed out due to too many redirects, as expected." );
             }
+            
+            ctx.close( false );
         }
         finally
         {
@@ -380,6 +394,8 @@ public class DefaultIndexUpdaterEmbeddingIT
             {
                 System.out.println( "Connection failed as expected." );
             }
+            
+            ctx.close( false );
         }
         finally
         {
