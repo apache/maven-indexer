@@ -38,6 +38,7 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.ScanningResult;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
@@ -341,6 +342,10 @@ public class NexusIndexerCli
 
         NexusIndexer indexer = plexus.lookup( NexusIndexer.class );
         IndexingContext context = null;
+        
+        // this is a CLI/batch invocation, don't coggle it with threads
+        DefaultIndexingContext.BLOCKING_COMMIT = true;
+
 
         try
         {

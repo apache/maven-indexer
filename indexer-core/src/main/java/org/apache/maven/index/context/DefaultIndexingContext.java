@@ -1159,6 +1159,11 @@ public class DefaultIndexingContext
 
     protected void installBottleWarmer()
     {
+        if ( BLOCKING_COMMIT )
+        {
+            return;
+        }
+
         Runnable bottleWarmer = new Runnable()
         {
             public void run()
