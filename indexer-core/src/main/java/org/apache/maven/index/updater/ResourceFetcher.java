@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.updater;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,16 +40,6 @@ public interface ResourceFetcher
      */
     void disconnect()
         throws IOException;
-
-    /**
-     * Retrieves file
-     * 
-     * @param name a name of resource to retrieve
-     * @param targetFile a target file to save retrieved resource to
-     */
-    @Deprecated
-    void retrieve( String name, File targetFile )
-        throws IOException, FileNotFoundException;
 
     /**
      * Retrieves resource as InputStream
