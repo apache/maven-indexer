@@ -31,6 +31,7 @@ import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
+import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.updater.IndexUpdater;
 
@@ -310,11 +311,22 @@ public interface NexusIndexer
      * @param query
      * @param type
      * @return
+     * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
     Query constructQuery( Field field, String query, SearchType type )
         throws IllegalArgumentException;
 
-    // throws ParseException;
+    /**
+     * Helper method to construct Lucene query for given field without need for knowledge (on caller side) HOW is a
+     * field indexed, and WHAT query is needed to achieve that.
+     * 
+     * @param field
+     * @param query
+     * @param type
+     * @return
+     */
+    Query constructQuery( Field field, SearchExpression expression )
+        throws IllegalArgumentException;
 
     // ----------------------------------------------------------------------------
     // Identification

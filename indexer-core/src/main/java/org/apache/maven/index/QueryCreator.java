@@ -18,10 +18,9 @@
  */
 package org.apache.maven.index;
 
-import java.util.Collection;
-
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
+import org.apache.maven.index.expr.SearchExpression;
 
 /**
  * A component the creates Lucene Queries from "human written" queires, but also helps client applications to assemble
@@ -52,6 +51,20 @@ public interface QueryCreator
      * @return
      * @throws ParseException if query parsing is unsuccesful.
      */
+    Query constructQuery( Field field, SearchExpression expression )
+        throws ParseException;
+
+    /**
+     * Constructs query by parsing the query string, using field as default field. This method should be use to
+     * construct queries (single term or phrase queries) against <b>single field</b>.
+     * 
+     * @param field
+     * @param query
+     * @param type
+     * @return
+     * @throws ParseException if query parsing is unsuccesful.
+     * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
+     */
     Query constructQuery( Field field, String query, SearchType type )
         throws ParseException;
 
@@ -62,8 +75,7 @@ public interface QueryCreator
      * @param field
      * @param query
      * @return query if successfully parsed, or null.
-     * @deprecated Use {@link #constructQuery(Collection, String)} or
-     *             {@link QueryCreator#constructQuery(IndexerField, String, SearchType)} methods instead!
+     * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
     Query constructQuery( String field, String query );
 

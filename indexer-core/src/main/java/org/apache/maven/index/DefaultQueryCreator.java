@@ -36,6 +36,8 @@ import org.apache.lucene.util.Version;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.apache.maven.index.expr.SearchExpression;
+import org.apache.maven.index.expr.SearchTyped;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.Logger;
@@ -89,6 +91,19 @@ public class DefaultQueryCreator
         }
 
         return lastField;
+    }
+
+    public Query constructQuery( final Field field, final SearchExpression expression )
+        throws ParseException
+    {
+        SearchType searchType = SearchType.SCORED;
+
+        if ( expression instanceof SearchTyped )
+        {
+            searchType = ( (SearchTyped) expression ).getSearchType();
+        }
+
+        return constructQuery( field, expression.getStringValue(), searchType );
     }
 
     public Query constructQuery( final Field field, final String query, final SearchType type )
