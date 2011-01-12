@@ -306,6 +306,7 @@ under the License.
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
             <excludes>
+              <exclude>README.md</exclude>
               <exclude>src/test/repo/**</exclude>
               <exclude>src/test/nexus-*/**</exclude>
               <exclude>src/test/resources/**</exclude>
