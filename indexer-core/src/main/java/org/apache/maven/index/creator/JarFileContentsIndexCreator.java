@@ -66,7 +66,7 @@ public class JarFileContentsIndexCreator
 
         File artifactFile = artifactContext.getArtifact();
 
-        if ( artifactFile != null && artifactFile.exists() && artifactFile.getName().endsWith( ".jar" ) )
+        if ( artifactFile != null && artifactFile.isFile() && artifactFile.getName().endsWith( ".jar" ) )
         {
             updateArtifactInfo( ai, artifactFile );
         }

@@ -58,7 +58,7 @@ public class MavenArchetypeArtifactInfoIndexCreator
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && !MAVEN_ARCHETYPE_PACKAGING.equals( ai.packaging )
+        if ( artifact != null && artifact.isFile() && !MAVEN_ARCHETYPE_PACKAGING.equals( ai.packaging )
             && artifact.getName().endsWith( ".jar" ) )
         {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
