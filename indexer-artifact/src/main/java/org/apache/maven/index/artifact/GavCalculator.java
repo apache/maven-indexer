@@ -28,12 +28,23 @@ package org.apache.maven.index.artifact;
 public interface GavCalculator
 {
     /**
-     * @param path
-     * @return a Gav based on the path
-     * @throws IllegalArtifactCoordinateException if the path is illegal
+     * Calculates GAV from provided repository path. The path has to be absolute. If path represents a proper artifact
+     * path (conforming to given layout), GAV is returned. If path represents some file that is not an artifact, but is
+     * part of the repository layout (like maven-metadata.xml), it returns null. In any other case, it throws
+     * IllegalArtifactCoordinateException.
+     * 
+     * @param path the repository path
+     * @return Gav parsed from the path
+     * @throws IllegalArtifactCoordinateException if the path is illegal from layout's aspect
      */
     Gav pathToGav( String path )
         throws IllegalArtifactCoordinateException;
 
+    /**
+     * Reassebles the repository path from the supplied GAV. It will be an absolute path.
+     * 
+     * @param gav
+     * @return the path calculated from GAV, obeying current layout.
+     */
     String gavToPath( Gav gav );
 }

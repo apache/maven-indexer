@@ -32,7 +32,7 @@ import org.codehaus.plexus.component.annotations.Component;
  */
 @Component( role = GavCalculator.class, hint = "maven1" )
 public class M1GavCalculator
-    extends AbstractGavCalculator
+    implements GavCalculator
 {
 
     private static final Pattern pat1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
@@ -79,8 +79,6 @@ public class M1GavCalculator
                 classifier = "client";
             }
 
-            boolean snapshot = s.contains( "SNAPSHOT" );
-
             boolean checksum = false;
             Gav.HashType checksumType = null;
             if ( s.endsWith( ".md5" ) )
@@ -113,7 +111,7 @@ public class M1GavCalculator
                     version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
                 }
 
-                return new Gav( g, a, version, classifier, ext, null, null, n, snapshot, checksum, checksumType, false,
+                return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false,
                     null );
             }
             else
@@ -128,7 +126,7 @@ public class M1GavCalculator
                         version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
                     }
 
-                    return new Gav( g, a, version, classifier, ext, null, null, n, snapshot, checksum, checksumType,
+                    return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType,
                         false, null );
                 }
                 else

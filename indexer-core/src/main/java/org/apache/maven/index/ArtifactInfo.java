@@ -285,7 +285,6 @@ public class ArtifactInfo
         return new Gav( groupId, artifactId, version, classifier, fextension, null, // snapshotBuildNumber
             null, // snapshotTimeStamp
             fname, // name
-            VersionUtils.isSnapshot( version ), // isSnapshot
             false, // hash
             null, // hashType
             false, // signature

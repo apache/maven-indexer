@@ -112,7 +112,7 @@ public abstract class AbstractIndexUpdaterTest
         File metadata = null;
         ArtifactInfo artifactInfo = new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier );
         Gav gav =
-            new Gav( groupId, artifactId, version, classifier, "jar", null, null, artifact.getName(), false, false,
+            new Gav( groupId, artifactId, version, classifier, "jar", null, null, artifact.getName(), false,
                 null, false, null );
         return new ArtifactContext( pomFile, artifact, metadata, artifactInfo, gav );
     }

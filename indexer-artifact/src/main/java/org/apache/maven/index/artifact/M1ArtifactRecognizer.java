@@ -41,14 +41,6 @@ public class M1ArtifactRecognizer
     }
 
     /**
-     * Is this item M1 snapshot?
-     */
-    public static boolean isSnapshot( String path )
-    {
-        return path.indexOf( "SNAPSHOT" ) != -1;
-    }
-
-    /**
      * Is this item M1 metadata? There is no such!
      */
     public static boolean isMetadata( String path )

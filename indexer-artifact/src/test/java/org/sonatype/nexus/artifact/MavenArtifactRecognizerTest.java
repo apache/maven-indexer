@@ -37,11 +37,11 @@ public class MavenArtifactRecognizerTest
     public void testIsSnapshot1()
     {
         // NEXUS-3148
-        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0SNAPSHOT/xsdSNAPSHOT.jar" ) );
+        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0SNAPSHOT/aid-1.0SNAPSHOT.jar" ) );
 
-        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/xsd-SNAPSHOT.jar" ) );
-        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/xsd-SNAPSHOT.pom" ) );
-        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/a/b/c/xsd-1.2.3-.pom" ) );
+        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.jar" ) );
+        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.pom" ) );
+        assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.2.3-.pom" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/xsd-SNAPsHOT.jar" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/xsd-SNAPHOT.pom" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/a/b/c/xsd-1.2.3NAPSHOT.pom" ) );
@@ -52,10 +52,10 @@ public class MavenArtifactRecognizerTest
     {
         assertEquals(
             true,
-            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
+            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/appassembler-maven-plugin/1.0-SNAPSHOT/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
         assertEquals(
             false,
-            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
+            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
     }
 
     public void testIsMetadata()

@@ -20,7 +20,10 @@
 package org.apache.maven.index.artifact;
 
 /**
- * A value class representing unique artifact coordinates
+ * An immutable value class representing unique artifact coordinates.
+ * 
+ * @author cstamas
+ * @author jvanzyl
  */
 public class Gav
 {
@@ -57,48 +60,47 @@ public class Gav
         }
     }
 
-    private String groupId;
+    private final String groupId;
 
-    private String artifactId;
+    private final String artifactId;
 
-    private String version;
+    private final String version;
 
-    private String baseVersion;
+    private final String baseVersion;
 
-    private String classifier;
+    private final String classifier;
 
-    private String extension;
+    private final String extension;
 
-    private Integer snapshotBuildNumber;
+    private final Integer snapshotBuildNumber;
 
-    private Long snapshotTimeStamp;
+    private final Long snapshotTimeStamp;
 
-    private String name;
+    private final String name;
 
-    private boolean snapshot;
+    private final boolean snapshot;
 
-    private boolean hash;
+    private final boolean hash;
 
-    private HashType hashType;
+    private final HashType hashType;
 
-    private boolean signature;
+    private final boolean signature;
 
-    private SignatureType signatureType;
+    private final SignatureType signatureType;
 
     public Gav( String groupId, String artifactId, String version )
-        throws IllegalArtifactCoordinateException
     {
-        this( groupId, artifactId, version, null, null, null, null, null, false, false, null, false, null );
+        this( groupId, artifactId, version, null, null, null, null, null, false, null, false, null );
     }
 
     public Gav( String groupId, String artifactId, String version, String classifier, String extension,
-                Integer snapshotBuildNumber, Long snapshotTimeStamp, String name, boolean snapshot, boolean hash,
-                HashType hashType, boolean signature, SignatureType signatureType )
-        throws IllegalArtifactCoordinateException
+                Integer snapshotBuildNumber, Long snapshotTimeStamp, String name, boolean hash, HashType hashType,
+                boolean signature, SignatureType signatureType )
     {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
+        this.snapshot = VersionUtils.isSnapshot( version );
 
         if ( !snapshot )
         {
@@ -106,12 +108,6 @@ public class Gav
         }
         else
         {
-            if ( !VersionUtils.isSnapshot( version ) )
-            {
-                throw new IllegalArtifactCoordinateException( "GAV marked as snapshot but the supplied version '"
-                    + version + "' is not!" );
-            }
-
             if ( version.contains( "SNAPSHOT" ) )
             {
                 // this is not a timestamped version
@@ -123,28 +119,28 @@ public class Gav
                 // we have XXXXXX-YYYYMMDD.HHMMSS-B
                 // but XXXXXX may contain "-" too!
 
-                if ( new DefaultNexusEnforcer().isStrict() )
-                {
-                    this.baseVersion = version.substring( 0, version.lastIndexOf( '-' ) );
-                    this.baseVersion = baseVersion.substring( 0, baseVersion.lastIndexOf( '-' ) ) + "-SNAPSHOT";
-                }
+                // if ( new DefaultNexusEnforcer().isStrict() )
+                // {
+                // this.baseVersion = version.substring( 0, version.lastIndexOf( '-' ) );
+                // this.baseVersion = baseVersion.substring( 0, baseVersion.lastIndexOf( '-' ) ) + "-SNAPSHOT";
+                // }
                 // also there may be no XXXXXX (i.e. when version is strictly named SNAPSHOT
                 // BUT this is not the proper scheme, we will simply loosen up here if requested
+                // else
+                // {
+                // trim the part of 'YYYYMMDD.HHMMSS-BN
+                String tempBaseVersion = version.substring( 0, version.lastIndexOf( '-' ) );
+                tempBaseVersion = tempBaseVersion.substring( 0, tempBaseVersion.length() - 15 );
+
+                if ( tempBaseVersion.length() > 0 )
+                {
+                    this.baseVersion = tempBaseVersion + "SNAPSHOT";
+                }
                 else
                 {
-                    // trim the part of 'YYYYMMDD.HHMMSS-BN
-                    String tempBaseVersion = version.substring( 0, version.lastIndexOf( '-' ) );
-                    tempBaseVersion = tempBaseVersion.substring( 0, tempBaseVersion.length() - 15 );
-
-                    if ( tempBaseVersion.length() > 0 )
-                    {
-                        this.baseVersion = tempBaseVersion + "SNAPSHOT";
-                    }
-                    else
-                    {
-                        this.baseVersion = "SNAPSHOT";
-                    }
+                    this.baseVersion = "SNAPSHOT";
                 }
+                // }
             }
         }
 
@@ -153,7 +149,6 @@ public class Gav
         this.snapshotBuildNumber = snapshotBuildNumber;
         this.snapshotTimeStamp = snapshotTimeStamp;
         this.name = name;
-        this.snapshot = snapshot;
         this.hash = hash;
         this.hashType = hashType;
         this.signature = signature;
@@ -425,5 +420,4 @@ public class Gav
 
         return true;
     }
-
 }

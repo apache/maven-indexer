@@ -21,19 +21,16 @@ package org.sonatype.nexus.artifact;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.maven.index.artifact.DefaultNexusEnforcer;
-import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.M2GavCalculator;
-import org.apache.maven.index.artifact.NexusEnforcer;
-
 import junit.framework.TestCase;
+
+import org.apache.maven.index.artifact.Gav;
+import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
+import org.apache.maven.index.artifact.M2GavCalculator;
 
 public class M2GavCalculatorTest
     extends TestCase
 {
     private M2GavCalculator gavCalculator;
-
-    private NexusEnforcer enforcer;
 
     private SimpleDateFormat formatter = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
 
@@ -44,8 +41,6 @@ public class M2GavCalculatorTest
         super.setUp();
 
         gavCalculator = new M2GavCalculator();
-
-        enforcer = new DefaultNexusEnforcer();
     }
 
     protected Long parseTimestamp( String timeStamp )
@@ -538,114 +533,201 @@ public class M2GavCalculatorTest
         assertEquals( "/org/sonatype/nexus/nexus-webapp/1.4.0/nexus-webapp-1.4.0-bundle.tar.gz", path );
 
         gav = gavCalculator.pathToGav( "/foo/artifact/SNAPSHOT/artifact-SNAPSHOT.jar" );
+        assertEquals( "foo", gav.getGroupId() );
+        assertEquals( "artifact", gav.getArtifactId() );
+        assertEquals( "SNAPSHOT", gav.getVersion() );
+        assertEquals( "SNAPSHOT", gav.getBaseVersion() );
+        assertEquals( null, gav.getClassifier() );
+        assertEquals( "jar", gav.getExtension() );
+        assertEquals( null, gav.getSnapshotBuildNumber() );
+        assertEquals( null, gav.getSnapshotTimeStamp() );
+        assertEquals( "artifact-SNAPSHOT.jar", gav.getName() );
+        assertEquals( true, gav.isSnapshot() );
+        assertEquals( false, gav.isHash() );
+        assertEquals( null, gav.getHashType() );
 
-        if ( enforcer.isStrict() )
+        path = gavCalculator.gavToPath( gav );
+        assertEquals( "/foo/artifact/SNAPSHOT/artifact-SNAPSHOT.jar", path );
+
+        gav = gavCalculator.pathToGav( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar" );
+        assertEquals( "foo", gav.getGroupId() );
+        assertEquals( "artifact", gav.getArtifactId() );
+        assertEquals( "20080623.175436-1", gav.getVersion() );
+        assertEquals( "SNAPSHOT", gav.getBaseVersion() );
+        assertEquals( null, gav.getClassifier() );
+        assertEquals( "jar", gav.getExtension() );
+        assertEquals( Integer.valueOf( 1 ), gav.getSnapshotBuildNumber() );
+        assertEquals( parseTimestamp( "20080623.175436" ), gav.getSnapshotTimeStamp() );
+        assertEquals( "artifact-20080623.175436-1.jar", gav.getName() );
+        assertEquals( true, gav.isSnapshot() );
+        assertEquals( false, gav.isHash() );
+        assertEquals( null, gav.getHashType() );
+
+        path = gavCalculator.gavToPath( gav );
+        assertEquals( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path );
+    }
+
+    public void testNegGav()
+        throws Exception
+    {
+        Gav gav;
+        String path;
+
+        // NEXUS-4132
+        try
         {
-            assertEquals( "foo", gav.getGroupId() );
-            assertEquals( "artifact", gav.getArtifactId() );
-            assertEquals( "SNAPSHOT", gav.getVersion() );
-            assertEquals( "SNAPSHOT", gav.getBaseVersion() );
-            assertEquals( null, gav.getClassifier() );
-            assertEquals( "jar", gav.getExtension() );
+            gav =
+                gavCalculator.pathToGav( "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear" );
+            assertEquals( "org.sonatype.nexus", gav.getGroupId() );
+            assertEquals( "nexus-webapp", gav.getArtifactId() );
+            assertEquals( "1.4.0", gav.getVersion() );
+            assertEquals( "1.4.0", gav.getBaseVersion() );
+            assertEquals( "bundle", gav.getClassifier() );
+            assertEquals( "tar.gz", gav.getExtension() );
             assertEquals( null, gav.getSnapshotBuildNumber() );
             assertEquals( null, gav.getSnapshotTimeStamp() );
-            assertEquals( "artifact-SNAPSHOT.jar", gav.getName() );
+            assertEquals( "nexus-webapp-1.4.0-bundle.tar.gz", gav.getName() );
             assertEquals( false, gav.isSnapshot() );
             assertEquals( false, gav.isHash() );
             assertEquals( null, gav.getHashType() );
+            assertEquals( false, gav.isSignature() );
 
             path = gavCalculator.gavToPath( gav );
-            assertEquals( "/foo/artifact/SNAPSHOT/artifact-SNAPSHOT.jar", path );
-        }
-        else
-        {
-            assertEquals( "foo", gav.getGroupId() );
-            assertEquals( "artifact", gav.getArtifactId() );
-            assertEquals( "SNAPSHOT", gav.getVersion() );
-            assertEquals( "SNAPSHOT", gav.getBaseVersion() );
-            assertEquals( null, gav.getClassifier() );
-            assertEquals( "jar", gav.getExtension() );
-            assertEquals( null, gav.getSnapshotBuildNumber() );
-            assertEquals( null, gav.getSnapshotTimeStamp() );
-            assertEquals( "artifact-SNAPSHOT.jar", gav.getName() );
-            assertEquals( true, gav.isSnapshot() );
-            assertEquals( false, gav.isHash() );
-            assertEquals( null, gav.getHashType() );
+            assertEquals(
+                "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear",
+                path );
 
-            path = gavCalculator.gavToPath( gav );
-            assertEquals( "/foo/artifact/SNAPSHOT/artifact-SNAPSHOT.jar", path );
+            fail( "Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot" );
         }
-
-        gav = gavCalculator.pathToGav( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar" );
-        if ( enforcer.isStrict() )
+        catch ( IllegalArtifactCoordinateException e )
         {
-            assertEquals( null, gav );
+            // good, expected since the filename lacks the -BBB build number, hence, is not valid snapshot
         }
-        else
-        {
-            assertEquals( "foo", gav.getGroupId() );
-            assertEquals( "artifact", gav.getArtifactId() );
-            assertEquals( "20080623.175436-1", gav.getVersion() );
-            assertEquals( "SNAPSHOT", gav.getBaseVersion() );
-            assertEquals( null, gav.getClassifier() );
-            assertEquals( "jar", gav.getExtension() );
-            assertEquals( Integer.valueOf( 1 ), gav.getSnapshotBuildNumber() );
-            assertEquals( parseTimestamp( "20080623.175436" ), gav.getSnapshotTimeStamp() );
-            assertEquals( "artifact-20080623.175436-1.jar", gav.getName() );
-            assertEquals( true, gav.isSnapshot() );
-            assertEquals( false, gav.isHash() );
-            assertEquals( null, gav.getHashType() );
+        // NEXUS-4132 END
 
-            path = gavCalculator.gavToPath( gav );
-            assertEquals( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path );
-        }
     }
 
     public void testGavExtreme()
         throws Exception
     {
-        Gav gav = gavCalculator.pathToGav( "/" );
-        assertEquals( null, gav );
+        Gav gav;
 
-        gav = gavCalculator.pathToGav( "/some/stupid/path" );
-        assertEquals( null, gav );
+        try
+        {
+            gav = gavCalculator.pathToGav( "/" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
 
-        gav = gavCalculator.pathToGav( "/some/stupid/path/more/in/it" );
-        assertEquals( null, gav );
+        try
+        {
+            gav = gavCalculator.pathToGav( "/some/stupid/path" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
 
-        gav = gavCalculator.pathToGav( "/something/that/looks/" );
-        assertEquals( null, gav );
+        try
+        {
+            gav = gavCalculator.pathToGav( "/some/stupid/path/more/in/it" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
 
-        gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.blah" );
-        assertEquals( null, gav );
+        try
+        {
+            gav = gavCalculator.pathToGav( "/something/that/looks/" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
 
-        gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.pom" );
-        assertEquals( null, gav );
+        try
+        {
+            gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.blah" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
 
+        try
+        {
+            gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.pom" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
+
+        try
+        {
+            gav = gavCalculator.pathToGav( "org/apache/maven/scm/maven-scm" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
+
+        try
+        {
+            gav = gavCalculator.pathToGav( "org/apache/geronimo/javamail/geronimo-javamail_1.4_mail" );
+            assertEquals( null, gav );
+            fail( "This is not an artifact!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
+
+        // this is metadata, will return null
         gav = gavCalculator.pathToGav( "/something/that/looks/maven-metadata.xml" );
         assertEquals( null, gav );
 
+        // this is metadata, will return null
         gav = gavCalculator.pathToGav( "/something/that/looks/like-SNAPSHOT/maven-metadata.xml" );
         assertEquals( null, gav );
 
+        // this is metadata, will return null
         gav = gavCalculator.pathToGav( "/org/codehaus/plexus/plexus-container-default/maven-metadata.xml" );
-        assertEquals( null, gav );
-
-        gav = gavCalculator.pathToGav( "org/apache/maven/scm/maven-scm" );
-        assertEquals( null, gav );
-
-        gav = gavCalculator.pathToGav( "org/apache/geronimo/javamail/geronimo-javamail_1.4_mail" );
         assertEquals( null, gav );
     }
 
     public void testIssueNexus57()
         throws Exception
     {
-        Gav gav;
         // broken path, baseVersion and version mismatch (2.0-SNAPSHOT vs 2.0-alpha-1...)
-        gav =
-            gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
-        assertEquals( null, gav );
+        try
+        {
+            Gav gav =
+                gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
+
+            fail( "We expect IllegalArtifactCoordinateException since baseVersion and version mismatch in path!" );
+        }
+        catch ( IllegalArtifactCoordinateException e )
+        {
+            // good
+        }
     }
 
     public void testGavExtensionAndClassifier()

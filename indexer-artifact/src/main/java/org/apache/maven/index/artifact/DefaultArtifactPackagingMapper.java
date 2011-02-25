@@ -75,7 +75,7 @@ public class DefaultArtifactPackagingMapper
         this.packaging2extensionMapping = null;
     }
 
-    public Map<String, String> getPackaging2extensionMapping()
+    public synchronized Map<String, String> getPackaging2extensionMapping()
     {
         if ( packaging2extensionMapping == null )
         {

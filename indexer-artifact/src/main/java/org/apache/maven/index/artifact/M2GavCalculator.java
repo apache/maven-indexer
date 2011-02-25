@@ -32,7 +32,7 @@ import org.codehaus.plexus.component.annotations.Component;
  */
 @Component( role = GavCalculator.class, hint = "maven2" )
 public class M2GavCalculator
-    extends AbstractGavCalculator
+    implements GavCalculator
 {
     public Gav pathToGav( String str )
         throws IllegalArtifactCoordinateException
@@ -45,21 +45,24 @@ public class M2GavCalculator
 
             if ( vEndPos == -1 )
             {
-                return null;
+                throw new IllegalArtifactCoordinateException( "The path \"" + str
+                    + "\" does not represents an artifact!" );
             }
 
             int aEndPos = s.lastIndexOf( '/', vEndPos - 1 );
 
             if ( aEndPos == -1 )
             {
-                return null;
+                throw new IllegalArtifactCoordinateException( "The path \"" + str
+                    + "\" does not represents an artifact!" );
             }
 
             int gEndPos = s.lastIndexOf( '/', aEndPos - 1 );
 
             if ( gEndPos == -1 )
             {
-                return null;
+                throw new IllegalArtifactCoordinateException( "The path \"" + str
+                    + "\" does not represents an artifact!" );
             }
 
             String groupId = s.substring( 0, gEndPos ).replace( '/', '.' );
@@ -111,11 +114,13 @@ public class M2GavCalculator
         }
         catch ( NumberFormatException e )
         {
-            return null;
+            throw new IllegalArtifactCoordinateException( "The path \"" + str + "\" does not represents a snapshot artifact!",
+                e );
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            return null;
+            throw new IllegalArtifactCoordinateException( "The path \"" + str + "\" does not represents an artifact!",
+                e );
         }
     }
 
@@ -127,7 +132,8 @@ public class M2GavCalculator
         if ( !fileName.startsWith( artifactId + "-" + version + "." )
             && !fileName.startsWith( artifactId + "-" + version + "-" ) )
         {
-            return null;
+            throw new IllegalArtifactCoordinateException( "The path \"" + s
+                + "\" does not represents an artifact (filename does not match artifactId-version)!" );
         }
 
         int nTailPos = vEndPos + artifactId.length() + version.length() + 2;
@@ -139,15 +145,16 @@ public class M2GavCalculator
         if ( nExtPos == -1 )
         {
             // NX-563: not allowing extensionless paths to be interpreted as artifact
-            return null;
+            throw new IllegalArtifactCoordinateException( "The path \"" + s
+                + "\" does not represents an artifact (does not have extension)!" );
         }
 
         String ext = tail.substring( nExtPos + 1 );
 
         String classifier = tail.charAt( 0 ) == '-' ? tail.substring( 1, nExtPos ) : null;
 
-        return new Gav( groupId, artifactId, version, classifier, ext, null, null, fileName, false, /* release */
-        checksum, checksumType, signature, signatureType );
+        return new Gav( groupId, artifactId, version, classifier, ext, null, null, fileName, checksum, checksumType,
+            signature, signatureType );
     }
 
     private Gav getSnapshotGav( String s, int vEndPos, String groupId, String artifactId, String version,
@@ -179,7 +186,8 @@ public class M2GavCalculator
             if ( nExtPos == -1 )
             {
                 // NX-563: not allowing extensionless paths to be interpreted as artifact
-                return null;
+                throw new IllegalArtifactCoordinateException( "The path \"" + s
+                    + "\" does not represents an artifact (does not have extension)!" );
             }
 
             ext = tail.substring( nExtPos + 1 );
@@ -211,16 +219,7 @@ public class M2GavCalculator
             String snapshotBuildNumber = sb.toString();
             snapshotBuildNo = Integer.parseInt( bnr.toString() );
 
-            int n;
-
-            if ( getEnforcer().isStrict() )
-            {
-                n = version.length() - 9;
-            }
-            else
-            {
-                n = version.length() > 9 ? version.length() - 9 + 1 : 0;
-            }
+            int n = version.length() > 9 ? version.length() - 9 + 1 : 0;
 
             String tail = s.substring( vEndPos + artifactId.length() + n + snapshotBuildNumber.length() + 2 );
 
@@ -229,7 +228,8 @@ public class M2GavCalculator
             if ( nExtPos == -1 )
             {
                 // NX-563: not allowing extensionless paths to be interpreted as artifact
-                return null;
+                throw new IllegalArtifactCoordinateException( "The path \"" + s
+                    + "\" does not represents an artifact (does not have extension)!" );
             }
 
             ext = tail.substring( nExtPos + 1 );
@@ -240,7 +240,6 @@ public class M2GavCalculator
         }
 
         return new Gav( groupId, artifactId, version, classifier, ext, snapshotBuildNo, snapshotTimestamp, fileName,
-            true, /* snapshot */
             checksum, checksumType, signature, signatureType );
     }
 

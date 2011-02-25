@@ -20,7 +20,8 @@
 package org.apache.maven.index.artifact;
 
 /**
- * Thrown if was provided an illegal artifact coordinate
+ * Thrown if provided parameters are illegal from layout's aspect, does not follow the convention, or impose wrong
+ * combination of values.
  * 
  * @author juven
  */
