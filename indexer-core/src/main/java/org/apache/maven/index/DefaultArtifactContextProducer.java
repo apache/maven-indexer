@@ -72,9 +72,17 @@ public class DefaultArtifactContextProducer
             return null; // skipped
         }
 
-        Gav gav = getGavFromPath( context, repositoryPath, artifactPath );
+        Gav gav;
+        try
+        {
+            gav = getGavFromPath( context, repositoryPath, artifactPath );
 
-        if ( gav == null )
+            if ( gav == null )
+            {
+                return null; // not an artifact, but rather metadata
+            }
+        }
+        catch ( IllegalArtifactCoordinateException e )
         {
             return null; // not an artifact
         }
