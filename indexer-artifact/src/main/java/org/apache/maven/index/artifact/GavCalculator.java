@@ -35,8 +35,10 @@ public interface GavCalculator
      * 
      * @param path the repository path
      * @return Gav parsed from the path
+     * @throws IllegalArtifactCoordinateException not throwing it anymore, here just for backward compatibility.
      */
-    Gav pathToGav( String path );
+    Gav pathToGav( String path )
+        throws IllegalArtifactCoordinateException;
 
     /**
      * Reassembles the repository path from the supplied GAV. It will be an absolute path.
