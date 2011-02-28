@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -99,19 +98,11 @@ public class DefaultScanner
     {
         IndexingContext context = request.getIndexingContext();
 
-        try
-        {
-            ArtifactContext ac = artifactContextProducer.getArtifactContext( context, file );
+        ArtifactContext ac = artifactContextProducer.getArtifactContext( context, file );
 
-            if ( ac != null )
-            {
-                request.getArtifactScanningListener().artifactDiscovered( ac );
-            }
-        }
-        catch ( IllegalArtifactCoordinateException e )
+        if ( ac != null )
         {
-            getLogger().warn(
-                "Failed to process file: '" + file.getAbsolutePath() + "' while scanning a maven 2 directory.", e );
+            request.getArtifactScanningListener().artifactDiscovered( ac );
         }
     }
 

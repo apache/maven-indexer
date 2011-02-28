@@ -24,8 +24,6 @@ package org.apache.maven.index.artifact;
  */
 public class M2ArtifactRecognizer
 {
-    private static final M2GavCalculator gavCalculator = new M2GavCalculator();
-
     /**
      * Is this item M2 Checksum?
      */
@@ -50,16 +48,7 @@ public class M2ArtifactRecognizer
      */
     public static boolean isSnapshot( String path )
     {
-        try
-        {
-            Gav gav = gavCalculator.pathToGav( path );
-
-            return gav != null && gav.isSnapshot();
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            return false;
-        }
+        return path.indexOf( "SNAPSHOT" ) != -1;
     }
 
     /**

@@ -20,7 +20,6 @@ package org.apache.maven.index;
 
 import java.io.File;
 
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
@@ -32,7 +31,5 @@ public interface ArtifactContextProducer
 {
     String ROLE = ArtifactContextProducer.class.getName();
 
-    public ArtifactContext getArtifactContext( IndexingContext context, File file )
-        throws IllegalArtifactCoordinateException;
-
+    public ArtifactContext getArtifactContext( IndexingContext context, File file );
 }

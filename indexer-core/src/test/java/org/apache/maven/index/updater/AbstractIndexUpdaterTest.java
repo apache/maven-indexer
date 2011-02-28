@@ -32,11 +32,9 @@ import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.FileUtils;
 
 public abstract class AbstractIndexUpdaterTest
@@ -104,8 +102,7 @@ public abstract class AbstractIndexUpdaterTest
 
     protected ArtifactContext createArtifactContext( String repositoryId, String groupId, String artifactId,
                                                      String version, String classifier )
-        throws IllegalArtifactCoordinateException
-    {
+   {
         String path = createPath( groupId, artifactId, version, classifier );
         File pomFile = new File( path + ".pom" );
         File artifact = new File( path + ".jar" );

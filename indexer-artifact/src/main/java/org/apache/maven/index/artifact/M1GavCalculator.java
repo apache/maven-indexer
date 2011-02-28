@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import org.codehaus.plexus.component.annotations.Component;
 
 /**
- * An M1 <code>GavCalculator</code>.
+ * An M1 <code>GavCalculator</code>. Heavily under-maintained.
  * 
  * @author Jason van Zyl
  * @author Tamas Cservenak
@@ -40,7 +40,6 @@ public class M1GavCalculator
     private static final Pattern pat2 = Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
     public Gav pathToGav( String str )
-        throws IllegalArtifactCoordinateException
     {
         try
         {

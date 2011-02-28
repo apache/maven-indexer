@@ -26,7 +26,6 @@ import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.artifact.M2GavCalculator;
 
 public class ArtifactLocatorTest
@@ -52,7 +51,6 @@ public class ArtifactLocatorTest
     }
 
     public void testContextProducer()
-        throws IllegalArtifactCoordinateException
     {
         final File pomFile =
             getTestFile( "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
@@ -64,7 +62,6 @@ public class ArtifactLocatorTest
     }
 
     public void testArtifactLocator()
-        throws IllegalArtifactCoordinateException
     {
         ArtifactLocator al = new ArtifactLocator( artifactPackagingMapper );
 

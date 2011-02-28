@@ -30,7 +30,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -268,20 +267,13 @@ class DefaultScannerListener
                 }
 
                 // minimal ArtifactContext for removal
-                try
-                {
-                    ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
+                ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
 
-                    for ( int i = 0; i < collector.getTotalHits(); i++ )
-                    {
-                        indexerEngine.remove( context, ac );
-
-                        deleted++;
-                    }
-                }
-                catch ( IllegalArtifactCoordinateException e )
+                for ( int i = 0; i < collector.getTotalHits(); i++ )
                 {
-                    getLogger().warn( "Failed to remove deleted artifact from Search Engine.", e );
+                    indexerEngine.remove( context, ac );
+
+                    deleted++;
                 }
             }
         }

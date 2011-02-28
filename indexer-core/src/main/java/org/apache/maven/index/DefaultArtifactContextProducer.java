@@ -22,7 +22,6 @@ import java.io.File;
 
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.locator.ArtifactLocator;
 import org.apache.maven.index.locator.GavHelpedLocator;
@@ -54,7 +53,6 @@ public class DefaultArtifactContextProducer
      * Get ArtifactContext for given pom or artifact (jar, war, etc). A file can be
      */
     public ArtifactContext getArtifactContext( IndexingContext context, File file )
-        throws IllegalArtifactCoordinateException
     {
         // TODO shouldn't this use repository layout instead?
 
@@ -72,19 +70,11 @@ public class DefaultArtifactContextProducer
             return null; // skipped
         }
 
-        Gav gav;
-        try
-        {
-            gav = getGavFromPath( context, repositoryPath, artifactPath );
+        Gav gav = getGavFromPath( context, repositoryPath, artifactPath );
 
-            if ( gav == null )
-            {
-                return null; // not an artifact, but rather metadata
-            }
-        }
-        catch ( IllegalArtifactCoordinateException e )
+        if ( gav == null )
         {
-            return null; // not an artifact
+            return null; // not an artifact, but rather metadata
         }
 
         File pom;
@@ -157,7 +147,6 @@ public class DefaultArtifactContextProducer
     }
 
     private Gav getGavFromPath( IndexingContext context, String repositoryPath, String artifactPath )
-        throws IllegalArtifactCoordinateException
     {
         String path = artifactPath.substring( repositoryPath.length() + 1 ).replace( '\\', '/' );
 

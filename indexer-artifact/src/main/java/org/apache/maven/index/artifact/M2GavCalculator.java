@@ -35,7 +35,6 @@ public class M2GavCalculator
     implements GavCalculator
 {
     public Gav pathToGav( String str )
-        throws IllegalArtifactCoordinateException
     {
         try
         {
@@ -45,24 +44,21 @@ public class M2GavCalculator
 
             if ( vEndPos == -1 )
             {
-                throw new IllegalArtifactCoordinateException( "The path \"" + str
-                    + "\" does not represents an artifact!" );
+                return null;
             }
 
             int aEndPos = s.lastIndexOf( '/', vEndPos - 1 );
 
             if ( aEndPos == -1 )
             {
-                throw new IllegalArtifactCoordinateException( "The path \"" + str
-                    + "\" does not represents an artifact!" );
+                return null;
             }
 
             int gEndPos = s.lastIndexOf( '/', aEndPos - 1 );
 
             if ( gEndPos == -1 )
             {
-                throw new IllegalArtifactCoordinateException( "The path \"" + str
-                    + "\" does not represents an artifact!" );
+                return null;
             }
 
             String groupId = s.substring( 0, gEndPos ).replace( '/', '.' );
@@ -114,26 +110,23 @@ public class M2GavCalculator
         }
         catch ( NumberFormatException e )
         {
-            throw new IllegalArtifactCoordinateException( "The path \"" + str + "\" does not represents a snapshot artifact!",
-                e );
+            return null;
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw new IllegalArtifactCoordinateException( "The path \"" + str + "\" does not represents an artifact!",
-                e );
+            return null;
         }
     }
 
     private Gav getReleaseGav( String s, int vEndPos, String groupId, String artifactId, String version,
                                String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
                                Gav.SignatureType signatureType )
-        throws IllegalArtifactCoordinateException
     {
         if ( !fileName.startsWith( artifactId + "-" + version + "." )
             && !fileName.startsWith( artifactId + "-" + version + "-" ) )
         {
-            throw new IllegalArtifactCoordinateException( "The path \"" + s
-                + "\" does not represents an artifact (filename does not match artifactId-version)!" );
+            // The path does not represents an artifact (filename does not match artifactId-version)!
+            return null;
         }
 
         int nTailPos = vEndPos + artifactId.length() + version.length() + 2;
@@ -145,8 +138,7 @@ public class M2GavCalculator
         if ( nExtPos == -1 )
         {
             // NX-563: not allowing extensionless paths to be interpreted as artifact
-            throw new IllegalArtifactCoordinateException( "The path \"" + s
-                + "\" does not represents an artifact (does not have extension)!" );
+            return null;
         }
 
         String ext = tail.substring( nExtPos + 1 );
@@ -160,7 +152,6 @@ public class M2GavCalculator
     private Gav getSnapshotGav( String s, int vEndPos, String groupId, String artifactId, String version,
                                 String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
                                 Gav.SignatureType signatureType )
-        throws IllegalArtifactCoordinateException
     {
 
         Integer snapshotBuildNo = null;
@@ -186,8 +177,7 @@ public class M2GavCalculator
             if ( nExtPos == -1 )
             {
                 // NX-563: not allowing extensionless paths to be interpreted as artifact
-                throw new IllegalArtifactCoordinateException( "The path \"" + s
-                    + "\" does not represents an artifact (does not have extension)!" );
+                return null;
             }
 
             ext = tail.substring( nExtPos + 1 );
@@ -228,8 +218,7 @@ public class M2GavCalculator
             if ( nExtPos == -1 )
             {
                 // NX-563: not allowing extensionless paths to be interpreted as artifact
-                throw new IllegalArtifactCoordinateException( "The path \"" + s
-                    + "\" does not represents an artifact (does not have extension)!" );
+                return null;
             }
 
             ext = tail.substring( nExtPos + 1 );
@@ -266,41 +255,48 @@ public class M2GavCalculator
 
     public String calculateArtifactName( Gav gav )
     {
-        StringBuffer path = new StringBuffer( gav.getArtifactId() );
-
-        path.append( "-" );
-
-        path.append( gav.getVersion() );
-
-        if ( gav.getClassifier() != null && gav.getClassifier().trim().length() > 0 )
+        if ( gav.getName() != null && gav.getName().trim().length() > 0 )
         {
+            return gav.getName();
+        }
+        else
+        {
+            StringBuffer path = new StringBuffer( gav.getArtifactId() );
+
             path.append( "-" );
 
-            path.append( gav.getClassifier() );
+            path.append( gav.getVersion() );
+
+            if ( gav.getClassifier() != null && gav.getClassifier().trim().length() > 0 )
+            {
+                path.append( "-" );
+
+                path.append( gav.getClassifier() );
+            }
+
+            if ( gav.getExtension() != null )
+            {
+                path.append( "." );
+
+                path.append( gav.getExtension() );
+            }
+
+            if ( gav.isSignature() )
+            {
+                path.append( "." );
+
+                path.append( gav.getSignatureType().toString() );
+            }
+
+            if ( gav.isHash() )
+            {
+                path.append( "." );
+
+                path.append( gav.getHashType().toString() );
+            }
+
+            return path.toString();
         }
-
-        if ( gav.getExtension() != null )
-        {
-            path.append( "." );
-
-            path.append( gav.getExtension() );
-        }
-
-        if ( gav.isSignature() )
-        {
-            path.append( "." );
-
-            path.append( gav.getSignatureType().toString() );
-        }
-
-        if ( gav.isHash() )
-        {
-            path.append( "." );
-
-            path.append( gav.getHashType().toString() );
-        }
-
-        return path.toString();
     }
 
 }

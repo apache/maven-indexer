@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 import junit.framework.TestCase;
 
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
 import org.apache.maven.index.artifact.M2GavCalculator;
 
 public class M2GavCalculatorTest
@@ -574,37 +573,10 @@ public class M2GavCalculatorTest
         String path;
 
         // NEXUS-4132
-        try
-        {
-            gav =
-                gavCalculator.pathToGav( "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear" );
-            assertEquals( "org.sonatype.nexus", gav.getGroupId() );
-            assertEquals( "nexus-webapp", gav.getArtifactId() );
-            assertEquals( "1.4.0", gav.getVersion() );
-            assertEquals( "1.4.0", gav.getBaseVersion() );
-            assertEquals( "bundle", gav.getClassifier() );
-            assertEquals( "tar.gz", gav.getExtension() );
-            assertEquals( null, gav.getSnapshotBuildNumber() );
-            assertEquals( null, gav.getSnapshotTimeStamp() );
-            assertEquals( "nexus-webapp-1.4.0-bundle.tar.gz", gav.getName() );
-            assertEquals( false, gav.isSnapshot() );
-            assertEquals( false, gav.isHash() );
-            assertEquals( null, gav.getHashType() );
-            assertEquals( false, gav.isSignature() );
-
-            path = gavCalculator.gavToPath( gav );
-            assertEquals(
-                "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear",
-                path );
-
-            fail( "Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good, expected since the filename lacks the -BBB build number, hence, is not valid snapshot
-        }
+        gav =
+            gavCalculator.pathToGav( "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear" );
+        assertNull( "Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot", gav );
         // NEXUS-4132 END
-
     }
 
     public void testGavExtreme()
@@ -612,93 +584,29 @@ public class M2GavCalculatorTest
     {
         Gav gav;
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/some/stupid/path" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/some/stupid/path" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/some/stupid/path/more/in/it" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/some/stupid/path/more/in/it" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/something/that/looks/" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/something/that/looks/" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.blah" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.blah" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.pom" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "/something/that/looks/like-an-artifact.pom" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "org/apache/maven/scm/maven-scm" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "org/apache/maven/scm/maven-scm" );
+        assertEquals( null, gav );
 
-        try
-        {
-            gav = gavCalculator.pathToGav( "org/apache/geronimo/javamail/geronimo-javamail_1.4_mail" );
-            assertEquals( null, gav );
-            fail( "This is not an artifact!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        gav = gavCalculator.pathToGav( "org/apache/geronimo/javamail/geronimo-javamail_1.4_mail" );
+        assertEquals( null, gav );
 
         // this is metadata, will return null
         gav = gavCalculator.pathToGav( "/something/that/looks/maven-metadata.xml" );
@@ -717,17 +625,10 @@ public class M2GavCalculatorTest
         throws Exception
     {
         // broken path, baseVersion and version mismatch (2.0-SNAPSHOT vs 2.0-alpha-1...)
-        try
-        {
-            Gav gav =
-                gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
+        Gav gav =
+            gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
 
-            fail( "We expect IllegalArtifactCoordinateException since baseVersion and version mismatch in path!" );
-        }
-        catch ( IllegalArtifactCoordinateException e )
-        {
-            // good
-        }
+        assertNull( "We expect null since baseVersion and version mismatch in path!", gav );
     }
 
     public void testGavExtensionAndClassifier()

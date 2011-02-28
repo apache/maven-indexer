@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.IllegalArtifactCoordinateException;
-import org.apache.maven.index.artifact.VersionUtils;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -280,7 +278,6 @@ public class ArtifactInfo
     }
 
     public Gav calculateGav()
-        throws IllegalArtifactCoordinateException
     {
         return new Gav( groupId, artifactId, version, classifier, fextension, null, // snapshotBuildNumber
             null, // snapshotTimeStamp

@@ -41,7 +41,7 @@ public class MavenArtifactRecognizerTest
 
         assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.jar" ) );
         assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.pom" ) );
-        assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.2.3-.pom" ) );
+        assertEquals( true, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0-SNAPSHOT/aid-1.2.3-.pom" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/xsd-SNAPsHOT.jar" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/xsd-SNAPHOT.pom" ) );
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/org/somewhere/aid/1.0/a/b/c/xsd-1.2.3NAPSHOT.pom" ) );
