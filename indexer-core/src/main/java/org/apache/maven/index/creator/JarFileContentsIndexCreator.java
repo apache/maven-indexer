@@ -22,9 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -35,6 +33,8 @@ import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.util.zip.ZipFacade;
+import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.component.annotations.Component;
 
 /**
@@ -136,21 +136,18 @@ public class JarFileContentsIndexCreator
     private void updateArtifactInfo( ArtifactInfo ai, File f )
         throws IOException
     {
-        ZipFile jar = null;
+        ZipHandle handle = null;
 
         try
         {
-            jar = new ZipFile( f );
+            handle = ZipFacade.getZipHandle( f );
 
-            StringBuilder sb = new StringBuilder();
+            final List<String> entries = handle.getEntries();
 
-            Enumeration<?> en = jar.entries();
-            while ( en.hasMoreElements() )
+            final StringBuilder sb = new StringBuilder();
+
+            for ( String name : entries )
             {
-                ZipEntry e = (ZipEntry) en.nextElement();
-
-                String name = e.getName();
-
                 if ( name.endsWith( ".class" ) )
                 {
                     // TODO verify if class is public or protected
@@ -171,9 +168,11 @@ public class JarFileContentsIndexCreator
                 }
             }
 
-            if ( sb.toString().trim().length() != 0 )
+            final String fieldValue = sb.toString().trim();
+
+            if ( fieldValue.length() != 0 )
             {
-                ai.classNames = sb.toString();
+                ai.classNames = fieldValue;
             }
             else
             {
@@ -182,16 +181,13 @@ public class JarFileContentsIndexCreator
         }
         finally
         {
-            if ( jar != null )
+            try
             {
-                try
-                {
-                    jar.close();
-                }
-                catch ( Exception e )
-                {
-                    getLogger().error( "Could not close jar file properly.", e );
-                }
+                ZipFacade.close( handle );
+            }
+            catch ( Exception e )
+            {
+                getLogger().error( "Could not close jar file properly.", e );
             }
         }
     }

@@ -26,8 +26,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -38,10 +36,11 @@ import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.util.zip.ZipFacade;
+import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
@@ -83,35 +82,39 @@ public class MavenPluginArtifactInfoIndexCreator
 
     private void checkMavenPlugin( ArtifactInfo ai, File artifact )
     {
-        ZipFile jf = null;
-
-        InputStream is = null;
+        ZipHandle handle = null;
 
         try
         {
-            jf = new ZipFile( artifact );
+            handle = ZipFacade.getZipHandle( artifact );
 
-            ZipEntry entry = jf.getEntry( "META-INF/maven/plugin.xml" );
+            final String pluginDescriptorPath = "META-INF/maven/plugin.xml";
 
-            if ( entry == null )
+            if ( handle.hasEntry( pluginDescriptorPath ) )
             {
-                return;
-            }
+                InputStream is = new BufferedInputStream( handle.getEntryContent( pluginDescriptorPath ) );
 
-            is = new BufferedInputStream( jf.getInputStream( entry ) );
+                try
+                {
+                    // here the reader is closed
+                    PlexusConfiguration plexusConfig =
+                        new XmlPlexusConfiguration( Xpp3DomBuilder.build( new InputStreamReader( is ) ) );
 
-            PlexusConfiguration plexusConfig =
-                new XmlPlexusConfiguration( Xpp3DomBuilder.build( new InputStreamReader( is ) ) );
+                    ai.prefix = plexusConfig.getChild( "goalPrefix" ).getValue();
 
-            ai.prefix = plexusConfig.getChild( "goalPrefix" ).getValue();
+                    ai.goals = new ArrayList<String>();
 
-            ai.goals = new ArrayList<String>();
+                    PlexusConfiguration[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
 
-            PlexusConfiguration[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
-
-            for ( PlexusConfiguration mojoConfig : mojoConfigs )
-            {
-                ai.goals.add( mojoConfig.getChild( "goal" ).getValue() );
+                    for ( PlexusConfiguration mojoConfig : mojoConfigs )
+                    {
+                        ai.goals.add( mojoConfig.getChild( "goal" ).getValue() );
+                    }
+                }
+                finally
+                {
+                    is.close();
+                }
             }
         }
         catch ( Exception e )
@@ -120,9 +123,13 @@ public class MavenPluginArtifactInfoIndexCreator
         }
         finally
         {
-            close( jf );
-
-            IOUtil.close( is );
+            try
+            {
+                ZipFacade.close( handle );
+            }
+            catch ( IOException e )
+            {
+            }
         }
     }
 
@@ -158,20 +165,6 @@ public class MavenPluginArtifactInfoIndexCreator
         }
 
         return res;
-    }
-
-    private void close( ZipFile zf )
-    {
-        if ( zf != null )
-        {
-            try
-            {
-                zf.close();
-            }
-            catch ( IOException ex )
-            {
-            }
-        }
     }
 
     @Override

@@ -26,10 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -38,6 +35,8 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.util.zip.ZipFacade;
+import org.apache.maven.index.util.zip.ZipHandle;
 import org.apache.maven.model.Model;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
@@ -102,23 +101,18 @@ public class ArtifactContext
         // Otherwise, check for pom contained in maven generated artifact
         else if ( getArtifact() != null )
         {
-            ZipFile jar = null;
+            ZipHandle handle = null;
 
             try
             {
-                jar = new ZipFile( getArtifact() );
+                handle = ZipFacade.getZipHandle( getArtifact() );
 
-                Enumeration<? extends ZipEntry> en = jar.entries();
-                while ( en.hasMoreElements() )
+                final String embeddedPomPath =
+                    "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
+
+                if ( handle.hasEntry( embeddedPomPath ) )
                 {
-                    ZipEntry e = en.nextElement();
-                    String name = e.getName();
-
-                    // pom will be stored under /META-INF/maven/groupId/artifactId/pom.xml
-                    if ( name.equals( "META-INF/maven/" + gav.getGroupId() + "/" + gav.getArtifactId() + "/pom.xml" ) )
-                    {
-                        return new ModelReader().readModel( jar.getInputStream( e ) );
-                    }
+                    return new ModelReader().readModel( handle.getEntryContent( embeddedPomPath ) );
                 }
             }
             catch ( IOException e )
@@ -126,15 +120,12 @@ public class ArtifactContext
             }
             finally
             {
-                if ( jar != null )
+                try
                 {
-                    try
-                    {
-                        jar.close();
-                    }
-                    catch ( Exception e )
-                    {
-                    }
+                    ZipFacade.close( handle );
+                }
+                catch ( Exception e )
+                {
                 }
             }
         }

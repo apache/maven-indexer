@@ -22,14 +22,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.util.zip.ZipFacade;
+import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.component.annotations.Component;
 
 /**
@@ -77,16 +77,18 @@ public class MavenArchetypeArtifactInfoIndexCreator
      */
     private void checkMavenArchetype( ArtifactInfo ai, File artifact )
     {
-        ZipFile jf = null;
+        ZipHandle handle = null;
 
         try
         {
-            jf = new ZipFile( artifact );
+            handle = ZipFacade.getZipHandle( artifact );
 
-            for ( String location : ARCHETYPE_XML_LOCATIONS )
+            for ( String path : ARCHETYPE_XML_LOCATIONS )
             {
-                if ( checkEntry( ai, jf, location ) )
+                if ( handle.hasEntry( path ) )
                 {
+                    ai.packaging = MAVEN_ARCHETYPE_PACKAGING;
+
                     return;
                 }
             }
@@ -106,21 +108,14 @@ public class MavenArchetypeArtifactInfoIndexCreator
         }
         finally
         {
-            close( jf );
+            try
+            {
+                ZipFacade.close( handle );
+            }
+            catch ( IOException ex )
+            {
+            }
         }
-    }
-
-    private boolean checkEntry( ArtifactInfo ai, ZipFile jf, String entryName )
-    {
-        ZipEntry entry = jf.getEntry( entryName );
-
-        if ( entry != null )
-        {
-            ai.packaging = MAVEN_ARCHETYPE_PACKAGING;
-
-            return true;
-        }
-        return false;
     }
 
     public void updateDocument( ArtifactInfo ai, Document doc )
@@ -136,20 +131,6 @@ public class MavenArchetypeArtifactInfoIndexCreator
     }
 
     // ==
-
-    private void close( ZipFile zf )
-    {
-        if ( zf != null )
-        {
-            try
-            {
-                zf.close();
-            }
-            catch ( IOException ex )
-            {
-            }
-        }
-    }
 
     @Override
     public String toString()
