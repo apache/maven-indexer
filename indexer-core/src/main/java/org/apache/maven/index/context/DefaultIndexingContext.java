@@ -64,7 +64,7 @@ public class DefaultIndexingContext
      */
     private static final String INDEX_DIRECTORY = ".index";
 
-    private static final String FLD_DESCRIPTOR = "DESCRIPTOR";
+    public static final String FLD_DESCRIPTOR = "DESCRIPTOR";
 
     private static final String FLD_DESCRIPTOR_CONTENTS = "NexusIndex";
 

@@ -36,6 +36,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
@@ -65,6 +66,8 @@ public class IndexDataWriter
 
     private final Set<String> rootGroups;
 
+    private boolean descriptorWritten;
+
     public IndexDataWriter( OutputStream os )
         throws IOException
     {
@@ -74,6 +77,7 @@ public class IndexDataWriter
 
         this.allGroups = new HashSet<String>();
         this.rootGroups = new HashSet<String>();
+        this.descriptorWritten = false;
     }
 
     public int write( IndexingContext context, List<Integer> docIndexes )
@@ -176,6 +180,18 @@ public class IndexDataWriter
 
         for ( Fieldable field : fields )
         {
+            if ( DefaultIndexingContext.FLD_DESCRIPTOR.equals( field.name() ) )
+            {
+                if ( descriptorWritten )
+                {
+                    return false;
+                }
+                else
+                {
+                    descriptorWritten = true;
+                }
+            }
+
             if ( ArtifactInfo.ALL_GROUPS.equals( field.name() ) )
             {
                 final String groupList = document.get( ArtifactInfo.ALL_GROUPS_LIST );

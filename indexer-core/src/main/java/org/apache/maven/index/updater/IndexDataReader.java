@@ -56,9 +56,7 @@ public class IndexDataReader
     public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context )
         throws IOException
     {
-        dis.readByte(); // data format version
-
-        long timestamp = dis.readLong();
+        long timestamp = readHeader();
 
         Date date = null;
 
@@ -86,6 +84,14 @@ public class IndexDataReader
         result.setDocumentCount( n );
         result.setTimestamp( date );
         return result;
+    }
+
+    public long readHeader()
+        throws IOException
+    {
+        dis.readByte(); // data format version
+
+        return dis.readLong();
     }
 
     public Document readDocument()
