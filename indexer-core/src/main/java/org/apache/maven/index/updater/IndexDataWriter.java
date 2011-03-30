@@ -196,7 +196,7 @@ public class IndexDataWriter
             {
                 final String groupList = document.get( ArtifactInfo.ALL_GROUPS_LIST );
 
-                if ( groupList != null )
+                if ( groupList != null && groupList.trim().length() > 0 )
                 {
                     allGroups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
                 }
@@ -208,7 +208,7 @@ public class IndexDataWriter
             {
                 final String groupList = document.get( ArtifactInfo.ROOT_GROUPS_LIST );
 
-                if ( groupList != null )
+                if ( groupList != null && groupList.trim().length() > 0 )
                 {
                     rootGroups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
                 }
