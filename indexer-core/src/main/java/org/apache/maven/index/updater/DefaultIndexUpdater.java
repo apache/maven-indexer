@@ -645,7 +645,7 @@ public class DefaultIndexUpdater
             throws IOException
         {
             super.commit();
-            
+
             updateRequest.getIndexingContext().commit();
         }
 
@@ -872,7 +872,16 @@ public class DefaultIndexUpdater
         catch ( IOException ex )
         {
             // try to look for legacy index transfer format
-            return target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".zip" );
+            try
+            {
+                return target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".zip" );
+            }
+            catch ( IOException ex2 )
+            {
+                getLogger().error( "Fallback to *.zip also failed: " + ex2 ); // do not bother with stack trace
+                
+                throw ex; // original exception more likely to be interesting
+            }
         }
     }
 
