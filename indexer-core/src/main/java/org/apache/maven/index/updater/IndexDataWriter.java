@@ -23,13 +23,19 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
+import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
@@ -49,11 +55,15 @@ public class IndexDataWriter
 
     static final int F_COMPRESSED = 8;
 
-    private DataOutputStream dos;
+    private final DataOutputStream dos;
 
-    private GZIPOutputStream gos;
+    private final GZIPOutputStream gos;
 
-    private BufferedOutputStream bos;
+    private final BufferedOutputStream bos;
+
+    private final Set<String> allGroups;
+
+    private final Set<String> rootGroups;
 
     public IndexDataWriter( OutputStream os )
         throws IOException
@@ -61,6 +71,9 @@ public class IndexDataWriter
         bos = new BufferedOutputStream( os, 1024 * 8 );
         gos = new GZIPOutputStream( bos, 1024 * 2 );
         dos = new DataOutputStream( gos );
+
+        this.allGroups = new HashSet<String>();
+        this.rootGroups = new HashSet<String>();
     }
 
     public int write( IndexingContext context, List<Integer> docIndexes )
@@ -69,6 +82,8 @@ public class IndexDataWriter
         writeHeader( context );
 
         int n = writeDocuments( context.getIndexReader(), docIndexes );
+
+        writeGroupFields();
 
         close();
 
@@ -95,6 +110,28 @@ public class IndexDataWriter
         dos.writeLong( timestamp == null ? -1 : timestamp.getTime() );
     }
 
+    public void writeGroupFields()
+        throws IOException
+    {
+        {
+            List<Fieldable> allGroupsFields = new ArrayList<Fieldable>( 2 );
+            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Field.Store.YES,
+                Field.Index.NOT_ANALYZED ) );
+            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
+                Field.Store.YES, Field.Index.NO ) );
+            writeDocumentFields( allGroupsFields );
+        }
+
+        {
+            List<Fieldable> rootGroupsFields = new ArrayList<Fieldable>( 2 );
+            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, Field.Store.YES,
+                Field.Index.NOT_ANALYZED ) );
+            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
+                Field.Store.YES, Field.Index.NO ) );
+            writeDocumentFields( rootGroupsFields );
+        }
+    }
+
     public int writeDocuments( IndexReader r, List<Integer> docIndexes )
         throws IOException
     {
@@ -106,8 +143,10 @@ public class IndexDataWriter
             {
                 if ( !r.isDeleted( i ) )
                 {
-                    writeDocument( r.document( i ) );
-                    n++;
+                    if ( writeDocument( r.document( i ) ) )
+                    {
+                        n++;
+                    }
                 }
             }
         }
@@ -117,8 +156,10 @@ public class IndexDataWriter
             {
                 if ( !r.isDeleted( i ) )
                 {
-                    writeDocument( r.document( i ) );
-                    n++;
+                    if ( writeDocument( r.document( i ) ) )
+                    {
+                        n++;
+                    }
                 }
             }
         }
@@ -126,29 +167,58 @@ public class IndexDataWriter
         return n;
     }
 
-    public void writeDocument( Document document )
+    public boolean writeDocument( final Document document )
         throws IOException
     {
         List<Fieldable> fields = document.getFields();
 
-        int fieldCount = 0;
+        List<Fieldable> storedFields = new ArrayList<Fieldable>( fields.size() );
 
         for ( Fieldable field : fields )
         {
+            if ( ArtifactInfo.ALL_GROUPS.equals( field.name() ) )
+            {
+                final String groupList = document.get( ArtifactInfo.ALL_GROUPS_LIST );
+
+                if ( groupList != null )
+                {
+                    allGroups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
+                }
+
+                return false;
+            }
+
+            if ( ArtifactInfo.ROOT_GROUPS.equals( field.name() ) )
+            {
+                final String groupList = document.get( ArtifactInfo.ROOT_GROUPS_LIST );
+
+                if ( groupList != null )
+                {
+                    rootGroups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
+                }
+
+                return false;
+            }
+
             if ( field.isStored() )
             {
-                fieldCount++;
+                storedFields.add( field );
             }
         }
 
-        dos.writeInt( fieldCount );
+        writeDocumentFields( storedFields );
+
+        return true;
+    }
+
+    public void writeDocumentFields( List<Fieldable> fields )
+        throws IOException
+    {
+        dos.writeInt( fields.size() );
 
         for ( Fieldable field : fields )
         {
-            if ( field.isStored() )
-            {
-                writeField( field );
-            }
+            writeField( field );
         }
     }
 
