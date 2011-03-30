@@ -1,23 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
- -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<!-- Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+  distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+  the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may 
+  obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+  in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+  ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+  the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -36,6 +26,7 @@ under the License.
     <aether.version>1.8</aether.version>
     <archetype.version>2.0-alpha-4</archetype.version>
     <wagon.version>1.0-beta-7</wagon.version>
+    <truezip.version>7.0-rc1</truezip.version>
   </properties>
 
   <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
@@ -175,6 +166,20 @@ under the License.
       <optional>true</optional>
     </dependency>
 
+    <!-- ZipFacade -->
+    <dependency>
+      <groupId>de.schlichtherle.truezip</groupId>
+      <artifactId>truezip-file</artifactId>
+      <version>${truezip.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>de.schlichtherle.truezip</groupId>
+      <artifactId>truezip-driver-zip</artifactId>
+      <version>${truezip.version}</version>
+      <optional>true</optional>
+    </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -227,6 +232,7 @@ under the License.
               <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>org.apache.maven.index.cli.NexusIndexerCli</mainClass>
                 </transformer>
@@ -247,6 +253,10 @@ under the License.
                   <include>org.sonatype.sisu:sisu-inject-plexus</include>
                   <include>org.sonatype.sisu:sisu-inject-bean</include>
                   <include>org.sonatype.sisu:sisu-guice:jar:noaop</include>
+                  <include>de.schlichtherle.truezip:truezip-kernel</include>
+                  <include>de.schlichtherle.truezip:truezip-file</include>
+                  <include>de.schlichtherle.truezip:truezip-driver-zip</include>
+                  <include>de.schlichtherle.truezip:truezip-driver-file</include>
                 </includes>
               </artifactSet>
             </configuration>
