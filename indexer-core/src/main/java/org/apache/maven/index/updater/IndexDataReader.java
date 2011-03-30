@@ -49,8 +49,24 @@ public class IndexDataReader
         throws IOException
     {
         BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-        GZIPInputStream gis = new GZIPInputStream( bis, 2 * 1024 );
-        this.dis = new DataInputStream( gis );
+
+        // MINDEXER-13
+        // LightweightHttpWagon may have performed automatic decompression
+        // Handle it transparently
+        bis.mark( 2 );
+        InputStream data;
+        if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
+        {
+            bis.reset();
+            data = new GZIPInputStream( bis, 2 * 1024 );
+        }
+        else
+        {
+            bis.reset();
+            data = bis;
+        }
+
+        this.dis = new DataInputStream( data );
     }
 
     public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context )
