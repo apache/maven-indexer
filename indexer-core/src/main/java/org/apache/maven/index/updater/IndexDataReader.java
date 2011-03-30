@@ -105,7 +105,13 @@ public class IndexDataReader
     public long readHeader()
         throws IOException
     {
-        dis.readByte(); // data format version
+        final byte HDRBYTE = (byte) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
+
+        if ( HDRBYTE != dis.readByte() )
+        {
+            // data format version mismatch
+            throw new IOException( "Provided input contains unexpected data (0x01 expected as 1st byte)!" );
+        }
 
         return dis.readLong();
     }
