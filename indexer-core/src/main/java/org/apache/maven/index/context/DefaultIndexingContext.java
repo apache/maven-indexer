@@ -1190,7 +1190,7 @@ public class DefaultIndexingContext
             }
         };
 
-        bottleWarmerThread = new Thread( bottleWarmer, "Index-BottleWarmer" );
+        bottleWarmerThread = new Thread( bottleWarmer, "Index-BottleWarmer-" + id );
         bottleWarmerThread.setDaemon( true );
         bottleWarmerThread.start();
     }
