@@ -117,4 +117,11 @@ public class IteratorSearchResponse
      * @deprecated Use {@link #empty(Query)} instead.
      */
     public static final IteratorSearchResponse EMPTY_ITERATOR_SEARCH_RESPONSE = empty( null );
+
+    /**
+     * Too many search response.
+     * 
+     * @deprecated Left here for backward compatibility, but since version 4.1.0 (see MINDEXER-14) there is NO notion of "hit limit" anymore.
+     */
+    public static final IteratorSearchResponse TOO_MANY_HITS_ITERATOR_SEARCH_RESPONSE = new IteratorSearchResponse( null, -1, EMPTY_ITERATOR_RESULT_SET );
 }
