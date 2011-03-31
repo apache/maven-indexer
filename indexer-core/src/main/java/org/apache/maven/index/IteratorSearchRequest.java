@@ -25,7 +25,8 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
- * A Search Request that will perform the new "iterator-like" type of search.
+ * A Search Request that will perform the new "iterator-like" type of search. It is pageable as plus, but on downside,
+ * it's corresponding result does not result size in advance.
  * 
  * @author cstamas
  */

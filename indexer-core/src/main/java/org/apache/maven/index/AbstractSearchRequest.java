@@ -26,9 +26,21 @@ import org.apache.maven.index.context.IndexingContext;
 
 public class AbstractSearchRequest
 {
+    /**
+     * Constant for denoting undefined value for result count.
+     */
+    public static final int UNDEFINED = -1;
+
     private Query query;
 
     private List<IndexingContext> contexts;
+
+    /**
+     * The maximum count of results expected to have delivered, actually count of items (AIs). More precisely, with this
+     * setting we LIMIT the number of Lucene Documents for total set of hits to be processed. If set to anything other
+     * than {@link #UNDEFINED}, search will stop upon processing this count of AIs (that correspond to Lucene Document).
+     */
+    private int count;
 
     /**
      * The filter to be used while executing the search request.
@@ -65,6 +77,8 @@ public class AbstractSearchRequest
         {
             getContexts().addAll( contexts );
         }
+
+        this.count = UNDEFINED;
     }
 
     public Query getQuery()
@@ -90,6 +104,31 @@ public class AbstractSearchRequest
     public void setContexts( List<IndexingContext> contexts )
     {
         this.contexts = contexts;
+    }
+
+    /**
+     * Returns the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
+     * 
+     * @return
+     */
+    public int getCount()
+    {
+        return count;
+    }
+
+    /**
+     * Sets the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
+     * 
+     * @param count
+     */
+    public void setCount( int count )
+    {
+        if ( UNDEFINED != count && count < 1 )
+        {
+            throw new IllegalArgumentException( "Count cannot be less than 1!" );
+        }
+
+        this.count = count;
     }
 
     /**

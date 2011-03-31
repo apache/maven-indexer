@@ -60,7 +60,7 @@ public class AbstractSearchResponse
     /**
      * Returns the number of total hits found by this query (total number of potential hits as reported by Lucene
      * index). This is the number of existing AIs matching your query, and does not represent the count of hits
-     * delivered, which is returned by {@link #getHitsCount()}.
+     * delivered, which is returned by {@link #getReturnedHitsCount()}.
      * 
      * @return
      */

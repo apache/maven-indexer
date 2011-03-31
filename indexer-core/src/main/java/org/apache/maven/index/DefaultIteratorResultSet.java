@@ -109,7 +109,7 @@ public class DefaultIteratorResultSet
         this.from = request.getStart();
 
         this.count =
-            ( request.getCount() == AbstractSearchPageableRequest.UNDEFINED ? hits.scoreDocs.length : Math.min(
+            ( request.getCount() == AbstractSearchRequest.UNDEFINED ? hits.scoreDocs.length : Math.min(
                 request.getCount(), hits.scoreDocs.length ) );
 
         this.pointer = from;

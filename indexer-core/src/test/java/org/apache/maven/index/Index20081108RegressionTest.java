@@ -151,7 +151,9 @@ public class Index20081108RegressionTest
     {
         FlatSearchRequest request = new FlatSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED ) );
 
-        request.setStart( 0 );
+        // See MINDEXER-22
+        // Flat search is not pageable
+        // request.setStart( 0 );
 
         request.setCount( 50 );
 
@@ -206,57 +208,59 @@ public class Index20081108RegressionTest
         }
     }
 
-    @Override
-    public void donttestPaging()
-        throws Exception
-    {
-        // we have 15 artifact for this search
-        int total = 15;
-
-        int pageSize = 4;
-
-        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
-
-        FlatSearchRequest req = new FlatSearchRequest( q );
-
-        // have page size of 4, that will make us 4 pages
-        req.setCount( pageSize );
-
-        List<ArtifactInfo> constructedPageList = new ArrayList<ArtifactInfo>();
-
-        int offset = 0;
-
-        while ( true )
-        {
-            req.setStart( offset );
-
-            FlatSearchResponse resp = nexusIndexer.searchFlat( req );
-
-            Collection<ArtifactInfo> p = resp.getResults();
-
-            assertEquals( p.toString(), total, resp.getTotalHits() );
-
-            assertEquals( Math.min( pageSize, total - offset ), p.size() );
-
-            constructedPageList.addAll( p );
-
-            offset += pageSize;
-
-            if ( offset > total )
-            {
-                break;
-            }
-        }
-
-        //
-        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        Collection<ArtifactInfo> onePage = response.getResults();
-
-        List<ArtifactInfo> onePageList = new ArrayList<ArtifactInfo>( onePage );
-
-        // onePage and constructedPage should hold equal elems in the same order
-        assertTrue( resultsAreEqual( onePageList, constructedPageList ) );
-    }
+    // See MINDEXER-22
+    // Flat search is not pageable
+//    @Override
+//    public void donttestPaging()
+//        throws Exception
+//    {
+//        // we have 15 artifact for this search
+//        int total = 15;
+//
+//        int pageSize = 4;
+//
+//        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
+//
+//        FlatSearchRequest req = new FlatSearchRequest( q );
+//
+//        // have page size of 4, that will make us 4 pages
+//        req.setCount( pageSize );
+//
+//        List<ArtifactInfo> constructedPageList = new ArrayList<ArtifactInfo>();
+//
+//        int offset = 0;
+//
+//        while ( true )
+//        {
+//            req.setStart( offset );
+//
+//            FlatSearchResponse resp = nexusIndexer.searchFlat( req );
+//
+//            Collection<ArtifactInfo> p = resp.getResults();
+//
+//            assertEquals( p.toString(), total, resp.getTotalHits() );
+//
+//            assertEquals( Math.min( pageSize, total - offset ), p.size() );
+//
+//            constructedPageList.addAll( p );
+//
+//            offset += pageSize;
+//
+//            if ( offset > total )
+//            {
+//                break;
+//            }
+//        }
+//
+//        //
+//        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
+//        Collection<ArtifactInfo> onePage = response.getResults();
+//
+//        List<ArtifactInfo> onePageList = new ArrayList<ArtifactInfo>( onePage );
+//
+//        // onePage and constructedPage should hold equal elems in the same order
+//        assertTrue( resultsAreEqual( onePageList, constructedPageList ) );
+//    }
 
     @Override
     public void testPurge()

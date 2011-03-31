@@ -305,9 +305,9 @@ public class DefaultSearchEngine
                                                         final IndexSearcher indexSearcher, final Query query )
         throws IOException
     {
-        int topHitCount = getTopDocsCollectorHitNum( request, AbstractSearchPageableRequest.UNDEFINED );
+        int topHitCount = getTopDocsCollectorHitNum( request, AbstractSearchRequest.UNDEFINED );
 
-        if ( AbstractSearchPageableRequest.UNDEFINED != topHitCount )
+        if ( AbstractSearchRequest.UNDEFINED != topHitCount )
         {
             // count is set, simply just execute it as-is
             final TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
@@ -321,13 +321,11 @@ public class DefaultSearchEngine
             // set something reasonable as 1k
             topHitCount = 1000;
 
-            // count is not set, start with something reasonable as 1k
-            TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
-
             // perform search
+            TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
             indexSearcher.search( query, hits );
 
-            // check total hits against
+            // check total hits against, does it fit?
             if ( topHitCount < hits.getTotalHits() )
             {
                 topHitCount = hits.getTotalHits();
@@ -431,10 +429,18 @@ public class DefaultSearchEngine
         {
             final AbstractSearchPageableRequest prequest = (AbstractSearchPageableRequest) request;
 
-            if ( AbstractSearchPageableRequest.UNDEFINED != prequest.getCount() )
+            if ( AbstractSearchRequest.UNDEFINED != prequest.getCount() )
             {
                 // easy, user knows and tells us how many results he want
                 return prequest.getCount() + prequest.getStart();
+            }
+        }
+        else
+        {
+            if ( AbstractSearchRequest.UNDEFINED != request.getCount() )
+            {
+                // easy, user knows and tells us how many results he want
+                return request.getCount();
             }
         }
 
