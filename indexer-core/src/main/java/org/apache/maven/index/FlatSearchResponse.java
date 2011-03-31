@@ -34,7 +34,7 @@ public class FlatSearchResponse
 
     public FlatSearchResponse( Query query, int totalHits, Set<ArtifactInfo> results )
     {
-        super( query, totalHits );
+        super( query, totalHits, results.size() );
 
         this.results = results;
     }

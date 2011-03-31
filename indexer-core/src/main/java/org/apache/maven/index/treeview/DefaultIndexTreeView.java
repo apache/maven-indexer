@@ -33,7 +33,7 @@ import org.apache.maven.index.IteratorSearchRequest;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.SearchType;
+import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
@@ -377,7 +377,7 @@ public class DefaultIndexTreeView
 
         result = getArtifactsByG( g, request );
 
-        if ( result.getTotalHits() > 0 )
+        if ( result.getTotalHitsCount() > 0 )
         {
             return result;
         }
@@ -399,7 +399,7 @@ public class DefaultIndexTreeView
 
             result = getArtifactsByGA( g, a, request );
 
-            if ( result.getTotalHits() > 0 )
+            if ( result.getTotalHitsCount() > 0 )
             {
                 return result;
             }
@@ -425,7 +425,7 @@ public class DefaultIndexTreeView
 
                 result = getArtifactsByGAV( g, a, v, request );
 
-                if ( result.getTotalHits() > 0 )
+                if ( result.getTotalHitsCount() > 0 )
                 {
                     return result;
                 }
@@ -441,7 +441,7 @@ public class DefaultIndexTreeView
         }
 
         // if we are here, no hits found
-        return IteratorSearchResponse.EMPTY_ITERATOR_SEARCH_RESPONSE;
+        return IteratorSearchResponse.empty( result.getQuery() );
     }
 
     protected IteratorSearchResponse getHintedArtifacts( TreeNode root, TreeViewRequest request )
@@ -465,7 +465,7 @@ public class DefaultIndexTreeView
         else
         {
             // if we are here, no hits found or something horribly went wrong?
-            return IteratorSearchResponse.EMPTY_ITERATOR_SEARCH_RESPONSE;
+            return IteratorSearchResponse.empty( null );
         }
     }
 
@@ -497,16 +497,16 @@ public class DefaultIndexTreeView
         Query versionQ = null;
 
         // minimum must have
-        groupIdQ = getNexusIndexer().constructQuery( MAVEN.GROUP_ID, g, SearchType.EXACT );
+        groupIdQ = getNexusIndexer().constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( g ) );
 
         if ( StringUtils.isNotBlank( a ) )
         {
-            artifactIdQ = getNexusIndexer().constructQuery( MAVEN.ARTIFACT_ID, a, SearchType.EXACT );
+            artifactIdQ = getNexusIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( a ) );
         }
 
         if ( StringUtils.isNotBlank( v ) )
         {
-            versionQ = getNexusIndexer().constructQuery( MAVEN.VERSION, v, SearchType.EXACT );
+            versionQ = getNexusIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( v ) );
         }
 
         BooleanQuery q = new BooleanQuery();

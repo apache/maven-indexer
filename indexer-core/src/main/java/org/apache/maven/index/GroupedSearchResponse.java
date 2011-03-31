@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.lucene.search.Query;
 
 /**
- * A grouped search response.
+ * A grouped search response. For hitsCount, it reports the number of groups found.
  * 
  * @see NexusIndexer#searchGrouped(GroupedSearchRequest)
  */
@@ -34,7 +34,7 @@ public class GroupedSearchResponse
 
     public GroupedSearchResponse( Query query, int totalHits, Map<String, ArtifactInfoGroup> results )
     {
-        super( query, totalHits );
+        super( query, totalHits, results.size() );
 
         this.results = results;
     }

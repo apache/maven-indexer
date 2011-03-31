@@ -25,7 +25,8 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
- * A grouped search request.
+ * A grouped search request. This kinds of request is not pageable, since order of incoming hits are not defined, hence
+ * paging between Document hits makes no sense, would produce unpredictable (and probably not meaningful) results.
  * 
  * @see NexusIndexer#searchGrouped(GroupedSearchRequest)
  */

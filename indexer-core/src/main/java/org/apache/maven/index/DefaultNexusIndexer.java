@@ -60,7 +60,6 @@ public class DefaultNexusIndexer
     extends AbstractLogEnabled
     implements NexusIndexer
 {
-
     @Requirement
     private Scanner scanner;
 
@@ -437,6 +436,7 @@ public class DefaultNexusIndexer
     // Query construction
     // ----------------------------------------------------------------------------
 
+    @Deprecated
     public Query constructQuery( Field field, String query, SearchType type )
         throws IllegalArgumentException
     {
@@ -528,7 +528,7 @@ public class DefaultNexusIndexer
 
         try
         {
-            ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( result.getTotalHits() );
+            ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( result.getTotalHitsCount() );
 
             for ( ArtifactInfo ai : result )
             {

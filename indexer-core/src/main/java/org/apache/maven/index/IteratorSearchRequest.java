@@ -30,7 +30,7 @@ import org.apache.maven.index.context.IndexingContext;
  * @author cstamas
  */
 public class IteratorSearchRequest
-    extends AbstractSearchRequest
+    extends AbstractSearchPageableRequest
 {
     public IteratorSearchRequest( Query query )
     {

@@ -49,15 +49,6 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 public class DefaultIteratorResultSet
     implements IteratorResultSet
 {
-    /**
-     * This is "hard limit", a possible maximum count of hits that Nexus Indexer will _serve_ even if asked for more.
-     * Thus, it prevents some malicious attacks like forcing Nexus (or underlying IO to it's knees) but asking for huuge
-     * count of hits. If anyone needs more than 1000 of hits, it should download the index and use Indexer API instead
-     * to perform searches locally.
-     */
-    // TODO: inspect is this limit actually needed or not.
-    private static final int HARD_HIT_COUNT_LIMIT = Integer.MAX_VALUE;
-
     private final IteratorSearchRequest searchRequest;
 
     private final IndexSearcher indexSearcher;
@@ -115,11 +106,11 @@ public class DefaultIteratorResultSet
 
         this.hits = hits;
 
-        this.from = ( request.getStart() == AbstractSearchRequest.UNDEFINED ? 0 : request.getStart() );
+        this.from = request.getStart();
 
         this.count =
-            ( request.getCount() == AbstractSearchRequest.UNDEFINED ? HARD_HIT_COUNT_LIMIT : Math.min(
-                request.getCount(), HARD_HIT_COUNT_LIMIT ) );
+            ( request.getCount() == AbstractSearchPageableRequest.UNDEFINED ? hits.scoreDocs.length : Math.min(
+                request.getCount(), hits.scoreDocs.length ) );
 
         this.pointer = from;
 

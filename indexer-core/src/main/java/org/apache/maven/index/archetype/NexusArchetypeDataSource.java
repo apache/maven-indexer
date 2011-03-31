@@ -32,8 +32,8 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -58,7 +58,7 @@ public class NexusArchetypeDataSource
         {
             Map<String, String> repositories = getRepositoryMap();
 
-            Query pq = indexer.constructQuery( MAVEN.PACKAGING, "maven-archetype", SearchType.EXACT );
+            Query pq = indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
 
             FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
 

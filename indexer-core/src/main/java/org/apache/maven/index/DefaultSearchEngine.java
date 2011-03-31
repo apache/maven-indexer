@@ -20,8 +20,10 @@ package org.apache.maven.index;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -56,7 +58,8 @@ public class DefaultSearchEngine
                                          IndexingContext indexingContext, Query query )
         throws IOException
     {
-        return searchFlatPaged( new FlatSearchRequest( query, artifactInfoComparator, indexingContext ) ).getResults();
+        return searchFlatPaged( new FlatSearchRequest( query, artifactInfoComparator, indexingContext ),
+            Arrays.asList( indexingContext ), true ).getResults();
     }
 
     @Deprecated
@@ -65,22 +68,6 @@ public class DefaultSearchEngine
         throws IOException
     {
         return searchFlatPaged( new FlatSearchRequest( query, artifactInfoComparator ), indexingContexts ).getResults();
-    }
-
-    public FlatSearchResponse searchFlatPaged( FlatSearchRequest request )
-        throws IOException
-    {
-        TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
-
-        int totalHits = 0;
-
-        for ( IndexingContext context : request.getContexts() )
-        {
-            totalHits +=
-                searchFlat( request, result, context, request.getQuery(), request.getStart(), request.getCount() );
-        }
-
-        return new FlatSearchResponse( request.getQuery(), totalHits, result );
     }
 
     public FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
@@ -102,35 +89,25 @@ public class DefaultSearchEngine
     {
         TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
 
-        int totalHits = 0;
+        List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        for ( IndexingContext ctx : indexingContexts )
+        try
         {
-            if ( ignoreContext || ctx.isSearchable() )
+            for ( IndexingContext ctx : contexts )
             {
-                int hitCount =
-                    searchFlat( request, result, ctx, request.getQuery(), request.getStart(), request.getCount() );
-
-                if ( hitCount == AbstractSearchResponse.LIMIT_EXCEEDED )
-                {
-                    totalHits = hitCount;
-                }
-                else
-                {
-                    totalHits += hitCount;
-                }
+                ctx.lock();
             }
 
-            if ( request.isHitLimited() && ( totalHits > request.getResultHitLimit() )
-                || totalHits == AbstractSearchResponse.LIMIT_EXCEEDED )
+            return new FlatSearchResponse( request.getQuery(), searchFlat( request, result, contexts,
+                request.getQuery() ), result );
+        }
+        finally
+        {
+            for ( IndexingContext ctx : contexts )
             {
-                totalHits = AbstractSearchResponse.LIMIT_EXCEEDED;
-                result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
-                break;
+                ctx.unlock();
             }
         }
-
-        return new FlatSearchResponse( request.getQuery(), totalHits, result );
     }
 
     public GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
@@ -154,45 +131,37 @@ public class DefaultSearchEngine
         TreeMap<String, ArtifactInfoGroup> result =
             new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
 
-        int totalHits = 0;
-
-        for ( IndexingContext ctx : indexingContexts )
-        {
-            if ( ignoreContext || ctx.isSearchable() )
-            {
-                int hitCount = searchGrouped( request, result, request.getGrouping(), ctx, request.getQuery() );
-
-                if ( hitCount == AbstractSearchResponse.LIMIT_EXCEEDED )
-                {
-                    totalHits = hitCount;
-                }
-                else
-                {
-                    totalHits += hitCount;
-                }
-            }
-
-            if ( request.isHitLimited() && ( totalHits > request.getResultHitLimit() )
-                || totalHits == AbstractSearchResponse.LIMIT_EXCEEDED )
-            {
-                totalHits = AbstractSearchResponse.LIMIT_EXCEEDED;
-                result = new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
-                break;
-            }
-        }
-
-        return new GroupedSearchResponse( request.getQuery(), totalHits, result );
-    }
-
-    protected int searchFlat( AbstractSearchRequest req, Collection<ArtifactInfo> result, IndexingContext context,
-                              Query query, int from, int aiCount )
-        throws IOException
-    {
-        context.lock();
+        List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
         try
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create( req.getResultHitLimit(), true );
+            for ( IndexingContext ctx : contexts )
+            {
+                ctx.lock();
+            }
+
+            return new GroupedSearchResponse( request.getQuery(), searchGrouped( request, result,
+                request.getGrouping(), contexts, request.getQuery() ), result );
+
+        }
+        finally
+        {
+            for ( IndexingContext ctx : contexts )
+            {
+                ctx.unlock();
+            }
+        }
+    }
+
+    protected int searchFlat( FlatSearchRequest req, Collection<ArtifactInfo> result,
+                              List<IndexingContext> participatingContexts, Query query )
+        throws IOException
+    {
+        int hitCount = 0;
+
+        for ( IndexingContext context : participatingContexts )
+        {
+            TopScoreDocCollector collector = TopScoreDocCollector.create( getTopDocsCollectorHitNum( req ), true );
 
             context.getIndexSearcher().search( query, collector );
 
@@ -201,14 +170,9 @@ public class DefaultSearchEngine
                 return 0;
             }
 
-            if ( req.isHitLimited() && collector.getTotalHits() > req.getResultHitLimit() )
-            {
-                return AbstractSearchResponse.LIMIT_EXCEEDED;
-            }
-
             ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
 
-            int hitCount = scoreDocs.length;
+            hitCount += collector.getTotalHits();
 
             int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
 
@@ -226,45 +190,30 @@ public class DefaultSearchEngine
                     artifactInfo.context = context.getId();
 
                     result.add( artifactInfo );
-
-                    if ( req.isHitLimited() && result.size() > req.getResultHitLimit() )
-                    {
-                        // we hit limit, back out now !!
-                        return AbstractSearchResponse.LIMIT_EXCEEDED;
-                    }
                 }
             }
+        }
 
-            return hitCount;
-        }
-        finally
-        {
-            context.unlock();
-        }
+        return hitCount;
     }
 
-    protected int searchGrouped( AbstractSearchRequest req, Map<String, ArtifactInfoGroup> result, Grouping grouping,
-                                 IndexingContext context, Query query )
+    protected int searchGrouped( GroupedSearchRequest req, Map<String, ArtifactInfoGroup> result, Grouping grouping,
+                                 List<IndexingContext> participatingContexts, Query query )
         throws IOException
     {
-        context.lock();
+        int hitCount = 0;
 
-        try
+        for ( IndexingContext context : participatingContexts )
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create( req.getResultHitLimit(), true );
+            TopScoreDocCollector collector = TopScoreDocCollector.create( getTopDocsCollectorHitNum( req ), true );
 
             context.getIndexSearcher().search( query, collector );
 
             if ( collector.getTotalHits() > 0 )
             {
-                if ( req.isHitLimited() && collector.getTotalHits() > req.getResultHitLimit() )
-                {
-                    return AbstractSearchResponse.LIMIT_EXCEEDED;
-                }
-
                 ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
 
-                int hitCount = scoreDocs.length;
+                hitCount += collector.getTotalHits();
 
                 for ( int i = 0; i < scoreDocs.length; i++ )
                 {
@@ -285,18 +234,10 @@ public class DefaultSearchEngine
                         }
                     }
                 }
+            }
+        }
 
-                return hitCount;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        finally
-        {
-            context.unlock();
-        }
+        return hitCount;
     }
 
     // == NG Search
@@ -320,48 +261,17 @@ public class DefaultSearchEngine
                                                         boolean ignoreContext )
         throws IOException
     {
-        // manage defaults!
-        if ( request.getStart() < 0 )
-        {
-            request.setStart( IteratorSearchRequest.UNDEFINED );
-        }
-        if ( request.getCount() < 0 )
-        {
-            request.setCount( IteratorSearchRequest.UNDEFINED );
-        }
-
         try
         {
-            // to not change the API all away, but we need stable ordering here
-            // filter for those 1st, that take part in here
-            ArrayList<IndexingContext> contexts = new ArrayList<IndexingContext>( indexingContexts.size() );
+            List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-            for ( IndexingContext ctx : indexingContexts )
-            {
-                if ( ignoreContext || ctx.isSearchable() )
-                {
-                    contexts.add( ctx );
-
-                    ctx.lock();
-                }
-            }
-
-            ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( contexts.size() );
-
-            for ( IndexingContext ctx : contexts )
-            {
-                contextsToSearch.add( ctx.getIndexReader() );
-            }
-
-            MultiReader multiReader =
-                new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
+            final IndexReader multiReader = getMergedIndexReader( indexingContexts, ignoreContext );
 
             IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
 
             // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed
-            // patch
-            // did come in faster! -- Thanks)
-            TopScoreDocCollector hits = TopScoreDocCollector.create( request.getResultHitLimit(), true );
+            // patch did come in faster! -- Thanks)
+            TopScoreDocCollector hits = TopScoreDocCollector.create( getTopDocsCollectorHitNum( request ), true );
 
             indexSearcher.search( request.getQuery(), hits );
 
@@ -391,5 +301,98 @@ public class DefaultSearchEngine
                 throw ex;
             }
         }
+    }
+
+    // ==
+
+    /**
+     * Returns the list of participating contexts. Does not locks them, just builds a list of them.
+     */
+    protected List<IndexingContext> getParticipatingContexts( final Collection<IndexingContext> indexingContexts,
+                                                              final boolean ignoreContext )
+    {
+        // to not change the API all away, but we need stable ordering here
+        // filter for those 1st, that take part in here
+        final ArrayList<IndexingContext> contexts = new ArrayList<IndexingContext>( indexingContexts.size() );
+
+        for ( IndexingContext ctx : indexingContexts )
+        {
+            if ( ignoreContext || ctx.isSearchable() )
+            {
+                contexts.add( ctx );
+            }
+        }
+
+        return contexts;
+    }
+
+    /**
+     * Locks down participating contexts, and returns a "merged" reader of them. In case of error, unlocks as part of
+     * cleanup and re-throws exception. Without error, it is the duty of caller to unlock contexts!
+     * 
+     * @param indexingContexts
+     * @param ignoreContext
+     * @return
+     * @throws IOException
+     */
+    protected IndexReader getMergedIndexReader( final Collection<IndexingContext> indexingContexts,
+                                                final boolean ignoreContext )
+        throws IOException
+    {
+        final List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
+
+        try
+        {
+            final ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( contexts.size() );
+
+            for ( IndexingContext ctx : contexts )
+            {
+                ctx.lock();
+
+                contextsToSearch.add( ctx.getIndexReader() );
+            }
+
+            MultiReader multiReader =
+                new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
+
+            return multiReader;
+        }
+        catch ( Throwable e )
+        {
+            // perform cleaup, otherwise DefaultIteratorResultSet will do it
+            for ( IndexingContext ctx : contexts )
+            {
+                ctx.unlock();
+            }
+
+            if ( e instanceof IOException )
+            {
+                throw (IOException) e;
+            }
+            else
+            {
+                // wrap it
+                IOException ex = new IOException( e.getMessage() );
+                ex.initCause( e );
+                throw ex;
+            }
+        }
+    }
+
+    protected int getTopDocsCollectorHitNum( AbstractSearchRequest request )
+    {
+        if ( request instanceof AbstractSearchPageableRequest )
+        {
+            final AbstractSearchPageableRequest prequest = (AbstractSearchPageableRequest) request;
+
+            if ( AbstractSearchPageableRequest.UNDEFINED != prequest.getCount() )
+            {
+                // easy, user knows how many results he want
+                return prequest.getCount() + prequest.getStart();
+            }
+        }
+
+        // TODO: ???
+        return 10000;
     }
 }

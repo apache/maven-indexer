@@ -26,28 +26,9 @@ import org.apache.maven.index.context.IndexingContext;
 
 public class AbstractSearchRequest
 {
-    public static final int UNDEFINED = -1;
-
-    public static final int UNDEFINED_HIT_LIMIT = 1000;
-
     private Query query;
 
     private List<IndexingContext> contexts;
-
-    private int start;
-
-    /**
-     * The page size, actually count of items in one page. Different than limit, because this will _cut_ the response to
-     * the requested count.
-     */
-    private int count;
-
-    /**
-     * The limit size, the maximum possible count of items in response. Different than count above, since if this is
-     * set, and the search funds more then this number, the response will be _empty_ and a flag will be set on response
-     * about this.
-     */
-    private int resultHitLimit;
 
     /**
      * The filter to be used while executing the search request.
@@ -84,13 +65,6 @@ public class AbstractSearchRequest
         {
             getContexts().addAll( contexts );
         }
-
-        this.start = UNDEFINED;
-
-        this.count = UNDEFINED;
-
-        // TODO: rethink use cases and find better way to provide this value!
-        this.resultHitLimit = UNDEFINED_HIT_LIMIT;
     }
 
     public Query getQuery()
@@ -118,51 +92,40 @@ public class AbstractSearchRequest
         this.contexts = contexts;
     }
 
-    public boolean isHitLimited()
+    /**
+     * Returns true if hits are limited.
+     * 
+     * @return
+     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
+     * @see http://jira.codehaus.org/browse/MINDEXER-14
+     */
+    public boolean _isHitLimited()
     {
-        return getResultHitLimit() != UNDEFINED_HIT_LIMIT;
+        return false;
     }
 
-    public int getStart()
+    /**
+     * Gets the hit limit. Since 4.1.0 does nothing, always returns 0.
+     * 
+     * @return
+     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
+     * @see http://jira.codehaus.org/browse/MINDEXER-14
+     */
+    public int _getResultHitLimit()
     {
-        return start;
+        return -1;
     }
 
-    public void setStart( int start )
+    /**
+     * Sets the hit limit. Since 4.1.0 does nothing.
+     * 
+     * @param resultHitLimit
+     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
+     * @see http://jira.codehaus.org/browse/MINDEXER-14
+     */
+    public void _setResultHitLimit( int resultHitLimit )
     {
-        this.start = start;
-    }
-
-    public int getCount()
-    {
-        return count;
-    }
-
-    @Deprecated
-    public int getAiCount()
-    {
-        return getCount();
-    }
-
-    public void setCount( int count )
-    {
-        this.count = count;
-    }
-
-    @Deprecated
-    public void setAiCount( int count )
-    {
-        setCount( count );
-    }
-
-    public int getResultHitLimit()
-    {
-        return resultHitLimit;
-    }
-
-    public void setResultHitLimit( int resultHitLimit )
-    {
-        this.resultHitLimit = resultHitLimit;
+        // noop
     }
 
     public ArtifactInfoFilter getArtifactInfoFilter()

@@ -30,7 +30,7 @@ import org.apache.maven.index.context.IndexingContext;
  * @see NexusIndexer#searchFlat(FlatSearchRequest)
  */
 public class FlatSearchRequest
-    extends AbstractSearchRequest
+    extends AbstractSearchPageableRequest
 {
     private Comparator<ArtifactInfo> artifactInfoComparator;
 

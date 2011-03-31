@@ -25,8 +25,9 @@ import java.util.Iterator;
 import org.apache.lucene.search.Query;
 
 /**
- * A Search Response for the "iterator-like" search request. The totalHits reports _total_ hits found on index, even if
- * the set of ArtifactInfos are usually limited!
+ * A Search Response for the "iterator-like" search request. The totalHitsCount reports <em>total</em> hits found on
+ * index, even if the set of ArtifactInfos are usually limited! On the flipside, the hitsCount is actually unknown,
+ * since this instance performs filtering on the fly, hence it does not know how many hits it will return ahead of time.
  * 
  * @author cstamas
  */
@@ -38,7 +39,7 @@ public class IteratorSearchResponse
 
     public IteratorSearchResponse( Query query, int totalHits, IteratorResultSet results )
     {
-        super( query, totalHits );
+        super( query, totalHits, -1 );
 
         this.results = results;
     }
@@ -53,6 +54,7 @@ public class IteratorSearchResponse
         return getResults();
     }
 
+    @Override
     public void close()
         throws IOException
     {
@@ -104,10 +106,8 @@ public class IteratorSearchResponse
         }
     };
 
-    public static final IteratorSearchResponse EMPTY_ITERATOR_SEARCH_RESPONSE = new IteratorSearchResponse( null, 0,
-        EMPTY_ITERATOR_RESULT_SET );
-
-    public static final IteratorSearchResponse TOO_MANY_HITS_ITERATOR_SEARCH_RESPONSE = new IteratorSearchResponse(
-        null, LIMIT_EXCEEDED, EMPTY_ITERATOR_RESULT_SET );
-
+    public static final IteratorSearchResponse empty( final Query q )
+    {
+        return new IteratorSearchResponse( q, 0, EMPTY_ITERATOR_RESULT_SET );
+    }
 }

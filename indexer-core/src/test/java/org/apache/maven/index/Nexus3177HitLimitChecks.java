@@ -25,11 +25,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.AbstractSearchResponse;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 
 public class Nexus3177HitLimitChecks
@@ -65,19 +60,28 @@ public class Nexus3177HitLimitChecks
         nexusIndexer.removeIndexingContext( secondContext, false );
     }
 
+    // ===================================================================
+    // NOTE: This test, with testing search limits lost it's original meaning,
+    // since version 4.1.0 there is no notion of hit limit.
+    // See http://jira.codehaus.org/browse/MINDEXER-14
+
+    // Hence, some of the tests, that can keep still original semantics were updated and left in place
+    // but the two test explicitly testing LIMIT_EXCEEDED were just removed/commented out.
+
     public void testHitLimitNotReachedSingleContext()
         throws Exception
     {
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 5 );
+        request.setCount( 5 );
+        // request.setResultHitLimit( 5 );
         request.getContexts().add( context );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Set<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 4, r.size() );
-        assertEquals( r.toString(), 4, response.getTotalHits() );
+        assertEquals( r.toString(), 4, response.getTotalHitsCount() );
     }
 
     public void testHitLimitEqualSingleContext()
@@ -86,29 +90,31 @@ public class Nexus3177HitLimitChecks
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 4 );
+        request.setCount( 4 );
+        // request.setResultHitLimit( 4 );
         request.getContexts().add( context );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Set<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 4, r.size() );
-        assertEquals( r.toString(), 4, response.getTotalHits() );
+        assertEquals( r.toString(), 4, response.getTotalHitsCount() );
     }
 
-    public void testHitLimitExceededSingleContext()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
-
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 3 );
-        request.getContexts().add( context );
-
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
-        Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 0, r.size() );
-        assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
-    }
+    // See NOTE above
+    // public void testHitLimitExceededSingleContext()
+    // throws Exception
+    // {
+    // WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    //
+    // FlatSearchRequest request = new FlatSearchRequest( q );
+    // request.setResultHitLimit( 3 );
+    // request.getContexts().add( context );
+    //
+    // FlatSearchResponse response = nexusIndexer.searchFlat( request );
+    // Set<ArtifactInfo> r = response.getResults();
+    // assertEquals( r.toString(), 0, r.size() );
+    // assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
+    // }
 
     public void testHitLimitNotReachedMultipleContexts()
         throws Exception
@@ -116,7 +122,8 @@ public class Nexus3177HitLimitChecks
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 9 );
+        request.setCount( 9 );
+        // request.setResultHitLimit( 9 );
         request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
         request.getContexts().add( context );
         request.getContexts().add( secondContext );
@@ -124,7 +131,7 @@ public class Nexus3177HitLimitChecks
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Set<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 8, r.size() );
-        assertEquals( r.toString(), 8, response.getTotalHits() );
+        assertEquals( r.toString(), 8, response.getTotalHitsCount() );
     }
 
     public void testHitLimitEqualMultipleContexts()
@@ -133,7 +140,8 @@ public class Nexus3177HitLimitChecks
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 8 );
+        request.setCount( 8 );
+        // request.setResultHitLimit( 8 );
         request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
         request.getContexts().add( context );
         request.getContexts().add( secondContext );
@@ -141,23 +149,24 @@ public class Nexus3177HitLimitChecks
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Set<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 8, r.size() );
-        assertEquals( r.toString(), 8, response.getTotalHits() );
+        assertEquals( r.toString(), 8, response.getTotalHitsCount() );
     }
 
-    public void testHitLimitExceededMultipleContexts()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
-
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setResultHitLimit( 7 );
-        request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
-        request.getContexts().add( context );
-        request.getContexts().add( secondContext );
-
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
-        Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 0, r.size() );
-        assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
-    }
+    // See NOTE above
+    // public void testHitLimitExceededMultipleContexts()
+    // throws Exception
+    // {
+    // WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    //
+    // FlatSearchRequest request = new FlatSearchRequest( q );
+    // request.setResultHitLimit( 7 );
+    // request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
+    // request.getContexts().add( context );
+    // request.getContexts().add( secondContext );
+    //
+    // FlatSearchResponse response = nexusIndexer.searchFlat( request );
+    // Set<ArtifactInfo> r = response.getResults();
+    // assertEquals( r.toString(), 0, r.size() );
+    // assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
+    // }
 }
