@@ -110,4 +110,11 @@ public class IteratorSearchResponse
     {
         return new IteratorSearchResponse( q, 0, EMPTY_ITERATOR_RESULT_SET );
     }
+
+    /**
+     * Empty search response.
+     * 
+     * @deprecated Use {@link #empty(Query)} instead.
+     */
+    public static final IteratorSearchResponse EMPTY_ITERATOR_SEARCH_RESPONSE = empty( null );
 }
