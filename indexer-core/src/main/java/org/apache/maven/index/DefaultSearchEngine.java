@@ -83,16 +83,16 @@ public class DefaultSearchEngine
         return searchFlatPaged( request, indexingContexts, true );
     }
 
-    private FlatSearchResponse searchFlatPaged( FlatSearchRequest request,
-                                                Collection<IndexingContext> indexingContexts, boolean ignoreContext )
+    protected FlatSearchResponse searchFlatPaged( FlatSearchRequest request,
+                                                  Collection<IndexingContext> indexingContexts, boolean ignoreContext )
         throws IOException
     {
-        TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
-
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
         try
         {
+            final TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
+
             for ( IndexingContext ctx : contexts )
             {
                 ctx.lock();
@@ -109,6 +109,8 @@ public class DefaultSearchEngine
             }
         }
     }
+
+    // ==
 
     public GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
                                                 Collection<IndexingContext> indexingContexts )
@@ -128,13 +130,13 @@ public class DefaultSearchEngine
                                                    Collection<IndexingContext> indexingContexts, boolean ignoreContext )
         throws IOException
     {
-        TreeMap<String, ArtifactInfoGroup> result =
-            new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
-
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
         try
         {
+            final TreeMap<String, ArtifactInfoGroup> result =
+                new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
+
             for ( IndexingContext ctx : contexts )
             {
                 ctx.lock();
@@ -153,6 +155,8 @@ public class DefaultSearchEngine
         }
     }
 
+    // ===
+
     protected int searchFlat( FlatSearchRequest req, Collection<ArtifactInfo> result,
                               List<IndexingContext> participatingContexts, Query query )
         throws IOException
@@ -161,9 +165,7 @@ public class DefaultSearchEngine
 
         for ( IndexingContext context : participatingContexts )
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create( getTopDocsCollectorHitNum( req ), true );
-
-            context.getIndexSearcher().search( query, collector );
+            final TopScoreDocCollector collector = doSearchWithCeiling( req, context.getIndexSearcher(), query );
 
             if ( collector.getTotalHits() == 0 )
             {
@@ -205,9 +207,7 @@ public class DefaultSearchEngine
 
         for ( IndexingContext context : participatingContexts )
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create( getTopDocsCollectorHitNum( req ), true );
-
-            context.getIndexSearcher().search( query, collector );
+            final TopScoreDocCollector collector = doSearchWithCeiling( req, context.getIndexSearcher(), query );
 
             if ( collector.getTotalHits() > 0 )
             {
@@ -265,15 +265,11 @@ public class DefaultSearchEngine
         {
             List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-            final IndexReader multiReader = getMergedIndexReader( indexingContexts, ignoreContext );
+            IndexReader multiReader = getMergedIndexReader( indexingContexts, ignoreContext );
 
             IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
 
-            // NEXUS-3482 made us to NOT use reverse ordering (it is a fix I wanted to implement, but user contributed
-            // patch did come in faster! -- Thanks)
-            TopScoreDocCollector hits = TopScoreDocCollector.create( getTopDocsCollectorHitNum( request ), true );
-
-            indexSearcher.search( request.getQuery(), hits );
+            TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
 
             return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(), new DefaultIteratorResultSet(
                 request, indexSearcher, contexts, hits.topDocs() ) );
@@ -304,6 +300,56 @@ public class DefaultSearchEngine
     }
 
     // ==
+
+    protected TopScoreDocCollector doSearchWithCeiling( final AbstractSearchRequest request,
+                                                        final IndexSearcher indexSearcher, final Query query )
+        throws IOException
+    {
+        int topHitCount = getTopDocsCollectorHitNum( request, AbstractSearchPageableRequest.UNDEFINED );
+
+        if ( AbstractSearchPageableRequest.UNDEFINED != topHitCount )
+        {
+            // count is set, simply just execute it as-is
+            final TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
+
+            indexSearcher.search( query, hits );
+
+            return hits;
+        }
+        else
+        {
+            // set something reasonable as 1k
+            topHitCount = 1000;
+
+            // count is not set, start with something reasonable as 1k
+            TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
+
+            // perform search
+            indexSearcher.search( query, hits );
+
+            // check total hits against
+            if ( topHitCount < hits.getTotalHits() )
+            {
+                topHitCount = hits.getTotalHits();
+
+                if ( getLogger().isDebugEnabled() )
+                {
+                    // warn the user and leave trace just before OOM might happen
+                    // the hits.getTotalHits() might be HUUGE
+                    getLogger().debug(
+                        "Executing unbounded search, and fitting topHitCounts to "
+                            + topHitCount
+                            + ", an OOMEx might follow. To avoid OOM use narrower queries or limit your expectancy with request.setCount() method where appropriate. See MINDEXER-14 for details." );
+                }
+
+                // redo all, but this time with correct numbers
+                hits = TopScoreDocCollector.create( topHitCount, true );
+                indexSearcher.search( query, hits );
+            }
+
+            return hits;
+        }
+    }
 
     /**
      * Returns the list of participating contexts. Does not locks them, just builds a list of them.
@@ -379,7 +425,7 @@ public class DefaultSearchEngine
         }
     }
 
-    protected int getTopDocsCollectorHitNum( AbstractSearchRequest request )
+    protected int getTopDocsCollectorHitNum( final AbstractSearchRequest request, final int ceiling )
     {
         if ( request instanceof AbstractSearchPageableRequest )
         {
@@ -387,12 +433,11 @@ public class DefaultSearchEngine
 
             if ( AbstractSearchPageableRequest.UNDEFINED != prequest.getCount() )
             {
-                // easy, user knows how many results he want
+                // easy, user knows and tells us how many results he want
                 return prequest.getCount() + prequest.getStart();
             }
         }
 
-        // TODO: ???
-        return 10000;
+        return ceiling;
     }
 }

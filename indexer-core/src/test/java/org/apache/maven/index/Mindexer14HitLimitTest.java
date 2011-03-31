@@ -6,6 +6,8 @@ import java.io.IOException;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.search.grouping.GAGrouping;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.LoggerManager;
 
 public class Mindexer14HitLimitTest
     extends AbstractNexusIndexerTest
@@ -16,6 +18,9 @@ public class Mindexer14HitLimitTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
+        // Put Plexus into DEBUG mode
+        lookup( LoggerManager.class ).setThresholds( Logger.LEVEL_DEBUG );
+
         repo.mkdirs();
 
         context =
