@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 
 /**
  * An {@link java.lang.reflect.InvocationHandler} that can be extended with methods from the proxied interface. While
- * invocation it will look for a method within itself that matches the signature of the invoked peoxy method. If found
+ * invocation it will look for a method within itself that matches the signature of the invoked proxy method. If found
  * the method will be invoked and result returned, otherwise an {@link UnsupportedOperationException} will be thrown.
  * 
  * @author Alin Dreghiciu

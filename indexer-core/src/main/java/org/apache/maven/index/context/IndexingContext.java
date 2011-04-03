@@ -65,7 +65,7 @@ public interface IndexingContext
     public static final String INDEX_ID = INDEX_PROPERTY_PREFIX + "id";
 
     /**
-     * A property name used to specify legacy index timestam (the last update time)
+     * A property name used to specify legacy index timestamp (the last update time)
      */
     public static final String INDEX_LEGACY_TIMESTAMP = INDEX_PROPERTY_PREFIX + "time";
 
@@ -95,7 +95,7 @@ public interface IndexingContext
     public static final String INDEX_CHUNK_COUNTER = INDEX_PROPERTY_PREFIX + "last-incremental";
 
     /**
-     * An id that defines the current incremental chain. If when checking remote repo, the index chain doesnt match
+     * An id that defines the current incremental chain. If when checking remote repo, the index chain doesn't match
      * you'll know that you need to download the full index
      */
     public static final String INDEX_CHAIN_ID = INDEX_PROPERTY_PREFIX + "chain-id";

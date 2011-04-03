@@ -31,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
- * A util class to calculate various digests on Strings. Usaful for some simple password management.
+ * A util class to calculate various digests on Strings. Useful for some simple password management.
  * 
  * @author cstamas
  */

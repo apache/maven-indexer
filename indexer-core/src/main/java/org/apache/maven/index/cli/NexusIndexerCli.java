@@ -71,7 +71,7 @@ import org.codehaus.plexus.util.IOUtil;
  * When index folder contains previously created index, the tool will use it as a base line and will generate chunks for
  * the incremental updates.
  * <p>
- * The indexer types could be one of default, min or full. You can also specify list of coma-separated custom index
+ * The indexer types could be one of default, min or full. You can also specify list of comma-separated custom index
  * creators. An index creator should be a regular Plexus component, see {@link MinimalArtifactInfoIndexCreator} and
  * {@link JarFileContentsIndexCreator}.
  */

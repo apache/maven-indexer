@@ -31,7 +31,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
- * A very simple artifact packaging mapper, that has everyting for quick-start wired in this class. Also, it takes into
+ * A very simple artifact packaging mapper, that has everything for quick-start wired in this class. Also, it takes into
  * account the "${nexus-work}/conf/packaging2extension-mapping.properties" file into account if found. To override the
  * "defaults" in this class, simply add lines to properties file with same keys.
  * 

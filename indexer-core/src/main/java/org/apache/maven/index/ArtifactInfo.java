@@ -337,7 +337,7 @@ public class ArtifactInfo
     }
 
     /**
-     * This method will dissapear, once we drop ArtifactInfo.
+     * This method will disappear, once we drop ArtifactInfo.
      * 
      * @param field
      * @return

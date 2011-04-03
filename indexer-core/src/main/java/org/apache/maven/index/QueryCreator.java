@@ -23,7 +23,7 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SearchExpression;
 
 /**
- * A component the creates Lucene Queries from "human written" queires, but also helps client applications to assemble
+ * A component the creates Lucene Queries from "human written" queries, but also helps client applications to assemble
  * proper queries for fields they want to search.
  * 
  * @author Tamas Cservenak
@@ -49,7 +49,7 @@ public interface QueryCreator
      * @param query
      * @param type
      * @return
-     * @throws ParseException if query parsing is unsuccesful.
+     * @throws ParseException if query parsing is unsuccessful.
      */
     Query constructQuery( Field field, SearchExpression expression )
         throws ParseException;
@@ -62,7 +62,7 @@ public interface QueryCreator
      * @param query
      * @param type
      * @return
-     * @throws ParseException if query parsing is unsuccesful.
+     * @throws ParseException if query parsing is unsuccessful.
      * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
     Query constructQuery( Field field, String query, SearchType type )

@@ -24,8 +24,6 @@ import java.util.List;
 
 /**
  * Base set of functionality for the TreeNode that all implementations will need.
- * 
- * @version $Revision$ $Date$
  */
 public abstract class AbstractTreeNode
     implements TreeNode
@@ -80,7 +78,7 @@ public abstract class AbstractTreeNode
     private transient final TreeViewRequest request;
 
     /**
-     * Constructor that takes an IndexTreeView implmentation and a TreeNodeFactory implementation;
+     * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation;
      * 
      * @param tview
      * @param factory

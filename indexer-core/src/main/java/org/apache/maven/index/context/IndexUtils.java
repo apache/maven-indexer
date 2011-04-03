@@ -45,7 +45,7 @@ public class IndexUtils
     public static void copyDirectory( Directory source, Directory target )
         throws IOException
     {
-        // perform plain copy (but semantic changes between Lucene 2.4 and 2.9 exists, so timestmap file will be not
+        // perform plain copy (but semantic changes between Lucene 2.4 and 2.9 exists, so timestamp file will be not
         // copied in 2.9)
         Directory.copy( source, target, false );
 

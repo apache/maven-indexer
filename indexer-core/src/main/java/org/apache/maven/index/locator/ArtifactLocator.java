@@ -45,7 +45,7 @@ public class ArtifactLocator
 
     public File locate( File source, GavCalculator gavCalculator, Gav gav )
     {
-        // if we dont have this data, nothing we can do
+        // if we don't have this data, nothing we can do
         if ( source == null || !source.exists() || gav == null || gav.getArtifactId() == null
             || gav.getVersion() == null )
         {

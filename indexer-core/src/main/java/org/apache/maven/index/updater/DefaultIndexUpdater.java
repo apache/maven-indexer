@@ -841,7 +841,7 @@ public class DefaultIndexUpdater
             if ( localTimestamp != null )
             {
                 // if we have localTimestamp
-                // if incremental cant be done for whatever reason, simply use old logic of
+                // if incremental can't be done for whatever reason, simply use old logic of
                 // checking the timestamp, if the same, nothing to do
                 if ( updateTimestamp != null && localTimestamp != null && !updateTimestamp.after( localTimestamp ) )
                 {

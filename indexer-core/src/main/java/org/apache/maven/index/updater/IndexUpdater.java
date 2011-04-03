@@ -29,20 +29,21 @@ import org.apache.maven.index.packer.IndexPacker;
  * The following snippet shows how to update/download remote index:
  * 
  * <pre>
- *   IndexingContext context = indexer.getIndexingContexts().get(indexId);
+ *   IndexingContext context = indexer.getIndexingContexts().get( indexId );
  *   Settings settings = embedder.getSettings();
  *   Proxy proxy = settings.getActiveProxy();
  *   ProxyInfo proxyInfo = null;
- *   if(proxy != null) {
- *     proxyInfo = new ProxyInfo();
- *     proxyInfo.setHost(proxy.getHost());
- *     proxyInfo.setPort(proxy.getPort());
- *     proxyInfo.setNonProxyHosts(proxy.getNonProxyHosts());
- *     proxyInfo.setUserName(proxy.getUsername());
- *     proxyInfo.setPassword(proxy.getPassword());
+ *   if ( proxy != null )
+ *   {
+ *       proxyInfo = new ProxyInfo();
+ *       proxyInfo.setHost( proxy.getHost() );
+ *       proxyInfo.setPort( proxy.getPort() );
+ *       proxyInfo.setNonProxyHosts( proxy.getNonProxyHosts() );
+ *       proxyInfo.setUserName( proxy.getUsername() );
+ *       proxyInfo.setPassword( proxy.getPassword() );
  *   }
  *   
- *   Date indexTime = updater.fetchAndUpdateIndex(context, transferListener, proxyInfo);
+ *   Date indexTime = updater.fetchAndUpdateIndex( context, transferListener, proxyInfo );
  *   ...
  * </pre>
  * 

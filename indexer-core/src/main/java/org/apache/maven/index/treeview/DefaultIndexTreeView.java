@@ -262,7 +262,7 @@ public class DefaultIndexTreeView
     }
 
     /**
-     * Builds a path out from ArtifactInfo. The field paramter controls "how deep" the path goes. Possible values are
+     * Builds a path out from ArtifactInfo. The field parameter controls "how deep" the path goes. Possible values are
      * MAVEN.GROUP_ID (builds a path from groupId only), MAVEN.ARTIFACT_ID (builds a path from groupId + artifactId),
      * MAVEN.VERSION (builds a path up to version) or anything else (including null) will build "full" artifact path.
      * 

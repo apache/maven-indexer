@@ -22,7 +22,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Filesystem locker. Can be used to synchronise access to filesystem directories from different operating system
+ * Filesystem locker. Can be used to synchronize access to filesystem directories from different operating system
  * processes.
  * 
  * @author igor

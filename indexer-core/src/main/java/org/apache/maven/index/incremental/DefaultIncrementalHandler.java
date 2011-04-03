@@ -67,7 +67,7 @@ public class DefaultIncrementalHandler
 
         getLogger().debug( "Found " + chunk.size() + " differences to put in incremental index." );
 
-        // if no documents, then we dont need to do anything, no changes
+        // if no documents, then we don't need to do anything, no changes
         if ( chunk.size() > 0 )
         {
             updateProperties( properties, request );
@@ -272,7 +272,7 @@ public class DefaultIncrementalHandler
 
     private boolean canRetrieveAllChunks( Properties localProps, Properties remoteProps )
     {
-        // no localprops, cant retrieve chunks
+        // no localprops, can't retrieve chunks
         if ( localProps == null )
         {
             return false;
