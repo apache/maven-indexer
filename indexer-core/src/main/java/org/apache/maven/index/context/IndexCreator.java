@@ -42,7 +42,7 @@ public interface IndexCreator
      * 
      * @return
      */
-    public Collection<IndexerField> getIndexerFields();
+    Collection<IndexerField> getIndexerFields();
 
     /**
      * Populate an <code>ArtifactContext</code> with information about corresponding artifact.

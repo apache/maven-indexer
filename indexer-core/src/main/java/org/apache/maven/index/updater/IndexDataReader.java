@@ -163,7 +163,7 @@ public class IndexDataReader
         return new Field( name, value, store, index );
     }
 
-    private final static String readUTF( DataInput in )
+    private static String readUTF( DataInput in )
         throws IOException
     {
         int utflen = in.readInt();

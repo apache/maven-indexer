@@ -36,53 +36,51 @@ import org.apache.maven.index.context.IndexingContext;
 public interface SearchEngine
 {
     @Deprecated
-    public Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                         IndexingContext indexingContext, Query query )
+    Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext indexingContext,
+                                  Query query )
         throws IOException;
 
     @Deprecated
-    public Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                         Collection<IndexingContext> indexingContexts, Query query )
+    Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
+                                  Collection<IndexingContext> indexingContexts, Query query )
         throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
-    public FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
+    FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
-    public IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
-                                                       Collection<IndexingContext> indexingContexts )
-        throws IOException;
-
-    /**
-     * Do the search only on searchable contexts
-     */
-    public GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
+    IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
                                                 Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**
-     * Do the search in all contexts, no matter if the context is searchable or not
+     * Do the search only on searchable contexts
      */
-    public FlatSearchResponse forceSearchFlatPaged( FlatSearchRequest request,
-                                                    Collection<IndexingContext> indexingContexts )
+    GroupedSearchResponse searchGrouped( GroupedSearchRequest request, Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
-    public IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
-                                                            Collection<IndexingContext> indexingContexts )
+    FlatSearchResponse forceSearchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
         throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
-    public GroupedSearchResponse forceSearchGrouped( GroupedSearchRequest request,
+    IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
                                                      Collection<IndexingContext> indexingContexts )
+        throws IOException;
+
+    /**
+     * Do the search in all contexts, no matter if the context is searchable or not
+     */
+    GroupedSearchResponse forceSearchGrouped( GroupedSearchRequest request,
+                                              Collection<IndexingContext> indexingContexts )
         throws IOException;
 }

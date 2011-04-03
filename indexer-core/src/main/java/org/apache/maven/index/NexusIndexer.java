@@ -253,16 +253,16 @@ public interface NexusIndexer
     // Modifying
     // ----------------------------------------------------------------------------
 
-    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
+    void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
-    public void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context )
+    void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context )
         throws IOException;
 
-    public void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context )
+    void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
-    public void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context )
+    void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context )
         throws IOException;
 
     // ----------------------------------------------------------------------------

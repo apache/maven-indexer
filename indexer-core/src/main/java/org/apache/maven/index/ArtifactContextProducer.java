@@ -31,5 +31,5 @@ public interface ArtifactContextProducer
 {
     String ROLE = ArtifactContextProducer.class.getName();
 
-    public ArtifactContext getArtifactContext( IndexingContext context, File file );
+    ArtifactContext getArtifactContext( IndexingContext context, File file );
 }

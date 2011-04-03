@@ -46,59 +46,59 @@ public interface IndexingContext
      * Standard name of the full repository index that is used when clients requesting index information have nothing to
      * start with.
      */
-    public static final String INDEX_FILE_PREFIX = "nexus-maven-repository-index";
+    String INDEX_FILE_PREFIX = "nexus-maven-repository-index";
 
-    public static final String INDEX_REMOTE_PROPERTIES_FILE = INDEX_FILE_PREFIX + ".properties";
+    String INDEX_REMOTE_PROPERTIES_FILE = INDEX_FILE_PREFIX + ".properties";
 
-    public static final String INDEX_UPDATER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-updater.properties";
+    String INDEX_UPDATER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-updater.properties";
 
-    public static final String INDEX_PACKER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-packer.properties";
+    String INDEX_PACKER_PROPERTIES_FILE = INDEX_FILE_PREFIX + "-packer.properties";
 
     /**
      * A prefix used for all index property names
      */
-    public static final String INDEX_PROPERTY_PREFIX = "nexus.index.";
+    String INDEX_PROPERTY_PREFIX = "nexus.index.";
 
     /**
      * A property name used to specify index id
      */
-    public static final String INDEX_ID = INDEX_PROPERTY_PREFIX + "id";
+    String INDEX_ID = INDEX_PROPERTY_PREFIX + "id";
 
     /**
      * A property name used to specify legacy index timestamp (the last update time)
      */
-    public static final String INDEX_LEGACY_TIMESTAMP = INDEX_PROPERTY_PREFIX + "time";
+    String INDEX_LEGACY_TIMESTAMP = INDEX_PROPERTY_PREFIX + "time";
 
     /**
      * A property name used to specify index timtestamp
      */
-    public static final String INDEX_TIMESTAMP = INDEX_PROPERTY_PREFIX + "timestamp";
+    String INDEX_TIMESTAMP = INDEX_PROPERTY_PREFIX + "timestamp";
 
     /**
      * A prefix used to specify an incremental update chunk name
      */
-    public static final String INDEX_CHUNK_PREFIX = INDEX_PROPERTY_PREFIX + "incremental-";
+    String INDEX_CHUNK_PREFIX = INDEX_PROPERTY_PREFIX + "incremental-";
 
     /**
      * A date format used for index timestamp
      */
-    public static final String INDEX_TIME_FORMAT = "yyyyMMddHHmmss.SSS Z";
+    String INDEX_TIME_FORMAT = "yyyyMMddHHmmss.SSS Z";
 
     /**
      * A date format used for incremental update chunk names
      */
-    public static final String INDEX_TIME_DAY_FORMAT = "yyyyMMdd";
+    String INDEX_TIME_DAY_FORMAT = "yyyyMMdd";
 
     /**
      * A counter used to id the chunks
      */
-    public static final String INDEX_CHUNK_COUNTER = INDEX_PROPERTY_PREFIX + "last-incremental";
+    String INDEX_CHUNK_COUNTER = INDEX_PROPERTY_PREFIX + "last-incremental";
 
     /**
      * An id that defines the current incremental chain. If when checking remote repo, the index chain doesn't match
      * you'll know that you need to download the full index
      */
-    public static final String INDEX_CHAIN_ID = INDEX_PROPERTY_PREFIX + "chain-id";
+    String INDEX_CHAIN_ID = INDEX_PROPERTY_PREFIX + "chain-id";
 
     /**
      * Returns this indexing context id.

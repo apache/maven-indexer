@@ -781,7 +781,7 @@ public class DefaultIndexUpdater
         }
     }
 
-    static abstract class LocalIndexCacheFetcher
+    abstract static class LocalIndexCacheFetcher
         extends FileFetcher
     {
         public LocalIndexCacheFetcher( File basedir )

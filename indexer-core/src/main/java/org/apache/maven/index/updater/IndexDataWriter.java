@@ -253,7 +253,7 @@ public class IndexDataWriter
         writeUTF( value, dos );
     }
 
-    private final static void writeUTF( String str, DataOutput out )
+    private static void writeUTF( String str, DataOutput out )
         throws IOException
     {
         int strlen = str.length();

@@ -419,9 +419,13 @@ public class DefaultIteratorResultSet
             int mid = ( lo + hi ) >>> 1;
             int midValue = starts[mid];
             if ( n < midValue )
+            {
                 hi = mid - 1;
+            }
             else if ( n > midValue )
+            {
                 lo = mid + 1;
+            }
             else
             { // found a match
                 while ( mid + 1 < numSubReaders && starts[mid + 1] == midValue )
