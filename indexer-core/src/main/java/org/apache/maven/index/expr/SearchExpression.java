@@ -1,3 +1,5 @@
+package org.apache.maven.index.expr;
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.index.expr;
 
 /**
  * SearchExpression is a wrapper interface for expressions representable as plain strings to be used within searches.

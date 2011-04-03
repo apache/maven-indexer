@@ -1,3 +1,5 @@
+package org.apache.maven.index.artifact;
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,7 +19,6 @@
  * under the License.
  *
  */
-package org.apache.maven.index.artifact;
 
 /**
  * An interface to calculate <code>Gav</code> based on provided artifact path and to calculate an artifact path from

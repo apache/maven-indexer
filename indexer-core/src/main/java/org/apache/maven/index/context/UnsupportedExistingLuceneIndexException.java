@@ -1,3 +1,5 @@
+package org.apache.maven.index.context;
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,7 +18,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.index.context;
 
 /**
  * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index. The reason for

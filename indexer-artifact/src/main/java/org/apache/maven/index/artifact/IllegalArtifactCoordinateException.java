@@ -1,3 +1,5 @@
+package org.apache.maven.index.artifact;
+
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,7 +19,6 @@
  * under the License.
  *
  */
-package org.apache.maven.index.artifact;
 
 /**
  * Deprecated exception, just made into Runtime exception but NEVER THROWN anymore (since 4.0.1),
