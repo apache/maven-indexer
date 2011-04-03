@@ -1,4 +1,4 @@
-package org.sonatype.nexus.artifact;
+package org.apache.maven.index.artifact;
 
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
