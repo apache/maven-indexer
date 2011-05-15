@@ -17,4 +17,4 @@ Mailing lists: Maven Users and Maven Developers list from
 http://maven.apache.org/mail-lists.html
 
 CI:
-https://grid.sonatype.org/ci/job/maven-indexer/
+https://builds.apache.org/hudson/job/maven-indexer/

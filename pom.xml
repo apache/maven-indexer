@@ -96,6 +96,10 @@ under the License.
     <system>jira</system>
     <url>http://jira.codehaus.org/browse/MINDEXER</url>
   </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://builds.apache.org/hudson/job/maven-indexer/</url>
+  </ciManagement>
 
   <properties>
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
