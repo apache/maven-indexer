@@ -32,6 +32,10 @@ under the License.
   <packaging>pom</packaging>
 
   <name>Maven :: Indexer</name>
+  <description>
+    Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
+    of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
+  </description>
 
   <developers>
     <developer>
