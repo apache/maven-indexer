@@ -20,13 +20,20 @@ package org.apache.maven.index;
  */
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -67,13 +74,18 @@ public class DefaultIndexerEngine
 
             if ( d != null )
             {
-                IndexWriter w = context.getIndexWriter();
+                Document old = getOldDocument( context, ac );
 
-                w.updateDocument( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ), d );
+                if ( !equals( d, old ) )
+                {
+                    IndexWriter w = context.getIndexWriter();
 
-                updateGroups( context, ac );
+                    w.updateDocument( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ), d );
 
-                context.updateTimestamp();
+                    updateGroups( context, ac );
+
+                    context.updateTimestamp();
+                }
             }
         }
     }
@@ -83,12 +95,15 @@ public class DefaultIndexerEngine
     {
         if ( ac != null )
         {
-            String uinfo = ac.getArtifactInfo().getUinfo();
+            final String uinfo = ac.getArtifactInfo().getUinfo();
+
             // add artifact deletion marker
-            Document doc = new Document();
+            final Document doc = new Document();
+
             doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
             doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
                 Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+
             IndexWriter w = context.getIndexWriter();
             w.addDocument( doc );
             w.deleteDocuments( new Term( ArtifactInfo.UINFO, uinfo ) );
@@ -97,6 +112,63 @@ public class DefaultIndexerEngine
     }
 
     // ==
+
+    private boolean equals( final Document d1, final Document d2 )
+    {
+        if ( d1 == null && d2 == null )
+        {
+            return true;
+        }
+        if ( d1 == null || d2 == null )
+        {
+            return false;
+        }
+
+        final Map<String, String> m1 = toMap( d1 );
+        final Map<String, String> m2 = toMap( d2 );
+
+        m1.remove( MinimalArtifactInfoIndexCreator.FLD_LAST_MODIFIED.getKey() );
+        m2.remove( MinimalArtifactInfoIndexCreator.FLD_LAST_MODIFIED.getKey() );
+
+        return m1.equals( m2 );
+    }
+
+    private Map<String, String> toMap( Document d )
+    {
+        final HashMap<String, String> result = new HashMap<String, String>();
+
+        for ( Object o : d.getFields() )
+        {
+            Fieldable f = (Fieldable) o;
+            if ( f.isStored() )
+            {
+                result.put( f.name(), f.stringValue() );
+            }
+        }
+
+        return result;
+    }
+
+    private Document getOldDocument( IndexingContext context, ArtifactContext ac )
+    {
+        try
+        {
+            IndexSearcher indexSearcher = context.getIndexSearcher();
+
+            TopDocs result =
+                indexSearcher.search( new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ),
+                    2 );
+
+            if ( result.totalHits == 1 )
+            {
+                return indexSearcher.doc( result.scoreDocs[0].doc );
+            }
+        }
+        catch ( IOException e )
+        {
+        }
+        return null;
+    }
 
     private void updateGroups( IndexingContext context, ArtifactContext ac )
         throws IOException
