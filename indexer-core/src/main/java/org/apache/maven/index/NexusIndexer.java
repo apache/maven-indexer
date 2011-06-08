@@ -179,6 +179,16 @@ public interface NexusIndexer
                                               boolean searchable, ContextMemberProvider membersProvider )
         throws IOException;
 
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                              Directory indexDirectory, boolean searchable,
+                                              Collection<IndexingContext> contexts )
+        throws IOException;
+
+    IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                              Directory indexDirectory, boolean searchable,
+                                              ContextMemberProvider membersProvider )
+        throws IOException;
+
     /**
      * Removes the indexing context from Nexus indexer, closes it and deletes (if specified) the index files.
      * 

@@ -185,6 +185,33 @@ public class DefaultNexusIndexer
         return context;
     }
 
+    public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                                     Directory indexDirectory, boolean searchable,
+                                                     Collection<IndexingContext> contexts )
+        throws IOException
+    {
+        IndexingContext context =
+            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                new StaticContextMemberProvider( contexts ) );
+
+        indexingContexts.put( context.getId(), context );
+
+        return context;
+    }
+
+    public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
+                                                     Directory indexDirectory, boolean searchable,
+                                                     ContextMemberProvider membersProvider )
+        throws IOException
+    {
+        IndexingContext context =
+            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable, membersProvider );
+
+        indexingContexts.put( context.getId(), context );
+
+        return context;
+    }
+
     public void removeIndexingContext( IndexingContext context, boolean deleteFiles )
         throws IOException
     {
