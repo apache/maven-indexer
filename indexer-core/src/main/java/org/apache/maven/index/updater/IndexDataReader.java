@@ -169,8 +169,22 @@ public class IndexDataReader
     {
         int utflen = in.readInt();
 
-        byte[] bytearr = new byte[utflen];
-        char[] chararr = new char[utflen];
+        byte[] bytearr;
+        char[] chararr;
+
+        try
+        {
+            bytearr = new byte[utflen];
+            chararr = new char[utflen];
+        }
+        catch ( OutOfMemoryError e )
+        {
+            final IOException ex =
+                new IOException(
+                    "Index data content is inappropriate (is junk?), leads to OutOfMemoryError! See MINDEXER-28 for more information!" );
+            e.initCause( e );
+            throw ex;
+        }
 
         int c, char2, char3;
         int count = 0;
