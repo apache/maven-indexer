@@ -182,7 +182,7 @@ public class IndexDataReader
             final IOException ex =
                 new IOException(
                     "Index data content is inappropriate (is junk?), leads to OutOfMemoryError! See MINDEXER-28 for more information!" );
-            e.initCause( e );
+            ex.initCause( e );
             throw ex;
         }
 
