@@ -20,6 +20,7 @@ package org.apache.maven.index;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import junit.framework.Assert;
@@ -27,6 +28,7 @@ import junit.framework.Assert;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.expr.UserInputSearchExpression;
 
 public class ConcurrentUseTest
     extends AbstractNexusIndexerTest
@@ -52,6 +54,12 @@ public class ConcurrentUseTest
         assertNotNull( context.getTimestamp() );
     }
 
+    protected IndexUserThread createThread( final ArtifactInfo ai )
+    {
+        // we search and modify same context concurrently
+        return new IndexUserThread( this, nexusIndexer, context, context, ai );
+    }
+
     public void testConcurrency()
         throws Exception
     {
@@ -62,7 +70,7 @@ public class ConcurrentUseTest
 
         for ( int i = 0; i < THREAD_COUNT; i++ )
         {
-            threads[i] = new IndexUserThread( nexusIndexer, context, ai );
+            threads[i] = createThread( ai );
 
             threads[i].start();
         }
@@ -94,11 +102,51 @@ public class ConcurrentUseTest
 
         //
 
-        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, ai.groupId, SearchType.SCORED );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( ai.groupId ) );
 
-        FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
+        FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q, context ) );
 
-        Assert.assertEquals( "All added should be found after final commit!", totalAdded, result.getTotalHits() );
+        Assert.assertEquals( "All added should be found after final commit!", totalAdded, result.getTotalHitsCount() );
+    }
+
+    // ==
+
+    private static final AtomicInteger versionSource = new AtomicInteger( 1 );
+
+    protected void addToIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext )
+        throws IOException
+    {
+        final ArtifactInfo artifactInfo =
+            new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact", "1."
+                + String.valueOf( versionSource.getAndIncrement() ), null );
+
+        final ArtifactContext ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
+
+        nexusIndexer.addArtifactToIndex( ac, indexingContext );
+    }
+
+    protected void deleteFromIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext )
+        throws IOException
+    {
+        // TODO: delete some of those already added
+        // artifactInfo.version = "1." + String.valueOf( versionSource.getAndIncrement() );
+        //
+        // ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
+        //
+        // nexusIndexer.deleteArtifactFromIndex( ac, indexingContext );
+        //
+        // deleted++;
+    }
+
+    protected int readIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext )
+        throws IOException
+    {
+        final Query q =
+            nexusIndexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( "org.apache.maven.indexer" ) );
+
+        FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q, indexingContext ) );
+
+        return result.getReturnedHitsCount();
     }
 
     // ==
@@ -106,11 +154,13 @@ public class ConcurrentUseTest
     public static class IndexUserThread
         extends Thread
     {
-        private static final AtomicInteger versionSource = new AtomicInteger( 1 );
+        private final ConcurrentUseTest test;
 
         private final NexusIndexer nexusIndexer;
 
-        private final IndexingContext indexingContext;
+        private final IndexingContext searchIndexingContext;
+
+        private final IndexingContext modifyIndexingContext;
 
         private boolean stopped = false;
 
@@ -122,11 +172,17 @@ public class ConcurrentUseTest
 
         private Throwable t;
 
-        public IndexUserThread( NexusIndexer nexusIndexer, IndexingContext indexingContext, ArtifactInfo artifactInfo )
+        public IndexUserThread( final ConcurrentUseTest test, final NexusIndexer nexusIndexer,
+                                final IndexingContext searchIndexingContext,
+                                final IndexingContext modifyIndexingContext, ArtifactInfo artifactInfo )
         {
+            this.test = test;
+
             this.nexusIndexer = nexusIndexer;
 
-            this.indexingContext = indexingContext;
+            this.searchIndexingContext = searchIndexingContext;
+
+            this.modifyIndexingContext = modifyIndexingContext;
         }
 
         public int getAdded()
@@ -150,31 +206,22 @@ public class ConcurrentUseTest
         }
 
         public void stopThread()
+            throws IOException
         {
+            this.modifyIndexingContext.commit();
+
             this.stopped = true;
         }
 
         public void run()
         {
-            ArtifactInfo artifactInfo;
-
-            ArtifactContext ac;
-
-            Query q;
-
             while ( !stopped )
             {
                 if ( System.currentTimeMillis() % 5 == 0 )
                 {
                     try
                     {
-                        artifactInfo =
-                            new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact",
-                                "1." + String.valueOf( versionSource.getAndIncrement() ), null );
-
-                        ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
-
-                        nexusIndexer.addArtifactToIndex( ac, indexingContext );
+                        test.addToIndex( nexusIndexer, modifyIndexingContext );
 
                         added++;
                     }
@@ -188,23 +235,22 @@ public class ConcurrentUseTest
 
                 if ( System.currentTimeMillis() % 11 == 0 )
                 {
-                    // TODO: delete some of those already added
-                    // artifactInfo.version = "1." + String.valueOf( versionSource.getAndIncrement() );
-                    //
-                    // ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
-                    //
-                    // nexusIndexer.deleteArtifactFromIndex( ac, indexingContext );
-                    //
-                    // deleted++;
+                    try
+                    {
+                        // test.deleteFromIndex( nexusIndexer, modifyIndexingContext );
+                        // deleted++;
+                    }
+                    catch ( Throwable e )
+                    {
+                        t = e;
+
+                        throw new IllegalStateException( "error", e );
+                    }
                 }
 
                 try
                 {
-                    q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org.apache.maven.indexer", SearchType.SCORED );
-
-                    FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-
-                    lastSearchHitCount = result.getTotalHits();
+                    lastSearchHitCount = test.readIndex( nexusIndexer, searchIndexingContext );
                 }
                 catch ( Throwable e )
                 {
