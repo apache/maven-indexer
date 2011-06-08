@@ -351,35 +351,38 @@ public class DefaultIndexingContext
     private void deleteIndexFiles( boolean full )
         throws IOException
     {
-        String[] names = indexDirectory.listAll();
-
-        if ( names != null )
+        if ( indexDirectory != null )
         {
-            IndexFileNameFilter filter = IndexFileNameFilter.getFilter();
+            String[] names = indexDirectory.listAll();
 
-            for ( int i = 0; i < names.length; i++ )
+            if ( names != null )
             {
-                if ( filter.accept( null, names[i] ) )
+                IndexFileNameFilter filter = IndexFileNameFilter.getFilter();
+
+                for ( int i = 0; i < names.length; i++ )
                 {
-                    indexDirectory.deleteFile( names[i] );
+                    if ( filter.accept( null, names[i] ) )
+                    {
+                        indexDirectory.deleteFile( names[i] );
+                    }
                 }
             }
-        }
 
-        if ( full )
-        {
-            if ( indexDirectory.fileExists( INDEX_PACKER_PROPERTIES_FILE ) )
+            if ( full )
             {
-                indexDirectory.deleteFile( INDEX_PACKER_PROPERTIES_FILE );
+                if ( indexDirectory.fileExists( INDEX_PACKER_PROPERTIES_FILE ) )
+                {
+                    indexDirectory.deleteFile( INDEX_PACKER_PROPERTIES_FILE );
+                }
+
+                if ( indexDirectory.fileExists( INDEX_UPDATER_PROPERTIES_FILE ) )
+                {
+                    indexDirectory.deleteFile( INDEX_UPDATER_PROPERTIES_FILE );
+                }
             }
 
-            if ( indexDirectory.fileExists( INDEX_UPDATER_PROPERTIES_FILE ) )
-            {
-                indexDirectory.deleteFile( INDEX_UPDATER_PROPERTIES_FILE );
-            }
+            IndexUtils.deleteTimestamp( indexDirectory );
         }
-
-        IndexUtils.deleteTimestamp( indexDirectory );
     }
 
     public boolean isSearchable()
