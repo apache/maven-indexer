@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>4.1.1-SNAPSHOT</version>
+  <version>4.1.1</version>
   <packaging>pom</packaging>
 
   <name>Maven :: Indexer</name>
@@ -91,9 +91,9 @@ under the License.
   </developers>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-4.1.1</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-4.1.1</developerConnection>
+    <url>http://svn.apache.org/repos/asf/maven/indexer/tags/maven-indexer-4.1.1</url>
   </scm>
 
   <issueManagement>
