@@ -30,6 +30,9 @@ under the License.
   <artifactId>indexer-artifact</artifactId>
 
   <name>Maven :: Indexer Artifact Utils</name>
+  <description>
+    Indexer Artifact Utils module contains small set of reusable utilities, mostly artifact, path and their two way conversion related.
+  </description>
 
   <dependencies>
     <dependency>

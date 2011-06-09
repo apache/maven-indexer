@@ -18,6 +18,10 @@
   <artifactId>indexer-core</artifactId>
 
   <name>Maven :: Indexer Core</name>
+  <description>
+    Indexer Core contains the core support for indexing Maven repositories, searching them, publishing and consuming remotely
+    published indexes.
+  </description>
 
   <properties>
     <lucene.version>3.0.3</lucene.version>
