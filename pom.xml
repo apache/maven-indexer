@@ -221,6 +221,7 @@ under the License.
             <excludes>
               <exclude>README.md</exclude>
               <exclude>.gitignore</exclude>
+              <exclude>DEPENDENCIES</exclude>
             </excludes>
           </configuration>
         </plugin>
