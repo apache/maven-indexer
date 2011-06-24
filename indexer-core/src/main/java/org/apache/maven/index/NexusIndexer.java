@@ -75,7 +75,7 @@ import org.apache.maven.index.updater.IndexUpdater;
  *   ...
  * </pre>
  * 
- * Query could be also constructed using a convenience {@link NexusIndexer#constructQuery(String, String)} method that
+ * Query could be also constructed using a convenience {@link NexusIndexer#constructQuery(Field, SearchExpression)} method that
  * handles creation of the wildcard queries. Also see {@link DefaultQueryCreator} for more details on supported queries.
  * 
  * @see IndexingContext
@@ -332,8 +332,7 @@ public interface NexusIndexer
      * field indexed, and WHAT query is needed to achieve that.
      * 
      * @param field
-     * @param query
-     * @param type
+     * @param expression
      * @return
      */
     Query constructQuery( Field field, SearchExpression expression )
