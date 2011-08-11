@@ -102,7 +102,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://builds.apache.org/hudson/job/maven-indexer/</url>
+    <url>https://builds.apache.org/job/maven-indexer/</url>
   </ciManagement>
 
   <properties>
