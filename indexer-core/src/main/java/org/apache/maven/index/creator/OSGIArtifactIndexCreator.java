@@ -25,7 +25,6 @@ import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
-import org.apache.maven.index.NEXUS;
 import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
@@ -61,15 +60,15 @@ public class OSGIArtifactIndexCreator
     private static final String BV = "Bundle-Version";
 
     public static final IndexerField FLD_BUNDLE_VERSION =
-        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, "bv", "Bundle-Version (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, "bv", "Bundle-Version (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
 
 
     private static final String BEP = "Export-Package";
 
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
-        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, "bv", "Export-Package (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, "bv", "Export-Package (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
 
     public Collection<IndexerField> getIndexerFields()
     {

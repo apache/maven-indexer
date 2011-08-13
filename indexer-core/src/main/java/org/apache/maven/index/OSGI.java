@@ -20,13 +20,16 @@ package org.apache.maven.index;
 
 /**
  * Maven ontology.
+ *
  * @author Olivier Lamy
  * @since 4.1.1
  */
 public interface OSGI
 {
 
-    /** OSGI namespace */
+    /**
+     * OSGI namespace
+     */
     String OSGI_NAMESPACE = "urn:osgi#";
 
     Field SYMBOLIC_NAME = new Field( null, OSGI_NAMESPACE, "symbolicName", "Bundle Symbolic Name" );
