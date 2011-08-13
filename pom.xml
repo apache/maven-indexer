@@ -109,6 +109,7 @@ under the License.
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
     <plexus-component-metadata.version>1.5.5</plexus-component-metadata.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
   </properties>
 
   <dependencyManagement>
@@ -121,7 +122,7 @@ under the License.
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>3.8.2</version>
+        <version>4.8.2</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -177,9 +178,9 @@ under the License.
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>2.9</version>
         <configuration>
-          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
         </configuration>
       </plugin>
 
