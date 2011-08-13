@@ -31,6 +31,7 @@ import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.apache.maven.index.creator.OSGIArtifactIndexCreator;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.aether.util.version.GenericVersionScheme;
 import org.sonatype.aether.version.InvalidVersionSpecificationException;
@@ -140,6 +141,22 @@ public class ArtifactInfo
      */
     public static final String PLUGIN_GOALS = MavenPluginArtifactInfoIndexCreator.FLD_PLUGIN_GOALS.getKey();
 
+
+    /**
+     * @since 1.4.2
+     */
+    public static final String BUNDLE_SYMBOLIC_NAME = OSGIArtifactIndexCreator.FLD_BUNDLE_SYMBOLIC_NAME.getKey();
+
+    /**
+     * @since 1.4.2
+     */
+    public static final String BUNDLE_VERSION = OSGIArtifactIndexCreator.FLD_BUNDLE_VERSION.getKey();
+
+    /**
+     * @since 1.4.2
+     */
+    public static final String BUNDLE_EXPORT_PACKAGE = OSGIArtifactIndexCreator.FLD_BUNDLE_EXPORT_PACKAGE.getKey();
+
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
 
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
@@ -202,6 +219,25 @@ public class ArtifactInfo
      * Plugin goals (only if packaging is "maven-plugin")
      */
     public List<String> goals;
+
+    /**
+     * contains osgi metadata Bundle-Version if available
+     * @since 4.1.2
+     */
+    public String bundleVersion;
+
+    /**
+     * contains osgi metadata Bundle-SymbolicName if available
+     * @since 4.1.2
+     */
+    public String bundleSymbolicName;
+
+    /**
+     * contains osgi metadata Export-Package if available
+     * @since 4.1.2
+     */
+    public String bundleExportPackage;
+
 
     private String uinfo = null;
 

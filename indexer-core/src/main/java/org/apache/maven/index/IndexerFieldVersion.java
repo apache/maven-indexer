@@ -34,5 +34,10 @@ public enum IndexerFieldVersion
     /**
      * The 3.x line.
      */
-    V3;
+    V3,
+
+    /**
+     * The 4.x line.
+     */
+    V4;
 }
