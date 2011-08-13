@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>19</version>
+    <version>20</version>
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
@@ -109,7 +109,7 @@ under the License.
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
     <plexus-component-metadata.version>1.5.5</plexus-component-metadata.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
+    <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
   </properties>
 
   <dependencyManagement>
