@@ -212,4 +212,44 @@ public class OSGIArtifactIndexCreatorTest
 
     }
 
+    public void testIndexOSGIRepoThenSearchWithExportService()
+        throws Exception
+    {
+
+        indexOSGIRepo();
+
+        try
+        {
+
+            BooleanQuery q = new BooleanQuery();
+
+            q.add( nexusIndexer.constructQuery( OSGI.EXPORT_SERVICE, new StringSearchExpression(
+                "org.apache.felix.bundlerepository.RepositoryAdmin" ) ), BooleanClause.Occur.MUST );
+
+            FlatSearchRequest request = new FlatSearchRequest( q );
+            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+
+            //System.out.println("results with export package query " + response.getResults() );
+            assertEquals( 1, response.getResults().size() );
+
+            ArtifactInfo ai = response.getResults().iterator().next();
+            System.out.println("ai " + ai );
+
+            assertEquals( "org.apache.felix", ai.groupId );
+            assertEquals( "org.apache.felix.bundlerepository", ai.artifactId );
+            assertEquals( "1.6.6", ai.version );
+            assertEquals( "bundle", ai.packaging );
+            assertEquals( "org.apache.felix.bundlerepository", ai.bundleSymbolicName );
+            assertEquals( "1.6.6", ai.bundleVersion );
+
+        }
+        finally
+        {
+            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
+        }
+
+    }
+
+    // Export-Service: org.apache.felix.bundlerepository.RepositoryAdmin,org.osgi.service.obr.RepositoryAdmin
+
 }

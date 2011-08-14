@@ -38,4 +38,6 @@ public interface OSGI
 
     Field EXPORT_PACKAGE = new Field( null, OSGI_NAMESPACE, "exportPackage", "Bundle Export-Package" );
 
+    Field EXPORT_SERVICE = new Field( null, OSGI_NAMESPACE, "exportService", "Bundle Export-Service" );
+
 }

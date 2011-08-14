@@ -238,6 +238,12 @@ public class ArtifactInfo
      */
     public String bundleExportPackage;
 
+    /**
+     * contains osgi metadata Export-Service if available
+     * @since 4.1.2
+     */
+    public String bundleExportService;
+
 
     private String uinfo = null;
 

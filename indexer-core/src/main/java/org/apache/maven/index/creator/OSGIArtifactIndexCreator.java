@@ -67,12 +67,19 @@ public class OSGIArtifactIndexCreator
     private static final String BEP = "Export-Package";
 
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
-        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, "bv", "Export-Package (indexed, stored)",
+        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, "bep", "Export-Package (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
+
+    private static final String BES = "Export-Service";
+
+    public static final IndexerField FLD_BUNDLE_EXPORT_SERVIVE =
+        new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, "bes", "Export-Service (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
 
     public Collection<IndexerField> getIndexerFields()
     {
-        return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE );
+        return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
+                              FLD_BUNDLE_EXPORT_SERVIVE );
     }
 
     public void populateArtifactInfo( ArtifactContext artifactContext )
@@ -108,6 +115,11 @@ public class OSGIArtifactIndexCreator
             document.add( FLD_BUNDLE_EXPORT_PACKAGE.toField( artifactInfo.bundleExportPackage ) );
         }
 
+        if ( artifactInfo.bundleExportService != null )
+        {
+            document.add( FLD_BUNDLE_EXPORT_SERVIVE.toField( artifactInfo.bundleExportService ) );
+        }
+
     }
 
     public boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo )
@@ -137,6 +149,16 @@ public class OSGIArtifactIndexCreator
         if ( bundleExportPackage != null )
         {
             artifactInfo.bundleExportPackage = bundleExportPackage;
+
+            updated = true;
+
+        }
+
+        String bundleExportService = document.get( FLD_BUNDLE_EXPORT_SERVIVE.getKey() );
+
+        if ( bundleExportService != null )
+        {
+            artifactInfo.bundleExportService = bundleExportService;
 
             updated = true;
 
@@ -199,6 +221,17 @@ public class OSGIArtifactIndexCreator
                         else
                         {
                             ai.bundleExportPackage = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BES );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleExportService = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleExportService = null;
                         }
 
                     }
