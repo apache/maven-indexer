@@ -176,4 +176,40 @@ public class OSGIArtifactIndexCreatorTest
 
     }
 
+    public void testIndexOSGIRepoThenSearchWithExportPackage()
+        throws Exception
+    {
+
+        indexOSGIRepo();
+
+        try
+        {
+
+            BooleanQuery q = new BooleanQuery();
+
+            q.add( nexusIndexer.constructQuery( OSGI.EXPORT_PACKAGE, new StringSearchExpression(
+                "org.apache.karaf.features.command.completers" ) ), BooleanClause.Occur.MUST );
+
+            FlatSearchRequest request = new FlatSearchRequest( q );
+            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+
+            //System.out.println("results with export package query " + response.getResults() );
+            assertEquals( 1, response.getResults().size() );
+
+            ArtifactInfo ai = response.getResults().iterator().next();
+
+            assertEquals( "org.apache.karaf.features", ai.groupId );
+            assertEquals( "org.apache.karaf.features.command", ai.artifactId );
+            assertEquals( "2.2.2", ai.version );
+            assertEquals( "org.apache.karaf.features.command", ai.bundleSymbolicName );
+            assertEquals( "2.2.2", ai.bundleVersion );
+
+        }
+        finally
+        {
+            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
+        }
+
+    }
+
 }
