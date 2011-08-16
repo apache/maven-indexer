@@ -41,6 +41,19 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 /**
+ * This indexCreator will index some OSGI metadatas.
+ * <br/>
+ * All jars are indexed and not only the ones with packaging bundle.
+ * <br/>
+ * <p>
+ * OSGI metadatas indexed :
+ * <ul>
+ *   <li>Bundle-SymbolicName</li>
+ *   <li>Bundle-Version</li>
+ *   <li>Export-Package</li>
+ *   <li>Export-Service</li>
+ * </ul>
+ * </p>
  * @author Olivier Lamy
  * @since 4.1.2
  */
@@ -251,5 +264,11 @@ public class OSGIArtifactIndexCreator
             }
         }
         return updated;
+    }
+
+    @Override
+    public String toString()
+    {
+        return ID;
     }
 }
