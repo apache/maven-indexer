@@ -95,6 +95,17 @@ public class OSGIArtifactIndexCreatorTest
         assertEquals(
             "org.apache.karaf.features.command.completers;uses:=\"org.apache.karaf.features,org.apache.karaf.shell.console,org.apache.karaf.shell.console.completer\";version=\"2.2.2\",org.apache.karaf.features.command;uses:=\"org.apache.felix.gogo.commands,org.apache.karaf.features,org.apache.karaf.shell.console,org.osgi.framework,org.apache.felix.service.command\";version=\"2.2.2\"",
             artifactContext.getArtifactInfo().bundleExportPackage );
+
+        ArtifactInfo ai = artifactContext.getArtifactInfo();
+
+        assertEquals( "This bundle provides the Karaf shell commands to manipulate features.", ai.bundleDescription );
+        assertEquals( "Apache Karaf :: Features :: Command", ai.bundleName );
+        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.bundleLicense );
+        assertEquals( "http://www.apache.org/", ai.bundleDocUrl );
+
+        assertEquals(
+            "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
+            ai.bundleImportPackage );
     }
 
 
@@ -223,6 +234,16 @@ public class OSGIArtifactIndexCreatorTest
             assertEquals( "org.apache.karaf.features.command", ai.bundleSymbolicName );
             assertEquals( "2.2.2", ai.bundleVersion );
 
+            assertEquals( "This bundle provides the Karaf shell commands to manipulate features.",
+                          ai.bundleDescription );
+            assertEquals( "Apache Karaf :: Features :: Command", ai.bundleName );
+            assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.bundleLicense );
+            assertEquals( "http://www.apache.org/", ai.bundleDocUrl );
+
+            assertEquals(
+                "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
+                ai.bundleImportPackage );
+
         }
         finally
         {
@@ -252,7 +273,7 @@ public class OSGIArtifactIndexCreatorTest
             assertEquals( 1, response.getResults().size() );
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            System.out.println("ai " + ai );
+            System.out.println( "ai " + ai );
 
             assertEquals( "org.apache.felix", ai.groupId );
             assertEquals( "org.apache.felix.bundlerepository", ai.artifactId );

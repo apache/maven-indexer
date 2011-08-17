@@ -90,10 +90,43 @@ public class OSGIArtifactIndexCreator
         new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
 
+
+    private static final String BD = "Bundle-Description";
+
+    public static final IndexerField FLD_BUNDLE_DESCRIPTION =
+        new IndexerField( OSGI.DESCRIPTION, IndexerFieldVersion.V4, BD, "Bundle-Description (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
+
+    private static final String BN = "Bundle-Name";
+
+    public static final IndexerField FLD_BUNDLE_NAME =
+        new IndexerField( OSGI.NAME, IndexerFieldVersion.V4, BN, "Bundle-Name (indexed, stored)", Field.Store.YES,
+                          Field.Index.ANALYZED );
+
+    private static final String BL = "Bundle-License";
+
+    public static final IndexerField FLD_BUNDLE_LICENSE =
+        new IndexerField( OSGI.LICENSE, IndexerFieldVersion.V4, BL, "Bundle-License (indexed, stored)", Field.Store.YES,
+                          Field.Index.ANALYZED );
+
+    private static final String BDU = "Bundle-DocURL";
+
+    public static final IndexerField FLD_BUNDLE_DOCURL =
+        new IndexerField( OSGI.DOCURL, IndexerFieldVersion.V4, BDU, "Bundle-DocURL (indexed, stored)", Field.Store.YES,
+                          Field.Index.ANALYZED );
+
+    private static final String BIP = "Import-Package";
+
+    public static final IndexerField FLD_BUNDLE_IMPORT_PACKAGE =
+        new IndexerField( OSGI.IMPORT_PACKAGE, IndexerFieldVersion.V4, BIP, "Import-Package (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
+
+
     public Collection<IndexerField> getIndexerFields()
     {
         return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
-                              FLD_BUNDLE_EXPORT_SERVIVE );
+                              FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
+                              FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE );
     }
 
     public OSGIArtifactIndexCreator()
@@ -139,6 +172,30 @@ public class OSGIArtifactIndexCreator
             document.add( FLD_BUNDLE_EXPORT_SERVIVE.toField( artifactInfo.bundleExportService ) );
         }
 
+        if ( artifactInfo.bundleDescription != null )
+        {
+            document.add( FLD_BUNDLE_DESCRIPTION.toField( artifactInfo.bundleDescription ) );
+        }
+
+        if ( artifactInfo.bundleName != null )
+        {
+            document.add( FLD_BUNDLE_NAME.toField( artifactInfo.bundleName ) );
+        }
+
+        if ( artifactInfo.bundleLicense != null )
+        {
+            document.add( FLD_BUNDLE_LICENSE.toField( artifactInfo.bundleLicense ) );
+        }
+
+        if ( artifactInfo.bundleDocUrl != null )
+        {
+            document.add( FLD_BUNDLE_DOCURL.toField( artifactInfo.bundleDocUrl ) );
+        }
+
+        if ( artifactInfo.bundleImportPackage != null )
+        {
+            document.add( FLD_BUNDLE_IMPORT_PACKAGE.toField( artifactInfo.bundleImportPackage ) );
+        }
     }
 
     public boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo )
@@ -182,6 +239,59 @@ public class OSGIArtifactIndexCreator
             updated = true;
 
         }
+
+        String bundleDescription = document.get( FLD_BUNDLE_DESCRIPTION.getKey() );
+
+        if ( bundleDescription != null )
+        {
+            artifactInfo.bundleDescription = bundleDescription;
+
+            updated = true;
+
+        }
+
+
+        String bundleName = document.get( FLD_BUNDLE_NAME.getKey() );
+
+        if ( bundleName != null )
+        {
+            artifactInfo.bundleName = bundleName;
+
+            updated = true;
+
+        }
+
+
+        String bundleLicense = document.get( FLD_BUNDLE_LICENSE.getKey() );
+
+        if ( bundleLicense != null )
+        {
+            artifactInfo.bundleLicense = bundleLicense;
+
+            updated = true;
+
+        }
+
+        String bundleDocUrl = document.get( FLD_BUNDLE_DOCURL.getKey() );
+
+        if ( bundleDocUrl != null )
+        {
+            artifactInfo.bundleDocUrl = bundleDocUrl;
+
+            updated = true;
+
+        }
+
+        String bundleImportPackage = document.get( FLD_BUNDLE_IMPORT_PACKAGE.getKey() );
+
+        if ( bundleImportPackage != null )
+        {
+            artifactInfo.bundleImportPackage = bundleImportPackage;
+
+            updated = true;
+
+        }
+
 
         return updated;
     }
@@ -251,6 +361,61 @@ public class OSGIArtifactIndexCreator
                         else
                         {
                             ai.bundleExportService = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BD );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleDescription = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleDescription = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BN );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleName = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleName = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BL );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleLicense = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleLicense = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BDU );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleDocUrl = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleDocUrl = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BIP );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleImportPackage = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleImportPackage = null;
                         }
 
                     }

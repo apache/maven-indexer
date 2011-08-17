@@ -244,6 +244,40 @@ public class ArtifactInfo
      */
     public String bundleExportService;
 
+    /**
+     * contains osgi metadata Bundle-Description if available
+     * @since 4.1.2
+     */
+    public String bundleDescription;
+
+    /**
+     * contains osgi metadata Bundle-Name if available
+     * @since 4.1.2
+     */
+    public String bundleName;
+
+    /**
+     * contains osgi metadata Bundle-License if available
+     * @since 4.1.2
+     */
+    public String bundleLicense;
+
+    /**
+     * contains osgi metadata Bundle-DocURL if available
+     * @since 4.1.2
+     */
+    public String bundleDocUrl;
+
+    /**
+     * contains osgi metadata Import-Package if available
+     * @since 4.1.2
+     */
+    public String bundleImportPackage;
+
+
+
+
+
 
     private String uinfo = null;
 

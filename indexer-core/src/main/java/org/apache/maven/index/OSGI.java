@@ -19,7 +19,7 @@ package org.apache.maven.index;
  */
 
 /**
- * Maven ontology.
+ * OSGI ontology.
  *
  * @author Olivier Lamy
  * @since 4.1.1
@@ -39,5 +39,16 @@ public interface OSGI
     Field EXPORT_PACKAGE = new Field( null, OSGI_NAMESPACE, "exportPackage", "Bundle Export-Package" );
 
     Field EXPORT_SERVICE = new Field( null, OSGI_NAMESPACE, "exportService", "Bundle Export-Service" );
+
+    Field DESCRIPTION = new Field( null, OSGI_NAMESPACE, "bundleDescription", "Bundle-Description" );
+
+    Field NAME = new Field( null, OSGI_NAMESPACE, "bundleName", "Bundle-Name" );
+
+    Field LICENSE = new Field( null, OSGI_NAMESPACE, "bundleLicense", "Bundle-License" );
+
+    Field DOCURL = new Field( null, OSGI_NAMESPACE, "bundleDocUrl", "Bundle-DocURL" );
+
+    Field IMPORT_PACKAGE = new Field( null, OSGI_NAMESPACE, "importPackage", "Import-Package" );
+
 
 }
