@@ -31,6 +31,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -70,10 +71,9 @@ public class SearchWithAnEmptyIndexTest
         }
     }
 
-    public void testWithTwoContextWithOneEmpty()
+    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat()
         throws Exception
     {
-        createIndex( "src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1 );
 
         String repoPath = "target/test/empty-repo-for-searchtest";
 
@@ -89,6 +89,8 @@ public class SearchWithAnEmptyIndexTest
         //createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
         createIndex( repoPath, repoPath, INDEX_ID2 );
 
+        createIndex( "src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1 );
+
         try
         {
             BooleanQuery q = new BooleanQuery();
@@ -99,7 +101,9 @@ public class SearchWithAnEmptyIndexTest
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
-            request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
+            request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
+                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
 
             assertEquals( 1, response.getResults().size() );
@@ -140,6 +144,58 @@ public class SearchWithAnEmptyIndexTest
             System.out.println( " result size with term usage " + response.getResults().size() );
 
             assertEquals( 3, response.getResults().size() );
+
+        }
+        finally
+        {
+            closeAllIndexs();
+        }
+    }
+
+    /**
+     * both repos contains commons-cli so ensure we don't return duplicates
+     */
+    public void testSearchNoDuplicateArtifactInfo()
+        throws Exception
+    {
+
+        String repoPathIndex = "target/test/repo-for-searchdupe";
+
+        File emptyRepo = new File( getBasedir(), repoPathIndex );
+
+        if ( emptyRepo.exists() )
+        {
+            FileUtils.deleteDirectory( emptyRepo );
+        }
+
+        emptyRepo.mkdirs();
+
+        //createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
+        createIndex( "/src/test/repo", repoPathIndex, INDEX_ID2 );
+
+        createIndex( "src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1 );
+
+        try
+        {
+            BooleanQuery q = new BooleanQuery();
+
+            q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-cli" ) ),
+                   BooleanClause.Occur.MUST );
+
+            q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( "jar" ) ),
+                   BooleanClause.Occur.MUST );
+
+            q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( "sources" ) ),
+                   BooleanClause.Occur.MUST );
+
+            FlatSearchRequest request = new FlatSearchRequest( q );
+            assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
+            request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
+                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+
+            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+
+            assertEquals( 1, response.getResults().size() );
 
         }
         finally

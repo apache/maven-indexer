@@ -164,16 +164,26 @@ public class DefaultSearchEngine
     {
         int hitCount = 0;
 
+        Set<ArtifactInfo> nonDuplicateResults = new TreeSet<ArtifactInfo>( ArtifactInfo.VERSION_COMPARATOR );
+
+
         for ( IndexingContext context : participatingContexts )
         {
             final TopScoreDocCollector collector = doSearchWithCeiling( req, context.getIndexSearcher(), query );
 
+            // olamy if the first context used doesn't find the other are not used for search
+            // so the result can probably returns duplicate as artifactInfo doesn't implements hashCode/equals
+            // so implements this in nonDuplicateResults
+            /*
             if ( collector.getTotalHits() == 0 )
             {
                 return 0;
             }
+            */
 
             ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+
+            // uhm btw hitCount contains dups
 
             hitCount += collector.getTotalHits();
 
@@ -192,10 +202,13 @@ public class DefaultSearchEngine
 
                     artifactInfo.context = context.getId();
 
-                    result.add( artifactInfo );
+                    nonDuplicateResults.add( artifactInfo );
+
                 }
             }
         }
+
+        result.addAll( nonDuplicateResults );
 
         return hitCount;
     }
