@@ -48,12 +48,13 @@ import java.util.jar.Manifest;
  * <p>
  * OSGI metadatas indexed :
  * <ul>
- *   <li>Bundle-SymbolicName</li>
- *   <li>Bundle-Version</li>
- *   <li>Export-Package</li>
- *   <li>Export-Service</li>
+ * <li>Bundle-SymbolicName</li>
+ * <li>Bundle-Version</li>
+ * <li>Export-Package</li>
+ * <li>Export-Service</li>
  * </ul>
  * </p>
+ *
  * @author Olivier Lamy
  * @since 4.1.2
  */
@@ -66,27 +67,27 @@ public class OSGIArtifactIndexCreator
     private static final String BSN = "Bundle-SymbolicName";
 
     public static final IndexerField FLD_BUNDLE_SYMBOLIC_NAME =
-        new IndexerField( OSGI.SYMBOLIC_NAME, IndexerFieldVersion.V4, "bsn", "Bundle-SymbolicName (indexed, stored)",
+        new IndexerField( OSGI.SYMBOLIC_NAME, IndexerFieldVersion.V4, BSN, "Bundle-SymbolicName (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
 
 
     private static final String BV = "Bundle-Version";
 
     public static final IndexerField FLD_BUNDLE_VERSION =
-        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, "bv", "Bundle-Version (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, BV, "Bundle-Version (indexed, stored)", Field.Store.YES,
+                          Field.Index.ANALYZED );
 
 
     private static final String BEP = "Export-Package";
 
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
-        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, "bep", "Export-Package (indexed, stored)",
+        new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, BEP, "Export-Package (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
 
     private static final String BES = "Export-Service";
 
     public static final IndexerField FLD_BUNDLE_EXPORT_SERVIVE =
-        new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, "bes", "Export-Service (indexed, stored)",
+        new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
 
     public Collection<IndexerField> getIndexerFields()
@@ -94,7 +95,7 @@ public class OSGIArtifactIndexCreator
         return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
                               FLD_BUNDLE_EXPORT_SERVIVE );
     }
-    
+
     public OSGIArtifactIndexCreator()
     {
         super( ID );
