@@ -60,6 +60,11 @@ public class JarFileContentsIndexCreator
     public static final IndexerField FLD_CLASSNAMES_KW = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V1,
         "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
 
+    public JarFileContentsIndexCreator()
+    {
+        super( ID );
+    }
+
     public void populateArtifactInfo( ArtifactContext artifactContext )
         throws IOException
     {

@@ -44,6 +44,7 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SearchExpression;
+import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
@@ -91,7 +92,7 @@ public class DefaultNexusIndexer
     {
         IndexingContext context =
             new DefaultIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
-                indexers, false );
+                IndexCreatorSorter.sort( indexers ), false );
 
         indexingContexts.put( context.getId(), context );
 
@@ -109,7 +110,7 @@ public class DefaultNexusIndexer
         {
             context =
                 new DefaultIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl,
-                    indexUpdateUrl, indexers, true );
+                    indexUpdateUrl, IndexCreatorSorter.sort( indexers ), true );
 
             indexingContexts.put( context.getId(), context );
         }
@@ -128,7 +129,7 @@ public class DefaultNexusIndexer
     {
         IndexingContext context =
             new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl, indexUpdateUrl,
-                indexers, false );
+                IndexCreatorSorter.sort( indexers ), false );
 
         indexingContexts.put( context.getId(), context );
 
@@ -146,7 +147,7 @@ public class DefaultNexusIndexer
         {
             context =
                 new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl, indexUpdateUrl,
-                    indexers, true );
+                    IndexCreatorSorter.sort( indexers ), true );
 
             indexingContexts.put( context.getId(), context );
         }

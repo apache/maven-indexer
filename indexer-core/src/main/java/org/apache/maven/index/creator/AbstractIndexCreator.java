@@ -19,6 +19,10 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.maven.index.context.IndexCreator;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -31,6 +35,38 @@ public abstract class AbstractIndexCreator
     extends AbstractLogEnabled
     implements IndexCreator
 {
+    private final String id;
+
+    private final List<String> creatorDependencies;
+
+    protected AbstractIndexCreator( final String id )
+    {
+        this( id, null );
+    }
+
+    protected AbstractIndexCreator( final String id, final List<String> creatorDependencies )
+    {
+        this.id = id;
+
+        final ArrayList<String> deps = new ArrayList<String>();
+
+        if ( creatorDependencies != null && !creatorDependencies.isEmpty() )
+        {
+            deps.addAll( creatorDependencies );
+        }
+
+        this.creatorDependencies = Collections.unmodifiableList( deps );
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public List<String> getCreatorDependencies()
+    {
+        return creatorDependencies;
+    }
 
     public static String bos( boolean b )
     {
@@ -41,5 +77,4 @@ public abstract class AbstractIndexCreator
     {
         return b.equals( "1" );
     }
-
 }

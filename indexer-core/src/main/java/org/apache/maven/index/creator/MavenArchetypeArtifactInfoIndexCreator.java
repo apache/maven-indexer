@@ -21,6 +21,7 @@ package org.apache.maven.index.creator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -51,6 +52,11 @@ public class MavenArchetypeArtifactInfoIndexCreator
 
     private static final String[] ARCHETYPE_XML_LOCATIONS = { "META-INF/maven/archetype.xml", "META-INF/archetype.xml",
         "META-INF/maven/archetype-metadata.xml" };
+
+    public MavenArchetypeArtifactInfoIndexCreator()
+    {
+        super( ID, Arrays.asList( MinimalArtifactInfoIndexCreator.ID ) );
+    }
 
     public void populateArtifactInfo( ArtifactContext ac )
     {

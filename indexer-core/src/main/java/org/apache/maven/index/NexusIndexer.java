@@ -104,6 +104,7 @@ public interface NexusIndexer
      * @throws UnsupportedExistingLuceneIndexException if a Lucene index already exists where location is specified, but
      *             it has no Nexus descriptor record or it has, but the embedded repoId differs from the repoId
      *             specified from the supplied one.
+     * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
      */
     IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                         String repositoryUrl, String indexUpdateUrl,
@@ -124,6 +125,7 @@ public interface NexusIndexer
      * @param indexers the set of indexers to apply to this context.
      * @return
      * @throws IOException in case of some serious IO problem.
+     * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
      */
     IndexingContext addIndexingContextForced( String id, String repositoryId, File repository, File indexDirectory,
                                               String repositoryUrl, String indexUpdateUrl,
@@ -145,6 +147,7 @@ public interface NexusIndexer
      * @throws UnsupportedExistingLuceneIndexException if a Lucene index already exists where location is specified, but
      *             it has no Nexus descriptor record or it has, but the embedded repoId differs from the repoId
      *             specified from the supplied one.
+     * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
      */
     IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
                                         String repositoryUrl, String indexUpdateUrl,
@@ -165,6 +168,7 @@ public interface NexusIndexer
      * @param indexers the set of indexers to apply to this context.
      * @return
      * @throws IOException in case of some serious IO problem.
+     * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
      */
     IndexingContext addIndexingContextForced( String id, String repositoryId, File repository, Directory directory,
                                               String repositoryUrl, String indexUpdateUrl,

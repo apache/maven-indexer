@@ -21,6 +21,7 @@ package org.apache.maven.index.context;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
@@ -38,6 +39,22 @@ import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
  */
 public interface IndexCreator
 {
+    /**
+     * Returns IndexCreator ID, that has to be unique across all existing creators.
+     * 
+     * @return
+     */
+    String getId();
+
+    /**
+     * Returns list of IndexCreator IDs that this creator depends on. Needed to perform a topological sort on
+     * IndexCreators to guarantee proper ordering of them, as some IndexCreators might rely on informations already
+     * extracted by some other IndexCreator.
+     * 
+     * @return
+     */
+    List<String> getCreatorDependencies();
+
     /**
      * Returns the indexer fields that this IndexCreator introduces to index.
      * 

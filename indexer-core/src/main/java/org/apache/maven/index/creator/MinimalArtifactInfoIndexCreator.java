@@ -112,6 +112,11 @@ public class MinimalArtifactInfoIndexCreator
 
     private Locator sha1l = new Sha1Locator();
 
+    public MinimalArtifactInfoIndexCreator()
+    {
+        super( ID );
+    }
+
     public void populateArtifactInfo( ArtifactContext ac )
     {
         File artifact = ac.getArtifact();

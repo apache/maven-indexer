@@ -94,6 +94,11 @@ public class OSGIArtifactIndexCreator
         return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
                               FLD_BUNDLE_EXPORT_SERVIVE );
     }
+    
+    public OSGIArtifactIndexCreator()
+    {
+        super( ID );
+    }
 
     public void populateArtifactInfo( ArtifactContext artifactContext )
         throws IOException

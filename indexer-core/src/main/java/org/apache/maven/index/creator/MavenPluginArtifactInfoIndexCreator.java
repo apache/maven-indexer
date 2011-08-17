@@ -65,6 +65,11 @@ public class MavenPluginArtifactInfoIndexCreator
     public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
         "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.ANALYZED );
 
+    public MavenPluginArtifactInfoIndexCreator()
+    {
+        super( ID, Arrays.asList( MinimalArtifactInfoIndexCreator.ID ) );
+    }
+
     public void populateArtifactInfo( ArtifactContext ac )
     {
         File artifact = ac.getArtifact();
