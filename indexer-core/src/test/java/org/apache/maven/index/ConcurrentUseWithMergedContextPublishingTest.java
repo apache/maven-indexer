@@ -21,6 +21,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
@@ -39,6 +40,8 @@ public class ConcurrentUseWithMergedContextPublishingTest
 
     protected File repoPublish = new File( getBasedir(), "target/repo-publish" );
 
+    protected final AtomicInteger counter = new AtomicInteger();
+
     @Override
     protected void setUp()
         throws Exception
@@ -52,7 +55,13 @@ public class ConcurrentUseWithMergedContextPublishingTest
     protected int readIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext )
         throws IOException
     {
-        final IndexPackingRequest request = new IndexPackingRequest( context, repoPublish );
+        // note: concurrent Index publishing into SAME directory is not supported and should be avoided.
+        // This test had multiple threads doing it, and since it was not checking actual results of publish (that was
+        // not the goal of the test, but simultaneous publishing of merged context that has member changes happening),
+        // it was probably publish rubbish anyway.
+        final File publish = new File( repoPublish, "publish-" + counter.getAndIncrement() );
+
+        final IndexPackingRequest request = new IndexPackingRequest( context, publish );
 
         request.setCreateIncrementalChunks( false );
 
