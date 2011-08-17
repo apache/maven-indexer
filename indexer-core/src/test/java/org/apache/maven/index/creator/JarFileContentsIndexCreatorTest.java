@@ -76,4 +76,27 @@ public class JarFileContentsIndexCreatorTest
         assertNull( "Classes should be null", artifactContext.getArtifactInfo().classNames );
     }
 
+    public void testMindexer35ScanWar()
+        throws Exception
+    {
+        File artifact =
+            new File( getBasedir(),
+                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.war" );
+
+        File pom =
+            new File( getBasedir(),
+                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom" );
+
+        ArtifactInfo artifactInfo =
+            new ArtifactInfo( "test", "org.apache.maven.indexer.test", "sample-war", "1.0-SNAPSHOT", null );
+
+        ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
+
+        indexCreator.populateArtifactInfo( artifactContext );
+
+        assertTrue( "Classes should contain WebappClass",
+            artifactContext.getArtifactInfo().classNames.contains( "WebappClass" ) );
+        assertEquals( "WebappClass should have proper package",
+            "/org/apache/maven/indexer/samples/webapp/WebappClass", artifactContext.getArtifactInfo().classNames );
+    }
 }

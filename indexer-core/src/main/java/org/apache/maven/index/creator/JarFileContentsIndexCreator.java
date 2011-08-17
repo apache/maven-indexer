@@ -37,10 +37,11 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
- * An index creator used to index Java class names from a Maven artifact. Will open up the JAR and collect all the class
- * names from it.
+ * An index creator used to index Java class names from a Maven artifact (JAR or WAR for now). Will open up the file and
+ * collect all the class names from it.
  */
 @Component( role = IndexCreator.class, hint = JarFileContentsIndexCreator.ID )
 public class JarFileContentsIndexCreator
@@ -65,20 +66,21 @@ public class JarFileContentsIndexCreator
         super( ID );
     }
 
-    public void populateArtifactInfo( ArtifactContext artifactContext )
+    public void populateArtifactInfo( final ArtifactContext artifactContext )
         throws IOException
     {
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
         File artifactFile = artifactContext.getArtifact();
 
-        if ( artifactFile != null && artifactFile.isFile() && artifactFile.getName().endsWith( ".jar" ) )
+        if ( artifactFile != null && artifactFile.isFile()
+            && ( artifactFile.getName().endsWith( ".jar" ) || artifactFile.getName().endsWith( ".war" ) ) )
         {
             updateArtifactInfo( ai, artifactFile );
         }
     }
 
-    public void updateDocument( ArtifactInfo ai, Document doc )
+    public void updateDocument( final ArtifactInfo ai, final Document doc )
     {
         if ( ai.classNames != null )
         {
@@ -87,7 +89,7 @@ public class JarFileContentsIndexCreator
         }
     }
 
-    public void updateLegacyDocument( ArtifactInfo ai, Document doc )
+    public void updateLegacyDocument( final ArtifactInfo ai, final Document doc )
     {
         if ( ai.classNames != null )
         {
@@ -111,7 +113,7 @@ public class JarFileContentsIndexCreator
         }
     }
 
-    public boolean updateArtifactInfo( Document doc, ArtifactInfo artifactInfo )
+    public boolean updateArtifactInfo( final Document doc, final ArtifactInfo artifactInfo )
     {
         String names = doc.get( FLD_CLASSNAMES_KW.getKey() );
 
@@ -139,7 +141,20 @@ public class JarFileContentsIndexCreator
         return false;
     }
 
-    private void updateArtifactInfo( ArtifactInfo ai, File f )
+    private void updateArtifactInfo( final ArtifactInfo ai, final File f )
+        throws IOException
+    {
+        if ( f.getName().endsWith( ".jar" ) )
+        {
+            updateArtifactInfo( ai, f, null );
+        }
+        else if ( f.getName().endsWith( ".war" ) )
+        {
+            updateArtifactInfo( ai, f, "WEB-INF/classes/" );
+        }
+    }
+
+    private void updateArtifactInfo( final ArtifactInfo ai, final File f, final String strippedPrefix )
         throws IOException
     {
         ZipHandle handle = null;
@@ -168,8 +183,16 @@ public class JarFileContentsIndexCreator
                             sb.append( '/' );
                         }
 
-                        // class name without ".class"
-                        sb.append( name.substring( 0, name.length() - 6 ) ).append( '\n' );
+                        if ( StringUtils.isBlank( strippedPrefix ) )
+                        {
+                            // class name without ".class"
+                            sb.append( name.substring( 0, name.length() - 6 ) ).append( '\n' );
+                        }
+                        else if ( name.startsWith( strippedPrefix ) && (name.length() > ( strippedPrefix.length() + 6 )) )
+                        {
+                            // class name without ".class" and stripped prefix
+                            sb.append( name.substring( strippedPrefix.length(), name.length() - 6 ) ).append( '\n' );
+                        }
                     }
                 }
             }
