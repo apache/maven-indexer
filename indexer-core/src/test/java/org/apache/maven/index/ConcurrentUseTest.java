@@ -229,6 +229,8 @@ public class ConcurrentUseTest
                     {
                         t = e;
 
+                        e.printStackTrace();
+
                         throw new IllegalStateException( "error", e );
                     }
                 }
