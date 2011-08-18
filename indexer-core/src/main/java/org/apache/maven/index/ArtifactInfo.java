@@ -161,6 +161,8 @@ public class ArtifactInfo
 
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
 
+    public static final Comparator<ArtifactInfo> CONTEXT_VERSION_COMPARATOR = new ContextVersionComparator();
+
     public String fname;
 
     public String fextension;
@@ -548,7 +550,7 @@ public class ArtifactInfo
     static class VersionComparator
         implements Comparator<ArtifactInfo>
     {
-        public int compare( ArtifactInfo f1, ArtifactInfo f2 )
+        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
         {
             int n = f1.groupId.compareTo( f2.groupId );
             if ( n != 0 )
@@ -569,8 +571,8 @@ public class ArtifactInfo
             }
 
             {
-                String c1 = f1.classifier;
-                String c2 = f2.classifier;
+                final String c1 = f1.classifier;
+                final String c2 = f2.classifier;
                 if ( c1 == null )
                 {
                     if ( c2 != null )
@@ -594,8 +596,8 @@ public class ArtifactInfo
             }
 
             {
-                String p1 = f1.packaging;
-                String p2 = f2.packaging;
+                final String p1 = f1.packaging;
+                final String p2 = f2.packaging;
                 if ( p1 == null )
                 {
                     return p2 == null ? 0 : -1;
@@ -615,16 +617,44 @@ public class ArtifactInfo
         extends VersionComparator
     {
         @Override
-        public int compare( ArtifactInfo f1, ArtifactInfo f2 )
+        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
         {
-            int n = super.compare( f1, f2 );
+            final int n = super.compare( f1, f2 );
             if ( n != 0 )
             {
                 return n;
             }
 
-            String r1 = f1.repository;
-            String r2 = f2.repository;
+            final String r1 = f1.repository;
+            final String r2 = f2.repository;
+            if ( r1 == null )
+            {
+                return r2 == null ? 0 : -1;
+            }
+            else
+            {
+                return r2 == null ? 1 : r1.compareTo( r2 );
+            }
+        }
+    }
+    
+    /**
+     * A context and version comparator
+     */
+    static class ContextVersionComparator
+        extends VersionComparator
+    {
+        @Override
+        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
+        {
+            final int n = super.compare( f1, f2 );
+            if ( n != 0 )
+            {
+                return n;
+            }
+
+            final String r1 = f1.context;
+            final String r2 = f2.context;
             if ( r1 == null )
             {
                 return r2 == null ? 0 : -1;
