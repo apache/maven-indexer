@@ -58,8 +58,8 @@ import java.util.jar.Manifest;
  * @author Olivier Lamy
  * @since 4.1.2
  */
-@Component( role = IndexCreator.class, hint = OSGIArtifactIndexCreator.ID )
-public class OSGIArtifactIndexCreator
+@Component( role = IndexCreator.class, hint = OsgiArtifactIndexCreator.ID )
+public class OsgiArtifactIndexCreator
     extends AbstractIndexCreator
 {
     public static final String ID = "osgi-metadatas";
@@ -129,7 +129,7 @@ public class OSGIArtifactIndexCreator
                               FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE );
     }
 
-    public OSGIArtifactIndexCreator()
+    public OsgiArtifactIndexCreator()
     {
         super( ID );
     }

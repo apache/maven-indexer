@@ -31,7 +31,7 @@ import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.apache.maven.index.creator.OSGIArtifactIndexCreator;
+import org.apache.maven.index.creator.OsgiArtifactIndexCreator;
 import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.aether.util.version.GenericVersionScheme;
 import org.sonatype.aether.version.InvalidVersionSpecificationException;
@@ -145,17 +145,17 @@ public class ArtifactInfo
     /**
      * @since 1.4.2
      */
-    public static final String BUNDLE_SYMBOLIC_NAME = OSGIArtifactIndexCreator.FLD_BUNDLE_SYMBOLIC_NAME.getKey();
+    public static final String BUNDLE_SYMBOLIC_NAME = OsgiArtifactIndexCreator.FLD_BUNDLE_SYMBOLIC_NAME.getKey();
 
     /**
      * @since 1.4.2
      */
-    public static final String BUNDLE_VERSION = OSGIArtifactIndexCreator.FLD_BUNDLE_VERSION.getKey();
+    public static final String BUNDLE_VERSION = OsgiArtifactIndexCreator.FLD_BUNDLE_VERSION.getKey();
 
     /**
      * @since 1.4.2
      */
-    public static final String BUNDLE_EXPORT_PACKAGE = OSGIArtifactIndexCreator.FLD_BUNDLE_EXPORT_PACKAGE.getKey();
+    public static final String BUNDLE_EXPORT_PACKAGE = OsgiArtifactIndexCreator.FLD_BUNDLE_EXPORT_PACKAGE.getKey();
 
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
 

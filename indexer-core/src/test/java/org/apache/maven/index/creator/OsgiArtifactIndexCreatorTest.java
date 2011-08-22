@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * @author Olivier Lamy
  */
-public class OSGIArtifactIndexCreatorTest
+public class OsgiArtifactIndexCreatorTest
     extends PlexusTestCase
 {
     protected IndexCreator indexCreator;
@@ -55,7 +55,7 @@ public class OSGIArtifactIndexCreatorTest
     {
         super.setUp();
 
-        indexCreator = this.lookup( IndexCreator.class, OSGIArtifactIndexCreator.ID );
+        indexCreator = this.lookup( IndexCreator.class, OsgiArtifactIndexCreator.ID );
 
         nexusIndexer = this.lookup( NexusIndexer.class );
     }
@@ -126,7 +126,7 @@ public class OSGIArtifactIndexCreatorTest
 
         List<IndexCreator> indexCreators =
             Arrays.<IndexCreator>asList( new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
-                                         new MavenPluginArtifactInfoIndexCreator(), new OSGIArtifactIndexCreator() );
+                                         new MavenPluginArtifactInfoIndexCreator(), new OsgiArtifactIndexCreator() );
 
         IndexingContext indexingContext =
             nexusIndexer.addIndexingContext( INDEX_ID, INDEX_ID, repo, repoIndexDir, "http://www.apache.org",
