@@ -50,5 +50,7 @@ public interface OSGI
 
     Field IMPORT_PACKAGE = new Field( null, OSGI_NAMESPACE, "importPackage", "Import-Package" );
 
+    Field REQUIRE_BUNDLE  = new Field( null, OSGI_NAMESPACE, "requireBundle", "Require-Bundle" );
+
 
 }

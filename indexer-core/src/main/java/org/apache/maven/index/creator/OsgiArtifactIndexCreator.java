@@ -122,11 +122,20 @@ public class OsgiArtifactIndexCreator
                           Field.Store.YES, Field.Index.ANALYZED );
 
 
+    private static final String BRB = "Require-Bundle";
+
+    public static final IndexerField FLD_BUNDLE_REQUIRE_BUNDLE =
+        new IndexerField( OSGI.REQUIRE_BUNDLE, IndexerFieldVersion.V4, BRB, "Require-Bundle (indexed, stored)",
+                          Field.Store.YES, Field.Index.ANALYZED );
+
+
+
+
     public Collection<IndexerField> getIndexerFields()
     {
         return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
                               FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
-                              FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE );
+                              FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE );
     }
 
     public OsgiArtifactIndexCreator()
@@ -195,6 +204,11 @@ public class OsgiArtifactIndexCreator
         if ( artifactInfo.bundleImportPackage != null )
         {
             document.add( FLD_BUNDLE_IMPORT_PACKAGE.toField( artifactInfo.bundleImportPackage ) );
+        }
+
+        if ( artifactInfo.bundleRequireBundle != null )
+        {
+            document.add( FLD_BUNDLE_REQUIRE_BUNDLE.toField( artifactInfo.bundleRequireBundle ) );
         }
     }
 
@@ -287,6 +301,16 @@ public class OsgiArtifactIndexCreator
         if ( bundleImportPackage != null )
         {
             artifactInfo.bundleImportPackage = bundleImportPackage;
+
+            updated = true;
+
+        }
+
+        String bundleRequireBundle = document.get( FLD_BUNDLE_REQUIRE_BUNDLE.getKey() );
+
+        if ( bundleRequireBundle != null )
+        {
+            artifactInfo.bundleRequireBundle = bundleRequireBundle;
 
             updated = true;
 
@@ -416,6 +440,17 @@ public class OsgiArtifactIndexCreator
                         else
                         {
                             ai.bundleImportPackage = null;
+                        }
+
+                        attValue = mainAttributes.getValue( BRB );
+                        if ( StringUtils.isNotBlank( attValue ) )
+                        {
+                            ai.bundleRequireBundle = attValue;
+                            updated = true;
+                        }
+                        else
+                        {
+                            ai.bundleRequireBundle = null;
                         }
 
                     }

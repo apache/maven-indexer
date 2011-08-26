@@ -276,6 +276,11 @@ public class ArtifactInfo
      */
     public String bundleImportPackage;
 
+    /**
+     * contains osgi metadata Require-Bundle if available
+     * @since 4.1.2
+     */
+    public String bundleRequireBundle;
 
 
 
