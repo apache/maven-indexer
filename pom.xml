@@ -205,13 +205,6 @@ under the License.
           </execution>
         </executions>
       </plugin>
-
-      <!-- Remove after upgrading to parent 19-SNAPSHOT -->
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <version>0.7</version>
-      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>
