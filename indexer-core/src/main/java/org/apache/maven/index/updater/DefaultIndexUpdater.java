@@ -729,9 +729,9 @@ public class DefaultIndexUpdater
         {
             File chunksFile = new File( dir, CHUNKS_FILENAME );
             BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) );
+            Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING );
             try
             {
-                Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING );
                 for ( String filename : newChunks )
                 {
                     w.write( filename + "\n" );
@@ -740,6 +740,7 @@ public class DefaultIndexUpdater
             }
             finally
             {
+                IOUtil.close( w );
                 IOUtil.close( os );
             }
             super.commit();
