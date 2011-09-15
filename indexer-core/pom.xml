@@ -38,7 +38,7 @@ under the License.
     <lucene.version>3.0.3</lucene.version>
     <maven.version>3.0.1</maven.version>
     <aether.version>1.8</aether.version>
-    <archetype.version>2.0-alpha-4</archetype.version>
+    <archetype.version>2.1</archetype.version>
     <wagon.version>1.0</wagon.version>
     <truezip.version>7.0-rc1</truezip.version>
   </properties>
