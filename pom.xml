@@ -110,6 +110,8 @@ under the License.
     <plexus-component-metadata.version>1.5.5</plexus-component-metadata.version>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
+    <!-- remove with upgrade to parent 21 -->
+    <sonar.host.url>https://analysis.apache.org/</sonar.host.url>
   </properties>
 
   <dependencyManagement>
@@ -268,6 +270,7 @@ under the License.
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
           </plugin>
+          <!-- remove with upgrade to parent 21 -->
           <plugin>
             <groupId>org.codehaus.sonar-plugins</groupId>
             <artifactId>maven-report</artifactId>
