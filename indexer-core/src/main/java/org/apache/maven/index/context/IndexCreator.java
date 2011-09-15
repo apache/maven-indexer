@@ -19,23 +19,21 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.creator.JarFileContentsIndexCreator;
-import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * An index creator is responsible for storing and reading data to and from Lucene index.
  * 
  * @author Jason van Zyl
- * @see MinimalArtifactInfoIndexCreator
- * @see JarFileContentsIndexCreator
+ * @see org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator
+ * @see org.apache.maven.index.creator.JarFileContentsIndexCreator
  */
 public interface IndexCreator
 {
