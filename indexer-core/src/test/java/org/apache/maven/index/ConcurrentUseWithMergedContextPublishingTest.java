@@ -19,18 +19,18 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * The point in this test is: we use Merged context, and we modify some of the "members" in the merged context, while we
  * try to publish those simultaneously.
- * 
+ *
  * @author cstamas
  */
 public class ConcurrentUseWithMergedContextPublishingTest
@@ -49,6 +49,18 @@ public class ConcurrentUseWithMergedContextPublishingTest
         super.setUp();
 
         packer = lookup( IndexPacker.class );
+    }
+
+    @Override
+    protected void tearDown()
+        throws Exception
+    {
+        File props = new File( IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
+        if ( props.exists() )
+        {
+            props.delete();
+        }
+        super.tearDown();
     }
 
     @Override
