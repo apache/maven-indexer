@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>20</version>
+    <version>21</version>
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
@@ -36,7 +36,6 @@ under the License.
     Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
     of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
   </description>
-
 
   <contributors>
     <contributor>
@@ -67,11 +66,7 @@ under the License.
 
   <properties>
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
-    <plexus-component-metadata.version>1.5.5</plexus-component-metadata.version>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
-    <!-- remove with upgrade to parent 21 -->
-    <sonar.host.url>https://analysis.apache.org/</sonar.host.url>
   </properties>
 
   <dependencyManagement>
@@ -100,7 +95,6 @@ under the License.
       <plugin>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-component-metadata</artifactId>
-        <version>${plexus-component-metadata.version}</version>
         <executions>
           <execution>
             <id>process-classes</id>
@@ -115,14 +109,6 @@ under the License.
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -140,7 +126,6 @@ under the License.
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.9</version>
         <configuration>
           <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
         </configuration>
@@ -209,35 +194,4 @@ under the License.
       </plugins>
     </pluginManagement>
   </build>
-
-  <profiles>
-    <profile>
-      <id>reporting</id>
-      <reporting>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-pmd-plugin</artifactId>
-            <configuration>
-              <targetJdk>1.5</targetJdk>
-            </configuration>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-checkstyle-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-          </plugin>
-          <!-- remove with upgrade to parent 21 -->
-          <plugin>
-            <groupId>org.codehaus.sonar-plugins</groupId>
-            <artifactId>maven-report</artifactId>
-            <version>0.1</version>
-          </plugin>
-        </plugins>
-      </reporting>
-    </profile>
-  </profiles>
 </project>
