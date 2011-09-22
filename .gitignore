@@ -19,3 +19,4 @@ target/
 # Other
 .svn/
 bin/
+.DS_Store

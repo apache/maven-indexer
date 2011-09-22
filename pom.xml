@@ -37,29 +37,9 @@ under the License.
     of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
   </description>
 
-  <developers>
-    <developer>
-      <id>cstamas</id>
-      <name>Tamas Cservenak</name>
-      <email>cstamas@sonatype.com</email>
-      <organization>Sonatype</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>2</timezone>
-    </developer>
-    <developer>
-      <id>brianf</id>
-      <name>Brian Fox</name>
-      <email>brian@sonatype.com</email>
-      <organization>Sonatype</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-6</timezone>
-    </developer>
-    <developer>
-      <id>eu</id>
+
+  <contributors>
+    <contributor>
       <name>Eugene Kuleshov</name>
       <email>eugene@sonatype.com</email>
       <organization>Sonatype</organization>
@@ -67,28 +47,8 @@ under the License.
         <role>Developer</role>
       </roles>
       <timezone>-5</timezone>
-    </developer>
-    <developer>
-      <id>dbradicich</id>
-      <name>Damian Bradicich</name>
-      <email>dbradicich@sonatype.com</email>
-      <organization>Sonatype</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-    <developer>
-      <id>bdemers</id>
-      <name>Brian Demers</name>
-      <email>bdemers@sonatype.com</email>
-      <organization>Sonatype</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </developer>
-  </developers>
+    </contributor>
+  </contributors>
 
   <scm>
     <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
