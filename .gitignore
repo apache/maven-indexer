@@ -15,6 +15,7 @@ target/
 # Intellij
 *.ipr
 *.iml
+.idea/
 
 # Other
 .svn/
