@@ -19,12 +19,6 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -38,13 +32,19 @@ import org.apache.maven.wagon.repository.Repository;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  * This is a helper for obtaining Wagon based ResourceFetchers. Some Indexer integrations does have access to Wagon
  * already, so this is here just to help them. Since Wagon (et al) is just optional dependency, looking up this
  * component in integrations where Wagon is not present, should be avoided. This helper is rather limited, as it offers
  * only "HTTP" wagons! This is not made a Plexus component since SISU would crack in CLI, while trying to load up this
  * class, because of lacking Wagon classes from classpath!
- * 
+ *
  * @author cstamas
  */
 public class WagonHelper
@@ -62,12 +62,40 @@ public class WagonHelper
         return getWagonResourceFetcher( listener, null, null );
     }
 
+    /**
+     * @deprecated use getWagonResourceFetcher with protocol argument
+     * @param listener
+     * @param authenticationInfo
+     * @param proxyInfo
+     * @return
+     * @throws ComponentLookupException
+     */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
-                                                 final AuthenticationInfo authenticationInfo, final ProxyInfo proxyInfo )
+                                                 final AuthenticationInfo authenticationInfo,
+                                                 final ProxyInfo proxyInfo )
         throws ComponentLookupException
     {
         // we limit ourselves to HTTP only
-        return new WagonFetcher( plexusContainer.lookup( Wagon.class, "http" ), listener, authenticationInfo, proxyInfo );
+        return new WagonFetcher( plexusContainer.lookup( Wagon.class, "http" ), listener, authenticationInfo,
+                                 proxyInfo );
+    }
+
+    /**
+     * @param listener
+     * @param authenticationInfo
+     * @param proxyInfo
+     * @param protocol protocol supported by wagon http/https
+     * @return
+     * @throws ComponentLookupException
+     * @since 4.1.3
+     */
+    public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
+                                                 final AuthenticationInfo authenticationInfo, final ProxyInfo proxyInfo,
+                                                 String protocol )
+        throws ComponentLookupException
+    {
+        return new WagonFetcher( plexusContainer.lookup( Wagon.class, protocol ), listener, authenticationInfo,
+                                 proxyInfo );
     }
 
     public static class WagonFetcher
