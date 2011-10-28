@@ -134,13 +134,17 @@ public class WagonHelper
             {
                 String msg = "Authentication exception connecting to " + repository;
                 logError( msg, ex );
-                throw new IOException( msg );
+                IOException ioException = new IOException( msg );
+                ioException.initCause( ex );
+                throw ioException;
             }
             catch ( WagonException ex )
             {
                 String msg = "Wagon exception connecting to " + repository;
                 logError( msg, ex );
-                throw new IOException( msg );
+                IOException ioException = new IOException( msg );
+                ioException.initCause( ex );
+                throw ioException;
             }
         }
 
@@ -187,19 +191,25 @@ public class WagonHelper
             {
                 String msg = "Authorization exception retrieving " + name;
                 logError( msg, e );
-                throw new IOException( msg );
+                IOException ioException = new IOException( msg );
+                ioException.initCause( e );
+                throw ioException;
             }
             catch ( ResourceDoesNotExistException e )
             {
                 String msg = "Resource " + name + " does not exist";
                 logError( msg, e );
-                throw new FileNotFoundException( msg );
+                FileNotFoundException fileNotFoundException = new FileNotFoundException( msg );
+                fileNotFoundException.initCause( e );
+                throw fileNotFoundException;
             }
             catch ( WagonException e )
             {
                 String msg = "Transfer for " + name + " failed";
                 logError( msg, e );
-                throw new IOException( msg + "; " + e.getMessage() );
+                IOException ioException = new IOException( msg + "; " + e.getMessage() );
+                ioException.initCause( e );
+                throw ioException;
             }
         }
 
