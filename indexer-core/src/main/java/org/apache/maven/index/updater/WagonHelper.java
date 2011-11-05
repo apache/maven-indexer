@@ -63,12 +63,12 @@ public class WagonHelper
     }
 
     /**
-     * @deprecated use getWagonResourceFetcher with protocol argument
      * @param listener
      * @param authenticationInfo
      * @param proxyInfo
      * @return
      * @throws ComponentLookupException
+     * @deprecated use getWagonResourceFetcher with protocol argument
      */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
                                                  final AuthenticationInfo authenticationInfo,
@@ -84,7 +84,7 @@ public class WagonHelper
      * @param listener
      * @param authenticationInfo
      * @param proxyInfo
-     * @param protocol protocol supported by wagon http/https
+     * @param protocol           protocol supported by wagon http/https
      * @return
      * @throws ComponentLookupException
      * @since 4.1.3
@@ -177,6 +177,7 @@ public class WagonHelper
         }
 
         public void disconnect()
+            throws IOException
         {
             if ( wagon != null )
             {
@@ -186,7 +187,9 @@ public class WagonHelper
                 }
                 catch ( ConnectionException ex )
                 {
-                    logError( "Failed to close connection", ex );
+                    IOException ioe = new IOException( ex.toString() );
+                    ioe.initCause( ex );
+                    throw ioe;
                 }
             }
         }
