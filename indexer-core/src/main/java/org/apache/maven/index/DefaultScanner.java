@@ -48,7 +48,7 @@ public class DefaultScanner
     {
         request.getArtifactScanningListener().scanningStarted( request.getIndexingContext() );
 
-        ScanningResult result = new ScanningResult();
+        ScanningResult result = new ScanningResult( request );
 
         scanDirectory( request.getStartingDirectory(), request );
 

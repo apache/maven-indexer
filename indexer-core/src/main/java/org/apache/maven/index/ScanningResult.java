@@ -35,6 +35,13 @@ public class ScanningResult
 
     private List<Exception> exceptions = new ArrayList<Exception>();
 
+    private final ScanningRequest request;
+
+    public ScanningResult( ScanningRequest request )
+    {
+        this.request = request;
+    }
+
     public void setTotalFiles( int totalFiles )
     {
         this.totalFiles = totalFiles;
@@ -68,6 +75,11 @@ public class ScanningResult
     public List<Exception> getExceptions()
     {
         return exceptions;
+    }
+
+    public ScanningRequest getRequest()
+    {
+        return request;
     }
 
 }

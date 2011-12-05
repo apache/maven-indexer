@@ -166,7 +166,7 @@ class DefaultScannerListener
 
             if ( update && !context.isReceivingUpdates() )
             {
-                removeDeletedArtifacts( context, result );
+                removeDeletedArtifacts( context, result, result.getRequest().getStartingPath() );
             }
         }
         catch ( IOException ex )
@@ -232,7 +232,7 @@ class DefaultScannerListener
         }
     }
 
-    private void removeDeletedArtifacts( IndexingContext context, ScanningResult result )
+    private void removeDeletedArtifacts( IndexingContext context, ScanningResult result, String contextPath )
         throws IOException
     {
         int deleted = 0;
@@ -272,7 +272,11 @@ class DefaultScannerListener
 
                 for ( int i = 0; i < collector.getTotalHits(); i++ )
                 {
-                    indexerEngine.remove( context, ac );
+                    if ( contextPath == null
+                        || context.getGavCalculator().gavToPath( ac.getGav() ).startsWith( contextPath ) )
+                    {
+                        indexerEngine.remove( context, ac );
+                    }
 
                     deleted++;
                 }
