@@ -34,7 +34,7 @@ import org.codehaus.plexus.util.IOUtil;
  * A very simple artifact packaging mapper, that has everything for quick-start wired in this class. Also, it takes into
  * account the "${nexus-work}/conf/packaging2extension-mapping.properties" file into account if found. To override the
  * "defaults" in this class, simply add lines to properties file with same keys.
- * 
+ *
  * @author cstamas
  */
 @Component( role = ArtifactPackagingMapper.class )
@@ -42,11 +42,12 @@ public class DefaultArtifactPackagingMapper
     extends AbstractLogEnabled
     implements ArtifactPackagingMapper
 {
+
     public static final String MAPPING_PROPERTIES_FILE = "packaging2extension-mapping.properties";
 
     private File propertiesFile;
 
-    private Map<String, String> packaging2extensionMapping;
+    private volatile Map<String, String> packaging2extensionMapping;
 
     private final static Map<String, String> defaults;
 
@@ -75,55 +76,65 @@ public class DefaultArtifactPackagingMapper
         this.packaging2extensionMapping = null;
     }
 
-    public synchronized Map<String, String> getPackaging2extensionMapping()
+    public Map<String, String> getPackaging2extensionMapping()
     {
         if ( packaging2extensionMapping == null )
         {
-            packaging2extensionMapping = new HashMap<String, String>();
-
-            // merge defaults
-            packaging2extensionMapping.putAll( defaults );
-
-            if ( propertiesFile != null && propertiesFile.exists() )
+            synchronized ( this )
             {
-                getLogger().info( "Found user artifact packaging mapping file, applying it..." );
-
-                Properties userMappings = new Properties();
-
-                FileInputStream fis = null;
-
-                try
+                if ( packaging2extensionMapping == null )
                 {
-                    fis = new FileInputStream( propertiesFile );
+                    packaging2extensionMapping = new HashMap<String, String>();
 
-                    userMappings.load( fis );
+                    // merge defaults
+                    packaging2extensionMapping.putAll( defaults );
 
-                    if ( userMappings.keySet().size() > 0 )
+                    if ( propertiesFile != null && propertiesFile.exists() )
                     {
-                        for ( Object key : userMappings.keySet() )
+                        getLogger().info( "Found user artifact packaging mapping file, applying it..." );
+
+                        Properties userMappings = new Properties();
+
+                        FileInputStream fis = null;
+
+                        try
                         {
-                            packaging2extensionMapping.put( key.toString(), userMappings.getProperty( key.toString() ) );
+                            fis = new FileInputStream( propertiesFile );
+
+                            userMappings.load( fis );
+
+                            if ( userMappings.keySet().size() > 0 )
+                            {
+                                for ( Object key : userMappings.keySet() )
+                                {
+                                    packaging2extensionMapping.put( key.toString(),
+                                                                    userMappings.getProperty( key.toString() ) );
+                                }
+
+                                getLogger().info(
+                                    propertiesFile.getAbsolutePath()
+                                        + " user artifact packaging mapping file contained "
+                                        + userMappings.keySet().size() + " mappings, applied them all succesfully." );
+                            }
+                        }
+                        catch ( IOException e )
+                        {
+                            getLogger().warn(
+                                "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
+                        }
+                        finally
+                        {
+                            IOUtil.close( fis );
                         }
 
-                        getLogger().info(
-                            propertiesFile.getAbsolutePath() + " user artifact packaging mapping file contained "
-                                + userMappings.keySet().size() + " mappings, applied them all succesfully." );
+                    }
+                    else
+                    {
+                        // make it silent if using defaults
+                        getLogger().debug(
+                            "User artifact packaging mappings file not found, will work with defaults..." );
                     }
                 }
-                catch ( IOException e )
-                {
-                    getLogger().warn( "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
-                }
-                finally
-                {
-                    IOUtil.close( fis );
-                }
-
-            }
-            else
-            {
-                // make it silent if using defaults
-                getLogger().debug( "User artifact packaging mappings file not found, will work with defaults..." );
             }
         }
 
