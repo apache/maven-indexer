@@ -36,7 +36,7 @@ import org.apache.maven.index.ArtifactInfo;
  * 
  * @author Jason van Zyl
  */
-public class NexusLegacyAnalyzer
+public final class NexusLegacyAnalyzer
     extends Analyzer
 {
     private static Analyzer DEFAULT_ANALYZER = new StandardAnalyzer( Version.LUCENE_30 );

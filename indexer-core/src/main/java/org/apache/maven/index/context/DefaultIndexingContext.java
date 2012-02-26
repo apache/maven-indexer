@@ -500,6 +500,8 @@ public class DefaultIndexingContext
 
         indexWriter.setMergeScheduler( new SerialMergeScheduler() );
 
+        indexWriter.commit(); // LUCENE-2386
+
         openAndWarmupReaders();
     }
 

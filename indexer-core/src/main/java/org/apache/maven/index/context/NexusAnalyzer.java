@@ -35,7 +35,7 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
  * @author Eugene Kuleshov
  * @author cstamas
  */
-public class NexusAnalyzer
+public final class NexusAnalyzer
     extends Analyzer
 {
     public TokenStream tokenStream( String fieldName, Reader reader )

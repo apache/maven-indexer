@@ -342,16 +342,12 @@ public class NexusIndexerCli
         }
 
         NexusIndexer indexer = plexus.lookup( NexusIndexer.class );
-        IndexingContext context = null;
-
         // this is a CLI/batch invocation, don't coggle it with threads
         DefaultIndexingContext.BLOCKING_COMMIT = true;
 
-        try
-        {
             long tstart = System.currentTimeMillis();
 
-            context = indexer.addIndexingContext( //
+        IndexingContext context = indexer.addIndexingContext( //
                                                   repositoryName, // context id
                                                   repositoryName, // repository id
                                                   repositoryFolder, // repository folder
@@ -360,6 +356,8 @@ public class NexusIndexerCli
                                                   null, // index update url
                                                   indexers );
 
+        try
+        {
             IndexPacker packer = plexus.lookup( IndexPacker.class );
 
             ArtifactScanningListener listener = new IndexerListener( context, debug, quiet );
