@@ -287,17 +287,12 @@ under the License.
               <goal>verify</goal>
             </goals>
             <configuration>
-              <redirectTestOutputToFile>true</redirectTestOutputToFile>
-              <systemProperties>
-                <property>
-                  <name>indexerJar</name>
-                  <value>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</value>
-                </property>
-                <property>
-                  <name>index-server</name>
-                  <value>${index-server}</value>
-                </property>
-              </systemProperties>
+              <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+              <systemPropertyVariables>
+                <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</indexerJar>
+                <index-server>${index-server}</index-server>
+              </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>
