@@ -289,7 +289,7 @@ public class DefaultNexusIndexer
             dir = indexDir.getParentFile();
         }
 
-        File tmpFile = File.createTempFile( context.getId() + "-tmp", "", dir );
+        File tmpFile = File.createTempFile( context.getId() + "-tmp", "" );
         File tmpDir = new File( tmpFile.getParentFile(), tmpFile.getName() + ".dir" );
         if ( !tmpDir.mkdirs() )
         {
