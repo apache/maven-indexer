@@ -35,7 +35,7 @@ under the License.
   </description>
 
   <properties>
-    <lucene.version>3.5.0</lucene.version>
+    <lucene.version>3.6.1</lucene.version>
     <maven.version>3.0.1</maven.version>
     <aether.version>1.8</aether.version>
     <archetype.version>2.1</archetype.version>
