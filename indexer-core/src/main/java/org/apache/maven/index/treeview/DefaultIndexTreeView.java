@@ -389,14 +389,14 @@ public class DefaultIndexTreeView
 
         // 2nd try, lets consider path a group + artifactId, we must ensure there is at least one / but not as root
 
-        if ( path.lastIndexOf( "/" ) > 0 )
+        if ( path.lastIndexOf( '/' ) > 0 )
         {
             // reset wp
             wp = path;
 
-            a = wp.substring( wp.lastIndexOf( "/" ) + 1, wp.length() );
+            a = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
 
-            g = wp.substring( 1, wp.lastIndexOf( "/" ) ).replace( '/', '.' );
+            g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
 
             result = getArtifactsByGA( g, a, request );
 
@@ -416,13 +416,13 @@ public class DefaultIndexTreeView
                 // reset wp
                 wp = path;
 
-                v = wp.substring( wp.lastIndexOf( "/" ) + 1, wp.length() );
+                v = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
 
-                wp = wp.substring( 0, wp.lastIndexOf( "/" ) );
+                wp = wp.substring( 0, wp.lastIndexOf( '/' ) );
 
-                a = wp.substring( wp.lastIndexOf( "/" ) + 1, wp.length() );
+                a = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
 
-                g = wp.substring( 1, wp.lastIndexOf( "/" ) ).replace( '/', '.' );
+                g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
 
                 result = getArtifactsByGAV( g, a, v, request );
 
