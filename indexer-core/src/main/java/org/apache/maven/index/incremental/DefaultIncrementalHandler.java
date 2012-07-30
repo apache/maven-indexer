@@ -19,6 +19,16 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.StringUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -29,21 +39,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-import java.util.Map.Entry;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.StringUtils;
 
 @Component( role = IncrementalHandler.class )
 public class DefaultIncrementalHandler
@@ -197,7 +197,7 @@ public class DefaultIncrementalHandler
 
         int i = 0;
         // Next put the items back in w/ proper keys
-        for ( Integer key : dataMap.keySet() )
+        for ( Entry<Integer, String> entry : dataMap.entrySet() )
         {
             // make sure to end if we reach limit, 0 based
             if ( i >= ( request.getMaxIndexChunks() - 1 ) )
@@ -205,7 +205,7 @@ public class DefaultIncrementalHandler
                 break;
             }
 
-            properties.put( IndexingContext.INDEX_CHUNK_PREFIX + ( key + 1 ), dataMap.get( key ) );
+            properties.put( IndexingContext.INDEX_CHUNK_PREFIX + ( entry.getKey() + 1 ), entry.getValue() );
 
             i++;
         }
@@ -226,7 +226,8 @@ public class DefaultIncrementalHandler
             {
                 String[] parts = name.split( "\\." );
 
-                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals( "gz" ) )
+                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals(
+                    "gz" ) )
                 {
                     return true;
                 }
@@ -310,8 +311,8 @@ public class DefaultIncrementalHandler
                 String value = remoteProps.getProperty( sKey );
 
                 // If we have the current counter, or the next counter, we are good to go
-                if ( Integer.toString( currentLocalCounter ).equals( value )
-                    || Integer.toString( currentLocalCounter + 1 ).equals( value ) )
+                if ( Integer.toString( currentLocalCounter ).equals( value ) || Integer.toString(
+                    currentLocalCounter + 1 ).equals( value ) )
                 {
                     return true;
                 }
