@@ -39,7 +39,7 @@ under the License.
     <maven.version>3.0.1</maven.version>
     <aether.version>1.8</aether.version>
     <archetype.version>2.1</archetype.version>
-    <wagon.version>1.0</wagon.version>
+    <wagon.version>2.2</wagon.version>
     <truezip.version>7.0-rc1</truezip.version>
   </properties>
 
