@@ -536,7 +536,9 @@ public class DefaultNexusIndexer
         }
         catch ( NoSuchAlgorithmException ex )
         {
-            throw new IOException( "Unable to calculate digest" );
+            IOException ioe = new IOException( "Unable to calculate digest" );
+            ioe.initCause( ex );
+            throw ioe;
         }
         finally
         {
