@@ -37,6 +37,8 @@ under the License.
     of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
   </description>
 
+  <url>${siteUrl}</url>
+
   <contributors>
     <contributor>
       <name>Eugene Kuleshov</name>
@@ -67,7 +69,16 @@ under the License.
   <properties>
     <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
+    <distributionSiteUrl>scp://people.apache.org/www/maven.apache.org/maven-indexer</distributionSiteUrl>
+    <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
   </properties>
+
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <url>${distributionSiteUrl}</url>
+    </site>
+  </distributionManagement>
 
   <dependencyManagement>
     <dependencies>
