@@ -19,12 +19,6 @@ package org.apache.maven.index.cli;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -35,6 +29,12 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Random;
 
 public abstract class AbstractNexusIndexerCliTest
     extends PlexusTestCase
@@ -157,7 +157,7 @@ public abstract class AbstractNexusIndexerCliTest
         code = execute( "--repository", "--index", "-d" );
         output = out.toString();
         assertEquals( output, 1, code );
-        assertTrue( "Should print bad usage", output.contains( usage ) );
+        assertTrue( "Should print bad usage but '" + output + "'", output.contains( usage ) );
 
         assertFalse( "Index file was generated", new File( INDEX_DIR ).exists() );
     }
@@ -209,7 +209,7 @@ public abstract class AbstractNexusIndexerCliTest
     {
         int code =
             execute( "-r", new File( "target/undexinting/repo/to/try/what/will/happen/here" ).getCanonicalPath(), "-i",
-                INDEX_DIR, "-d", DEST_DIR );
+                     INDEX_DIR, "-d", DEST_DIR );
         String output = out.toString();
         assertEquals( output, 1, code );
     }
@@ -231,7 +231,7 @@ public abstract class AbstractNexusIndexerCliTest
 
             context =
                 indexer.addIndexingContext( "index", "index", new File( TEST_REPO ), new File( indexDir ), null, null,
-                    indexCreators );
+                                            indexCreators );
 
             assertFalse( "No index file was generated", new File( indexDir ).list().length == 0 );
 
