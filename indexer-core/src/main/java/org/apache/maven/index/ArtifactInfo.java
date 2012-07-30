@@ -282,24 +282,22 @@ public class ArtifactInfo
      */
     public String bundleRequireBundle;
 
-
-
-
-
     private String uinfo = null;
 
     private final Map<String, String> attributes = new HashMap<String, String>();
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
 
-    private final VersionScheme versionScheme = new GenericVersionScheme();
+    private final transient VersionScheme versionScheme;
 
     public ArtifactInfo()
     {
+        versionScheme = new GenericVersionScheme();
     }
 
     public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier )
     {
+        this();
         this.repository = repository;
         this.groupId = groupId;
         this.artifactId = artifactId;
