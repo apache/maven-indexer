@@ -29,6 +29,26 @@ under the License.
     <version>1.2.2</version>
   </skin>
 
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
+      <googleSearch>
+        <sitesearch>${project.url}</sitesearch>
+      </googleSearch>
+    </fluidoSkin>
+
+  </custom>
+
+  <bannerLeft>
+    <name>${project.name}</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://maven.apache.org/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://maven.apache.org/images/maventxt_logo_200.gif</src>
+  </bannerRight>
+
   <body>
     <breadcrumbs>
       <item name="Maven Indexer" href="http://maven.apache.org/maven-indexer/index.html" />
