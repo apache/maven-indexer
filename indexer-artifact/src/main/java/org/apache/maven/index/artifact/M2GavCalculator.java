@@ -186,7 +186,7 @@ public class M2GavCalculator
         }
         else
         {
-            StringBuffer sb = new StringBuffer( vSnapshot );
+            StringBuilder sb = new StringBuilder( vSnapshot );
             sb.append( s.substring( vSnapshotStart + sb.length(), vSnapshotStart + sb.length() + 8 ) );
 
             try
@@ -199,7 +199,7 @@ public class M2GavCalculator
             }
 
             int buildNumberPos = vSnapshotStart + sb.length();
-            StringBuffer bnr = new StringBuffer();
+            StringBuilder bnr = new StringBuilder();
             while ( s.charAt( buildNumberPos ) >= '0' && s.charAt( buildNumberPos ) <= '9' )
             {
                 sb.append( s.charAt( buildNumberPos ) );
@@ -234,7 +234,7 @@ public class M2GavCalculator
 
     public String gavToPath( Gav gav )
     {
-        StringBuffer path = new StringBuffer( "/" );
+        StringBuilder path = new StringBuilder( "/" );
 
         path.append( gav.getGroupId().replaceAll( "(?m)(.)\\.", "$1/" ) ); // replace all '.' except the first char
 
@@ -261,7 +261,7 @@ public class M2GavCalculator
         }
         else
         {
-            StringBuffer path = new StringBuffer( gav.getArtifactId() );
+            StringBuilder path = new StringBuilder( gav.getArtifactId() );
 
             path.append( "-" );
 

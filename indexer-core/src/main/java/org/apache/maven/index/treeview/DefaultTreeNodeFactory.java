@@ -93,7 +93,7 @@ public class DefaultTreeNodeFactory
 
     public TreeNode createArtifactNode( IndexTreeView tview, TreeViewRequest req, ArtifactInfo ai, String path )
     {
-        StringBuffer sb = new StringBuffer( ai.artifactId ).append( "-" ).append( ai.version );
+        StringBuilder sb = new StringBuilder( ai.artifactId ).append( "-" ).append( ai.version );
 
         if ( ai.classifier != null )
         {

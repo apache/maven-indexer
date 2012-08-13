@@ -152,7 +152,7 @@ public class M1GavCalculator
      */
     public String gavToPath( Gav gav )
     {
-        StringBuffer path = new StringBuffer( "/" );
+        StringBuilder path = new StringBuilder( "/" );
 
         path.append( gav.getGroupId() );
 
