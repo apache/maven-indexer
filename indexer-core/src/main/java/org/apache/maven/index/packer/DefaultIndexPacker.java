@@ -108,8 +108,6 @@ public class DefaultIndexPacker
 
         Properties info = null;
 
-        final IndexingContext context = request.getContext();
-
         try
         {
             // Note that for incremental indexes to work properly, a valid index.properties file

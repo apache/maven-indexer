@@ -28,8 +28,6 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -107,8 +105,6 @@ public class DefaultIndexingContext
      */
     private GavCalculator gavCalculator;
 
-    private ReadWriteLock indexMaintenanceLock = new ReentrantReadWriteLock();
-
     private DefaultIndexingContext( String id,
                                     String repositoryId,
                                     File repository, //
@@ -175,31 +171,13 @@ public class DefaultIndexingContext
         }
     }
 
-    public void lock()
-    {
-        //indexMaintenanceLock.readLock().lock();
-    }
-
-    public void unlock()
-    {
-        //indexMaintenanceLock.readLock().unlock();
-    }
-
-    public void lockExclusively()
-    {
-        //indexMaintenanceLock.writeLock().lock();
-    }
-
-    public void unlockExclusively()
-    {
-        //indexMaintenanceLock.writeLock().unlock();
-    }
-
+    @Override
     public Directory getIndexDirectory()
     {
         return indexDirectory;
     }
 
+    @Override
     public File getIndexDirectoryFile()
     {
         return indexDirectoryFile;
@@ -385,33 +363,39 @@ public class DefaultIndexingContext
         }
     }
 
+    @Override
     public boolean isSearchable()
     {
         return searchable;
     }
 
+    @Override
     public void setSearchable( boolean searchable )
     {
         this.searchable = searchable;
     }
 
+    @Override
     public String getId()
     {
         return id;
     }
 
+    @Override
     public void updateTimestamp()
         throws IOException
     {
         updateTimestamp( false );
     }
 
+    @Override
     public void updateTimestamp( boolean save )
         throws IOException
     {
         updateTimestamp( save, new Date() );
     }
 
+    @Override
     public void updateTimestamp( boolean save, Date timestamp )
         throws IOException
     {
@@ -423,11 +407,13 @@ public class DefaultIndexingContext
         }
     }
 
+    @Override
     public Date getTimestamp()
     {
         return timestamp;
     }
 
+    @Override
     public int getSize()
         throws IOException
     {
@@ -442,21 +428,25 @@ public class DefaultIndexingContext
         }
     }
 
+    @Override
     public String getRepositoryId()
     {
         return repositoryId;
     }
 
+    @Override
     public File getRepository()
     {
         return repository;
     }
 
+    @Override
     public String getRepositoryUrl()
     {
         return repositoryUrl;
     }
 
+    @Override
     public String getIndexUpdateUrl()
     {
         if ( repositoryUrl != null )
@@ -469,6 +459,7 @@ public class DefaultIndexingContext
         return indexUpdateUrl;
     }
 
+    @Override
     public Analyzer getAnalyzer()
     {
         return new NexusAnalyzer();
@@ -497,28 +488,23 @@ public class DefaultIndexingContext
         this.searcherManager = new SearcherManager( indexWriter, false, new NexusIndexSearcherFactory( this ) );
     }
 
+    @Override
     public IndexWriter getIndexWriter()
         throws IOException
     {
-        lock();
-
-        try
-        {
-            return indexWriter;
-        }
-        finally
-        {
-            unlock();
-        }
+        return indexWriter;
     }
 
+    @Override
     public IndexSearcher acquireIndexSearcher()
         throws IOException
     {
+        // TODO: move this to separate thread to not penalty next incoming searcher
         searcherManager.maybeRefresh();
         return searcherManager.acquire();
     }
 
+    @Override
     public void releaseIndexSearcher( final IndexSearcher is )
         throws IOException
     {
@@ -529,11 +515,10 @@ public class DefaultIndexingContext
         searcherManager.release( is );
     }
 
+    @Override
     public void commit()
         throws IOException
     {
-        lock();
-
         try
         {
             getIndexWriter().commit();
@@ -541,202 +526,127 @@ public class DefaultIndexingContext
         catch ( CorruptIndexException e )
         {
             close( false );
-
             throw e;
         }
         catch ( IOException e )
         {
             close( false );
-
             throw e;
-        }
-        finally
-        {
-            unlock();
         }
     }
 
+    @Override
     public void rollback()
         throws IOException
     {
-        lock();
-
         try
         {
-            try
-            {
-                getIndexWriter().rollback();
-            }
-            catch ( CorruptIndexException e )
-            {
-                close( false );
-
-                throw e;
-            }
-            catch ( IOException e )
-            {
-                close( false );
-
-                throw e;
-            }
+            getIndexWriter().rollback();
         }
-        finally
+        catch ( CorruptIndexException e )
         {
-            unlock();
+            close( false );
+            throw e;
+        }
+        catch ( IOException e )
+        {
+            close( false );
+            throw e;
         }
     }
 
-    public void optimize()
+    @Override
+    public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
-        lockExclusively();
-
         try
         {
-            IndexWriter w = getIndexWriter();
-
-            try
-            {
-                w.optimize();
-
-                commit();
-            }
-            catch ( CorruptIndexException e )
-            {
-                close( false );
-
-                throw e;
-            }
-            catch ( IOException e )
-            {
-                close( false );
-
-                throw e;
-            }
+            getIndexWriter().optimize();
+            commit();
         }
-        finally
+        catch ( CorruptIndexException e )
         {
-            unlockExclusively();
+            close( false );
+            throw e;
+        }
+        catch ( IOException e )
+        {
+            close( false );
+            throw e;
         }
     }
 
-    public void close( boolean deleteFiles )
+    @Override
+    public synchronized void close( boolean deleteFiles )
         throws IOException
     {
-        lockExclusively();
-
-        try
+        if ( indexDirectory != null )
         {
-            if ( indexDirectory != null )
-            {
-                IndexUtils.updateTimestamp( indexDirectory, getTimestamp() );
-
-                closeReaders();
-
-                if ( deleteFiles )
-                {
-                    deleteIndexFiles( true );
-                }
-
-                indexDirectory.close();
-            }
-
-            // TODO: this will prevent from reopening them, but needs better solution
-            // Needed to make bottleWarmerThread die off
-            indexDirectory = null;
-        }
-        finally
-        {
-            unlockExclusively();
-        }
-    }
-
-    public void purge()
-        throws IOException
-    {
-        lockExclusively();
-
-        try
-        {
+            IndexUtils.updateTimestamp( indexDirectory, getTimestamp() );
             closeReaders();
-
-            deleteIndexFiles( true );
-
-            openAndWarmup();
-
-            try
+            if ( deleteFiles )
             {
-                prepareIndex( true );
+                deleteIndexFiles( true );
             }
-            catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                // just deleted it
-            }
-
-            rebuildGroups();
-
-            updateTimestamp( true, null );
+            indexDirectory.close();
         }
-        finally
-        {
-            unlockExclusively();
-        }
+        indexDirectory = null;
     }
 
-    public void replace( Directory directory )
+    @Override
+    public synchronized void purge()
         throws IOException
     {
-        lockExclusively();
-
+        closeReaders();
+        deleteIndexFiles( true );
+        openAndWarmup();
         try
         {
-            Date ts = IndexUtils.getTimestamp( directory );
-
-            closeReaders();
-
-            deleteIndexFiles( false );
-
-            IndexUtils.copyDirectory( directory, indexDirectory );
-
-            openAndWarmup();
-
-            // reclaim the index as mine
-            storeDescriptor();
-
-            updateTimestamp( true, ts );
-
-            optimize();
+            prepareIndex( true );
         }
-        finally
+        catch ( UnsupportedExistingLuceneIndexException e )
         {
-            unlockExclusively();
+            // just deleted it
         }
+        rebuildGroups();
+        updateTimestamp( true, null );
     }
 
-    public void merge( Directory directory )
+    @Override
+    public synchronized void replace( Directory directory )
+        throws IOException
+    {
+        final Date ts = IndexUtils.getTimestamp( directory );
+        closeReaders();
+        deleteIndexFiles( false );
+        IndexUtils.copyDirectory( directory, indexDirectory );
+        openAndWarmup();
+        // reclaim the index as mine
+        storeDescriptor();
+        updateTimestamp( true, ts );
+        optimize();
+    }
+
+    @Override
+    public synchronized void merge( Directory directory )
         throws IOException
     {
         merge( directory, null );
     }
 
-    public void merge( Directory directory, DocumentFilter filter )
+    @Override
+    public synchronized void merge( Directory directory, DocumentFilter filter )
         throws IOException
     {
-        lockExclusively();
-
-        IndexSearcher s = acquireIndexSearcher();
+        final IndexSearcher s = acquireIndexSearcher();
         try
         {
-            IndexWriter w = getIndexWriter();
-
-            IndexReader directoryReader = IndexReader.open( directory, true );
-
+            final IndexWriter w = getIndexWriter();
+            final IndexReader directoryReader = IndexReader.open( directory, true );
             TopScoreDocCollector collector = null;
-
             try
             {
                 int numDocs = directoryReader.maxDoc();
-
                 for ( int i = 0; i < numDocs; i++ )
                 {
                     if ( directoryReader.isDeleted( i ) )
@@ -745,20 +655,16 @@ public class DefaultIndexingContext
                     }
 
                     Document d = directoryReader.document( i );
-
                     if ( filter != null && !filter.accept( d ) )
                     {
                         continue;
                     }
 
                     String uinfo = d.get( ArtifactInfo.UINFO );
-
                     if ( uinfo != null )
                     {
                         collector = TopScoreDocCollector.create( 1, false );
-
                         s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
-
                         if ( collector.getTotalHits() == 0 )
                         {
                             w.addDocument( IndexUtils.updateDocument( d, this, false ) );
@@ -787,7 +693,6 @@ public class DefaultIndexingContext
             }
 
             rebuildGroups();
-
             Date mergedTimestamp = IndexUtils.getTimestamp( directory );
 
             if ( getTimestamp() != null && mergedTimestamp != null && mergedTimestamp.after( getTimestamp() ) )
@@ -799,13 +704,11 @@ public class DefaultIndexingContext
             {
                 updateTimestamp( true );
             }
-
             optimize();
         }
         finally
         {
             releaseIndexSearcher( s );
-            unlockExclusively();
         }
     }
 
@@ -815,22 +718,22 @@ public class DefaultIndexingContext
         if ( searcherManager != null )
         {
             searcherManager.close();
-
             searcherManager = null;
         }
         if ( indexWriter != null )
         {
             indexWriter.close();
-
             indexWriter = null;
         }
     }
 
+    @Override
     public GavCalculator getGavCalculator()
     {
         return gavCalculator;
     }
 
+    @Override
     public List<IndexCreator> getIndexCreators()
     {
         return Collections.unmodifiableList( indexCreators );
@@ -838,11 +741,10 @@ public class DefaultIndexingContext
 
     // groups
 
-    public void rebuildGroups()
+    @Override
+    public synchronized void rebuildGroups()
         throws IOException
     {
-        lockExclusively();
-
         final IndexSearcher is = acquireIndexSearcher();
         try
         {
@@ -880,70 +782,37 @@ public class DefaultIndexingContext
         finally
         {
             releaseIndexSearcher( is );
-            unlockExclusively();
         }
     }
 
+    @Override
     public Set<String> getAllGroups()
         throws IOException
     {
-        lock();
-
-        try
-        {
-            return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
-        }
-        finally
-        {
-            unlock();
-        }
+        return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
     }
 
-    public void setAllGroups( Collection<String> groups )
+    @Override
+    public synchronized void setAllGroups( Collection<String> groups )
         throws IOException
     {
-        lockExclusively();
-
-        try
-        {
-            setGroups( groups, ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
-            commit();
-        }
-        finally
-        {
-            unlockExclusively();
-        }
+        setGroups( groups, ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
+        commit();
     }
 
+    @Override
     public Set<String> getRootGroups()
         throws IOException
     {
-        lock();
-
-        try
-        {
-            return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
-        }
-        finally
-        {
-            unlock();
-        }
+        return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
     }
 
-    public void setRootGroups( Collection<String> groups )
+    @Override
+    public synchronized void setRootGroups( Collection<String> groups )
         throws IOException
     {
-        lockExclusively();
-
-        try
-        {
-            setGroups( groups, ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
-            commit();
-        }
-        finally
-        {
-            unlockExclusively();
-        }
+        setGroups( groups, ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
+        commit();
     }
 
     protected Set<String> getGroups( String field, String filedValue, String listField )
@@ -954,23 +823,17 @@ public class DefaultIndexingContext
         try
         {
             indexSearcher.search( new TermQuery( new Term( field, filedValue ) ), collector );
-
             TopDocs topDocs = collector.topDocs();
-
             Set<String> groups = new LinkedHashSet<String>( Math.max( 10, topDocs.totalHits ) );
-
             if ( topDocs.totalHits > 0 )
             {
                 Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );
-
                 String groupList = doc.get( listField );
-
                 if ( groupList != null )
                 {
                     groups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
                 }
             }
-
             return groups;
         }
         finally
@@ -983,8 +846,7 @@ public class DefaultIndexingContext
                               String groupListField )
         throws IOException, CorruptIndexException
     {
-        IndexWriter w = getIndexWriter();
-
+        final IndexWriter w = getIndexWriter();
         w.updateDocument( new Term( groupField, groupFieldValue ),
             createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
     }
@@ -992,14 +854,11 @@ public class DefaultIndexingContext
     protected Document createGroupsDocument( Collection<String> groups, String field, String fieldValue,
                                              String listField )
     {
-        Document groupDoc = new Document();
-
+        final Document groupDoc = new Document();
         groupDoc.add( new Field( field, //
             fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-
         groupDoc.add( new Field( listField, //
             ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
-
         return groupDoc;
     }
 

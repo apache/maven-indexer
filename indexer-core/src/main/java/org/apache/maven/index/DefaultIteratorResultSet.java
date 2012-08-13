@@ -371,6 +371,7 @@ public class DefaultIteratorResultSet
         }
         else
         {
+            tokenStream.close();
             throw new UnsupportedOperationException( "Hightlight more \"" + hr.getHighlightMode().toString()
                 + "\" is not supported!" );
         }

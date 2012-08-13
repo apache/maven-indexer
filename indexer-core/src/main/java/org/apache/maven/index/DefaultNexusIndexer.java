@@ -282,13 +282,6 @@ public class DefaultNexusIndexer
         }
 
         // always use temporary context when reindexing
-        File indexDir = context.getIndexDirectoryFile();
-        File dir = null;
-        if ( indexDir != null )
-        {
-            dir = indexDir.getParentFile();
-        }
-
         File tmpFile = File.createTempFile( context.getId() + "-tmp", "" );
         File tmpDir = new File( tmpFile.getParentFile(), tmpFile.getName() + ".dir" );
         if ( !tmpDir.mkdirs() )

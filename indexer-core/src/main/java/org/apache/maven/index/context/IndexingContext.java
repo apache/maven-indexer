@@ -167,7 +167,7 @@ public interface IndexingContext
 
     /**
      * Acquires a fresh instance of {@link IndexSearcher}. You have to release the received instance with
-     * {@link #releaseIndexSearcher(IndexSearcher)}.
+     * {@link #releaseIndexSearcher(IndexSearcher)} otherwise you are about to introduce leak.
      * 
      * @return
      */
@@ -183,7 +183,7 @@ public interface IndexingContext
         throws IOException;
 
     /**
-     * Returns the Lucene IndexWriter of this context.
+     * Returns the Lucene IndexWriter (thread safe, shared instance) of this context.
      * 
      * @return indexWriter
      * @throws IOException
@@ -223,22 +223,11 @@ public interface IndexingContext
         throws IOException;
 
     /**
-     * Optimizes index
+     * Optimizes index. According to Lucene 3.6+ Javadoc, there is no more sense to optimize, so this method might
+     * become "noop".
      */
     void optimize()
         throws IOException;
-
-    /**
-     * Performs a shared locking on this context, guaranteeing that no IndexReader/Searcher/Writer close will occur. But
-     * the cost of it is potentially blocking other threads, so stay in critical region locking this context as less as
-     * possible.
-     */
-    void lock();
-
-    /**
-     * Releases the shared lock on this context.
-     */
-    void unlock();
 
     /**
      * Shuts down this context.
