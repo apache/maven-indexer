@@ -31,14 +31,12 @@ public interface GavCalculator
      * Calculates GAV from provided <em>repository path</em>. The path has to be absolute starting from repository root.
      * If path represents a proper artifact path (conforming to given layout), GAV is "calculated" from it and is
      * returned. If path represents some file that is not an artifact, but is part of the repository layout (like
-     * maven-metadata.xml), or in any other case it returns null. TODO: some place for different levels of "validation"?
+     * maven-metadata.xml), or in any other case it returns null.
      * 
      * @param path the repository path
      * @return Gav parsed from the path
-     * @throws IllegalArtifactCoordinateException not throwing it anymore, here just for backward compatibility.
      */
-    Gav pathToGav( String path )
-        throws IllegalArtifactCoordinateException;
+    Gav pathToGav( String path );
 
     /**
      * Reassembles the repository path from the supplied GAV. It will be an absolute path.

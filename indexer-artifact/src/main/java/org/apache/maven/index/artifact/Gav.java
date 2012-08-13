@@ -93,33 +93,6 @@ public class Gav
         this( groupId, artifactId, version, null, null, null, null, null, false, null, false, null );
     }
 
-    /**
-     * Deprecated constructor, left here for backward compatibility. It simply delegates to other constructor and
-     * neglects the snapshot redundant parameter.
-     * 
-     * @deprecated The <code>boolean snapshot</code> parameter is simply neglected. Use the constructor without it.
-     * @param groupId
-     * @param artifactId
-     * @param version
-     * @param classifier
-     * @param extension
-     * @param snapshotBuildNumber
-     * @param snapshotTimeStamp
-     * @param name
-     * @param snapshot
-     * @param hash
-     * @param hashType
-     * @param signature
-     * @param signatureType
-     */
-    public Gav( String groupId, String artifactId, String version, String classifier, String extension,
-                Integer snapshotBuildNumber, Long snapshotTimeStamp, String name, boolean snapshot, boolean hash,
-                HashType hashType, boolean signature, SignatureType signatureType )
-    {
-        this( groupId, artifactId, version, classifier, extension, snapshotBuildNumber, snapshotTimeStamp, name, hash,
-            hashType, signature, signatureType );
-    }
-
     public Gav( String groupId, String artifactId, String version, String classifier, String extension,
                 Integer snapshotBuildNumber, Long snapshotTimeStamp, String name, boolean hash, HashType hashType,
                 boolean signature, SignatureType signatureType )

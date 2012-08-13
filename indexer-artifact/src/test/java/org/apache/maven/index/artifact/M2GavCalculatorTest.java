@@ -571,7 +571,6 @@ public class M2GavCalculatorTest
         throws Exception
     {
         Gav gav;
-        String path;
 
         // NEXUS-4132
         gav =
