@@ -21,6 +21,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
@@ -84,9 +85,14 @@ public class FSDirectoryDeleteTest
     public void testIndexAndDelete()
         throws Exception
     {
-        context.getIndexReader().maxDoc();
-
-        otherContext.getIndexReader().maxDoc();
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        final IndexSearcher otherIndexSearcher = otherContext.acquireIndexSearcher();
+        
+        indexSearcher.getIndexReader().maxDoc();
+        otherIndexSearcher.getIndexReader().maxDoc();
+        
+        context.releaseIndexSearcher( indexSearcher );
+        otherContext.releaseIndexSearcher( otherIndexSearcher );
 
         context.replace( otherIndexDir );
 

@@ -70,8 +70,6 @@ public class AbstractIndexCreatorHelper
         FULL_CREATORS.add( mavenPlugin );
         FULL_CREATORS.add( mavenArchetype );
         FULL_CREATORS.add( jar );
-        
-        DefaultIndexingContext.BLOCKING_COMMIT = true;
     }
 
     protected void deleteDirectory( File dir )

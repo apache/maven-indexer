@@ -153,19 +153,27 @@ public class DefaultIndexerEngine
     {
         try
         {
-            IndexSearcher indexSearcher = context.getIndexSearcher();
-
-            TopDocs result =
-                indexSearcher.search( new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ),
-                    2 );
-
-            if ( result.totalHits == 1 )
+            final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+            try
             {
-                return indexSearcher.doc( result.scoreDocs[0].doc );
+                TopDocs result =
+                    indexSearcher.search(
+                        new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ), 2 );
+
+                if ( result.totalHits == 1 )
+                {
+                    return indexSearcher.doc( result.scoreDocs[0].doc );
+                }
+            }
+            finally
+            {
+                context.releaseIndexSearcher( indexSearcher );
             }
         }
         catch ( IOException e )
         {
+            // huh?
+            throw new IllegalStateException( e );
         }
         return null;
     }

@@ -31,15 +31,14 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.NexusIndexSearcher;
+import org.apache.maven.index.context.NexusIndexMultiReader;
+import org.apache.maven.index.context.NexusIndexMultiSearcher;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -90,25 +89,9 @@ public class DefaultSearchEngine
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        try
-        {
-            final TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
-
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.lock();
-            }
-
-            return new FlatSearchResponse( request.getQuery(), searchFlat( request, result, contexts,
-                request.getQuery() ), result );
-        }
-        finally
-        {
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.unlock();
-            }
-        }
+        final TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
+        return new FlatSearchResponse( request.getQuery(), searchFlat( request, result, contexts, request.getQuery() ),
+            result );
     }
 
     // ==
@@ -133,27 +116,11 @@ public class DefaultSearchEngine
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        try
-        {
-            final TreeMap<String, ArtifactInfoGroup> result =
-                new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
+        final TreeMap<String, ArtifactInfoGroup> result =
+            new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
 
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.lock();
-            }
-
-            return new GroupedSearchResponse( request.getQuery(), searchGrouped( request, result,
-                request.getGrouping(), contexts, request.getQuery() ), result );
-
-        }
-        finally
-        {
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.unlock();
-            }
-        }
+        return new GroupedSearchResponse( request.getQuery(), searchGrouped( request, result, request.getGrouping(),
+            contexts, request.getQuery() ), result );
     }
 
     // ===
@@ -163,40 +130,47 @@ public class DefaultSearchEngine
         throws IOException
     {
         int hitCount = 0;
-
         for ( IndexingContext context : participatingContexts )
         {
-            final TopScoreDocCollector collector = doSearchWithCeiling( req, context.getIndexSearcher(), query );
-
-            if ( collector.getTotalHits() == 0 )
+            final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+            try
             {
-                // context has no hits, just continue to next one
-                continue;
-            }
+                final TopScoreDocCollector collector = doSearchWithCeiling( req, indexSearcher, query );
 
-            ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
-
-            // uhm btw hitCount contains dups
-
-            hitCount += collector.getTotalHits();
-
-            int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
-
-            // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
-            for ( int i = start; i < scoreDocs.length; i++ )
-            {
-                Document doc = context.getIndexSearcher().doc( scoreDocs[i].doc );
-
-                ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
-
-                if ( artifactInfo != null )
+                if ( collector.getTotalHits() == 0 )
                 {
-                    artifactInfo.repository = context.getRepositoryId();
-
-                    artifactInfo.context = context.getId();
-
-                    result.add( artifactInfo );
+                    // context has no hits, just continue to next one
+                    continue;
                 }
+
+                ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+
+                // uhm btw hitCount contains dups
+
+                hitCount += collector.getTotalHits();
+
+                int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
+
+                // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
+                for ( int i = start; i < scoreDocs.length; i++ )
+                {
+                    Document doc = indexSearcher.doc( scoreDocs[i].doc );
+
+                    ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
+
+                    if ( artifactInfo != null )
+                    {
+                        artifactInfo.repository = context.getRepositoryId();
+
+                        artifactInfo.context = context.getId();
+
+                        result.add( artifactInfo );
+                    }
+                }
+            }
+            finally
+            {
+                context.releaseIndexSearcher( indexSearcher );
             }
         }
 
@@ -211,33 +185,41 @@ public class DefaultSearchEngine
 
         for ( IndexingContext context : participatingContexts )
         {
-            final TopScoreDocCollector collector = doSearchWithCeiling( req, context.getIndexSearcher(), query );
-
-            if ( collector.getTotalHits() > 0 )
+            final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+            try
             {
-                ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+                final TopScoreDocCollector collector = doSearchWithCeiling( req, indexSearcher, query );
 
-                hitCount += collector.getTotalHits();
-
-                for ( int i = 0; i < scoreDocs.length; i++ )
+                if ( collector.getTotalHits() > 0 )
                 {
-                    Document doc = context.getIndexSearcher().doc( scoreDocs[i].doc );
+                    ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
 
-                    ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
+                    hitCount += collector.getTotalHits();
 
-                    if ( artifactInfo != null )
+                    for ( int i = 0; i < scoreDocs.length; i++ )
                     {
-                        artifactInfo.repository = context.getRepositoryId();
+                        Document doc = indexSearcher.doc( scoreDocs[i].doc );
 
-                        artifactInfo.context = context.getId();
+                        ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
-                        if ( !grouping.addArtifactInfo( result, artifactInfo ) )
+                        if ( artifactInfo != null )
                         {
-                            // fix the hitCount accordingly
-                            hitCount--;
+                            artifactInfo.repository = context.getRepositoryId();
+
+                            artifactInfo.context = context.getId();
+
+                            if ( !grouping.addArtifactInfo( result, artifactInfo ) )
+                            {
+                                // fix the hitCount accordingly
+                                hitCount--;
+                            }
                         }
                     }
                 }
+            }
+            finally
+            {
+                context.releaseIndexSearcher( indexSearcher );
             }
         }
 
@@ -265,42 +247,16 @@ public class DefaultSearchEngine
                                                         boolean ignoreContext )
         throws IOException
     {
-        try
-        {
-            List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
+        List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-            IndexReader multiReader = getMergedIndexReader( indexingContexts, ignoreContext );
+        NexusIndexMultiReader multiReader = getMergedIndexReader( indexingContexts, ignoreContext );
 
-            IndexSearcher indexSearcher = new NexusIndexSearcher( multiReader );
+        NexusIndexMultiSearcher indexSearcher = new NexusIndexMultiSearcher( multiReader );
 
-            TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
+        TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
 
-            return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(), new DefaultIteratorResultSet(
-                request, indexSearcher, contexts, hits.topDocs() ) );
-        }
-        catch ( Throwable e )
-        {
-            // perform cleaup, otherwise DefaultIteratorResultSet will do it
-            for ( IndexingContext ctx : indexingContexts )
-            {
-                if ( ignoreContext || ctx.isSearchable() )
-                {
-                    ctx.unlock();
-                }
-            }
-
-            if ( e instanceof IOException )
-            {
-                throw (IOException) e;
-            }
-            else
-            {
-                // wrap it
-                IOException ex = new IOException( e.getMessage() );
-                ex.initCause( e );
-                throw ex;
-            }
-        }
+        return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(), new DefaultIteratorResultSet(
+            request, indexSearcher, contexts, hits.topDocs() ) );
     }
 
     // ==
@@ -383,48 +339,12 @@ public class DefaultSearchEngine
      * @return
      * @throws IOException
      */
-    protected IndexReader getMergedIndexReader( final Collection<IndexingContext> indexingContexts,
-                                                final boolean ignoreContext )
+    protected NexusIndexMultiReader getMergedIndexReader( final Collection<IndexingContext> indexingContexts,
+                                                          final boolean ignoreContext )
         throws IOException
     {
         final List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
-
-        try
-        {
-            final ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( contexts.size() );
-
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.lock();
-
-                contextsToSearch.add( ctx.getIndexReader() );
-            }
-
-            MultiReader multiReader =
-                new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
-
-            return multiReader;
-        }
-        catch ( Throwable e )
-        {
-            // perform cleaup, otherwise DefaultIteratorResultSet will do it
-            for ( IndexingContext ctx : contexts )
-            {
-                ctx.unlock();
-            }
-
-            if ( e instanceof IOException )
-            {
-                throw (IOException) e;
-            }
-            else
-            {
-                // wrap it
-                IOException ex = new IOException( e.getMessage() );
-                ex.initCause( e );
-                throw ex;
-            }
-        }
+        return new NexusIndexMultiReader( contexts );
     }
 
     protected int getTopDocsCollectorHitNum( final AbstractSearchRequest request, final int ceiling )

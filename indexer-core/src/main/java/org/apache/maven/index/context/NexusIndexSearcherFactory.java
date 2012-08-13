@@ -23,36 +23,21 @@ import java.io.IOException;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.SearcherFactory;
 
-/**
- * An extended Searcher, that holds reference to the IndexingContext that is a searcher for. Needed to provide "extra"
- * data for search hits, that are not on index, and support ArtifactInfoPostprocessor's.
- * 
- * @author cstamas
- */
-public class NexusIndexSearcher
-    extends IndexSearcher
+public class NexusIndexSearcherFactory
+    extends SearcherFactory
 {
-    private final IndexingContext indexingContext;
+    private final IndexingContext context;
 
-    public NexusIndexSearcher( final IndexReader reader )
-        throws IOException
+    public NexusIndexSearcherFactory( final IndexingContext context )
     {
-        this( null, reader );
+        this.context = context;
     }
 
-    public NexusIndexSearcher( final IndexingContext indexingContext, final IndexReader reader )
+    public IndexSearcher newSearcher( final IndexReader reader )
         throws IOException
     {
-        super( reader );
-
-        this.indexingContext = indexingContext;
-
-        // setSimilarity( new NexusSimilarity() );
-    }
-
-    public IndexingContext getIndexingContext()
-    {
-        return indexingContext;
+        return new NexusIndexSearcher( context, reader );
     }
 }

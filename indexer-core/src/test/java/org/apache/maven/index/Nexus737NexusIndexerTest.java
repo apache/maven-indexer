@@ -44,7 +44,7 @@ public class Nexus737NexusIndexerTest
     public void testValidateUINFOs()
         throws Exception
     {
-        IndexReader reader = context.getIndexReader();
+        IndexReader reader = context.acquireIndexSearcher().getIndexReader();
 
         int foundCount = 0;
 

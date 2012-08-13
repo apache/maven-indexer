@@ -35,6 +35,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
@@ -85,7 +86,16 @@ public class IndexDataWriter
     {
         writeHeader( context );
 
-        int n = writeDocuments( context.getIndexReader(), docIndexes );
+        int n = 0;
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            n = writeDocuments( indexSearcher.getIndexReader(), docIndexes );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         writeGroupFields();
 

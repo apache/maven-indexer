@@ -519,7 +519,7 @@ public abstract class AbstractRepoNexusIndexerTest
     public void testPackaging()
         throws Exception
     {
-        IndexReader reader = context.getIndexReader();
+        IndexReader reader = context.acquireIndexSearcher().getIndexReader();
 
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {

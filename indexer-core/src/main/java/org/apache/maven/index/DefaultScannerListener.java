@@ -29,6 +29,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.maven.index.context.IndexingContext;
@@ -207,28 +208,36 @@ class DefaultScannerListener
     private void initialize( IndexingContext ctx )
         throws IOException, CorruptIndexException
     {
-        IndexReader r = ctx.getIndexReader();
-
-        for ( int i = 0; i < r.maxDoc(); i++ )
+        final IndexSearcher indexSearcher = ctx.acquireIndexSearcher();
+        try
         {
-            if ( !r.isDeleted( i ) )
+            final IndexReader r = indexSearcher.getIndexReader();
+
+            for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                Document d = r.document( i );
-
-                String uinfo = d.get( ArtifactInfo.UINFO );
-
-                if ( uinfo != null )
+                if ( !r.isDeleted( i ) )
                 {
-                    uinfos.add( uinfo );
+                    Document d = r.document( i );
 
-                    // add all existing groupIds to the lists, as they will
-                    // not be "discovered" and would be missing from the new list..
-                    String groupId = uinfo.substring( 0, uinfo.indexOf( '|' ) );
-                    int n = groupId.indexOf( '.' );
-                    groups.add( n == -1 ? groupId : groupId.substring( 0, n ) );
-                    allGroups.add( groupId );
+                    String uinfo = d.get( ArtifactInfo.UINFO );
+
+                    if ( uinfo != null )
+                    {
+                        uinfos.add( uinfo );
+
+                        // add all existing groupIds to the lists, as they will
+                        // not be "discovered" and would be missing from the new list..
+                        String groupId = uinfo.substring( 0, uinfo.indexOf( '|' ) );
+                        int n = groupId.indexOf( '.' );
+                        groups.add( n == -1 ? groupId : groupId.substring( 0, n ) );
+                        allGroups.add( groupId );
+                    }
                 }
             }
+        }
+        finally
+        {
+            ctx.releaseIndexSearcher( indexSearcher );
         }
     }
 
@@ -237,50 +246,58 @@ class DefaultScannerListener
     {
         int deleted = 0;
 
-        for ( String uinfo : uinfos )
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
         {
-            TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
-
-            context.getIndexSearcher().search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
-
-            if ( collector.getTotalHits() > 0 )
+            for ( String uinfo : uinfos )
             {
-                String[] ra = ArtifactInfo.FS_PATTERN.split( uinfo );
+                TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
 
-                ArtifactInfo ai = new ArtifactInfo();
+                indexSearcher.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
 
-                ai.repository = context.getRepositoryId();
-
-                ai.groupId = ra[0];
-
-                ai.artifactId = ra[1];
-
-                ai.version = ra[2];
-
-                if ( ra.length > 3 )
+                if ( collector.getTotalHits() > 0 )
                 {
-                    ai.classifier = ArtifactInfo.renvl( ra[3] );
-                }
+                    String[] ra = ArtifactInfo.FS_PATTERN.split( uinfo );
 
-                if ( ra.length > 4 )
-                {
-                    ai.packaging = ArtifactInfo.renvl( ra[4] );
-                }
+                    ArtifactInfo ai = new ArtifactInfo();
 
-                // minimal ArtifactContext for removal
-                ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
+                    ai.repository = context.getRepositoryId();
 
-                for ( int i = 0; i < collector.getTotalHits(); i++ )
-                {
-                    if ( contextPath == null
-                        || context.getGavCalculator().gavToPath( ac.getGav() ).startsWith( contextPath ) )
+                    ai.groupId = ra[0];
+
+                    ai.artifactId = ra[1];
+
+                    ai.version = ra[2];
+
+                    if ( ra.length > 3 )
                     {
-                        indexerEngine.remove( context, ac );
+                        ai.classifier = ArtifactInfo.renvl( ra[3] );
                     }
 
-                    deleted++;
+                    if ( ra.length > 4 )
+                    {
+                        ai.packaging = ArtifactInfo.renvl( ra[4] );
+                    }
+
+                    // minimal ArtifactContext for removal
+                    ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
+
+                    for ( int i = 0; i < collector.getTotalHits(); i++ )
+                    {
+                        if ( contextPath == null
+                            || context.getGavCalculator().gavToPath( ac.getGav() ).startsWith( contextPath ) )
+                        {
+                            indexerEngine.remove( context, ac );
+                        }
+
+                        deleted++;
+                    }
                 }
             }
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
         }
 
         if ( deleted > 0 )

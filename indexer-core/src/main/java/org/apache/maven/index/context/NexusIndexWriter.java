@@ -24,8 +24,11 @@ import java.io.IOException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.SerialMergeScheduler;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Version;
 
 /**
  * An extension of <a
@@ -35,11 +38,29 @@ import org.apache.lucene.store.LockObtainFailedException;
 public class NexusIndexWriter
     extends IndexWriter
 {
+    @Deprecated
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
         super( directory, analyzer, create, MaxFieldLength.LIMITED );
 
         // setSimilarity( new NexusSimilarity() );
+    }
+
+    public NexusIndexWriter( final Directory directory, final IndexWriterConfig config )
+        throws CorruptIndexException, LockObtainFailedException, IOException
+    {
+        super( directory, config );
+    }
+
+    // ==
+
+    public static IndexWriterConfig defaultConfig()
+    {
+        final IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, new NexusAnalyzer() );
+        // default open mode is CreateOrAppend which suits us
+        config.setRAMBufferSizeMB( 2.0 ); // old default
+        config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
+        return config;
     }
 }

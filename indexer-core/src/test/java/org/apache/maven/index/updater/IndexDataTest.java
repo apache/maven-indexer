@@ -115,7 +115,7 @@ public class IndexDataTest
     public void testData()
         throws Exception
     {
-        IndexReader r1 = context.getIndexReader();
+        IndexReader r1 = context.acquireIndexSearcher().getIndexReader();
 
         Map<String, ArtifactInfo> r1map = readIndex( r1 );
 

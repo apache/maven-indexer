@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -93,7 +91,7 @@ public class MergedIndexingContext
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            this.directoryFile = ( (FSDirectory) indexDirectory ).getFile();
+            this.directoryFile = ( (FSDirectory) indexDirectory ).getDirectory();
         }
     }
 
@@ -188,28 +186,27 @@ public class MergedIndexingContext
         return size;
     }
 
-    public IndexReader getIndexReader()
+    public IndexSearcher acquireIndexSearcher()
         throws IOException
     {
-        Collection<IndexingContext> members = getMembers();
-
-        ArrayList<IndexReader> contextsToSearch = new ArrayList<IndexReader>( members.size() );
-
-        for ( IndexingContext ctx : members )
-        {
-            contextsToSearch.add( ctx.getIndexReader() );
-        }
-
-        MultiReader multiReader =
-            new MultiReader( contextsToSearch.toArray( new IndexReader[contextsToSearch.size()] ) );
-
-        return multiReader;
+        final NexusIndexMultiReader mr = new NexusIndexMultiReader( getMembers() );
+        return new NexusIndexMultiSearcher( mr );
     }
 
-    public IndexSearcher getIndexSearcher()
+    public void releaseIndexSearcher( IndexSearcher indexSearcher )
         throws IOException
     {
-        return new NexusIndexSearcher( getIndexReader() );
+        if ( indexSearcher instanceof NexusIndexMultiSearcher )
+        {
+            ( (NexusIndexMultiSearcher) indexSearcher ).release();
+        }
+        else
+        {
+            throw new IllegalArgumentException( String.format(
+                "Illegal argument to merged idexing context: it emits class %s but and cannot release class %s!",
+                NexusIndexMultiSearcher.class.getName(), indexSearcher.getClass().getName() ) );
+        }
+
     }
 
     public IndexWriter getIndexWriter()

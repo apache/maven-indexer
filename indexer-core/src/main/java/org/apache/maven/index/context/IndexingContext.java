@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -167,21 +166,20 @@ public interface IndexingContext
         throws IOException;
 
     /**
-     * Returns the Lucene IndexReader of this context.
+     * Acquires a fresh instance of {@link IndexSearcher}. You have to release the received instance with
+     * {@link #releaseIndexSearcher(IndexSearcher)}.
      * 
-     * @return reader
-     * @throws IOException
+     * @return
      */
-    IndexReader getIndexReader()
+    IndexSearcher acquireIndexSearcher()
         throws IOException;
 
     /**
-     * Returns the Lucene IndexSearcher of this context.
+     * Releases the {@link IndexSearcher} instance.
      * 
-     * @return searcher
-     * @throws IOException
+     * @param s
      */
-    IndexSearcher getIndexSearcher()
+    void releaseIndexSearcher( IndexSearcher s )
         throws IOException;
 
     /**

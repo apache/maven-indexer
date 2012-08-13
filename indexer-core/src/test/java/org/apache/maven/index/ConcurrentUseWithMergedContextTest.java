@@ -47,9 +47,6 @@ public class ConcurrentUseWithMergedContextTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        // This IS concurrent test, so here, unlike all other UTs, we DO want to have async commits
-        DefaultIndexingContext.BLOCKING_COMMIT = false;
-
         context1 =
             nexusIndexer.addIndexingContext( "test-default-member1", "test1", repo, indexDir1, null, null,
                 DEFAULT_CREATORS );

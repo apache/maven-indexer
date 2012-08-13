@@ -68,7 +68,7 @@ public class Index20081108RegressionTest
     public void testExtension()
         throws Exception
     {
-        assertEquals( 31, context.getIndexReader().numDocs() );
+        assertEquals( 31, context.getSize() );
 
         {
             Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );

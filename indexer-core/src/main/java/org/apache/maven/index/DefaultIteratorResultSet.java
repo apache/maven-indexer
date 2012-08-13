@@ -40,6 +40,7 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.highlight.TextFragment;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.NexusIndexMultiSearcher;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
 /**
@@ -52,7 +53,7 @@ public class DefaultIteratorResultSet
 {
     private final IteratorSearchRequest searchRequest;
 
-    private final IndexSearcher indexSearcher;
+    private final NexusIndexMultiSearcher indexSearcher;
 
     private final List<IndexingContext> contexts;
 
@@ -78,7 +79,8 @@ public class DefaultIteratorResultSet
 
     private ArtifactInfo ai;
 
-    protected DefaultIteratorResultSet( final IteratorSearchRequest request, final IndexSearcher indexSearcher,
+    protected DefaultIteratorResultSet( final IteratorSearchRequest request,
+                                        final NexusIndexMultiSearcher indexSearcher,
                                         final List<IndexingContext> contexts, final TopDocs hits )
         throws IOException
     {
@@ -91,10 +93,13 @@ public class DefaultIteratorResultSet
         {
             int maxDoc = 0;
             this.starts = new int[contexts.size() + 1]; // build starts array
+            // this is good to do as we have NexusIndexMultiSearcher passed in contructor, so it is already open, hence
+            // #acquire() already invoked on underlying NexusIndexMultiReader
+            final List<IndexSearcher> acquiredSearchers = indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
             for ( int i = 0; i < contexts.size(); i++ )
             {
                 starts[i] = maxDoc;
-                maxDoc += contexts.get( i ).getIndexReader().maxDoc(); // compute maxDocs
+                maxDoc += acquiredSearchers.get( i ).maxDoc(); // compute maxDocs
             }
             starts[contexts.size()] = maxDoc;
         }
@@ -263,9 +268,13 @@ public class DefaultIteratorResultSet
             return;
         }
 
-        for ( IndexingContext ctx : contexts )
+        try
         {
-            ctx.unlock();
+            indexSearcher.release();
+        }
+        catch ( IOException e )
+        {
+            throw new IllegalStateException( e );
         }
 
         this.cleanedUp = true;
@@ -349,7 +358,7 @@ public class DefaultIteratorResultSet
             text = text.replace( '/', '.' ).replaceAll( "^\\.", "" ).replaceAll( "\n\\.", "\n" );
         }
 
-        Query rewrittenQuery = hr.getQuery().rewrite( context.getIndexReader() );
+        Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
 
         CachingTokenFilter tokenStream =
             new CachingTokenFilter( context.getAnalyzer().tokenStream( field.getKey(), new StringReader( text ) ) );
