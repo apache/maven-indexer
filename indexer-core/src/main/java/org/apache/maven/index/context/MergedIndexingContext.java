@@ -100,49 +100,41 @@ public class MergedIndexingContext
         return membersProvider.getMembers();
     }
 
-    @Override
     public String getId()
     {
         return id;
     }
 
-    @Override
     public String getRepositoryId()
     {
         return repositoryId;
     }
 
-    @Override
     public File getRepository()
     {
         return repository;
     }
 
-    @Override
     public String getRepositoryUrl()
     {
         return null;
     }
 
-    @Override
     public String getIndexUpdateUrl()
     {
         return null;
     }
 
-    @Override
     public boolean isSearchable()
     {
         return searchable;
     }
 
-    @Override
     public void setSearchable( boolean searchable )
     {
         this.searchable = searchable;
     }
 
-    @Override
     public Date getTimestamp()
     {
         Date ts = null;
@@ -163,28 +155,24 @@ public class MergedIndexingContext
         return ts;
     }
 
-    @Override
     public void updateTimestamp()
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void updateTimestamp( boolean save )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void updateTimestamp( boolean save, Date date )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public int getSize()
         throws IOException
     {
@@ -198,7 +186,6 @@ public class MergedIndexingContext
         return size;
     }
 
-    @Override
     public IndexSearcher acquireIndexSearcher()
         throws IOException
     {
@@ -206,7 +193,6 @@ public class MergedIndexingContext
         return new NexusIndexMultiSearcher( mr );
     }
 
-    @Override
     public void releaseIndexSearcher( IndexSearcher indexSearcher )
         throws IOException
     {
@@ -223,14 +209,12 @@ public class MergedIndexingContext
 
     }
 
-    @Override
     public IndexWriter getIndexWriter()
         throws IOException
     {
         throw new UnsupportedOperationException( getClass().getName() + " indexing context is read-only!" );
     }
 
-    @Override
     public List<IndexCreator> getIndexCreators()
     {
         HashSet<IndexCreator> creators = new HashSet<IndexCreator>();
@@ -243,94 +227,80 @@ public class MergedIndexingContext
         return new ArrayList<IndexCreator>( creators );
     }
 
-    @Override
     public Analyzer getAnalyzer()
     {
         return new NexusAnalyzer();
     }
 
-    @Override
     public void commit()
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void rollback()
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void optimize()
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void close( boolean deleteFiles )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void purge()
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void merge( Directory directory )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void merge( Directory directory, DocumentFilter filter )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public void replace( Directory directory )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public Directory getIndexDirectory()
     {
         return directory;
     }
 
-    @Override
     public File getIndexDirectoryFile()
     {
         return directoryFile;
     }
 
-    @Override
     public GavCalculator getGavCalculator()
     {
         return gavCalculator;
     }
 
-    @Override
     public void setAllGroups( Collection<String> groups )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public Set<String> getAllGroups()
         throws IOException
     {
@@ -344,14 +314,12 @@ public class MergedIndexingContext
         return result;
     }
 
-    @Override
     public void setRootGroups( Collection<String> groups )
         throws IOException
     {
         // noop
     }
 
-    @Override
     public Set<String> getRootGroups()
         throws IOException
     {
@@ -365,7 +333,6 @@ public class MergedIndexingContext
         return result;
     }
 
-    @Override
     public void rebuildGroups()
         throws IOException
     {

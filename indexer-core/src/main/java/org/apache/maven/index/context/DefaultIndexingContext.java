@@ -171,13 +171,11 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public Directory getIndexDirectory()
     {
         return indexDirectory;
     }
 
-    @Override
     public File getIndexDirectoryFile()
     {
         return indexDirectoryFile;
@@ -362,40 +360,36 @@ public class DefaultIndexingContext
             IndexUtils.deleteTimestamp( indexDirectory );
         }
     }
+    
+    // ==
 
-    @Override
     public boolean isSearchable()
     {
         return searchable;
     }
 
-    @Override
     public void setSearchable( boolean searchable )
     {
         this.searchable = searchable;
     }
 
-    @Override
     public String getId()
     {
         return id;
     }
 
-    @Override
     public void updateTimestamp()
         throws IOException
     {
         updateTimestamp( false );
     }
 
-    @Override
     public void updateTimestamp( boolean save )
         throws IOException
     {
         updateTimestamp( save, new Date() );
     }
 
-    @Override
     public void updateTimestamp( boolean save, Date timestamp )
         throws IOException
     {
@@ -407,13 +401,11 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public Date getTimestamp()
     {
         return timestamp;
     }
 
-    @Override
     public int getSize()
         throws IOException
     {
@@ -428,25 +420,21 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public String getRepositoryId()
     {
         return repositoryId;
     }
 
-    @Override
     public File getRepository()
     {
         return repository;
     }
 
-    @Override
     public String getRepositoryUrl()
     {
         return repositoryUrl;
     }
 
-    @Override
     public String getIndexUpdateUrl()
     {
         if ( repositoryUrl != null )
@@ -459,7 +447,6 @@ public class DefaultIndexingContext
         return indexUpdateUrl;
     }
 
-    @Override
     public Analyzer getAnalyzer()
     {
         return new NexusAnalyzer();
@@ -488,14 +475,12 @@ public class DefaultIndexingContext
         this.searcherManager = new SearcherManager( indexWriter, false, new NexusIndexSearcherFactory( this ) );
     }
 
-    @Override
     public IndexWriter getIndexWriter()
         throws IOException
     {
         return indexWriter;
     }
 
-    @Override
     public IndexSearcher acquireIndexSearcher()
         throws IOException
     {
@@ -504,7 +489,6 @@ public class DefaultIndexingContext
         return searcherManager.acquire();
     }
 
-    @Override
     public void releaseIndexSearcher( final IndexSearcher is )
         throws IOException
     {
@@ -515,7 +499,6 @@ public class DefaultIndexingContext
         searcherManager.release( is );
     }
 
-    @Override
     public void commit()
         throws IOException
     {
@@ -535,7 +518,6 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public void rollback()
         throws IOException
     {
@@ -555,7 +537,6 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
@@ -576,7 +557,6 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public synchronized void close( boolean deleteFiles )
         throws IOException
     {
@@ -593,7 +573,6 @@ public class DefaultIndexingContext
         indexDirectory = null;
     }
 
-    @Override
     public synchronized void purge()
         throws IOException
     {
@@ -612,7 +591,6 @@ public class DefaultIndexingContext
         updateTimestamp( true, null );
     }
 
-    @Override
     public synchronized void replace( Directory directory )
         throws IOException
     {
@@ -627,14 +605,12 @@ public class DefaultIndexingContext
         optimize();
     }
 
-    @Override
     public synchronized void merge( Directory directory )
         throws IOException
     {
         merge( directory, null );
     }
 
-    @Override
     public synchronized void merge( Directory directory, DocumentFilter filter )
         throws IOException
     {
@@ -727,13 +703,11 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public GavCalculator getGavCalculator()
     {
         return gavCalculator;
     }
 
-    @Override
     public List<IndexCreator> getIndexCreators()
     {
         return Collections.unmodifiableList( indexCreators );
@@ -741,7 +715,6 @@ public class DefaultIndexingContext
 
     // groups
 
-    @Override
     public synchronized void rebuildGroups()
         throws IOException
     {
@@ -785,14 +758,12 @@ public class DefaultIndexingContext
         }
     }
 
-    @Override
     public Set<String> getAllGroups()
         throws IOException
     {
         return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
     }
 
-    @Override
     public synchronized void setAllGroups( Collection<String> groups )
         throws IOException
     {
@@ -800,14 +771,12 @@ public class DefaultIndexingContext
         commit();
     }
 
-    @Override
     public Set<String> getRootGroups()
         throws IOException
     {
         return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
     }
 
-    @Override
     public synchronized void setRootGroups( Collection<String> groups )
         throws IOException
     {

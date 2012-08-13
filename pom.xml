@@ -141,13 +141,13 @@ under the License.
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java16</artifactId>
+            <artifactId>java15</artifactId>
             <version>1.0</version>
           </signature>
         </configuration>
         <executions>
           <execution>
-            <id>check-java-1.6-compat</id>
+            <id>check-java-1.5-compat</id>
             <phase>process-classes</phase>
             <goals>
               <goal>check</goal>
@@ -197,8 +197,8 @@ under the License.
           <artifactId>maven-compiler-plugin</artifactId>
           <version>2.5.1</version>
           <configuration>
-            <source>1.6</source>
-            <target>1.6</target>
+            <source>1.5</source>
+            <target>1.5</target>
           </configuration>
         </plugin>
         <plugin>
