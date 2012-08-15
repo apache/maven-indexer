@@ -223,7 +223,16 @@ class DefaultScannerListener
 
                     if ( uinfo != null )
                     {
-                        uinfos.add( uinfo );
+                        // if ctx is receiving updates (in other words, is a proxy),
+                        // there is no need to build a huge Set of strings with all uinfo's
+                        // as deletion detection in those cases have no effect. Also, the
+                        // removeDeletedArtifacts() method, that uses info gathered in this set
+                        // is invoked with same condition. As indexes of Central are getting huge,
+                        // the set grows enormously too, but is actually not used
+                        if ( !ctx.isReceivingUpdates() )
+                        {
+                            uinfos.add( uinfo );
+                        }
 
                         // add all existing groupIds to the lists, as they will
                         // not be "discovered" and would be missing from the new list..
