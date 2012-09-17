@@ -27,7 +27,6 @@ import java.util.Map;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
-import org.apache.maven.index.cli.NexusIndexerCli;
 import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
