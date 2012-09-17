@@ -67,10 +67,18 @@ under the License.
   </ciManagement>
 
   <properties>
-    <sisu-inject-plexus.version>1.4.3</sisu-inject-plexus.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
     <distributionSiteUrl>scp://people.apache.org/www/maven.apache.org/maven-indexer</distributionSiteUrl>
     <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
+
+    <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
+    <lucene.version>3.6.1</lucene.version>
+    <maven.version>3.0.4</maven.version>
+    <aether.version>1.13.1</aether.version>
+    <archetype.version>2.2</archetype.version>
+    <wagon.version>2.2</wagon.version>
+    <truezip.version>7.0-rc1</truezip.version>
   </properties>
 
   <distributionManagement>
@@ -83,14 +91,27 @@ under the License.
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-annotations</artifactId>
+        <version>1.5.5</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.0.5</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-inject-plexus</artifactId>
         <version>${sisu-inject-plexus.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.8.2</version>
+        <version>4.10</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -99,6 +120,7 @@ under the License.
   <modules>
     <module>indexer-core</module>
     <module>indexer-artifact</module>
+    <module>indexer-cli</module>
   </modules>
 
   <build>
