@@ -469,10 +469,19 @@ public class DefaultIndexingContext
             searcherManager = null;
         }
 
-        final IndexWriterConfig config = NexusIndexWriter.defaultConfig();
-        this.indexWriter = new NexusIndexWriter( getIndexDirectory(), config );
+        this.indexWriter = new NexusIndexWriter( getIndexDirectory(), getWriterConfig() );
         this.indexWriter.commit(); // LUCENE-2386
         this.searcherManager = new SearcherManager( indexWriter, false, new NexusIndexSearcherFactory( this ) );
+    }
+
+    /**
+     * Returns new IndexWriterConfig instance
+     * 
+     * @since 5.1
+     */
+    protected IndexWriterConfig getWriterConfig()
+    {
+        return NexusIndexWriter.defaultConfig();
     }
 
     public IndexWriter getIndexWriter()

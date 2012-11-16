@@ -74,7 +74,7 @@ public class DefaultNexusIndexer
     @Requirement
     private QueryCreator queryCreator;
 
-    private Map<String, IndexingContext> indexingContexts;
+    private final Map<String, IndexingContext> indexingContexts;
 
     public DefaultNexusIndexer()
     {
@@ -84,6 +84,11 @@ public class DefaultNexusIndexer
     // ----------------------------------------------------------------------------
     // Contexts
     // ----------------------------------------------------------------------------
+
+    public void addIndexingContext( IndexingContext context )
+    {
+        indexingContexts.put( context.getId(), context );
+    };
 
     public IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                                String repositoryUrl, String indexUpdateUrl,

@@ -91,6 +91,13 @@ public interface NexusIndexer
     /**
      * Adds an indexing context to Nexus indexer.
      * 
+     * @since 5.1.0
+     */
+    void addIndexingContext( IndexingContext context );
+
+    /**
+     * Adds an indexing context to Nexus indexer.
+     * 
      * @param id the ID of the context.
      * @param repositoryId the ID of the repository that this context represents.
      * @param repository the location of the repository.
