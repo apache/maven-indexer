@@ -36,7 +36,9 @@ import org.apache.maven.index.expr.UserInputSearchExpression;
 /**
  * Indexer component. It is the main component of Maven Indexer, offering {@link IndexingContext} creation and close
  * methods, context maintenance (scan, add, remove) and search methods. Supersedes the {@link NexusIndexer} component,
- * making it less cludged, and focusing on main use cases.
+ * making it less cludged, and focusing on main use cases. This component does not hold any reference to contexts
+ * it creates or uses, and caller of every method (except the createIndexingContext naturally) is obliged to
+ * explicitly supply {@link IndexingContext} to work with (perform searches or such).
  * 
  * @author cstamas
  * @since 5.1.0
