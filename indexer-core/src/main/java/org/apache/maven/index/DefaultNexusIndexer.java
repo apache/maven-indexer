@@ -78,7 +78,7 @@ public class DefaultNexusIndexer
     public void addIndexingContext( IndexingContext context )
     {
         indexingContexts.put( context.getId(), context );
-    };
+    }
 
     public IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                                String repositoryUrl, String indexUpdateUrl,
