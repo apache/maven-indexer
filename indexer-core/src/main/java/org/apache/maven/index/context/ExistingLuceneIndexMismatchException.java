@@ -1,7 +1,6 @@
 package org.apache.maven.index.context;
 
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.NexusIndexer;
+import java.io.IOException;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -23,25 +22,23 @@ import org.apache.maven.index.NexusIndexer;
  */
 
 /**
- * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index. The reason for
- * throwing this exception may be multiple: non-NexusIndexer Lucene index, index version is wrong, repositoryId does not
- * matches the context repositoryId, etc.
+ * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index, and there is a
+ * mismatch. The reason for mismatch may be multiple: non-NexusIndexer Lucene index (basically missing the descriptor
+ * document), index version is wrong or unknown, repositoryId from context and descriptor document does not matches,
+ * etc. This exception is not thrown in cases when "reclaim" is done, as in those cases, even if an unknown index is
+ * found, descriptor will be forcefully added with current context information, potentially replacing the existing
+ * descriptor, if any.
  * 
  * @author Tamas Cservenak
- * @deprecated The deprecated {@link NexusIndexer} uses this exception. Use {@link Indexer} instead.
+ * @since 5.1.0
  */
-public class UnsupportedExistingLuceneIndexException
-    extends Exception
+public class ExistingLuceneIndexMismatchException
+    extends IOException
 {
-    private static final long serialVersionUID = -3206758653346308322L;
+    private static final long serialVersionUID = -6587046761831878804L;
 
-    public UnsupportedExistingLuceneIndexException( String message )
+    public ExistingLuceneIndexMismatchException( String message )
     {
         super( message );
-    }
-
-    public UnsupportedExistingLuceneIndexException( String message, ExistingLuceneIndexMismatchException e )
-    {
-        super( message, e );
     }
 }

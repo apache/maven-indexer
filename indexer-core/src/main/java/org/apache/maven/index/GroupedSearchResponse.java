@@ -26,7 +26,7 @@ import org.apache.lucene.search.Query;
 /**
  * A grouped search response. For hitsCount, it reports the number of groups found.
  * 
- * @see NexusIndexer#searchGrouped(GroupedSearchRequest)
+ * @see Indexer#searchGrouped(GroupedSearchRequest)
  */
 public class GroupedSearchResponse
     extends AbstractSearchResponse

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * A grouping criteria for grouped searches.
  * 
- * @see NexusIndexer#searchGrouped(GroupedSearchRequest)
+ * @see Indexer#searchGrouped(GroupedSearchRequest)
  * @author Tamas Cservenak
  */
 public interface Grouping

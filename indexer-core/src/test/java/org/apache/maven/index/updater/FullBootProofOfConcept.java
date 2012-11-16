@@ -54,6 +54,10 @@ public class FullBootProofOfConcept
             {
                 run( basedir );
             }
+            catch ( UnsupportedExistingLuceneIndexException e )
+            {
+                e.printStackTrace();
+            }
             catch ( IOException e )
             {
                 e.printStackTrace();
@@ -67,10 +71,6 @@ public class FullBootProofOfConcept
                 e.printStackTrace();
             }
             catch ( ParseException e )
-            {
-                e.printStackTrace();
-            }
-            catch ( UnsupportedExistingLuceneIndexException e )
             {
                 e.printStackTrace();
             }

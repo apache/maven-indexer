@@ -83,6 +83,7 @@ public class MergedIndexingContext
         this.directoryFile = indexDirectoryFile;
     }
 
+    @Deprecated
     public MergedIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
                                   boolean searchable, ContextMemberProvider membersProvider )
         throws IOException

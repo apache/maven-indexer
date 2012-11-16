@@ -28,7 +28,7 @@ import org.apache.maven.index.context.IndexingContext;
 /**
  * A flat search request.
  * 
- * @see NexusIndexer#searchFlat(FlatSearchRequest)
+ * @see Indexer#searchFlat(FlatSearchRequest)
  */
 public class FlatSearchRequest
     extends AbstractSearchRequest

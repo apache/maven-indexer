@@ -30,10 +30,10 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.Field;
+import org.apache.maven.index.Indexer;
 import org.apache.maven.index.IteratorSearchRequest;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
 import org.codehaus.plexus.component.annotations.Component;
@@ -47,11 +47,11 @@ public class DefaultIndexTreeView
     implements IndexTreeView
 {
     @Requirement
-    private NexusIndexer nexusIndexer;
+    private Indexer indexer;
 
-    protected NexusIndexer getNexusIndexer()
+    protected Indexer getIndexer()
     {
-        return nexusIndexer;
+        return indexer;
     }
 
     public TreeNode listNodes( TreeViewRequest request )
@@ -498,16 +498,16 @@ public class DefaultIndexTreeView
         Query versionQ = null;
 
         // minimum must have
-        groupIdQ = getNexusIndexer().constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( g ) );
+        groupIdQ = getIndexer().constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( g ) );
 
         if ( StringUtils.isNotBlank( a ) )
         {
-            artifactIdQ = getNexusIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( a ) );
+            artifactIdQ = getIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( a ) );
         }
 
         if ( StringUtils.isNotBlank( v ) )
         {
-            versionQ = getNexusIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( v ) );
+            versionQ = getIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( v ) );
         }
 
         BooleanQuery q = new BooleanQuery();
@@ -528,7 +528,7 @@ public class DefaultIndexTreeView
 
         searchRequest.getContexts().add( request.getIndexingContext() );
 
-        IteratorSearchResponse result = getNexusIndexer().searchIterator( searchRequest );
+        IteratorSearchResponse result = getIndexer().searchIterator( searchRequest );
 
         return result;
     }

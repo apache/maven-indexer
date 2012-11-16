@@ -74,8 +74,9 @@ import org.apache.maven.index.updater.IndexUpdater;
  *   ...
  * </pre>
  * 
- * Query could be also constructed using a convenience {@link NexusIndexer#constructQuery(Field, SearchExpression)} method that
- * handles creation of the wildcard queries. Also see {@link DefaultQueryCreator} for more details on supported queries.
+ * Query could be also constructed using a convenience {@link NexusIndexer#constructQuery(Field, SearchExpression)}
+ * method that handles creation of the wildcard queries. Also see {@link DefaultQueryCreator} for more details on
+ * supported queries.
  * 
  * @see IndexingContext
  * @see IndexUpdater
@@ -83,7 +84,9 @@ import org.apache.maven.index.updater.IndexUpdater;
  * @author Jason van Zyl
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
+ * @deprecated Use {@link Indexer} instead.
  */
+@Deprecated
 public interface NexusIndexer
 {
     String ROLE = NexusIndexer.class.getName();
@@ -111,7 +114,9 @@ public interface NexusIndexer
      *             it has no Nexus descriptor record or it has, but the embedded repoId differs from the repoId
      *             specified from the supplied one.
      * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                         String repositoryUrl, String indexUpdateUrl,
                                         List<? extends IndexCreator> indexers )
@@ -132,7 +137,9 @@ public interface NexusIndexer
      * @return
      * @throws IOException in case of some serious IO problem.
      * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     IndexingContext addIndexingContextForced( String id, String repositoryId, File repository, File indexDirectory,
                                               String repositoryUrl, String indexUpdateUrl,
                                               List<? extends IndexCreator> indexers )
@@ -154,7 +161,9 @@ public interface NexusIndexer
      *             it has no Nexus descriptor record or it has, but the embedded repoId differs from the repoId
      *             specified from the supplied one.
      * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
                                         String repositoryUrl, String indexUpdateUrl,
                                         List<? extends IndexCreator> indexers )
@@ -175,25 +184,31 @@ public interface NexusIndexer
      * @return
      * @throws IOException in case of some serious IO problem.
      * @throws IllegalArgumentException in case the supplied list of IndexCreators are not satisfiable
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     IndexingContext addIndexingContextForced( String id, String repositoryId, File repository, Directory directory,
                                               String repositoryUrl, String indexUpdateUrl,
                                               List<? extends IndexCreator> indexers )
         throws IOException;
 
+    @Deprecated
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                               boolean searchable, Collection<IndexingContext> contexts )
         throws IOException;
 
+    @Deprecated
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                               boolean searchable, ContextMemberProvider membersProvider )
         throws IOException;
 
+    @Deprecated
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
                                               Directory indexDirectory, boolean searchable,
                                               Collection<IndexingContext> contexts )
         throws IOException;
 
+    @Deprecated
     IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
                                               Directory indexDirectory, boolean searchable,
                                               ContextMemberProvider membersProvider )
@@ -205,13 +220,18 @@ public interface NexusIndexer
      * @param context
      * @param deleteFiles
      * @throws IOException
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void removeIndexingContext( IndexingContext context, boolean deleteFiles )
         throws IOException;
 
     /**
      * Returns the map of indexing contexts keyed by their ID.
+     * 
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     Map<String, IndexingContext> getIndexingContexts();
 
     // ----------------------------------------------------------------------------
@@ -221,7 +241,9 @@ public interface NexusIndexer
      * Performs full scan (reindex) for the local repository belonging to supplied context.
      * 
      * @param context
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void scan( IndexingContext context )
         throws IOException;
 
@@ -231,7 +253,9 @@ public interface NexusIndexer
      * 
      * @param context
      * @param listener
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void scan( IndexingContext context, ArtifactScanningListener listener )
         throws IOException;
 
@@ -240,8 +264,10 @@ public interface NexusIndexer
      * context.
      * 
      * @param context
-     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happenF
+     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happen
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void scan( IndexingContext context, boolean update )
         throws IOException;
 
@@ -250,8 +276,10 @@ public interface NexusIndexer
      * 
      * @param context
      * @param listener
-     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happenF
+     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happen
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void scan( IndexingContext context, ArtifactScanningListener listener, boolean update )
         throws IOException;
 
@@ -262,11 +290,14 @@ public interface NexusIndexer
      * @param fromPath a path segment if you want "sub-path" reindexing (ie. reindex just a given subfolder of a
      *            repository, ot whole repository from root.
      * @param listener
-     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happenF
+     * @param update if incremental reindex wanted, set true, otherwise false and full reindex will happen
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     void scan( IndexingContext context, String fromPath, ArtifactScanningListener listener, boolean update )
         throws IOException;
 
+    @Deprecated
     void artifactDiscovered( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
@@ -274,15 +305,19 @@ public interface NexusIndexer
     // Modifying
     // ----------------------------------------------------------------------------
 
+    @Deprecated
     void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
+    @Deprecated
     void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context )
         throws IOException;
 
+    @Deprecated
     void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context )
         throws IOException;
 
+    @Deprecated
     void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context )
         throws IOException;
 
@@ -296,7 +331,9 @@ public interface NexusIndexer
      * @param request
      * @return
      * @throws IOException
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     FlatSearchResponse searchFlat( FlatSearchRequest request )
         throws IOException;
 
@@ -306,7 +343,9 @@ public interface NexusIndexer
      * @param request
      * @return
      * @throws IOException
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     IteratorSearchResponse searchIterator( IteratorSearchRequest request )
         throws IOException;
 
@@ -316,7 +355,9 @@ public interface NexusIndexer
      * @param request
      * @return
      * @throws IOException
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     GroupedSearchResponse searchGrouped( GroupedSearchRequest request )
         throws IOException;
 
@@ -332,8 +373,9 @@ public interface NexusIndexer
      * @param query
      * @param type
      * @return
-     * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     Query constructQuery( Field field, String query, SearchType type )
         throws IllegalArgumentException;
 
@@ -344,7 +386,9 @@ public interface NexusIndexer
      * @param field
      * @param expression
      * @return
+     * @deprecated Use {@link Indexer} instead.
      */
+    @Deprecated
     Query constructQuery( Field field, SearchExpression expression )
         throws IllegalArgumentException;
 
@@ -353,18 +397,23 @@ public interface NexusIndexer
     // Since 4.0: Indexer does not make any assumptions, it is caller call to decide what to do with multiple results
     // ----------------------------------------------------------------------------
 
+    @Deprecated
     Collection<ArtifactInfo> identify( Field field, String query )
         throws IllegalArgumentException, IOException;
 
+    @Deprecated
     Collection<ArtifactInfo> identify( File artifact )
         throws IOException;
 
+    @Deprecated
     Collection<ArtifactInfo> identify( File artifact, Collection<IndexingContext> contexts )
         throws IOException;
 
+    @Deprecated
     Collection<ArtifactInfo> identify( Query query )
         throws IOException;
 
+    @Deprecated
     Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
         throws IOException;
 

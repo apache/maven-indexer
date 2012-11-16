@@ -26,7 +26,7 @@ import org.apache.lucene.search.Query;
 /**
  * A flat search response.
  * 
- * @see NexusIndexer#searchFlat(FlatSearchRequest)
+ * @see Indexer#searchFlat(FlatSearchRequest)
  */
 public class FlatSearchResponse
     extends AbstractSearchResponse

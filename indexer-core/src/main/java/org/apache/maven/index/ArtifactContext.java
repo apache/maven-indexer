@@ -48,7 +48,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  * {@link IndexCreator}, which can populate {@link ArtifactInfo} for the given artifact.
  * 
  * @see IndexCreator#populateArtifactInfo(ArtifactContext)
- * @see NexusIndexer#scan(IndexingContext)
+ * @see Indexer#scan(IndexingContext)
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */

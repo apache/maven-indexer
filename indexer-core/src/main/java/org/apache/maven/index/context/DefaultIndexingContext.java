@@ -111,7 +111,7 @@ public class DefaultIndexingContext
                                     String repositoryUrl, String indexUpdateUrl,
                                     List<? extends IndexCreator> indexCreators, Directory indexDirectory,
                                     boolean reclaimIndex )
-        throws UnsupportedExistingLuceneIndexException, IOException
+        throws ExistingLuceneIndexMismatchException, IOException
     {
         this.id = id;
 
@@ -150,7 +150,7 @@ public class DefaultIndexingContext
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
                                    String repositoryUrl, String indexUpdateUrl,
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, ExistingLuceneIndexMismatchException
     {
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
             FSDirectory.open( indexDirectoryFile ), reclaimIndex );
@@ -158,10 +158,11 @@ public class DefaultIndexingContext
         this.indexDirectoryFile = indexDirectoryFile;
     }
 
+    @Deprecated
     public DefaultIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
                                    String repositoryUrl, String indexUpdateUrl,
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, ExistingLuceneIndexMismatchException
     {
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, reclaimIndex );
 
@@ -182,7 +183,7 @@ public class DefaultIndexingContext
     }
 
     private void prepareIndex( boolean reclaimIndex )
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, ExistingLuceneIndexMismatchException
     {
         if ( IndexReader.indexExists( indexDirectory ) )
         {
@@ -245,7 +246,7 @@ public class DefaultIndexingContext
     }
 
     private void checkAndUpdateIndexDescriptor( boolean reclaimIndex )
-        throws IOException, UnsupportedExistingLuceneIndexException
+        throws IOException, ExistingLuceneIndexMismatchException
     {
         if ( reclaimIndex )
         {
@@ -265,7 +266,7 @@ public class DefaultIndexingContext
 
                 if ( collector.getTotalHits() == 0 )
                 {
-                    throw new UnsupportedExistingLuceneIndexException(
+                    throw new ExistingLuceneIndexMismatchException(
                         "The existing index has no NexusIndexer descriptor" );
                 }
 
@@ -296,7 +297,7 @@ public class DefaultIndexingContext
                     }
                     else if ( !getRepositoryId().equals( repoId ) )
                     {
-                        throw new UnsupportedExistingLuceneIndexException( "The existing index is for repository " //
+                        throw new ExistingLuceneIndexMismatchException( "The existing index is for repository " //
                             + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
                     }
                 }
@@ -360,7 +361,7 @@ public class DefaultIndexingContext
             IndexUtils.deleteTimestamp( indexDirectory );
         }
     }
-    
+
     // ==
 
     public boolean isSearchable()
@@ -592,7 +593,7 @@ public class DefaultIndexingContext
         {
             prepareIndex( true );
         }
-        catch ( UnsupportedExistingLuceneIndexException e )
+        catch ( ExistingLuceneIndexMismatchException e )
         {
             // just deleted it
         }
