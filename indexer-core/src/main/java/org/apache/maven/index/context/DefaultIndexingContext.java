@@ -611,6 +611,7 @@ public class DefaultIndexingContext
         openAndWarmup();
         // reclaim the index as mine
         storeDescriptor();
+        rebuildGroups();
         updateTimestamp( true, ts );
         optimize();
     }
