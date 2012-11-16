@@ -31,12 +31,10 @@ import java.util.List;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.ContextMemberProvider;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
 import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
@@ -45,7 +43,6 @@ import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
@@ -58,9 +55,6 @@ public class DefaultIndexer
     extends AbstractLogEnabled
     implements Indexer
 {
-    @Requirement
-    private Scanner scanner;
-
     @Requirement
     private SearchEngine searcher;
 
@@ -100,78 +94,6 @@ public class DefaultIndexer
         throws IOException
     {
         context.close( deleteFiles );
-    }
-
-    // ----------------------------------------------------------------------------
-    // Scanning
-    // ----------------------------------------------------------------------------
-
-    public void scan( final IndexerScanRequest indexerScanRequest )
-        throws IOException
-    {
-        final IndexingContext context = indexerScanRequest.getIndexingContext();
-        final File repositoryDirectory = context.getRepository();
-        if ( repositoryDirectory == null )
-        {
-            // nothing to scan
-            return;
-        }
-
-        if ( !repositoryDirectory.exists() )
-        {
-            throw new IOException( "Repository directory " + repositoryDirectory + " does not exist" );
-        }
-
-        // always use temporary context when reindexing
-        final File tmpFile = File.createTempFile( context.getId() + "-tmp", "" );
-        final File tmpDir = new File( tmpFile.getParentFile(), tmpFile.getName() + ".dir" );
-        if ( !tmpDir.mkdirs() )
-        {
-            throw new IOException( "Cannot create temporary directory: " + tmpDir );
-        }
-
-        IndexingContext tmpContext = null;
-        try
-        {
-            final FSDirectory directory = FSDirectory.open( tmpDir );
-            if ( indexerScanRequest.isUpdate() )
-            {
-                IndexUtils.copyDirectory( context.getIndexDirectory(), directory );
-            }
-            tmpContext = new DefaultIndexingContext( context.getId() + "-tmp", //
-                context.getRepositoryId(), //
-                context.getRepository(), //
-                directory, //
-                context.getRepositoryUrl(), //
-                context.getIndexUpdateUrl(), //
-                context.getIndexCreators(), //
-                true );
-
-            scanner.scan( new ScanningRequest( tmpContext, //
-                new DefaultScannerListener( tmpContext, indexerEngine, indexerScanRequest.isUpdate(),
-                    indexerScanRequest.getArtifactScanningListener() ), indexerScanRequest.getStartingPath() ) );
-
-            tmpContext.updateTimestamp( true );
-            context.replace( tmpContext.getIndexDirectory() );
-        }
-        catch ( Exception ex )
-        {
-            throw (IOException) new IOException( "Error scanning context " + context.getId() + ": " + ex ).initCause( ex );
-        }
-        finally
-        {
-            if ( tmpContext != null )
-            {
-                tmpContext.close( true );
-            }
-
-            if ( tmpFile.exists() )
-            {
-                tmpFile.delete();
-            }
-
-            FileUtils.deleteDirectory( tmpDir );
-        }
     }
 
     // ----------------------------------------------------------------------------

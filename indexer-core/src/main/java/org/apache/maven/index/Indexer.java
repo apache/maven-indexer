@@ -105,19 +105,6 @@ public interface Indexer
         throws IOException;
 
     // ----------------------------------------------------------------------------
-    // Scanning
-    // ----------------------------------------------------------------------------
-
-    /**
-     * Performs a scan (re-index).
-     * 
-     * @param indexerScanRequest
-     * @throws IOException
-     */
-    void scan( IndexerScanRequest indexerScanRequest )
-        throws IOException;
-
-    // ----------------------------------------------------------------------------
     // Modifying
     // ----------------------------------------------------------------------------
 
