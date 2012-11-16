@@ -161,8 +161,19 @@ public class DefaultSearchEngine
                     if ( artifactInfo != null )
                     {
                         artifactInfo.repository = context.getRepositoryId();
-
                         artifactInfo.context = context.getId();
+
+                        if ( req.getArtifactInfoFilter() != null )
+                        {
+                            if ( !req.getArtifactInfoFilter().accepts( context, artifactInfo ) )
+                            {
+                                continue;
+                            }
+                        }
+                        if ( req.getArtifactInfoPostprocessor() != null )
+                        {
+                            req.getArtifactInfoPostprocessor().postprocess( context, artifactInfo );
+                        }
 
                         result.add( artifactInfo );
                     }
@@ -205,8 +216,19 @@ public class DefaultSearchEngine
                         if ( artifactInfo != null )
                         {
                             artifactInfo.repository = context.getRepositoryId();
-
                             artifactInfo.context = context.getId();
+
+                            if ( req.getArtifactInfoFilter() != null )
+                            {
+                                if ( !req.getArtifactInfoFilter().accepts( context, artifactInfo ) )
+                                {
+                                    continue;
+                                }
+                            }
+                            if ( req.getArtifactInfoPostprocessor() != null )
+                            {
+                                req.getArtifactInfoPostprocessor().postprocess( context, artifactInfo );
+                            }
 
                             if ( !grouping.addArtifactInfo( result, artifactInfo ) )
                             {
