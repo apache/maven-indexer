@@ -32,6 +32,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -44,6 +47,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -52,25 +56,29 @@ import org.apache.maven.index.context.NexusLegacyAnalyzer;
 import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
- * 
+ *
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
-@Component( role = IndexPacker.class )
+@Singleton
+@Named
 public class DefaultIndexPacker
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements IndexPacker
 {
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+
+    private final IncrementalHandler incrementalHandler;
+
+    @Inject
+    public DefaultIndexPacker( final IncrementalHandler incrementalHandler )
+    {
+        this.incrementalHandler = incrementalHandler;
+    }
 
     public void packIndex( IndexPackingRequest request )
         throws IOException, IllegalArgumentException
@@ -85,13 +93,13 @@ public class DefaultIndexPacker
             if ( !request.getTargetDir().isDirectory() )
             {
                 throw new IllegalArgumentException( //
-                    String.format( "Specified target path %s is not a directory",
-                        request.getTargetDir().getAbsolutePath() ) );
+                                                    String.format( "Specified target path %s is not a directory",
+                                                                   request.getTargetDir().getAbsolutePath() ) );
             }
             if ( !request.getTargetDir().canWrite() )
             {
                 throw new IllegalArgumentException( String.format( "Specified target path %s is not writtable",
-                    request.getTargetDir().getAbsolutePath() ) );
+                                                                   request.getTargetDir().getAbsolutePath() ) );
             }
         }
         else
@@ -131,11 +139,11 @@ public class DefaultIndexPacker
                 {
                     File file =
                         new File( request.getTargetDir(), //
-                            IndexingContext.INDEX_FILE_PREFIX + "."
-                                + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
+                                  IndexingContext.INDEX_FILE_PREFIX + "."
+                                      + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
 
                     writeIndexData( request.getContext(), //
-                        chunk, file );
+                                    chunk, file );
 
                     if ( request.isCreateChecksumFiles() )
                     {
@@ -191,10 +199,10 @@ public class DefaultIndexPacker
             if ( request.isCreateChecksumFiles() )
             {
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".sha1" ).getAbsolutePath(),
-                    DigesterUtils.getSha1Digest( v1File ) );
+                                     DigesterUtils.getSha1Digest( v1File ) );
 
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".md5" ).getAbsolutePath(),
-                    DigesterUtils.getMd5Digest( v1File ) );
+                                     DigesterUtils.getMd5Digest( v1File ) );
             }
         }
 
@@ -479,7 +487,8 @@ public class DefaultIndexPacker
         if ( request.isCreateChecksumFiles() )
         {
             FileUtils.fileWrite(
-                new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".sha1" ).getAbsolutePath(),
+                new File( targetPropertyFile.getParentFile(),
+                          targetPropertyFile.getName() + ".sha1" ).getAbsolutePath(),
                 DigesterUtils.getSha1Digest( targetPropertyFile ) );
 
             FileUtils.fileWrite(

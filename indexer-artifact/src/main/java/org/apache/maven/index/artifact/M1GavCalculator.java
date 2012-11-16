@@ -21,23 +21,25 @@ package org.apache.maven.index.artifact;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.codehaus.plexus.component.annotations.Component;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * An M1 <code>GavCalculator</code>. Heavily under-maintained.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = GavCalculator.class, hint = "maven1" )
+@Singleton
+@Named( "maven1" )
 public class M1GavCalculator
     implements GavCalculator
 {
 
     private static final Pattern pat1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
-    private static final Pattern pat2 = Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern pat2 =
+        Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
     public Gav pathToGav( String str )
     {
@@ -111,7 +113,7 @@ public class M1GavCalculator
                 }
 
                 return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false,
-                    null );
+                                null );
             }
             else
             {
@@ -126,7 +128,7 @@ public class M1GavCalculator
                     }
 
                     return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType,
-                        false, null );
+                                    false, null );
                 }
                 else
                 {
@@ -146,7 +148,7 @@ public class M1GavCalculator
 
     /**
      * // XXX this is not accurate, m1 is using packaging as an artifact folder name.
-     * 
+     *
      * @see org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout#pathOf(org.apache.maven.artifact.Artifact)
      * @see org.apache.maven.artifact.handler.DefaultArtifactHandler#getDirectory()
      */

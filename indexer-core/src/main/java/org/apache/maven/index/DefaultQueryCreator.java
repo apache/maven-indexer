@@ -21,6 +21,8 @@ package org.apache.maven.index;
 
 import java.io.IOException;
 import java.io.StringReader;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
@@ -39,13 +41,10 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTyped;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.Logger;
 
 /**
  * A default {@link QueryCreator} constructs Lucene query for provided query text.
- * <p>
+ * <p/>
  * By default wildcards are created such as query text matches beginning of the field value or beginning of the
  * class/package name segment for {@link ArtifactInfo#NAMES NAMES} field. But it can be controlled by using special
  * markers:
@@ -60,22 +59,15 @@ import org.codehaus.plexus.logging.Logger;
  * <li>*junit - matches junit, junit-foo and foo-junit</li>
  * <li>^junit$ - matches junit, but not junit-foo, nor foo-junit</li>
  * </ul>
- * 
+ *
  * @author Eugene Kuleshov
  */
-@Component( role = QueryCreator.class )
+@Singleton
+@Named
 public class DefaultQueryCreator
+    extends ComponentSupport
     implements QueryCreator
 {
-    @Requirement
-    private Logger logger;
-
-    protected Logger getLogger()
-    {
-        return logger;
-    }
-
-    // ==
 
     public IndexerField selectIndexerField( final Field field, final SearchType type )
     {
@@ -150,7 +142,8 @@ public class DefaultQueryCreator
                 if ( query.contains( "*" ) && query.matches( ".*(\\.|-|_).*" ) )
                 {
                     query =
-                        query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X", "*" );
+                        query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X",
+                                                                                                              "*" );
                 }
             }
 
@@ -178,7 +171,7 @@ public class DefaultQueryCreator
     // ==
 
     public Query constructQuery( final Field field, final IndexerField indexerField, final String query,
-                                 final SearchType type )
+        final SearchType type )
         throws ParseException
     {
         if ( indexerField == null )
@@ -233,7 +226,7 @@ public class DefaultQueryCreator
                     if ( query.startsWith( "/" ) )
                     {
                         return new TermQuery( new Term( indexerField.getKey(), query.toLowerCase().replaceAll( "\\.",
-                            "/" ) ) );
+                                                                                                               "/" ) ) );
                     }
                     else
                     {
@@ -318,7 +311,8 @@ public class DefaultQueryCreator
                 {
                     qpQuery =
                         qpQuery.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_|/", " " ).replaceAll( "X",
-                            "*" ).replaceAll( " \\* ", "" ).replaceAll( "^\\* ", "" ).replaceAll( " \\*$", "" );
+                                                                                                                  "*" ).replaceAll(
+                            " \\* ", "" ).replaceAll( "^\\* ", "" ).replaceAll( " \\*$", "" );
                 }
 
                 // "fix" it with trailing "*" if not there, but only if it not ends with a space

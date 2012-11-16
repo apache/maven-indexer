@@ -34,23 +34,26 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
-@Component( role = IncrementalHandler.class )
+@Singleton
+@Named
 public class DefaultIncrementalHandler
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements IncrementalHandler
 {
+
     public List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
         throws IOException
     {
@@ -81,7 +84,7 @@ public class DefaultIncrementalHandler
     }
 
     public List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
-                                                      Properties remoteProperties )
+        Properties remoteProperties )
         throws IOException
     {
         List<String> filenames = null;

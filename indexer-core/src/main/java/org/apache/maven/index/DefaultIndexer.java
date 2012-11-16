@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.Query;
@@ -40,49 +43,55 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
  * A default {@link Indexer} implementation.
- * 
+ *
  * @author Tamas Cservenak
  */
-@Component( role = Indexer.class )
+@Singleton
+@Named
 public class DefaultIndexer
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements Indexer
 {
-    @Requirement
-    private SearchEngine searcher;
 
-    @Requirement
-    private IndexerEngine indexerEngine;
+    private final SearchEngine searcher;
 
-    @Requirement
-    private QueryCreator queryCreator;
+    private final IndexerEngine indexerEngine;
 
-    // ----------------------------------------------------------------------------
+    private final QueryCreator queryCreator;
+
+    @Inject
+    public DefaultIndexer( final SearchEngine searcher, final IndexerEngine indexerEngine,
+        final QueryCreator queryCreator )
+    {
+        this.searcher = searcher;
+        this.indexerEngine = indexerEngine;
+        this.queryCreator = queryCreator;
+    }
+
+// ----------------------------------------------------------------------------
     // Contexts
     // ----------------------------------------------------------------------------
 
     public IndexingContext createIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
-                                                  String repositoryUrl, String indexUpdateUrl, boolean searchable,
-                                                  boolean reclaim, List<? extends IndexCreator> indexers )
+        String repositoryUrl, String indexUpdateUrl, boolean searchable,
+        boolean reclaim, List<? extends IndexCreator> indexers )
         throws IOException, ExistingLuceneIndexMismatchException, IllegalArgumentException
     {
         final IndexingContext context =
             new DefaultIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
-                IndexCreatorSorter.sort( indexers ), reclaim );
+                                        IndexCreatorSorter.sort( indexers ), reclaim );
         context.setSearchable( searchable );
         return context;
     }
 
     public IndexingContext createMergedIndexingContext( String id, String repositoryId, File repository,
-                                                        File indexDirectory, boolean searchable,
-                                                        ContextMemberProvider membersProvider )
+        File indexDirectory, boolean searchable,
+        ContextMemberProvider membersProvider )
         throws IOException
     {
         IndexingContext context =
@@ -137,7 +146,7 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo> emptySet() );
+            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo>emptySet() );
         }
         else
         {
@@ -163,7 +172,8 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new GroupedSearchResponse( request.getQuery(), 0, Collections.<String, ArtifactInfoGroup> emptyMap() );
+            return new GroupedSearchResponse( request.getQuery(), 0,
+                                              Collections.<String, ArtifactInfoGroup>emptyMap() );
         }
         else
         {

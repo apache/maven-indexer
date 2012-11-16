@@ -24,25 +24,32 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default repository scanner for Maven 2 repository.
- * 
+ *
  * @author Jason Van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = Scanner.class )
+@Singleton
+@Named
 public class DefaultScanner
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements Scanner
 {
-    @Requirement
-    private ArtifactContextProducer artifactContextProducer;
+
+    private final ArtifactContextProducer artifactContextProducer;
+
+    @Inject
+    public DefaultScanner( final ArtifactContextProducer artifactContextProducer )
+    {
+        this.artifactContextProducer = artifactContextProducer;
+    }
 
     public ScanningResult scan( ScanningRequest request )
     {
@@ -119,6 +126,7 @@ public class DefaultScanner
     private static class ScannerFileComparator
         implements Comparator<File>
     {
+
         public int compare( File o1, File o2 )
         {
             if ( o1.getName().endsWith( ".pom" ) && !o2.getName().endsWith( ".pom" ) )

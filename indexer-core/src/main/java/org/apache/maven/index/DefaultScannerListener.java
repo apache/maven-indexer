@@ -33,7 +33,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default scanning listener
@@ -41,7 +40,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Eugene Kuleshov
  */
 public class DefaultScannerListener
-    extends AbstractLogEnabled
     implements ArtifactScanningListener
 {
     private final IndexingContext context;
@@ -206,7 +204,7 @@ public class DefaultScannerListener
     }
 
     private void initialize( IndexingContext ctx )
-        throws IOException, CorruptIndexException
+        throws IOException
     {
         final IndexSearcher indexSearcher = ctx.acquireIndexSearcher();
         try

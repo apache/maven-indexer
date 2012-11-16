@@ -49,7 +49,17 @@ under the License.
       <version>${project.version}</version>
     </dependency>
 
-    <!-- Plexus (as compile since it has to end up in CLI) -->
+    <!-- SISU + Plexus (as compile since it has to end up in CLI) -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-inject-bean</artifactId>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-inject-plexus</artifactId>

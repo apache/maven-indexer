@@ -42,11 +42,11 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-component-annotations</artifactId>
+      <artifactId>plexus-utils</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <!-- Lucene -->
@@ -82,6 +82,14 @@ under the License.
 
     <!-- Plexus (as provided since you have to provide it when embedding MI) -->
     <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.sonatype.sisu</groupId>
+      <artifactId>sisu-inject-bean</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.sonatype.sisu</groupId>
       <artifactId>sisu-inject-plexus</artifactId>
     </dependency>
@@ -104,6 +112,10 @@ under the License.
         <exclusion>
           <groupId>org.codehaus.plexus</groupId>
           <artifactId>plexus-container-default</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-component-annotations</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.maven</groupId>
@@ -187,6 +199,11 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.context.IndexCreator;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * An abstract base class for {@link IndexCreator} implementations.
@@ -32,7 +32,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Jason van Zyl
  */
 public abstract class AbstractIndexCreator
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements IndexCreator
 {
     private final String id;

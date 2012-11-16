@@ -25,10 +25,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A very simple artifact packaging mapper, that has everything for quick-start wired in this class. Also, it takes into
@@ -37,13 +39,15 @@ import org.codehaus.plexus.util.IOUtil;
  *
  * @author cstamas
  */
-@Component( role = ArtifactPackagingMapper.class )
+@Singleton
+@Named
 public class DefaultArtifactPackagingMapper
-    extends AbstractLogEnabled
     implements ArtifactPackagingMapper
 {
 
     public static final String MAPPING_PROPERTIES_FILE = "packaging2extension-mapping.properties";
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     private File propertiesFile;
 
@@ -91,7 +95,7 @@ public class DefaultArtifactPackagingMapper
 
                     if ( propertiesFile != null && propertiesFile.exists() )
                     {
-                        getLogger().info( "Found user artifact packaging mapping file, applying it..." );
+                        logger.info( "Found user artifact packaging mapping file, applying it..." );
 
                         Properties userMappings = new Properties();
 
@@ -111,7 +115,7 @@ public class DefaultArtifactPackagingMapper
                                                                     userMappings.getProperty( key.toString() ) );
                                 }
 
-                                getLogger().info(
+                                logger.info(
                                     propertiesFile.getAbsolutePath()
                                         + " user artifact packaging mapping file contained "
                                         + userMappings.keySet().size() + " mappings, applied them all succesfully." );
@@ -119,7 +123,7 @@ public class DefaultArtifactPackagingMapper
                         }
                         catch ( IOException e )
                         {
-                            getLogger().warn(
+                            logger.warn(
                                 "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
                         }
                         finally
@@ -131,7 +135,7 @@ public class DefaultArtifactPackagingMapper
                     else
                     {
                         // make it silent if using defaults
-                        getLogger().debug(
+                        logger.debug(
                             "User artifact packaging mappings file not found, will work with defaults..." );
                     }
                 }

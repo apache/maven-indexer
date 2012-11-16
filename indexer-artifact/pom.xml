@@ -37,15 +37,20 @@ under the License.
   <dependencies>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-component-annotations</artifactId>
+      <artifactId>plexus-utils</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-utils</artifactId>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
     </dependency>
     <dependency>
       <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-inject-plexus</artifactId>
+      <artifactId>sisu-inject-bean</artifactId>
     </dependency>
 
     <!-- Test -->

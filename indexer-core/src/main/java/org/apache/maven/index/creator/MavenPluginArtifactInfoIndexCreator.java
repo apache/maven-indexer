@@ -27,6 +27,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -36,34 +38,37 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * A Maven Plugin index creator used to provide information about Maven Plugins. It will collect the plugin prefix and
  * the goals the plugin provides. Also, the Lucene document and the returned ArtifactInfo will be correctly filled with
  * these information.
- * 
+ *
  * @author cstamas
  */
-@Component( role = IndexCreator.class, hint = MavenPluginArtifactInfoIndexCreator.ID )
+@Singleton
+@Named( MavenPluginArtifactInfoIndexCreator.ID )
 public class MavenPluginArtifactInfoIndexCreator
     extends AbstractIndexCreator
 {
+
     public static final String ID = "maven-plugin";
 
     private static final String MAVEN_PLUGIN_PACKAGING = "maven-plugin";
 
     public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField( MAVEN.PLUGIN_PREFIX, IndexerFieldVersion.V1,
-        "px", "MavenPlugin prefix (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
+                                                                           "px",
+                                                                           "MavenPlugin prefix (as keyword, stored)",
+                                                                           Store.YES, Index.NOT_ANALYZED );
 
     public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
-        "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.ANALYZED );
+                                                                          "gx",
+                                                                          "MavenPlugin goals (as keyword, stored)",
+                                                                          Store.YES, Index.ANALYZED );
 
     public MavenPluginArtifactInfoIndexCreator()
     {
@@ -77,7 +82,8 @@ public class MavenPluginArtifactInfoIndexCreator
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && MAVEN_PLUGIN_PACKAGING.equals( ai.packaging ) && artifact.getName().endsWith( ".jar" ) )
+        if ( artifact != null && MAVEN_PLUGIN_PACKAGING.equals( ai.packaging ) && artifact.getName().endsWith(
+            ".jar" ) )
         {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
 
@@ -103,16 +109,16 @@ public class MavenPluginArtifactInfoIndexCreator
                 try
                 {
                     // here the reader is closed
-                    PlexusConfiguration plexusConfig =
-                        new XmlPlexusConfiguration( Xpp3DomBuilder.build( new InputStreamReader( is ) ) );
+                    Xpp3Dom plexusConfig =
+                        Xpp3DomBuilder.build( new InputStreamReader( is ) );
 
                     ai.prefix = plexusConfig.getChild( "goalPrefix" ).getValue();
 
                     ai.goals = new ArrayList<String>();
 
-                    PlexusConfiguration[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
+                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
 
-                    for ( PlexusConfiguration mojoConfig : mojoConfigs )
+                    for ( Xpp3Dom mojoConfig : mojoConfigs )
                     {
                         ai.goals.add( mojoConfig.getChild( "goal" ).getValue() );
                     }

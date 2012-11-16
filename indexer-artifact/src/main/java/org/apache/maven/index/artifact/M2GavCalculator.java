@@ -21,19 +21,21 @@ package org.apache.maven.index.artifact;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import org.codehaus.plexus.component.annotations.Component;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * An M2 <code>GavCalculator</code>.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = GavCalculator.class, hint = "maven2" )
+@Singleton
+@Named( "maven2" )
 public class M2GavCalculator
     implements GavCalculator
 {
+
     public Gav pathToGav( String str )
     {
         try
@@ -100,12 +102,12 @@ public class M2GavCalculator
             if ( snapshot )
             {
                 return getSnapshotGav( s, vEndPos, groupId, artifactId, version, fileName, checksum, signature,
-                    checksumType, signatureType );
+                                       checksumType, signatureType );
             }
             else
             {
                 return getReleaseGav( s, vEndPos, groupId, artifactId, version, fileName, checksum, signature,
-                    checksumType, signatureType );
+                                      checksumType, signatureType );
             }
         }
         catch ( NumberFormatException e )
@@ -119,8 +121,8 @@ public class M2GavCalculator
     }
 
     private Gav getReleaseGav( String s, int vEndPos, String groupId, String artifactId, String version,
-                               String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
-                               Gav.SignatureType signatureType )
+        String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
+        Gav.SignatureType signatureType )
     {
         if ( !fileName.startsWith( artifactId + "-" + version + "." )
             && !fileName.startsWith( artifactId + "-" + version + "-" ) )
@@ -146,12 +148,12 @@ public class M2GavCalculator
         String classifier = tail.charAt( 0 ) == '-' ? tail.substring( 1, nExtPos ) : null;
 
         return new Gav( groupId, artifactId, version, classifier, ext, null, null, fileName, checksum, checksumType,
-            signature, signatureType );
+                        signature, signatureType );
     }
 
     private Gav getSnapshotGav( String s, int vEndPos, String groupId, String artifactId, String version,
-                                String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
-                                Gav.SignatureType signatureType )
+        String fileName, boolean checksum, boolean signature, Gav.HashType checksumType,
+        Gav.SignatureType signatureType )
     {
 
         Integer snapshotBuildNo = null;
@@ -229,7 +231,7 @@ public class M2GavCalculator
         }
 
         return new Gav( groupId, artifactId, version, classifier, ext, snapshotBuildNo, snapshotTimestamp, fileName,
-            checksum, checksumType, signature, signatureType );
+                        checksum, checksumType, signature, signatureType );
     }
 
     public String gavToPath( Gav gav )

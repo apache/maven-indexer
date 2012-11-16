@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -36,14 +38,12 @@ import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NEXUS;
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.locator.JavadocLocator;
 import org.apache.maven.index.locator.Locator;
 import org.apache.maven.index.locator.Sha1Locator;
 import org.apache.maven.index.locator.SignatureLocator;
 import org.apache.maven.index.locator.SourcesLocator;
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -55,7 +55,8 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author cstamas
  */
-@Component( role = IndexCreator.class, hint = MinimalArtifactInfoIndexCreator.ID )
+@Singleton
+@Named( MinimalArtifactInfoIndexCreator.ID )
 public class MinimalArtifactInfoIndexCreator
     extends AbstractIndexCreator
     implements LegacyDocumentUpdater

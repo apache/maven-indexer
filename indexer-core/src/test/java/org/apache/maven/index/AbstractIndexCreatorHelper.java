@@ -31,6 +31,8 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -44,6 +46,13 @@ public class AbstractIndexCreatorHelper
     public List<IndexCreator> MIN_CREATORS;
 
     Random rand = new Random();
+
+    @Override
+    protected void customizeContainerConfiguration( final ContainerConfiguration containerConfiguration )
+    {
+        super.customizeContainerConfiguration( containerConfiguration );
+        containerConfiguration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+    }
 
     @Override
     protected void setUp()

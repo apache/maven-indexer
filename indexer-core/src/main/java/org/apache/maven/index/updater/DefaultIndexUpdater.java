@@ -41,6 +41,9 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -50,6 +53,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -59,40 +63,32 @@ import org.apache.maven.index.fs.Lock;
 import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
 
 /**
  * A default index updater implementation
- * 
+ *
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
-@Component( role = IndexUpdater.class )
+@Singleton
+@Named
 public class DefaultIndexUpdater
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements IndexUpdater
 {
 
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+    private final IncrementalHandler incrementalHandler;
 
-    @Requirement( role = IndexUpdateSideEffect.class )
-    private List<IndexUpdateSideEffect> sideEffects;
+    private final List<IndexUpdateSideEffect> sideEffects;
 
+    @Inject
     public DefaultIndexUpdater( final IncrementalHandler handler, final List<IndexUpdateSideEffect> mySideeffects )
     {
         incrementalHandler = handler;
         sideEffects = mySideeffects;
-    }
-
-    public DefaultIndexUpdater()
-    {
-
     }
 
     public IndexUpdateResult fetchAndUpdateIndex( final IndexUpdateRequest updateRequest )
@@ -175,7 +171,7 @@ public class DefaultIndexUpdater
     }
 
     private Date loadIndexDirectory( final IndexUpdateRequest updateRequest, final ResourceFetcher fetcher,
-                                     final boolean merge, final String remoteIndexFile )
+        final boolean merge, final String remoteIndexFile )
         throws IOException
     {
         File indexDir = File.createTempFile( remoteIndexFile, ".dir" );
@@ -195,13 +191,13 @@ public class DefaultIndexUpdater
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
                 timestamp = unpackIndexData( is, directory, //
-                    updateRequest.getIndexingContext() );
+                                             updateRequest.getIndexingContext() );
             }
             else
             {
                 // legacy transfer format
                 timestamp = unpackIndexArchive( is, directory, //
-                    updateRequest.getIndexingContext() );
+                                                updateRequest.getIndexingContext() );
             }
 
             if ( updateRequest.getDocumentFilter() != null )
@@ -250,13 +246,13 @@ public class DefaultIndexUpdater
 
     /**
      * Unpack legacy index archive into a specified Lucene <code>Directory</code>
-     * 
-     * @param is a <code>ZipInputStream</code> with index data
+     *
+     * @param is        a <code>ZipInputStream</code> with index data
      * @param directory Lucene <code>Directory</code> to unpack index data to
      * @return {@link Date} of the index update or null if it can't be read
      */
     public static Date unpackIndexArchive( final InputStream is, final Directory directory,
-                                           final IndexingContext context )
+        final IndexingContext context )
         throws IOException
     {
         File indexArchive = File.createTempFile( "nexus-index", "" );
@@ -327,7 +323,7 @@ public class DefaultIndexUpdater
     }
 
     private static void copyUpdatedDocuments( final Directory sourcedir, final Directory targetdir,
-                                              final IndexingContext context )
+        final IndexingContext context )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
         IndexWriter w = null;
@@ -493,9 +489,9 @@ public class DefaultIndexUpdater
 
     /**
      * Unpack index data using specified Lucene Index writer
-     * 
-     * @param is an input stream to unpack index data from
-     * @param w a writer to save index data
+     *
+     * @param is  an input stream to unpack index data from
+     * @param w   a writer to save index data
      * @param ics a collection of index creators for updating unpacked documents.
      */
     public static Date unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
@@ -522,6 +518,7 @@ public class DefaultIndexUpdater
     public static class FileFetcher
         implements ResourceFetcher
     {
+
         private final File basedir;
 
         public FileFetcher( File basedir )
@@ -563,6 +560,7 @@ public class DefaultIndexUpdater
 
     private abstract class IndexAdaptor
     {
+
         protected final File dir;
 
         protected Properties properties;
@@ -602,6 +600,7 @@ public class DefaultIndexUpdater
     private class LuceneIndexAdaptor
         extends IndexAdaptor
     {
+
         private final IndexUpdateRequest updateRequest;
 
         public LuceneIndexAdaptor( IndexUpdateRequest updateRequest )
@@ -655,6 +654,7 @@ public class DefaultIndexUpdater
     private class LocalCacheIndexAdaptor
         extends IndexAdaptor
     {
+
         private static final String CHUNKS_FILENAME = "chunks.lst";
 
         private static final String CHUNKS_FILE_ENCODING = "UTF-8";
@@ -786,6 +786,7 @@ public class DefaultIndexUpdater
     abstract static class LocalIndexCacheFetcher
         extends FileFetcher
     {
+
         public LocalIndexCacheFetcher( File basedir )
         {
             super( basedir );
@@ -796,7 +797,7 @@ public class DefaultIndexUpdater
     }
 
     private Date fetchAndUpdateIndex( final IndexUpdateRequest updateRequest, ResourceFetcher source,
-                                      IndexAdaptor target )
+        IndexAdaptor target )
         throws IOException
     {
         if ( !updateRequest.isForceFullUpdate() )
@@ -881,7 +882,7 @@ public class DefaultIndexUpdater
             catch ( IOException ex2 )
             {
                 getLogger().error( "Fallback to *.zip also failed: " + ex2 ); // do not bother with stack trace
-                
+
                 throw ex; // original exception more likely to be interesting
             }
         }

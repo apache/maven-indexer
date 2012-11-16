@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
@@ -39,8 +41,6 @@ import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiReader;
 import org.apache.maven.index.context.NexusIndexMultiSearcher;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default search engine implementation
@@ -48,9 +48,10 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Eugene Kuleshov
  * @author Tamas Cservenak
  */
-@Component( role = SearchEngine.class )
+@Singleton
+@Named
 public class DefaultSearchEngine
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements SearchEngine
 {
     @Deprecated

@@ -21,26 +21,35 @@ package org.apache.maven.index.archetype;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.apache.maven.archetype.source.ArchetypeDataSource;
+import org.apache.maven.index.Indexer;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
 
 /**
  * Nexus Archetype Data Source.
- * 
+ *
  * @author Eugene Kuleshov
  * @deprecated Extend {@link AbstractArchetypeDataSource} instead, and make it suit your case.
  */
 @Deprecated
-@Component( role = ArchetypeDataSource.class, hint = "nexus" )
+@Singleton
+@Named( "nexus" )
 public class NexusArchetypeDataSource
     extends AbstractArchetypeDataSource
 {
-    @Requirement
-    private NexusIndexer nexusIndexer;
+
+    private final NexusIndexer nexusIndexer;
+
+    @Inject
+    public NexusArchetypeDataSource( final Indexer indexer, final NexusIndexer nexusIndexer )
+    {
+        super( indexer );
+        this.nexusIndexer = nexusIndexer;
+    }
 
     @Override
     protected List<IndexingContext> getIndexingContexts()

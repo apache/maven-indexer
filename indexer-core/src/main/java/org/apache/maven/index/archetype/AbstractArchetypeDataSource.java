@@ -30,21 +30,25 @@ import org.apache.maven.archetype.catalog.ArchetypeCatalog;
 import org.apache.maven.archetype.source.ArchetypeDataSource;
 import org.apache.maven.archetype.source.ArchetypeDataSourceException;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 public abstract class AbstractArchetypeDataSource
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements ArchetypeDataSource
 {
-    @Requirement
-    private Indexer indexer;
+
+    private final Indexer indexer;
+
+    protected AbstractArchetypeDataSource( final Indexer indexer )
+    {
+        this.indexer = indexer;
+    }
 
     public ArchetypeCatalog getArchetypeCatalog( final Properties properties )
         throws ArchetypeDataSourceException
@@ -53,7 +57,8 @@ public abstract class AbstractArchetypeDataSource
         try
         {
             final Map<String, String> repositories = getRepositoryMap();
-            final Query pq = indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
+            final Query pq =
+                indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
             final FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
             searchRequest.setContexts( getIndexingContexts() );
             final FlatSearchResponse searchResponse = indexer.searchFlat( searchRequest );

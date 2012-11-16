@@ -72,7 +72,9 @@ under the License.
     <distributionSiteUrl>scp://people.apache.org/www/maven.apache.org/maven-indexer</distributionSiteUrl>
     <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
 
-    <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
+    <sisu-inject.version>2.3.1</sisu-inject.version>
+    <sisu-guice.version>3.1.2</sisu-guice.version>
+
     <lucene.version>3.6.1</lucene.version>
     <maven.version>3.0.4</maven.version>
     <aether.version>1.13.1</aether.version>
@@ -103,6 +105,20 @@ under the License.
         <scope>compile</scope>
       </dependency>
 
+      <!-- Logging -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.2</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.2</version>
+        <scope>test</scope>
+      </dependency>
+
       <!-- ZipFacade -->
       <dependency>
         <groupId>de.schlichtherle.truezip</groupId>
@@ -122,11 +138,25 @@ under the License.
       </dependency>
 
       <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>1</version>
+        <scope>compile</scope>
+      </dependency>
+      <!-- Is compile for only one class: WagonHelper -->
+      <!-- Consider moving it out, as these should be provided -->
+      <dependency>
+        <groupId>org.sonatype.sisu</groupId>
+        <artifactId>sisu-inject-bean</artifactId>
+        <version>${sisu-inject.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-inject-plexus</artifactId>
-        <version>${sisu-inject-plexus.version}</version>
-        <scope>provided</scope>
-      </dependency>
+        <version>${sisu-inject.version}</version>
+        <scope>compile</scope>
+    </dependency>
 
       <!-- Test -->
       <dependency>
@@ -165,19 +195,20 @@ under the License.
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-metadata</artifactId>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
+        <version>1.1</version>
         <executions>
           <execution>
             <id>process-classes</id>
             <goals>
-              <goal>generate-metadata</goal>
+              <goal>main-index</goal>
             </goals>
           </execution>
           <execution>
             <id>process-test-classes</id>
             <goals>
-              <goal>generate-test-metadata</goal>
+              <goal>test-index</goal>
             </goals>
           </execution>
         </executions>

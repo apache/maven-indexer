@@ -24,15 +24,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
-import org.codehaus.plexus.component.annotations.Component;
 
 /**
  * A Maven Archetype index creator used to detect and correct the artifact packaging to "maven-archetype" if the
@@ -42,7 +42,8 @@ import org.codehaus.plexus.component.annotations.Component;
  * 
  * @author cstamas
  */
-@Component( role = IndexCreator.class, hint = MavenArchetypeArtifactInfoIndexCreator.ID )
+@Singleton
+@Named( MavenArchetypeArtifactInfoIndexCreator.ID )
 public class MavenArchetypeArtifactInfoIndexCreator
     extends AbstractIndexCreator
 {

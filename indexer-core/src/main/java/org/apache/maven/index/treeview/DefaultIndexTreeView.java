@@ -24,11 +24,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.ComponentSupport;
 import org.apache.maven.index.Field;
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.IteratorSearchRequest;
@@ -36,18 +40,21 @@ import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
-@Component( role = IndexTreeView.class )
+@Singleton
+@Named
 public class DefaultIndexTreeView
-    extends AbstractLogEnabled
+    extends ComponentSupport
     implements IndexTreeView
 {
-    @Requirement
-    private Indexer indexer;
+    private final Indexer indexer;
+
+    @Inject
+    public DefaultIndexTreeView( final Indexer indexer )
+    {
+        this.indexer = indexer;
+    }
 
     protected Indexer getIndexer()
     {
@@ -123,7 +130,7 @@ public class DefaultIndexTreeView
 
     /**
      * @param root
-     * @param factory
+     * @param request
      * @param allGroups
      * @throws IOException
      */
