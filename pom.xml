@@ -78,7 +78,7 @@ under the License.
     <aether.version>1.13.1</aether.version>
     <archetype.version>2.2</archetype.version>
     <wagon.version>2.2</wagon.version>
-    <truezip.version>7.0-rc1</truezip.version>
+    <truezip.version>7.6.6</truezip.version>
   </properties>
 
   <distributionManagement>
@@ -102,16 +102,55 @@ under the License.
         <version>3.0.5</version>
         <scope>compile</scope>
       </dependency>
+
+      <!-- ZipFacade -->
+      <dependency>
+        <groupId>de.schlichtherle.truezip</groupId>
+        <artifactId>truezip-file</artifactId>
+        <version>${truezip.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.schlichtherle.truezip</groupId>
+        <artifactId>truezip-driver-zip</artifactId>
+        <version>${truezip.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-swing</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
       <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-inject-plexus</artifactId>
         <version>${sisu-inject-plexus.version}</version>
         <scope>provided</scope>
       </dependency>
+
+      <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.10</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.jmock</groupId>
+        <artifactId>jmock</artifactId>
+        <version>2.5.1</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty</artifactId>
+        <version>6.1.19</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http-lightweight</artifactId>
+        <version>${wagon.version}</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

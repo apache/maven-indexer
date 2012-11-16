@@ -156,17 +156,15 @@ under the License.
       </exclusions>
     </dependency>
 
-    <!-- ZipFacade -->
+    <!-- ZipFacade (as optional, who wants to use it should include TrueZip) -->
     <dependency>
       <groupId>de.schlichtherle.truezip</groupId>
       <artifactId>truezip-file</artifactId>
-      <version>${truezip.version}</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>de.schlichtherle.truezip</groupId>
       <artifactId>truezip-driver-zip</artifactId>
-      <version>${truezip.version}</version>
       <optional>true</optional>
     </dependency>
 
@@ -180,18 +178,15 @@ under the License.
       <groupId>org.jmock</groupId>
       <artifactId>jmock</artifactId>
       <scope>test</scope>
-      <version>2.5.1</version>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1.19</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
       <artifactId>wagon-http-lightweight</artifactId>
-      <version>${wagon.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
