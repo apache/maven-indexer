@@ -40,7 +40,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * 
  * @author Eugene Kuleshov
  */
-class DefaultScannerListener
+public class DefaultScannerListener
     extends AbstractLogEnabled
     implements ArtifactScanningListener
 {
@@ -64,7 +64,7 @@ class DefaultScannerListener
 
     private int count = 0;
 
-    DefaultScannerListener( IndexingContext context, //
+    public DefaultScannerListener( IndexingContext context, //
                             IndexerEngine indexerEngine, boolean update, //
                             ArtifactScanningListener listener )
     {
