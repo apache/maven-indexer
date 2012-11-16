@@ -21,6 +21,7 @@ package org.apache.maven.index.creator;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
@@ -41,7 +42,7 @@ import java.util.List;
  * @author Olivier Lamy
  */
 public class OsgiArtifactIndexCreatorTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 

@@ -21,6 +21,7 @@ package org.apache.maven.index.creator;
 
 import java.io.File;
 
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
@@ -30,7 +31,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @author Alin Dreghiciu
  */
 public class JarFileContentsIndexCreatorTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 

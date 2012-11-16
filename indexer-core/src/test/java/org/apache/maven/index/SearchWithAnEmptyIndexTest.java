@@ -38,7 +38,7 @@ import java.util.List;
  * @author Olivier Lamy
  */
 public class SearchWithAnEmptyIndexTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected List<IndexCreator> indexCreators;
 

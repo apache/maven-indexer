@@ -28,11 +28,12 @@ import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 
 public class NexusAnalyzerTest
-    extends TestCase
+    extends AbstractTestSupport
 {
     protected NexusAnalyzer nexusAnalyzer;
 

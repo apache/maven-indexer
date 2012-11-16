@@ -34,9 +34,14 @@ import org.apache.maven.index.updater.fixtures.ServerTestFixture;
 import org.apache.maven.index.updater.fixtures.TransferListenerFixture;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.events.TransferEvent;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.codehaus.plexus.configuration.DefaultPlexusConfiguration;
+import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.util.FileUtils;
 
 public class DefaultIndexUpdaterEmbeddingIT
@@ -51,6 +56,45 @@ public class DefaultIndexUpdaterEmbeddingIT
     private IndexUpdater updater;
 
     private WagonHelper wagonHelper;
+
+    @Override
+    public void setUp()
+        throws Exception
+    {
+        // FIXME: Try to detect the port from the system environment.
+        int port = -1;
+        String portStr = System.getProperty( "index-server" );
+        if ( portStr != null )
+        {
+            port = Integer.parseInt( portStr );
+        }
+
+        if ( port < 1024 )
+        {
+            System.out.println( "Using default port: 8080" );
+            port = 8080;
+        }
+
+        baseUrl = "http://127.0.0.1:" + port + "/";
+
+        server = new ServerTestFixture( port );
+        final DefaultContainerConfiguration configuration = new DefaultContainerConfiguration();
+        configuration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+        container = new DefaultPlexusContainer(configuration);
+
+        updater = container.lookup( IndexUpdater.class, "default" );
+
+        wagonHelper = new WagonHelper( container );
+    }
+
+    @Override
+    public void tearDown()
+        throws Exception
+    {
+        container.release( updater );
+        container.dispose();
+        server.stop();
+    }
 
     public void testBasicIndexRetrieval()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
@@ -424,42 +468,5 @@ public class DefaultIndexUpdaterEmbeddingIT
 
         return new DefaultIndexingContext( repositoryId, repositoryId, basedir, basedir, baseUrl, baseUrl, creators,
             true );
-    }
-
-    @Override
-    public void setUp()
-        throws Exception
-    {
-        // FIXME: Try to detect the port from the system environment.
-        int port = -1;
-        String portStr = System.getProperty( "index-server" );
-        if ( portStr != null )
-        {
-            port = Integer.parseInt( portStr );
-        }
-
-        if ( port < 1024 )
-        {
-            System.out.println( "Using default port: 8080" );
-            port = 8080;
-        }
-
-        baseUrl = "http://127.0.0.1:" + port + "/";
-
-        server = new ServerTestFixture( port );
-        container = new DefaultPlexusContainer();
-
-        updater = container.lookup( IndexUpdater.class, "default" );
-
-        wagonHelper = new WagonHelper( container );
-    }
-
-    @Override
-    public void tearDown()
-        throws Exception
-    {
-        container.release( updater );
-        container.dispose();
-        server.stop();
     }
 }

@@ -9,7 +9,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0    
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,32 +19,17 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusTestCase;
 
-/**
- * Simple support for components.
- *
- * @author cstamas
- * @since 5.1
- */
-public abstract class ComponentSupport
+public class AbstractTestSupport
+    extends PlexusTestCase
 {
-
-    private final Logger logger;
-
-    protected ComponentSupport()
+    @Override
+    protected void customizeContainerConfiguration( final ContainerConfiguration containerConfiguration )
     {
-        this.logger = createLogger();
-    }
-
-    protected Logger createLogger()
-    {
-        return LoggerFactory.getLogger( getClass() );
-    }
-
-    protected Logger getLogger()
-    {
-        return logger;
+        super.customizeContainerConfiguration( containerConfiguration );
+        containerConfiguration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
     }
 }

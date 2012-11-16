@@ -32,7 +32,10 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.updater.WagonHelper.WagonFetcher;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -102,7 +105,9 @@ public class FullBootProofOfConcept
 
         basedir.mkdirs();
 
-        PlexusContainer container = new DefaultPlexusContainer();
+        final DefaultContainerConfiguration configuration = new DefaultContainerConfiguration();
+        configuration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+        PlexusContainer container = new DefaultPlexusContainer(configuration);
 
         IndexCreator min = container.lookup( IndexCreator.class, "min" );
         IndexCreator jar = container.lookup( IndexCreator.class, "jarContent" );

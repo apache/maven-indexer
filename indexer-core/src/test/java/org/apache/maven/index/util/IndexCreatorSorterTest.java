@@ -23,12 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.context.IndexCreator;
 import org.codehaus.plexus.PlexusTestCase;
 import org.junit.Assert;
 
 public class IndexCreatorSorterTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     public void testLookupList()
         throws Exception

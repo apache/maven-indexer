@@ -37,7 +37,7 @@ import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 public class AbstractIndexCreatorHelper
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     public List<IndexCreator> DEFAULT_CREATORS;
 
