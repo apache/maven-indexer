@@ -110,6 +110,13 @@ public class DefaultIteratorResultSet
 
         this.matchHighlightRequests = request.getMatchHighlightRequests();
 
+        List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<MatchHighlightRequest>();
+        for ( MatchHighlightRequest hr : request.getMatchHighlightRequests() )
+        {
+            Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
+            matchHighlightRequests.add( new MatchHighlightRequest( hr.getField(), rewrittenQuery, hr.getHighlightMode() ) );
+        }
+
         this.hits = hits;
 
         this.from = request.getStart();
@@ -358,8 +365,6 @@ public class DefaultIteratorResultSet
             text = text.replace( '/', '.' ).replaceAll( "^\\.", "" ).replaceAll( "\n\\.", "\n" );
         }
 
-        Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
-
         CachingTokenFilter tokenStream =
             new CachingTokenFilter( context.getAnalyzer().tokenStream( field.getKey(), new StringReader( text ) ) );
 
@@ -376,7 +381,7 @@ public class DefaultIteratorResultSet
                 + "\" is not supported!" );
         }
 
-        return getBestFragments( rewrittenQuery, formatter, tokenStream, text, 3 );
+        return getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
     }
 
     protected final List<String> getBestFragments( Query query, Formatter formatter, TokenStream tokenStream,
