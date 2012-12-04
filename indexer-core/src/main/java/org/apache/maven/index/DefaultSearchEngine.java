@@ -275,10 +275,38 @@ public class DefaultSearchEngine
 
         NexusIndexMultiSearcher indexSearcher = new NexusIndexMultiSearcher( multiReader );
 
-        TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
+        try
+        {
+            TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
 
-        return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(), new DefaultIteratorResultSet(
-            request, indexSearcher, contexts, hits.topDocs() ) );
+            return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(),
+                                               new DefaultIteratorResultSet( request, indexSearcher, contexts,
+                                                                             hits.topDocs() ) );
+        }
+        catch ( IOException e )
+        {
+            try
+            {
+                indexSearcher.release();
+            }
+            catch ( Exception secondary )
+            {
+                // do not mask original exception
+            }
+            throw e;
+        }
+        catch ( RuntimeException e )
+        {
+            try
+            {
+                indexSearcher.release();
+            }
+            catch ( Exception secondary )
+            {
+                // do not mask original exception
+            }
+            throw e;
+        }
     }
 
     // ==
