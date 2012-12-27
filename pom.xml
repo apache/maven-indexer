@@ -73,7 +73,7 @@ under the License.
     <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
 
     <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
-    <lucene.version>3.6.1</lucene.version>
+    <lucene.version>3.6.2</lucene.version>
     <maven.version>3.0.4</maven.version>
     <aether.version>1.13.1</aether.version>
     <archetype.version>2.2</archetype.version>
