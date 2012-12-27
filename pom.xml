@@ -70,7 +70,7 @@ under the License.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
 
-    <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
+    <siteUrl>http://maven.apache.org/maven-indexer-archives/maven-indexer-${project.version}</siteUrl>
 
     <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
     <lucene.version>3.6.2</lucene.version>
@@ -353,7 +353,9 @@ under the License.
   <profiles>
     <profile>
       <id>site-release</id>
+
       <properties>
+        <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
         <maven.indexer.siteFilePath>${maven.site.cache}/maven-indexer</maven.indexer.siteFilePath>
         <maven.indexer.siteUrlDeployment>file://${maven.indexer.siteFilePath}</maven.indexer.siteUrlDeployment>
         <maven.indexer.scmPubCheckoutDirectory>${maven.site.cache}/maven-indexer-site-content</maven.indexer.scmPubCheckoutDirectory>
