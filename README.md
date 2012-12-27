@@ -21,4 +21,4 @@ Users: users@maven.apache.org
 (more at http://maven.apache.org/mail-lists.html)
 
 CI:
-https://builds.apache.org/hudson/job/maven-indexer/
+https://builds.apache.org/job/maven-indexer/

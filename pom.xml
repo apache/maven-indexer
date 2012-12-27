@@ -69,7 +69,7 @@ under the License.
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
-    <distributionSiteUrl>scp://people.apache.org/www/maven.apache.org/maven-indexer</distributionSiteUrl>
+
     <siteUrl>http://maven.apache.org/maven-indexer/</siteUrl>
 
     <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
@@ -79,12 +79,19 @@ under the License.
     <archetype.version>2.2</archetype.version>
     <wagon.version>2.2</wagon.version>
     <truezip.version>7.6.6</truezip.version>
+
+    <maven.site.cache>${user.home}/maven-sites</maven.site.cache>
+    <maven.indexer.siteFilePath>${maven.site.cache}/maven-indexer-${project.version}</maven.indexer.siteFilePath>
+    <maven.indexer.siteUrlDeployment>file://${maven.indexer.siteFilePath}</maven.indexer.siteUrlDeployment>
+    <maven.indexer.scmPubCheckoutDirectory>${maven.site.cache}/maven-indexer-site-content-${project.version}</maven.indexer.scmPubCheckoutDirectory>
+    <maven.indexer.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/maven/content/maven-indexer-archives/maven-indexer-${project.version}</maven.indexer.scmPubUrl>
+
   </properties>
 
   <distributionManagement>
     <site>
       <id>apache.website</id>
-      <url>${distributionSiteUrl}</url>
+      <url>${maven.indexer.siteUrlDeployment}</url>
     </site>
   </distributionManagement>
 
@@ -271,6 +278,23 @@ under the License.
           <artifactId>maven-surefire-plugin</artifactId>
           <version>2.12</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.2</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-publish-plugin</artifactId>
+          <version>1.0-beta-2</version>
+          <configuration>
+            <checkoutDirectory>${maven.indexer.scmPubCheckoutDirectory}</checkoutDirectory>
+            <pubScmUrl>scm:svn:${maven.indexer.scmPubUrl}</pubScmUrl>
+            <checkinComment>Apache Maven Indexer site deployment</checkinComment>
+            <content>${maven.indexer.siteFilePath}</content>
+            <tryUpdate>true</tryUpdate>
+          </configuration>
+        </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -325,4 +349,16 @@ under the License.
       </plugin>
     </plugins>
   </reporting>
+
+  <profiles>
+    <profile>
+      <id>site-release</id>
+      <properties>
+        <maven.indexer.siteFilePath>${maven.site.cache}/maven-indexer</maven.indexer.siteFilePath>
+        <maven.indexer.siteUrlDeployment>file://${maven.indexer.siteFilePath}</maven.indexer.siteUrlDeployment>
+        <maven.indexer.scmPubCheckoutDirectory>${maven.site.cache}/maven-indexer-site-content</maven.indexer.scmPubCheckoutDirectory>
+        <maven.indexer.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/maven/content/maven-indexer</maven.indexer.scmPubUrl>
+      </properties>
+    </profile>
+  </profiles>
 </project>
