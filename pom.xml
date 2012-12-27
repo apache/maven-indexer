@@ -340,7 +340,6 @@ under the License.
         </configuration>
         <reportSets>
           <reportSet>
-            <id>aggregate</id>
             <inherited>false</inherited>
             <reports>
               <report>aggregate</report>
