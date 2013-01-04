@@ -430,24 +430,11 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void setUp()
         throws Exception
     {
-        // FIXME: Try to detect the port from the system environment.
-        int port = -1;
-        String portStr = System.getProperty( "index-server" );
-        if ( portStr != null )
-        {
-            port = Integer.parseInt( portStr );
-        }
 
-        if ( port < 1024 )
-        {
-            System.out.println( "Using default port: 8080" );
-            port = 8080;
-        }
-
-        baseUrl = "http://127.0.0.1:" + port + "/";
-
-        server = new ServerTestFixture( port );
+        server = new ServerTestFixture( 0 );
         container = new DefaultPlexusContainer();
+
+        baseUrl = "http://127.0.0.1:" + server.getPort() + "/";
 
         updater = container.lookup( IndexUpdater.class, "default" );
 

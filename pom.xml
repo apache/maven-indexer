@@ -77,7 +77,7 @@ under the License.
     <maven.version>3.0.4</maven.version>
     <aether.version>1.13.1</aether.version>
     <archetype.version>2.2</archetype.version>
-    <wagon.version>2.2</wagon.version>
+    <wagon.version>2.3</wagon.version>
     <truezip.version>7.6.6</truezip.version>
 
     <maven.site.cache>${user.home}/maven-sites</maven.site.cache>
@@ -156,7 +156,7 @@ under the License.
       </dependency>
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-lightweight</artifactId>
+        <artifactId>wagon-http</artifactId>
         <version>${wagon.version}</version>
         <scope>test</scope>
       </dependency>
@@ -300,25 +300,6 @@ under the License.
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
           <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <versionRange>[1.7,)</versionRange>
-                    <goals>
-                      <goal>allocate-ports</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore />
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>

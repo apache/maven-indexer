@@ -65,12 +65,12 @@ public class ServerTestFixture
         Connector connector = new SelectChannelConnector();
         connector.setPort( port );
 
-        server.setConnectors( new Connector[] { connector } );
+        server.setConnectors( new Connector[]{ connector } );
 
         Constraint constraint = new Constraint();
         constraint.setName( Constraint.__BASIC_AUTH );
 
-        constraint.setRoles( new String[] { "allowed" } );
+        constraint.setRoles( new String[]{ "allowed" } );
         constraint.setAuthenticate( true );
 
         ConstraintMapping cm = new ConstraintMapping();
@@ -86,7 +86,7 @@ public class ServerTestFixture
         realm.addUserToRole( "longuser", "allowed" );
 
         sh.setUserRealm( realm );
-        sh.setConstraintMappings( new ConstraintMapping[] { cm } );
+        sh.setConstraintMappings( new ConstraintMapping[]{ cm } );
 
         WebAppContext ctx = new WebAppContext();
         ctx.setContextPath( "/" );
@@ -102,7 +102,7 @@ public class ServerTestFixture
         ( (AbstractSessionManager) sessionHandler.getSessionManager() ).setUsingCookies( false );
 
         HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers( new Handler[] { ctx, new DefaultHandler() } );
+        handlers.setHandlers( new Handler[]{ ctx, new DefaultHandler() } );
 
         server.setHandler( handlers );
         server.start();
@@ -147,7 +147,7 @@ public class ServerTestFixture
             catch ( URISyntaxException e )
             {
                 resp.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH );
+                                "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH );
                 return;
             }
 
@@ -190,6 +190,11 @@ public class ServerTestFixture
                 }
             }
         }
+    }
+
+    public int getPort()
+    {
+        return server.getConnectors()[0].getLocalPort();
     }
 
     public static final class InfiniteRedirectionServlet

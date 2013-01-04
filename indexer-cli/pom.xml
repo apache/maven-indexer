@@ -104,7 +104,7 @@ under the License.
     </dependency>
     <dependency>
       <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http-lightweight</artifactId>
+      <artifactId>wagon-http</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -159,29 +159,10 @@ under the License.
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</indexerJar>
-                <index-server>${index-server}</index-server>
               </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>reserve-network-port</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <portNames>
-            <portName>index-server</portName>
-          </portNames>
-        </configuration>
       </plugin>
     </plugins>
     <pluginManagement>
