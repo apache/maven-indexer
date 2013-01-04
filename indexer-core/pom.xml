@@ -214,23 +214,21 @@ under the License.
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>port-allocator-maven-plugin</artifactId>
-        <version>1.1</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.7</version>
         <executions>
           <execution>
             <phase>validate</phase>
             <goals>
-              <goal>allocate-ports</goal>
+              <goal>reserve-network-port</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
-          <ports>
-            <port>
-              <name>index-server</name>
-            </port>
-          </ports>
+          <portNames>
+            <portName>index-server</portName>
+          </portNames>
         </configuration>
       </plugin>
     </plugins>

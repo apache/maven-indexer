@@ -305,9 +305,9 @@ under the License.
               <pluginExecutions>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>port-allocator-maven-plugin</artifactId>
-                    <versionRange>[1.1,)</versionRange>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <versionRange>[1.7,)</versionRange>
                     <goals>
                       <goal>allocate-ports</goal>
                     </goals>
