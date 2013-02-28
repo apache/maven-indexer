@@ -512,59 +512,20 @@ public class DefaultIndexingContext
     public void commit()
         throws IOException
     {
-        try
-        {
-            getIndexWriter().commit();
-        }
-        catch ( CorruptIndexException e )
-        {
-            close( false );
-            throw e;
-        }
-        catch ( IOException e )
-        {
-            close( false );
-            throw e;
-        }
+        getIndexWriter().commit();
     }
 
     public void rollback()
         throws IOException
     {
-        try
-        {
-            getIndexWriter().rollback();
-        }
-        catch ( CorruptIndexException e )
-        {
-            close( false );
-            throw e;
-        }
-        catch ( IOException e )
-        {
-            close( false );
-            throw e;
-        }
+        getIndexWriter().rollback();
     }
 
     public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
-        try
-        {
-            getIndexWriter().optimize();
-            commit();
-        }
-        catch ( CorruptIndexException e )
-        {
-            close( false );
-            throw e;
-        }
-        catch ( IOException e )
-        {
-            close( false );
-            throw e;
-        }
+        getIndexWriter().optimize();
+        commit();
     }
 
     public synchronized void close( boolean deleteFiles )
