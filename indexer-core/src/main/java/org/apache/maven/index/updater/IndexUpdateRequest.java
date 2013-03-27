@@ -49,6 +49,8 @@ public class IndexUpdateRequest
 
     private boolean cacheOnly;
 
+    private FSDirectoryFactory directoryFactory;
+
     public IndexUpdateRequest( final IndexingContext context, final ResourceFetcher resourceFetcher )
     {
         assert context != null : "Context to be updated cannot be null!";
@@ -127,5 +129,15 @@ public class IndexUpdateRequest
     public boolean isCacheOnly()
     {
         return cacheOnly;
+    }
+
+    public void setLuceneDirectoryFactory( FSDirectoryFactory factory )
+    {
+        this.directoryFactory = factory;
+    }
+
+    public FSDirectoryFactory getFSDirectoryFactory()
+    {
+        return directoryFactory != null ? directoryFactory : FSDirectoryFactory.DEFAULT;
     }
 }

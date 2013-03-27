@@ -182,7 +182,7 @@ public class DefaultIndexUpdater
         indexDir.delete();
         indexDir.mkdirs();
 
-        FSDirectory directory = FSDirectory.open( indexDir );
+        final Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir );
 
         BufferedInputStream is = null;
 
