@@ -131,7 +131,7 @@ public class IndexUpdateRequest
         return cacheOnly;
     }
 
-    public void setLuceneDirectoryFactory( FSDirectoryFactory factory )
+    public void setFSDirectoryFactory( FSDirectoryFactory factory )
     {
         this.directoryFactory = factory;
     }
