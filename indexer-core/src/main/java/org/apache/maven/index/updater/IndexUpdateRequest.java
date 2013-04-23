@@ -40,6 +40,8 @@ public class IndexUpdateRequest
     private DocumentFilter documentFilter;
 
     private boolean forceFullUpdate;
+    
+    private boolean incrementalOnly;
 
     private File localIndexCacheDir;
 
@@ -59,6 +61,7 @@ public class IndexUpdateRequest
         this.context = context;
         this.resourceFetcher = resourceFetcher;
         this.forceFullUpdate = false;
+        this.incrementalOnly = false;
     }
 
     public IndexingContext getIndexingContext()
@@ -89,6 +92,16 @@ public class IndexUpdateRequest
     public boolean isForceFullUpdate()
     {
         return forceFullUpdate;
+    }
+    
+    public boolean isIncrementalOnly()
+    {
+        return incrementalOnly;
+    }
+
+    public void setIncrementalOnly(boolean incrementalOnly)
+    {
+        this.incrementalOnly = incrementalOnly;
     }
 
     public File getLocalIndexCacheDir()

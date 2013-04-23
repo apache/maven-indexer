@@ -26,6 +26,15 @@ public class IndexUpdateResult
     private Date timestamp;
 
     private boolean fullUpdate;
+    
+    private boolean successful;
+    
+    public IndexUpdateResult()
+    {
+        this.timestamp = null;
+        this.fullUpdate = false;
+        this.successful = false;
+    }
 
     public Date getTimestamp()
     {
@@ -45,5 +54,15 @@ public class IndexUpdateResult
     public boolean isFullUpdate()
     {
         return this.fullUpdate;
+    }
+
+    public boolean isSuccessful()
+    {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful)
+    {
+        this.successful = successful;
     }
 }

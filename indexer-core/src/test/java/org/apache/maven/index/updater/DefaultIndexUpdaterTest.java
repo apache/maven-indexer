@@ -345,9 +345,10 @@ public class DefaultIndexUpdaterTest
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     public void testFullIndexUpdate()
@@ -416,9 +417,10 @@ public class DefaultIndexUpdaterTest
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     public void testIncrementalIndexUpdate()
@@ -497,10 +499,12 @@ public class DefaultIndexUpdaterTest
         // tempContext.updateTimestamp( true, contextTimestamp );
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
+        updateRequest.setIncrementalOnly(true);
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     public void testIncrementalIndexUpdateNoCounter()
@@ -576,9 +580,74 @@ public class DefaultIndexUpdaterTest
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
+    }
+    
+    public void testIncrementalOnlyIndexUpdateNoCounter()
+        throws Exception
+    {
+        Mockery mockery = new Mockery();
+
+        final String indexUrl = repositoryUrl + ".index";
+        final Date contextTimestamp = df.parse( "20081128000000.000 -0600" );
+
+        final ResourceFetcher mockFetcher = mockery.mock( ResourceFetcher.class );
+
+        final IndexingContext tempContext = mockery.mock( IndexingContext.class );
+
+        mockery.checking( new Expectations()
+        {
+            {
+                allowing( tempContext ).getIndexDirectoryFile();
+                will( new ReturnValueAction( testBasedir ) );
+
+                allowing( tempContext ).getTimestamp();
+                will( returnValue( contextTimestamp ) );
+
+                allowing( tempContext ).getId();
+                will( returnValue( repositoryId ) );
+
+                allowing( tempContext ).getIndexUpdateUrl();
+                will( returnValue( indexUrl ) );
+
+                allowing( tempContext ).getIndexCreators();
+                will( returnValue( DEFAULT_CREATORS ) );
+
+                oneOf( mockFetcher ).connect( repositoryId, indexUrl );
+
+                oneOf( mockFetcher ).retrieve( //
+                    with( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) );
+                will( new PropertiesAction()
+                {
+                    @Override
+                    Properties getProperties()
+                    {
+                        Properties properties = new Properties();
+                        properties.setProperty( IndexingContext.INDEX_ID, "central" );
+                        properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600" );
+                        properties.setProperty( IndexingContext.INDEX_CHUNK_COUNTER, "3" );
+                        properties.setProperty( IndexingContext.INDEX_CHAIN_ID, "someid" );
+                        properties.setProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0", "3" );
+                        properties.setProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1", "2" );
+                        properties.setProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2", "1" );
+                        return properties;
+                    }
+                } );
+
+                oneOf( mockFetcher ).disconnect();
+            }
+        } );
+
+        IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
+        updateRequest.setIncrementalOnly(true);
+
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
+
+        mockery.assertIsSatisfied();
+        assertIndexUpdateFailed(updateResult);
     }
 
     public void testIncrementalIndexUpdateNoUpdateNecessary()
@@ -663,9 +732,10 @@ public class DefaultIndexUpdaterTest
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( tempContext, mockFetcher );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     public void testUpdateForceFullUpdate()
@@ -751,9 +821,10 @@ public class DefaultIndexUpdaterTest
 
         updateRequest.setForceFullUpdate( true );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     public void testUpdateForceFullUpdateNoGZ()
@@ -830,9 +901,10 @@ public class DefaultIndexUpdaterTest
 
         updateRequest.setForceFullUpdate( true );
 
-        updater.fetchAndUpdateIndex( updateRequest );
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex( updateRequest );
 
         mockery.assertIsSatisfied();
+        assertIndexUpdateSucceeded(updateResult);
     }
 
     protected InputStream newInputStream( String path )
@@ -897,5 +969,15 @@ public class DefaultIndexUpdaterTest
         {
             return this.file.getParentFile();
         }
+    }
+    
+    private void assertIndexUpdateSucceeded(IndexUpdateResult updateResult)
+    {
+        assertTrue("Index update should have succeeded, but says it failed", updateResult.isSuccessful());
+    }
+    
+    private void assertIndexUpdateFailed(IndexUpdateResult updateResult)
+    {
+        assertFalse("Index update should have failed, but says it succeeded", updateResult.isSuccessful());
     }
 }

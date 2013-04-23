@@ -133,8 +133,10 @@ public class DefaultIndexUpdater
 
                     try
                     {
-                        fetchAndUpdateIndex( updateRequest, fetcher, cache );
-                        cache.commit();
+                        if( fetchAndUpdateIndex( updateRequest, fetcher, cache ).isSuccessful() )
+                        {
+                            cache.commit();
+                        }
                     }
                     finally
                     {
@@ -154,8 +156,12 @@ public class DefaultIndexUpdater
                 if ( !updateRequest.isCacheOnly() )
                 {
                     LuceneIndexAdaptor target = new LuceneIndexAdaptor( updateRequest );
-                    result.setTimestamp( fetchAndUpdateIndex( updateRequest, fetcher, target ) );
-                    target.commit();
+                    result = fetchAndUpdateIndex( updateRequest, fetcher, target );
+                    
+                    if(result.isSuccessful())
+                    {
+                        target.commit();
+                    }
                 }
             }
             finally
@@ -795,10 +801,12 @@ public class DefaultIndexUpdater
             throws IOException;
     }
 
-    private Date fetchAndUpdateIndex( final IndexUpdateRequest updateRequest, ResourceFetcher source,
+    private IndexUpdateResult fetchAndUpdateIndex( final IndexUpdateRequest updateRequest, ResourceFetcher source,
                                       IndexAdaptor target )
         throws IOException
     {
+        IndexUpdateResult result = new IndexUpdateResult();
+        
         if ( !updateRequest.isForceFullUpdate() )
         {
             Properties localProperties = target.getProperties();
@@ -829,7 +837,9 @@ public class DefaultIndexUpdater
                         target.addIndexChunk( source, filename );
                     }
 
-                    return updateTimestamp;
+                    result.setTimestamp(updateTimestamp);
+                    result.setSuccessful(true);
+                    return result;
                 }
             }
             else
@@ -847,7 +857,9 @@ public class DefaultIndexUpdater
                 // checking the timestamp, if the same, nothing to do
                 if ( updateTimestamp != null && localTimestamp != null && !updateTimestamp.after( localTimestamp ) )
                 {
-                    return null; // index is up to date
+                    //Index is up to date
+                    result.setSuccessful(true);
+                    return result;
                 }
             }
         }
@@ -857,34 +869,43 @@ public class DefaultIndexUpdater
             target.setProperties( source );
         }
 
-        try
+        if( !updateRequest.isIncrementalOnly() )
         {
-            Date timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".gz" );
-            if ( source instanceof LocalIndexCacheFetcher )
-            {
-                // local cache has inverse organization compared to remote indexes,
-                // i.e. initial index file and delta chunks to apply on top of it
-                for ( String filename : ( (LocalIndexCacheFetcher) source ).getChunks() )
-                {
-                    target.addIndexChunk( source, filename );
-                }
-            }
-            return timestamp;
-        }
-        catch ( IOException ex )
-        {
-            // try to look for legacy index transfer format
+            Date timestamp = null;
             try
             {
-                return target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".zip" );
+                timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".gz" );
+                if ( source instanceof LocalIndexCacheFetcher )
+                {
+                    // local cache has inverse organization compared to remote indexes,
+                    // i.e. initial index file and delta chunks to apply on top of it
+                    for ( String filename : ( (LocalIndexCacheFetcher) source ).getChunks() )
+                    {
+                        target.addIndexChunk( source, filename );
+                    }
+                }
             }
-            catch ( IOException ex2 )
+            catch ( IOException ex )
             {
-                getLogger().error( "Fallback to *.zip also failed: " + ex2 ); // do not bother with stack trace
-                
-                throw ex; // original exception more likely to be interesting
+                // try to look for legacy index transfer format
+                try
+                {
+                    timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".zip" );
+                }
+                catch ( IOException ex2 )
+                {
+                    getLogger().error( "Fallback to *.zip also failed: " + ex2 ); // do not bother with stack trace
+                    
+                    throw ex; // original exception more likely to be interesting
+                }
             }
+            
+            result.setTimestamp(timestamp);
+            result.setSuccessful(true);
+            result.setFullUpdate(true);
         }
+        
+        return result;
     }
 
     /**
