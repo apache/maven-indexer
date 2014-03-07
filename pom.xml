@@ -1,22 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-Licensed to the Apache Software Foundation (ASF) under one
-or more contributor license agreements.  See the NOTICE file
-distributed with this work for additional information
-regarding copyright ownership.  The ASF licenses this file
-to you under the Apache License, Version 2.0 (the
-"License"); you may not use this file except in compliance
-with the License.  You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an
-"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, either express or implied.  See the License for the
-specific language governing permissions and limitations
-under the License.
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -31,7 +13,7 @@ under the License.
   <version>5.1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Maven :: Indexer</name>
+  <name>Maven-Indexer</name>
   <description>
     Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
     of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
@@ -40,6 +22,15 @@ under the License.
   <url>${siteUrl}</url>
 
   <contributors>
+    <contributor>
+      <name>Thomas Kruse</name>
+      <email>tk@trion.de</email>
+      <organization>trion development GmbH</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </contributor>
     <contributor>
       <name>Eugene Kuleshov</name>
       <email>eugene@sonatype.com</email>
@@ -52,25 +43,21 @@ under the License.
   </contributors>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
+    <connection>scm:git:ssh://git@bitbucket.org:everflux/maven-indexer-fork.git</connection>
+    <developerConnection>scm:git:ssh://git@bitbucket.org:everflux/maven-indexer-fork.git</developerConnection>
+    <url>https://bitbucket.org/everflux/maven-indexer-fork</url>
   </scm>
 
   <issueManagement>
-    <system>jira</system>
-    <url>http://jira.codehaus.org/browse/MINDEXER</url>
+    <system>bitbucket</system>
+    <url>https://bitbucket.org/everflux/maven-indexer-fork/issues</url>
   </issueManagement>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-indexer/</url>
-  </ciManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <surefire.redirectTestOutputToFile>false</surefire.redirectTestOutputToFile>
 
-    <siteUrl>http://maven.apache.org/maven-indexer-archives/maven-indexer-${project.version}</siteUrl>
+    <siteUrl>https://bitbucket.org/everflux/maven-indexer-fork</siteUrl>
 
     <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
     <lucene.version>3.6.2</lucene.version>
