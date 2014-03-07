@@ -600,7 +600,7 @@ public class DefaultIndexingContext
                 Bits liveDocs = MultiFields.getLiveDocs(directoryReader);
                 for ( int i = 0; i < numDocs; i++ )
                 {
-                    if (! liveDocs.get(i) )
+                    if (liveDocs != null && ! liveDocs.get(i) )
                     {
                         continue;
                     }
@@ -706,7 +706,7 @@ public class DefaultIndexingContext
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if (! liveDocs.get(i) )
+                if (liveDocs != null && !liveDocs.get(i) )
                 {
                     continue;
                 }

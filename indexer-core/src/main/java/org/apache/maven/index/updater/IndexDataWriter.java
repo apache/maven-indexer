@@ -155,7 +155,7 @@ public class IndexDataWriter
         {
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( liveDocs.get(i) )
+                if (liveDocs == null || liveDocs.get(i) )
                 {
                     if ( writeDocument( r.document( i ) ) )
                     {
@@ -168,7 +168,7 @@ public class IndexDataWriter
         {
             for ( int i : docIndexes )
             {
-                if ( liveDocs.get(i) )
+                if ( liveDocs == null || liveDocs.get(i) )
                 {
                     if ( writeDocument( r.document( i ) ) )
                     {

@@ -155,7 +155,7 @@ public class DefaultIncrementalHandler
             Bits liveDocs = MultiFields.getLiveDocs(r);
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( liveDocs.get(i) )
+                if (liveDocs == null || liveDocs.get(i) )
                 {
                     Document d = r.document( i );
 

@@ -526,7 +526,7 @@ public abstract class AbstractRepoNexusIndexerTest
         Bits liveDocs = MultiFields.getLiveDocs(reader);
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {
-            if ( liveDocs.get(i) )
+            if (liveDocs == null || liveDocs.get(i) )
             {
                 Document document = reader.document( i );
 

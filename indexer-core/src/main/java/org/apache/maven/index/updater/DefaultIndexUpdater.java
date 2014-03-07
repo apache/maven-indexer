@@ -350,7 +350,7 @@ public class DefaultIndexUpdater
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( liveDocs.get(i) )
+                if (liveDocs == null || liveDocs.get(i) )
                 {
                     w.addDocument( IndexUtils.updateDocument( r.document( i ), context ) );
                 }
@@ -384,7 +384,7 @@ public class DefaultIndexUpdater
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if (! liveDocs.get(i) )
+                if (liveDocs != null && ! liveDocs.get(i) )
                 {
                     continue;
                 }

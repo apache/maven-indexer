@@ -51,7 +51,7 @@ public class Nexus737NexusIndexerTest
 
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {
-            if ( liveDocs.get(i) )
+            if (liveDocs == null || liveDocs.get(i) )
             {
                 Document document = reader.document( i );
 
