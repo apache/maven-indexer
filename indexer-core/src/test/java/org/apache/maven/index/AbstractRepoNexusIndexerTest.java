@@ -29,7 +29,9 @@ import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.search.grouping.GAGrouping;
 
 public abstract class AbstractRepoNexusIndexerTest
@@ -521,9 +523,10 @@ public abstract class AbstractRepoNexusIndexerTest
     {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
 
+        Bits liveDocs = MultiFields.getLiveDocs(reader);
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {
-            if ( !reader.isDeleted( i ) )
+            if ( liveDocs.get(i) )
             {
                 Document document = reader.document( i );
 
