@@ -171,7 +171,7 @@ public class DefaultIndexPacker
         {
             info.setProperty( IndexingContext.INDEX_LEGACY_TIMESTAMP, format( timestamp ) );
 
-            writeIndexArchive( request.getContext(), legacyFile );
+            writeIndexArchive( request.getContext(), legacyFile, request.getMaxIndexChunks() );
 
             if ( request.isCreateChecksumFiles() )
             {
@@ -242,6 +242,12 @@ public class DefaultIndexPacker
     void writeIndexArchive( IndexingContext context, File targetArchive )
         throws IOException
     {
+        writeIndexArchive(context, targetArchive, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    void writeIndexArchive( IndexingContext context, File targetArchive, int maxSegments )
+        throws IOException
+    {
         if ( targetArchive.exists() )
         {
             targetArchive.delete();
@@ -267,6 +273,15 @@ public class DefaultIndexPacker
     public static void packIndexArchive( IndexingContext context, OutputStream os )
         throws IOException
     {
+        packIndexArchive(context, os, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    /**
+     * Pack legacy index archive into a specified output stream
+     */
+    public static void packIndexArchive( IndexingContext context, OutputStream os, int maxSegments )
+        throws IOException
+    {
         File indexArchive = File.createTempFile( "nexus-index", "" );
 
         File indexDir = new File( indexArchive.getAbsoluteFile().getParentFile(), indexArchive.getName() + ".dir" );
@@ -284,7 +299,7 @@ public class DefaultIndexPacker
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try
             {
-                copyLegacyDocuments( indexSearcher.getIndexReader(), fdir, context );
+                copyLegacyDocuments( indexSearcher.getIndexReader(), fdir, context, maxSegments);
             }
             finally
             {
@@ -303,6 +318,12 @@ public class DefaultIndexPacker
     static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
+        copyLegacyDocuments(r, targetdir, context, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context, int maxSegments)
+        throws CorruptIndexException, LockObtainFailedException, IOException
+    {
         IndexWriter w = null;
         Bits liveDocs = MultiFields.getLiveDocs(r);
         try
@@ -317,7 +338,7 @@ public class DefaultIndexPacker
                 }
             }
 
-            //w.optimize();
+            w.forceMerge(maxSegments);
             w.commit();
         }
         finally

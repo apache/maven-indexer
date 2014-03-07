@@ -42,10 +42,12 @@ import org.apache.maven.index.GroupedSearchResponse;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.junit.Ignore;
 
 /**
  * @author Eugene Kuleshov
  */
+@Ignore("Index format too old for Lucene 4")
 public class Index20081108RegressionTest
     extends AbstractRepoNexusIndexerTest
 {

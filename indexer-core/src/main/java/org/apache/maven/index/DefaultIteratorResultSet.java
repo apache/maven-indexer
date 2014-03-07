@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.lucene.analysis.Analyzer;
 
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
@@ -351,7 +352,7 @@ public class DefaultIteratorResultSet
      * @param context
      * @param hr
      * @param field
-     * @param doc
+     * @param text
      * @return
      * @throws IOException
      */
@@ -364,9 +365,12 @@ public class DefaultIteratorResultSet
         {
             text = text.replace( '/', '.' ).replaceAll( "^\\.", "" ).replaceAll( "\n\\.", "\n" );
         }
-
-        CachingTokenFilter tokenStream =
-            new CachingTokenFilter( context.getAnalyzer().tokenStream( field.getKey(), new StringReader( text ) ) );
+        
+        Analyzer analyzer = context.getAnalyzer();
+        TokenStream baseTokenStream = analyzer.tokenStream( field.getKey(), new StringReader( text ) );
+        baseTokenStream.reset();
+        
+        CachingTokenFilter tokenStream = new CachingTokenFilter(baseTokenStream);
 
         Formatter formatter = null;
 
@@ -376,12 +380,19 @@ public class DefaultIteratorResultSet
         }
         else
         {
+            tokenStream.reset();
+            tokenStream.end();
             tokenStream.close();
             throw new UnsupportedOperationException( "Hightlight more \"" + hr.getHighlightMode().toString()
                 + "\" is not supported!" );
         }
 
-        return getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
+        List<String> bestFragments = getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
+        
+        tokenStream.end();
+        tokenStream.close();
+        
+        return bestFragments;
     }
 
     protected final List<String> getBestFragments( Query query, Formatter formatter, TokenStream tokenStream,
@@ -391,8 +402,6 @@ public class DefaultIteratorResultSet
         Highlighter highlighter = new Highlighter( formatter, new CleaningEncoder(), new QueryScorer( query ) );
 
         highlighter.setTextFragmenter( new OneLineFragmenter() );
-
-        tokenStream.reset();
 
         maxNumFragments = Math.max( 1, maxNumFragments ); // sanity check
 
