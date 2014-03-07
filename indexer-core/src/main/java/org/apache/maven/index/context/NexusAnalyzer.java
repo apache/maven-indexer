@@ -88,7 +88,12 @@ public final class NexusAnalyzer
         {
             return i != '\n';
         }
-
+        
+        @Override
+        protected int normalize(int c)
+        {
+            return Character.toLowerCase(c);
+        }
     }
 
     public static class LetterOrDigitTokenizer
@@ -105,6 +110,11 @@ public final class NexusAnalyzer
             return Character.isLetterOrDigit( c );
         }
 
+        @Override
+        protected int normalize(int c)
+        {
+            return Character.toLowerCase(c);
+        }
     }
 
 }
