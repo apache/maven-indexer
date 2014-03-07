@@ -271,7 +271,7 @@ public class DefaultQueryCreator
             {
                 String qpQuery = query.toLowerCase().replaceAll( "\\.", " " ).replaceAll( "/", " " );
                 // tokenization should happen against the field!
-                QueryParser qp = new QueryParser( Version.LUCENE_30, indexerField.getKey(), new NexusAnalyzer() );
+                QueryParser qp = new QueryParser( Version.LUCENE_46, indexerField.getKey(), new NexusAnalyzer() );
                 qp.setDefaultOperator( Operator.AND );
                 return qp.parse( qpQuery );
             }
@@ -304,7 +304,7 @@ public class DefaultQueryCreator
                 String qpQuery = query;
 
                 // tokenization should happen against the field!
-                QueryParser qp = new QueryParser( Version.LUCENE_30, indexerField.getKey(), new NexusAnalyzer() );
+                QueryParser qp = new QueryParser( Version.LUCENE_46, indexerField.getKey(), new NexusAnalyzer() );
                 qp.setDefaultOperator( Operator.AND );
 
                 // small cheap trick

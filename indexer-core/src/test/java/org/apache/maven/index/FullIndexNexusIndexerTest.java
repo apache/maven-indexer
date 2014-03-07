@@ -58,6 +58,8 @@ import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class FullIndexNexusIndexerTest
     extends DefaultIndexNexusIndexerTest
@@ -124,7 +126,7 @@ public class FullIndexNexusIndexerTest
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals( r.toString(), 2, r.size() );
+            assertThat(r.toString(), r.size(), is(2));
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -508,6 +510,9 @@ public class FullIndexNexusIndexerTest
                 }
             }
         }
+        
+        assertThat(response.getReturnedHitsCount(), is(5));
+        assertThat(response.getTotalHitsCount(), is(5));
 
         assertEquals( "found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits() );
     }

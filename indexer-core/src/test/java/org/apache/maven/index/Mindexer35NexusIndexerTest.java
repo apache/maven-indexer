@@ -23,9 +23,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.UserInputSearchExpression;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class Mindexer35NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -50,7 +51,7 @@ public class Mindexer35NexusIndexerTest
         
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertEquals( 1, r.size() );
+        assertThat(r.size(), is(1));
 
         List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
 

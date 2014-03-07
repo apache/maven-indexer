@@ -62,6 +62,7 @@ public class NexusIndexWriter
         // default open mode is CreateOrAppend which suits us
         config.setRAMBufferSizeMB( 2.0 ); // old default
         config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
+        config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
         return config;
     }
 }

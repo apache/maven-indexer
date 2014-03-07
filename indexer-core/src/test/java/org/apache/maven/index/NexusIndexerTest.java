@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -51,6 +50,8 @@ import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /** @author Jason van Zyl */
 public class NexusIndexerTest
@@ -58,6 +59,25 @@ public class NexusIndexerTest
 {
     private IndexingContext context;
 
+    public void testSingleQuery() throws Exception
+    {
+        NexusIndexer indexer = lookup(NexusIndexer.class);
+        // Directory indexDir = new RAMDirectory();
+        File indexDir = super.getDirectory( "index/test" );
+        super.deleteDirectory( indexDir );
+
+        File repo = new File( getBasedir(), "src/test/repo" );
+
+        context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        indexer.scan( context );
+
+        Query q = null;
+        
+        // scored search against field having tokenized IndexerField only (should be impossible).
+        q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
+        assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:pom*) n:\"some artifact name from pom\""));
+    }
+    
     public void testQueryCreatorNG()
         throws Exception
     {

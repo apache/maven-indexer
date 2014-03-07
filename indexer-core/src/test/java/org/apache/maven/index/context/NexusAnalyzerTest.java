@@ -56,6 +56,7 @@ public class NexusAnalyzerTest
         throws IOException
     {
         Tokenizer ts = (Tokenizer) nexusAnalyzer.createComponents(indexerField.getKey(), new StringReader( text ) ).getTokenizer();
+        ts.reset();
 
         ArrayList<String> tokenList = new ArrayList<String>();
 

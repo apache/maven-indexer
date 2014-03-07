@@ -371,12 +371,11 @@ public class DefaultIndexUpdater
         throws IOException
     {
         IndexReader r = null;
+        IndexWriter w = null;
         try
         {
-            // explicitly RW reader needed
             r = IndexReader.open( directory );
-            
-            IndexWriter w = new IndexWriter(directory, NexusIndexWriter.defaultConfig());
+            w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
             
             Bits liveDocs = MultiFields.getLiveDocs(r);
 
@@ -397,13 +396,15 @@ public class DefaultIndexUpdater
                     //FIXME handle deletion failure
                 }
             }
+            w.commit();
         }
         finally
         {
             IndexUtils.close( r );
+            IndexUtils.close( w );
         }
 
-        IndexWriter w = null;
+        w = null;
         try
         {
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
