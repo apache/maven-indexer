@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -50,6 +49,7 @@ import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.ReturnValueAction;
 import org.jmock.lib.action.VoidAction;
+import org.junit.Ignore;
 
 /**
  * @author Eugene Kuleshov
@@ -828,7 +828,8 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
-    public void testUpdateForceFullUpdateNoGZ()
+    @Ignore("Legacy format no longer supported with Lucene 4")
+    public void ignoreTestUpdateForceFullUpdateNoGZ()
         throws Exception
     {
         Mockery mockery = new Mockery();

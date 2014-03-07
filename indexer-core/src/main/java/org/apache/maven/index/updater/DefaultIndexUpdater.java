@@ -210,8 +210,7 @@ public class DefaultIndexUpdater
             else
             {
                 // legacy transfer format
-                timestamp = unpackIndexArchive( is, directory, //
-                    updateRequest.getIndexingContext() );
+                throw new IllegalArgumentException("The legacy format is no longer supported by this version of maven-indexer.");
             }
 
             if ( updateRequest.getDocumentFilter() != null )
