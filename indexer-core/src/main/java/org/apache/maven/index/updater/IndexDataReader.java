@@ -95,8 +95,7 @@ public class IndexDataReader
 
         w.commit();
         
-        //FIXME
-        //w.optimize();
+        w.forceMerge(4);
 
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
