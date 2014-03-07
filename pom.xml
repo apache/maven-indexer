@@ -61,7 +61,7 @@
 
     <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
     <lucene.version>3.6.2</lucene.version>
-    <maven.version>3.0.4</maven.version>
+    <maven.version>3.0.5</maven.version>
     <aether.version>1.13.1</aether.version>
     <archetype.version>2.2</archetype.version>
     <wagon.version>2.3</wagon.version>
