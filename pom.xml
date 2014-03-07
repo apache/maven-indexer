@@ -10,7 +10,7 @@
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>5.1.2-SNAPSHOT</version>
+  <version>5.2.0.evr.SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
