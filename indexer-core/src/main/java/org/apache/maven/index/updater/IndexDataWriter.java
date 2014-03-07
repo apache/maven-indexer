@@ -131,14 +131,14 @@ public class IndexDataWriter
         throws IOException
     {
         {
-            List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
+            List<IndexableField> allGroupsFields = new ArrayList<IndexableField>( 2 );
             allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Store.YES));
             allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ), Store.YES) );
             writeDocumentFields( allGroupsFields );
         }
 
         {
-            List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
+            List<IndexableField> rootGroupsFields = new ArrayList<IndexableField>( 2 );
             rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, Store.YES) );
             rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ), Store.YES ));
             writeDocumentFields( rootGroupsFields );
@@ -186,7 +186,7 @@ public class IndexDataWriter
     {
         List<IndexableField> fields = document.getFields();
 
-        List<IndexableField> storedFields = new ArrayList<>( fields.size() );
+        List<IndexableField> storedFields = new ArrayList<IndexableField>( fields.size() );
 
         for (IndexableField field : fields )
         {
