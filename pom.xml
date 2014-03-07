@@ -43,15 +43,19 @@
   </contributors>
 
   <scm>
-    <connection>scm:git:ssh://git@bitbucket.org:everflux/maven-indexer-fork.git</connection>
-    <developerConnection>scm:git:ssh://git@bitbucket.org:everflux/maven-indexer-fork.git</developerConnection>
-    <url>https://bitbucket.org/everflux/maven-indexer-fork</url>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/trunk</developerConnection>
+    <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
   </scm>
 
   <issueManagement>
-    <system>bitbucket</system>
-    <url>https://bitbucket.org/everflux/maven-indexer-fork/issues</url>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MINDEXER</url>
   </issueManagement>
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>https://builds.apache.org/job/maven-indexer/</url>
+  </ciManagement>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -195,13 +199,13 @@
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java17</artifactId>
+            <artifactId>java16</artifactId>
             <version>1.0</version>
           </signature>
         </configuration>
         <executions>
           <execution>
-            <id>check-java-1.7-compat</id>
+            <id>check-java-1.6-compat</id>
             <phase>process-classes</phase>
             <goals>
               <goal>check</goal>
@@ -218,8 +222,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.1</version>
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>1.6</source>
+            <target>1.6</target>
           </configuration>
         </plugin>
         <plugin>
@@ -264,12 +268,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.6</version>
+        <version>2.7</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9</version>
+        <version>2.9.1</version>
         <configuration>
           <notimestamp>true</notimestamp>
         </configuration>
