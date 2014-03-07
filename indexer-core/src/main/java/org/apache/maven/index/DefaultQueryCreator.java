@@ -466,7 +466,7 @@ public class DefaultQueryCreator
     {
         try
         {
-            TokenStream ts = nexusAnalyzer.reusableTokenStream( indexerField.getKey(), new StringReader( query ) );
+            TokenStream ts = nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader(query));
 
             int result = 0;
 

@@ -30,6 +30,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.maven.index.ArtifactInfo;
@@ -46,9 +47,13 @@ public class IndexUtils
     public static void copyDirectory( Directory source, Directory target )
         throws IOException
     {
-        // perform plain copy (but semantic changes between Lucene 2.4 and 2.9 exists, so timestamp file will be not
-        // copied in 2.9)
-        Directory.copy( source, target, false );
+        //FIXME: check if this copies too much, Lucene 4 has no filter for lucene files
+        //Directory.copy( source, target, false );
+        
+        for (String file : source.listAll())
+        {
+            source.copy(target, file, file, IOContext.DEFAULT); 
+        }
 
         copyFile( source, target, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
         copyFile( source, target, IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
@@ -78,9 +83,9 @@ public class IndexUtils
 
         try
         {
-            is = source.openInput( srcName );
+            is = source.openInput( srcName, IOContext.DEFAULT);
 
-            os = target.createOutput( targetName );
+            os = target.createOutput( targetName, IOContext.DEFAULT);
 
             // and copy to dest directory
             long len = is.length();
@@ -181,7 +186,7 @@ public class IndexUtils
             {
                 deleteTimestamp( directory );
 
-                IndexOutput io = directory.createOutput( TIMESTAMP_FILE );
+                IndexOutput io = directory.createOutput( TIMESTAMP_FILE, IOContext.DEFAULT);
 
                 try
                 {
@@ -210,7 +215,7 @@ public class IndexUtils
 
                     try
                     {
-                        ii = directory.openInput( TIMESTAMP_FILE );
+                        ii = directory.openInput( TIMESTAMP_FILE, IOContext.DEFAULT);
 
                         result = new Date( ii.readLong() );
                     }

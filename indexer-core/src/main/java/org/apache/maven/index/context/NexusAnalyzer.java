@@ -21,7 +21,6 @@ package org.apache.maven.index.context;
 
 import java.io.Reader;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.util.Version;
@@ -38,11 +37,6 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 public final class NexusAnalyzer
     extends Analyzer
 {
-    //FIXME parent method is final
-    public TokenStream tokenStream( String fieldName, Reader reader )
-    {
-        return getTokenizer( fieldName, reader );
-    }
 
     protected Tokenizer getTokenizer( String fieldName, Reader reader )
     {
@@ -60,7 +54,7 @@ public final class NexusAnalyzer
     @Override
     protected TokenStreamComponents createComponents(String fieldName, Reader reader)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new TokenStreamComponents(getTokenizer(fieldName, reader));
     }
 
     // ==

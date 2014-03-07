@@ -23,8 +23,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharTokenizer;
+import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.util.Version;
 import org.apache.maven.index.ArtifactInfo;
@@ -39,50 +40,36 @@ import org.apache.maven.index.ArtifactInfo;
 public final class NexusLegacyAnalyzer
     extends Analyzer
 {
-    private static Analyzer DEFAULT_ANALYZER = new StandardAnalyzer( Version.LUCENE_30 );
-
+    private static final Analyzer DEFAULT_ANALYZER = new StandardAnalyzer( Version.LUCENE_46 );
+    
     @Override
-    public TokenStream tokenStream( String field, final Reader reader )
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader)
     {
-        if ( !isTextField( field ) )
+        try
         {
-            return new CharTokenizer( reader )
-            {
-                @Override
-                protected boolean isTokenChar( char c )
-                {
-                    return Character.isLetterOrDigit( c );
-                }
-
-                @Override
-                protected char normalize( char c )
-                {
-                    return Character.toLowerCase( c );
-                }
-            };
+            return new TokenStreamComponents((Tokenizer) tokenizer(fieldName, reader));
         }
-        else
+        catch (IOException ex)
         {
-            return DEFAULT_ANALYZER.tokenStream( field, reader );
+            throw new RuntimeException(ex);
         }
     }
 
-    @Override
-    public TokenStream reusableTokenStream( String field, Reader reader )
-        throws IOException
+
+    protected TokenStream tokenizer( String field, final Reader reader ) throws IOException
     {
         if ( !isTextField( field ) )
         {
-            return new CharTokenizer( reader )
+            return new CharTokenizer(Version.LUCENE_46, reader )
             {
                 @Override
-                protected boolean isTokenChar( char c )
+                protected boolean isTokenChar(int c )
                 {
                     return Character.isLetterOrDigit( c );
                 }
 
                 @Override
-                protected char normalize( char c )
+                protected int normalize(int c )
                 {
                     return Character.toLowerCase( c );
                 }
@@ -90,7 +77,7 @@ public final class NexusLegacyAnalyzer
         }
         else
         {
-            return DEFAULT_ANALYZER.reusableTokenStream( field, reader );
+            return DEFAULT_ANALYZER.tokenStream(field, reader );
         }
     }
 
@@ -101,4 +88,5 @@ public final class NexusLegacyAnalyzer
 
     }
 
+    
 }
