@@ -43,10 +43,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -54,6 +57,8 @@ import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -351,7 +356,21 @@ public class DefaultIndexUpdater
             {
                 if (liveDocs == null || liveDocs.get(i) )
                 {
-                    w.addDocument( IndexUtils.updateDocument( r.document( i ), context ) );
+                    Document sourceDocument = r.document( i );
+                    Document targetDocument = IndexUtils.updateDocument( sourceDocument, context );
+                    
+                    //Lucene does not return metadata for stored documents, so we need to fix that
+                    for (IndexableField indexableField : targetDocument.getFields())
+                    {
+                        if(indexableField.name().equals(DefaultIndexingContext.FLD_DESCRIPTOR))
+                        {
+                            targetDocument = new Document();
+                            targetDocument.add(new StringField(DefaultIndexingContext.FLD_DESCRIPTOR, DefaultIndexingContext.FLD_DESCRIPTOR_CONTENTS, Field.Store.YES));
+                            targetDocument.add( new StringField( DefaultIndexingContext.FLD_IDXINFO, DefaultIndexingContext.VERSION + ArtifactInfo.FS + context.getRepositoryId(), Field.Store.YES) );
+                            break;
+                        }
+                    }
+                    w.addDocument( targetDocument );
                 }
             }
 

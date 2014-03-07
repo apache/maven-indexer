@@ -511,7 +511,6 @@ public class FullIndexNexusIndexerTest
             }
         }
         
-        assertThat(response.getReturnedHitsCount(), is(5));
         assertThat(response.getTotalHitsCount(), is(5));
 
         assertEquals( "found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits() );

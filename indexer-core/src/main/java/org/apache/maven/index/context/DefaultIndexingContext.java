@@ -67,11 +67,11 @@ public class DefaultIndexingContext
 
     public static final String FLD_DESCRIPTOR = "DESCRIPTOR";
 
-    private static final String FLD_DESCRIPTOR_CONTENTS = "NexusIndex";
+    public static final String FLD_DESCRIPTOR_CONTENTS = "NexusIndex";
 
-    private static final String FLD_IDXINFO = "IDXINFO";
+    public static final String FLD_IDXINFO = "IDXINFO";
 
-    private static final String VERSION = "1.0";
+    public static final String VERSION = "1.0";
 
     private static final Term DESCRIPTOR_TERM = new Term( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS );
 

@@ -26,18 +26,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -47,6 +52,7 @@ import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -334,7 +340,22 @@ public class DefaultIndexPacker
             {
                 if ( liveDocs == null || liveDocs.get(i) )
                 {
-                    w.addDocument( updateLegacyDocument( r.document( i ), context ) );
+                    Document legacyDocument = r.document( i );
+                    Document updatedLegacyDocument = updateLegacyDocument( legacyDocument, context );
+                    
+                    //Lucene does not return metadata for stored documents, so we need to fix that
+                    for (IndexableField indexableField : updatedLegacyDocument.getFields())
+                    {
+                        if(indexableField.name().equals(DefaultIndexingContext.FLD_DESCRIPTOR))
+                        {
+                            updatedLegacyDocument = new Document();
+                            updatedLegacyDocument.add(new StringField(DefaultIndexingContext.FLD_DESCRIPTOR, DefaultIndexingContext.FLD_DESCRIPTOR_CONTENTS, Field.Store.YES));
+                            updatedLegacyDocument.add( new StringField( DefaultIndexingContext.FLD_IDXINFO, DefaultIndexingContext.VERSION + ArtifactInfo.FS + context.getRepositoryId(), Field.Store.YES) );
+                            break;
+                        }
+                    }
+                    
+                    w.addDocument( updatedLegacyDocument );
                 }
             }
 
