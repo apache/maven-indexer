@@ -99,7 +99,7 @@ public class DefaultIteratorResultSet
             for ( int i = 0; i < contexts.size(); i++ )
             {
                 starts[i] = maxDoc;
-                maxDoc += acquiredSearchers.get( i ).maxDoc(); // compute maxDocs
+                maxDoc += acquiredSearchers.get( i ).getIndexReader().maxDoc(); // compute maxDocs
             }
             starts[contexts.size()] = maxDoc;
         }

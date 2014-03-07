@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.io.UTFDataFormatException;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -95,7 +94,9 @@ public class IndexDataReader
         }
 
         w.commit();
-        w.optimize();
+        
+        //FIXME
+        //w.optimize();
 
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );

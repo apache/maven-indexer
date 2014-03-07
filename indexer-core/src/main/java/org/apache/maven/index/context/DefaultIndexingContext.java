@@ -28,15 +28,15 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexFileNameFilter;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
@@ -45,6 +45,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
@@ -185,7 +186,7 @@ public class DefaultIndexingContext
     private void prepareIndex( boolean reclaimIndex )
         throws IOException, ExistingLuceneIndexMismatchException
     {
-        if ( IndexReader.indexExists( indexDirectory ) )
+        if ( DirectoryReader.indexExists( indexDirectory ) )
         {
             try
             {
@@ -524,7 +525,8 @@ public class DefaultIndexingContext
     public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
-        getIndexWriter().optimize();
+        //FIXME
+        //getIndexWriter().optimize();
         commit();
     }
 
@@ -590,14 +592,16 @@ public class DefaultIndexingContext
         try
         {
             final IndexWriter w = getIndexWriter();
-            final IndexReader directoryReader = IndexReader.open( directory, true );
+            final IndexReader directoryReader = IndexReader.open( directory);
             TopScoreDocCollector collector = null;
             try
             {
                 int numDocs = directoryReader.maxDoc();
+                
+                Bits liveDocs = MultiFields.getLiveDocs(directoryReader);
                 for ( int i = 0; i < numDocs; i++ )
                 {
-                    if ( directoryReader.isDeleted( i ) )
+                    if (! liveDocs.get(i) )
                     {
                         continue;
                     }
@@ -699,10 +703,11 @@ public class DefaultIndexingContext
             Set<String> allGroups = new LinkedHashSet<String>();
 
             int numDocs = r.maxDoc();
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if ( r.isDeleted( i ) )
+                if (! liveDocs.get(i) )
                 {
                     continue;
                 }

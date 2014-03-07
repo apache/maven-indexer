@@ -38,11 +38,14 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
@@ -301,19 +304,20 @@ public class DefaultIndexPacker
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
         IndexWriter w = null;
+        Bits liveDocs = MultiFields.getLiveDocs(r);
         try
         {
             w = new NexusIndexWriter( targetdir, new NexusLegacyAnalyzer(), true );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     w.addDocument( updateLegacyDocument( r.document( i ), context ) );
                 }
             }
 
-            w.optimize();
+            //w.optimize();
             w.commit();
         }
         finally
@@ -390,7 +394,7 @@ public class DefaultIndexPacker
 
         zos.putNextEntry( e );
 
-        IndexInput in = directory.openInput( name );
+        IndexInput in = directory.openInput( name, IOContext.DEFAULT );
 
         try
         {

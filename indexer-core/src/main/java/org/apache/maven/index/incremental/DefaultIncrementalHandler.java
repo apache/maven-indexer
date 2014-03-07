@@ -37,7 +37,9 @@ import java.util.TreeMap;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest;
@@ -150,9 +152,10 @@ public class DefaultIncrementalHandler
         try
         {
             final IndexReader r = indexSearcher.getIndexReader();
+            Bits liveDocs = MultiFields.getLiveDocs(r);
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     Document d = r.document( i );
 

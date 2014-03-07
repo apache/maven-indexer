@@ -20,11 +20,11 @@ package org.apache.maven.index.context;
  */
 
 import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.CharTokenizer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.util.CharTokenizer;
+import org.apache.lucene.util.Version;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
 /**
@@ -38,6 +38,7 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 public final class NexusAnalyzer
     extends Analyzer
 {
+    //FIXME parent method is final
     public TokenStream tokenStream( String fieldName, Reader reader )
     {
         return getTokenizer( fieldName, reader );
@@ -56,6 +57,12 @@ public final class NexusAnalyzer
         }
     }
 
+    @Override
+    protected TokenStreamComponents createComponents(String fieldName, Reader reader)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     // ==
 
     public static class NoopTokenizer
@@ -63,11 +70,11 @@ public final class NexusAnalyzer
     {
         public NoopTokenizer( Reader in )
         {
-            super( in );
+            super( Version.LUCENE_46, in );
         }
 
         @Override
-        protected boolean isTokenChar( char c )
+        protected boolean isTokenChar(int i)
         {
             return true;
         }
@@ -79,20 +86,15 @@ public final class NexusAnalyzer
     {
         public DeprecatedClassnamesTokenizer( Reader in )
         {
-            super( in );
+            super( Version.LUCENE_46, in );
+        }
+        
+        @Override
+        protected boolean isTokenChar(int i)
+        {
+            return i != '\n';
         }
 
-        @Override
-        protected boolean isTokenChar( char c )
-        {
-            return c != '\n';
-        }
-
-        @Override
-        protected char normalize( char c )
-        {
-            return Character.toLowerCase( c );
-        }
     }
 
     public static class LetterOrDigitTokenizer
@@ -100,20 +102,15 @@ public final class NexusAnalyzer
     {
         public LetterOrDigitTokenizer( Reader in )
         {
-            super( in );
+            super( Version.LUCENE_46, in );
         }
 
         @Override
-        protected boolean isTokenChar( char c )
+        protected boolean isTokenChar(int c)
         {
             return Character.isLetterOrDigit( c );
         }
 
-        @Override
-        protected char normalize( char c )
-        {
-            return Character.toLowerCase( c );
-        }
     }
 
 }

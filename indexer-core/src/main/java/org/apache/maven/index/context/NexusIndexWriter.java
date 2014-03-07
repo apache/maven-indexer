@@ -42,11 +42,12 @@ public class NexusIndexWriter
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
-        super( directory, analyzer, create, MaxFieldLength.LIMITED );
+        //super( directory, analyzer, create, MaxFieldLength.LIMITED );
+        this(directory, new IndexWriterConfig(Version.LUCENE_46, analyzer));
 
         // setSimilarity( new NexusSimilarity() );
     }
-
+    
     public NexusIndexWriter( final Directory directory, final IndexWriterConfig config )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {

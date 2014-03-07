@@ -30,12 +30,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
@@ -128,20 +131,16 @@ public class IndexDataWriter
         throws IOException
     {
         {
-            List<Fieldable> allGroupsFields = new ArrayList<Fieldable>( 2 );
-            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Field.Store.YES,
-                Field.Index.NOT_ANALYZED ) );
-            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
-                Field.Store.YES, Field.Index.NO ) );
+            List<Field> allGroupsFields = new ArrayList<Field>( 2 );
+            allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Store.YES));
+            allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ), Store.YES) );
             writeDocumentFields( allGroupsFields );
         }
 
         {
-            List<Fieldable> rootGroupsFields = new ArrayList<Fieldable>( 2 );
-            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, Field.Store.YES,
-                Field.Index.NOT_ANALYZED ) );
-            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
-                Field.Store.YES, Field.Index.NO ) );
+            List<Field> rootGroupsFields = new ArrayList<Field>( 2 );
+            rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, Store.YES) );
+            rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ), Store.YES ));
             writeDocumentFields( rootGroupsFields );
         }
     }
@@ -150,12 +149,13 @@ public class IndexDataWriter
         throws IOException
     {
         int n = 0;
+        Bits liveDocs = MultiFields.getLiveDocs(r);
 
         if ( docIndexes == null )
         {
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     if ( writeDocument( r.document( i ) ) )
                     {
@@ -168,7 +168,7 @@ public class IndexDataWriter
         {
             for ( int i : docIndexes )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     if ( writeDocument( r.document( i ) ) )
                     {
@@ -184,11 +184,11 @@ public class IndexDataWriter
     public boolean writeDocument( final Document document )
         throws IOException
     {
-        List<Fieldable> fields = document.getFields();
+        List<IndexableField> fields = document.getFields();
 
-        List<Fieldable> storedFields = new ArrayList<Fieldable>( fields.size() );
+        List<Field> storedFields = new ArrayList<Field>( fields.size() );
 
-        for ( Fieldable field : fields )
+        for ( IndexableField field : fields )
         {
             if ( DefaultIndexingContext.FLD_DESCRIPTOR.equals( field.name() ) )
             {
@@ -226,7 +226,7 @@ public class IndexDataWriter
                 return false;
             }
 
-            if ( field.isStored() )
+            if ( field.fieldType().stored())
             {
                 storedFields.add( field );
             }
@@ -237,23 +237,23 @@ public class IndexDataWriter
         return true;
     }
 
-    public void writeDocumentFields( List<Fieldable> fields )
+    public void writeDocumentFields( List<Field> fields )
         throws IOException
     {
         dos.writeInt( fields.size() );
 
-        for ( Fieldable field : fields )
+        for ( Field field : fields )
         {
             writeField( field );
         }
     }
 
-    public void writeField( Fieldable field )
+    public void writeField( Field field )
         throws IOException
     {
-        int flags = ( field.isIndexed() ? F_INDEXED : 0 ) //
-            + ( field.isTokenized() ? F_TOKENIZED : 0 ) //
-            + ( field.isStored() ? F_STORED : 0 ); //
+        int flags = ( field.fieldType().indexed() ? F_INDEXED : 0 ) //
+            + ( field.fieldType().tokenized() ? F_TOKENIZED : 0 ) //
+            + ( field.fieldType().stored() ? F_STORED : 0 ); //
         // + ( false ? F_COMPRESSED : 0 ); // Compressed not supported anymore
 
         String name = field.name();

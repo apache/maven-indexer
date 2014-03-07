@@ -19,7 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SearchExpression;
 

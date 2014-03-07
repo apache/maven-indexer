@@ -28,10 +28,12 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -212,10 +214,11 @@ public class DefaultScannerListener
         try
         {
             final IndexReader r = indexSearcher.getIndexReader();
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     Document d = r.document( i );
 

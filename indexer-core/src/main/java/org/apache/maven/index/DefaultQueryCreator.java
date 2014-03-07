@@ -21,12 +21,11 @@ package org.apache.maven.index;
 
 import java.io.IOException;
 import java.io.StringReader;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
@@ -140,7 +139,7 @@ public class DefaultQueryCreator
         }
         else
         {
-            QueryParser qp = new QueryParser( Version.LUCENE_24, field, new NexusAnalyzer() );
+            QueryParser qp = new QueryParser( Version.LUCENE_46, field, new NexusAnalyzer() );
 
             // small cheap trick
             // if a query is not "expert" (does not contain field:val kind of expression)

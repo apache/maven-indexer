@@ -46,10 +46,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -342,16 +344,18 @@ public class DefaultIndexUpdater
         {
             r = IndexReader.open( sourcedir );
             w = new NexusIndexWriter( targetdir, new NexusAnalyzer(), true );
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs.get(i) )
                 {
                     w.addDocument( IndexUtils.updateDocument( r.document( i ), context ) );
                 }
             }
 
-            w.optimize();
+            //FIXME
+            //w.optimize();
             w.commit();
         }
         finally
@@ -369,12 +373,13 @@ public class DefaultIndexUpdater
         {
             // explicitly RW reader needed
             r = IndexReader.open( directory, false );
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             int numDocs = r.maxDoc();
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if ( r.isDeleted( i ) )
+                if (! liveDocs.get(i) )
                 {
                     continue;
                 }
@@ -398,7 +403,8 @@ public class DefaultIndexUpdater
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
-            w.optimize();
+            //FIXME
+            //w.optimize();
 
             w.commit();
         }
