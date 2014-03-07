@@ -524,7 +524,7 @@ public class DefaultIndexingContext
     public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
-        getIndexWriter().forceMerge(4);
+        getIndexWriter().forceMerge(1);
         commit();
     }
 

@@ -95,7 +95,8 @@ public class IndexDataReader
 
         w.commit();
         
-        w.forceMerge(4);
+        w.forceMerge(1);
+        w.commit();
 
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );

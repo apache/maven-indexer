@@ -374,7 +374,7 @@ public class DefaultIndexUpdater
                 }
             }
 
-            w.forceMerge(4);
+            w.forceMerge(1);
             w.commit();
         }
         finally
