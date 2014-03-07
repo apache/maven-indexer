@@ -44,11 +44,13 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
@@ -312,7 +314,7 @@ public class DefaultIndexUpdater
                     continue;
                 }
 
-                IndexOutput io = directory.createOutput( entry.getName() );
+                IndexOutput io = directory.createOutput( entry.getName(), IOContext.DEFAULT );
                 try
                 {
                     int n = 0;
@@ -372,7 +374,10 @@ public class DefaultIndexUpdater
         try
         {
             // explicitly RW reader needed
-            r = IndexReader.open( directory, false );
+            r = IndexReader.open( directory );
+            
+            IndexWriter w = new IndexWriter(directory, NexusIndexWriter.defaultConfig());
+            
             Bits liveDocs = MultiFields.getLiveDocs(r);
 
             int numDocs = r.maxDoc();
@@ -388,7 +393,8 @@ public class DefaultIndexUpdater
 
                 if ( !filter.accept( d ) )
                 {
-                    r.deleteDocument( i );
+                    boolean success = w.tryDeleteDocument(r, i);
+                    //FIXME handle deletion failure
                 }
             }
         }

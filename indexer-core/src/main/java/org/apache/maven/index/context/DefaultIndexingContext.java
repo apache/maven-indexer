@@ -335,13 +335,12 @@ public class DefaultIndexingContext
 
             if ( names != null )
             {
-                IndexFileNameFilter filter = IndexFileNameFilter.getFilter();
 
-                for ( int i = 0; i < names.length; i++ )
+                for (String name : names)
                 {
-                    if ( filter.accept( null, names[i] ) )
+                    if (! (name.equals(INDEX_PACKER_PROPERTIES_FILE) || name.equals(INDEX_UPDATER_PROPERTIES_FILE) ))
                     {
-                        indexDirectory.deleteFile( names[i] );
+                        indexDirectory.deleteFile(name);
                     }
                 }
             }

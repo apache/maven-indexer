@@ -55,7 +55,7 @@ public class NexusAnalyzerTest
     protected void runAndCompare( IndexerField indexerField, String text, String[] expected )
         throws IOException
     {
-        Tokenizer ts = (Tokenizer) nexusAnalyzer.reusableTokenStream( indexerField.getKey(), new StringReader( text ) );
+        Tokenizer ts = (Tokenizer) nexusAnalyzer.createComponents(indexerField.getKey(), new StringReader( text ) ).getTokenizer();
 
         ArrayList<String> tokenList = new ArrayList<String>();
 

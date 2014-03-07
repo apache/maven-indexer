@@ -131,14 +131,14 @@ public class IndexDataWriter
         throws IOException
     {
         {
-            List<Field> allGroupsFields = new ArrayList<Field>( 2 );
+            List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
             allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Store.YES));
             allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ), Store.YES) );
             writeDocumentFields( allGroupsFields );
         }
 
         {
-            List<Field> rootGroupsFields = new ArrayList<Field>( 2 );
+            List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
             rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, Store.YES) );
             rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ), Store.YES ));
             writeDocumentFields( rootGroupsFields );
@@ -186,9 +186,9 @@ public class IndexDataWriter
     {
         List<IndexableField> fields = document.getFields();
 
-        List<Field> storedFields = new ArrayList<Field>( fields.size() );
+        List<IndexableField> storedFields = new ArrayList<>( fields.size() );
 
-        for ( IndexableField field : fields )
+        for (IndexableField field : fields )
         {
             if ( DefaultIndexingContext.FLD_DESCRIPTOR.equals( field.name() ) )
             {
@@ -237,18 +237,18 @@ public class IndexDataWriter
         return true;
     }
 
-    public void writeDocumentFields( List<Field> fields )
+    public void writeDocumentFields( List<IndexableField> fields )
         throws IOException
     {
         dos.writeInt( fields.size() );
 
-        for ( Field field : fields )
+        for ( IndexableField field : fields )
         {
             writeField( field );
         }
     }
 
-    public void writeField( Field field )
+    public void writeField( IndexableField field )
         throws IOException
     {
         int flags = ( field.fieldType().indexed() ? F_INDEXED : 0 ) //
