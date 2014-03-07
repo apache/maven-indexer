@@ -38,6 +38,11 @@ public final class NexusAnalyzer
     extends Analyzer
 {
 
+    public NexusAnalyzer()
+    {
+        super(PER_FIELD_REUSE_STRATEGY);
+    }
+    
     protected Tokenizer getTokenizer( String fieldName, Reader reader )
     {
         if ( JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( fieldName ) )

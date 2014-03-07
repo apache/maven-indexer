@@ -227,6 +227,7 @@ public class JarFileContentsIndexCreator
         return ID;
     }
 
+    @Override
     public Collection<IndexerField> getIndexerFields()
     {
         return Arrays.asList( FLD_CLASSNAMES, FLD_CLASSNAMES_KW );
