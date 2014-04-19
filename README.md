@@ -1,4 +1,4 @@
-Apache Maven Indexer (evr-fork)
+Apache Maven Indexer
 ====================
 
 This is a fork of the Apache Maven Indexer:
