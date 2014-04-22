@@ -5,15 +5,11 @@ http://maven.apache.org/maven-indexer/
 
 (Formerly Sonatype Nexus Indexer)
 
-
-SVN (the canonical repository):
-http://svn.apache.org/repos/asf/maven/indexer/
+GIT (the canonical repository):
+https://git-wip-us.apache.org/repos/asf/maven-indexer.git
 
 JIRA:
 http://jira.codehaus.org/browse/MINDEXER
-
-Note: Migrated from "Search / Index" component of Nexus project:
-https://issues.sonatype.org/browse/NEXUS
 
 Mailing lists:
 Developers: dev@maven.apache.org
