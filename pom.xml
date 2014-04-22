@@ -52,9 +52,9 @@ under the License.
   </contributors>
 
   <scm>
-    <connection>scm:svn:http://svn.apache.org/repos/asf/maven/indexer/trunk</connection>
-    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/maven/indexer/trunk</developerConnection>
-    <url>http://svn.apache.org/repos/asf/maven/indexer/trunk</url>
+    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</connection>
+    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</developerConnection>
+    <url>https://github.com/apache/maven-indexer</url>
   </scm>
 
   <issueManagement>
