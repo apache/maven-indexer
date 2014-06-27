@@ -127,7 +127,7 @@ public class ArtifactInfo
     public static final String SHA1 = MinimalArtifactInfoIndexCreator.FLD_SHA1.getKey();
 
     /**
-     * Class names Stored compressed, indexed tokeninzed
+     * Class names Stored compressed, indexed tokenized
      */
     public static final String NAMES = JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey();
 
