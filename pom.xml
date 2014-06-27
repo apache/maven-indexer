@@ -158,7 +158,6 @@ under the License.
 
   <modules>
     <module>indexer-core</module>
-    <module>indexer-artifact</module>
     <module>indexer-cli</module>
   </modules>
 
