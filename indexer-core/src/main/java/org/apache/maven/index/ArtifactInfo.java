@@ -163,124 +163,124 @@ public class ArtifactInfo
 
     public static final Comparator<ArtifactInfo> CONTEXT_VERSION_COMPARATOR = new ContextVersionComparator();
 
-    public String fname;
+    private String fileName;
 
-    public String fextension;
+    private String fileExtension;
 
-    public String groupId;
+    private String groupId;
 
-    public String artifactId;
+    private String artifactId;
 
-    public String version;
+    private String version;
 
     private transient Version artifactVersion;
 
     private transient float luceneScore;
 
-    public String classifier;
+    private String classifier;
 
     /**
      * Artifact packaging for the main artifact and extension for secondary artifact (no classifier)
      */
-    public String packaging;
+    private String packaging;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public long lastModified = -1;
+    private long lastModified = -1;
 
-    public long size = -1;
+    private long size = -1;
 
-    public String md5;
+    private String md5;
 
-    public String sha1;
+    private String sha1;
 
-    public ArtifactAvailablility sourcesExists = ArtifactAvailablility.NOT_PRESENT;
+    private ArtifactAvailability sourcesExists = ArtifactAvailability.NOT_PRESENT;
 
-    public ArtifactAvailablility javadocExists = ArtifactAvailablility.NOT_PRESENT;
+    private ArtifactAvailability javadocExists = ArtifactAvailability.NOT_PRESENT;
 
-    public ArtifactAvailablility signatureExists = ArtifactAvailablility.NOT_PRESENT;
+    private ArtifactAvailability signatureExists = ArtifactAvailability.NOT_PRESENT;
 
-    public String classNames;
+    private String classNames;
 
-    public String repository;
+    private String repository;
 
-    public String path;
+    private String path;
 
-    public String remoteUrl;
+    private String remoteUrl;
 
-    public String context;
+    private String context;
 
     /**
      * Plugin goal prefix (only if packaging is "maven-plugin")
      */
-    public String prefix;
+    private String prefix;
 
     /**
      * Plugin goals (only if packaging is "maven-plugin")
      */
-    public List<String> goals;
+    private List<String> goals;
 
     /**
      * contains osgi metadata Bundle-Version if available
      * @since 4.1.2
      */
-    public String bundleVersion;
+    private String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
      * @since 4.1.2
      */
-    public String bundleSymbolicName;
+    private String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
      * @since 4.1.2
      */
-    public String bundleExportPackage;
+    private String bundleExportPackage;
 
     /**
      * contains osgi metadata Export-Service if available
      * @since 4.1.2
      */
-    public String bundleExportService;
+    private String bundleExportService;
 
     /**
      * contains osgi metadata Bundle-Description if available
      * @since 4.1.2
      */
-    public String bundleDescription;
+    private String bundleDescription;
 
     /**
      * contains osgi metadata Bundle-Name if available
      * @since 4.1.2
      */
-    public String bundleName;
+    private String bundleName;
 
     /**
      * contains osgi metadata Bundle-License if available
      * @since 4.1.2
      */
-    public String bundleLicense;
+    private String bundleLicense;
 
     /**
      * contains osgi metadata Bundle-DocURL if available
      * @since 4.1.2
      */
-    public String bundleDocUrl;
+    private String bundleDocUrl;
 
     /**
      * contains osgi metadata Import-Package if available
      * @since 4.1.2
      */
-    public String bundleImportPackage;
+    private String bundleImportPackage;
 
     /**
      * contains osgi metadata Require-Bundle if available
      * @since 4.1.2
      */
-    public String bundleRequireBundle;
+    private String bundleRequireBundle;
 
     private String uinfo = null;
 
@@ -289,6 +289,7 @@ public class ArtifactInfo
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
 
     private final transient VersionScheme versionScheme;
+
 
     public ArtifactInfo()
     {
@@ -361,9 +362,9 @@ public class ArtifactInfo
 
     public Gav calculateGav()
     {
-        return new Gav( groupId, artifactId, version, classifier, fextension, null, // snapshotBuildNumber
+        return new Gav( groupId, artifactId, version, classifier, fileExtension, null, // snapshotBuildNumber
             null, // snapshotTimeStamp
-            fname, // name
+            fileName, // name
             false, // hash
             null, // hashType
             false, // signature
@@ -667,6 +668,356 @@ public class ArtifactInfo
                 return r2 == null ? 1 : r1.compareTo( r2 );
             }
         }
+    }
+
+    public String getFileName( )
+    {
+        return fileName;
+    }
+
+    public void setFileName( String fileName )
+    {
+        this.fileName = fileName;
+    }
+
+    public String getFileExtension( )
+    {
+        return fileExtension;
+    }
+
+    public void setFileExtension( String fileExtension )
+    {
+        this.fileExtension = fileExtension;
+    }
+
+    public String getGroupId( )
+    {
+        return groupId;
+    }
+
+    public void setGroupId( String groupId )
+    {
+        this.groupId = groupId;
+    }
+
+    public String getArtifactId( )
+    {
+        return artifactId;
+    }
+
+    public void setArtifactId( String artifactId )
+    {
+        this.artifactId = artifactId;
+    }
+
+    public String getVersion( )
+    {
+        return version;
+    }
+
+    public void setVersion( String version )
+    {
+        this.version = version;
+    }
+
+    public void setArtifactVersion( Version artifactVersion )
+    {
+        this.artifactVersion = artifactVersion;
+    }
+
+    public String getClassifier( )
+    {
+        return classifier;
+    }
+
+    public void setClassifier( String classifier )
+    {
+        this.classifier = classifier;
+    }
+
+    public String getPackaging( )
+    {
+        return packaging;
+    }
+
+    public void setPackaging( String packaging )
+    {
+        this.packaging = packaging;
+    }
+
+    public String getName( )
+    {
+        return name;
+    }
+
+    public void setName( String name )
+    {
+        this.name = name;
+    }
+
+    public String getDescription( )
+    {
+        return description;
+    }
+
+    public void setDescription( String description )
+    {
+        this.description = description;
+    }
+
+    public long getLastModified( )
+    {
+        return lastModified;
+    }
+
+    public void setLastModified( long lastModified )
+    {
+        this.lastModified = lastModified;
+    }
+
+    public long getSize( )
+    {
+        return size;
+    }
+
+    public void setSize( long size )
+    {
+        this.size = size;
+    }
+
+    public String getMd5( )
+    {
+        return md5;
+    }
+
+    public void setMd5( String md5 )
+    {
+        this.md5 = md5;
+    }
+
+    public String getSha1( )
+    {
+        return sha1;
+    }
+
+    public void setSha1( String sha1 )
+    {
+        this.sha1 = sha1;
+    }
+
+    public ArtifactAvailability getSourcesExists( )
+    {
+        return sourcesExists;
+    }
+
+    public void setSourcesExists( ArtifactAvailability sourcesExists )
+    {
+        this.sourcesExists = sourcesExists;
+    }
+
+    public ArtifactAvailability getJavadocExists( )
+    {
+        return javadocExists;
+    }
+
+    public void setJavadocExists( ArtifactAvailability javadocExists )
+    {
+        this.javadocExists = javadocExists;
+    }
+
+    public ArtifactAvailability getSignatureExists( )
+    {
+        return signatureExists;
+    }
+
+    public void setSignatureExists( ArtifactAvailability signatureExists )
+    {
+        this.signatureExists = signatureExists;
+    }
+
+    public String getClassNames( )
+    {
+        return classNames;
+    }
+
+    public void setClassNames( String classNames )
+    {
+        this.classNames = classNames;
+    }
+
+    public String getRepository( )
+    {
+        return repository;
+    }
+
+    public void setRepository( String repository )
+    {
+        this.repository = repository;
+    }
+
+    public String getPath( )
+    {
+        return path;
+    }
+
+    public void setPath( String path )
+    {
+        this.path = path;
+    }
+
+    public String getRemoteUrl( )
+    {
+        return remoteUrl;
+    }
+
+    public void setRemoteUrl( String remoteUrl )
+    {
+        this.remoteUrl = remoteUrl;
+    }
+
+    public String getContext( )
+    {
+        return context;
+    }
+
+    public void setContext( String context )
+    {
+        this.context = context;
+    }
+
+    public String getPrefix( )
+    {
+        return prefix;
+    }
+
+    public void setPrefix( String prefix )
+    {
+        this.prefix = prefix;
+    }
+
+    public List<String> getGoals( )
+    {
+        return goals;
+    }
+
+    public void setGoals( List<String> goals )
+    {
+        this.goals = goals;
+    }
+
+    public String getBundleVersion( )
+    {
+        return bundleVersion;
+    }
+
+    public void setBundleVersion( String bundleVersion )
+    {
+        this.bundleVersion = bundleVersion;
+    }
+
+    public String getBundleSymbolicName( )
+    {
+        return bundleSymbolicName;
+    }
+
+    public void setBundleSymbolicName( String bundleSymbolicName )
+    {
+        this.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    public String getBundleExportPackage( )
+    {
+        return bundleExportPackage;
+    }
+
+    public void setBundleExportPackage( String bundleExportPackage )
+    {
+        this.bundleExportPackage = bundleExportPackage;
+    }
+
+    public String getBundleExportService( )
+    {
+        return bundleExportService;
+    }
+
+    public void setBundleExportService( String bundleExportService )
+    {
+        this.bundleExportService = bundleExportService;
+    }
+
+    public String getBundleDescription( )
+    {
+        return bundleDescription;
+    }
+
+    public void setBundleDescription( String bundleDescription )
+    {
+        this.bundleDescription = bundleDescription;
+    }
+
+    public String getBundleName( )
+    {
+        return bundleName;
+    }
+
+    public void setBundleName( String bundleName )
+    {
+        this.bundleName = bundleName;
+    }
+
+    public String getBundleLicense( )
+    {
+        return bundleLicense;
+    }
+
+    public void setBundleLicense( String bundleLicense )
+    {
+        this.bundleLicense = bundleLicense;
+    }
+
+    public String getBundleDocUrl( )
+    {
+        return bundleDocUrl;
+    }
+
+    public void setBundleDocUrl( String bundleDocUrl )
+    {
+        this.bundleDocUrl = bundleDocUrl;
+    }
+
+    public String getBundleImportPackage( )
+    {
+        return bundleImportPackage;
+    }
+
+    public void setBundleImportPackage( String bundleImportPackage )
+    {
+        this.bundleImportPackage = bundleImportPackage;
+    }
+
+    public String getBundleRequireBundle( )
+    {
+        return bundleRequireBundle;
+    }
+
+    public void setBundleRequireBundle( String bundleRequireBundle )
+    {
+        this.bundleRequireBundle = bundleRequireBundle;
+    }
+
+    public void setUinfo( String uinfo )
+    {
+        this.uinfo = uinfo;
+    }
+
+    public VersionScheme getVersionScheme( )
+    {
+        return versionScheme;
+    }
+
+    public void setFields( List<Field> fields )
+    {
+        this.fields = fields;
     }
 
 }

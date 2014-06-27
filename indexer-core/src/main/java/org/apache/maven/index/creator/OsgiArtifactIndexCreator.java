@@ -161,54 +161,54 @@ public class OsgiArtifactIndexCreator
     public void updateDocument( ArtifactInfo artifactInfo, Document document )
     {
 
-        if ( artifactInfo.bundleSymbolicName != null )
+        if ( artifactInfo.getBundleSymbolicName() != null )
         {
-            document.add( FLD_BUNDLE_SYMBOLIC_NAME.toField( artifactInfo.bundleSymbolicName ) );
+            document.add( FLD_BUNDLE_SYMBOLIC_NAME.toField( artifactInfo.getBundleSymbolicName() ) );
         }
 
-        if ( artifactInfo.bundleVersion != null )
+        if ( artifactInfo.getBundleVersion() != null )
         {
-            document.add( FLD_BUNDLE_VERSION.toField( artifactInfo.bundleVersion ) );
+            document.add( FLD_BUNDLE_VERSION.toField( artifactInfo.getBundleVersion() ) );
         }
 
-        if ( artifactInfo.bundleExportPackage != null )
+        if ( artifactInfo.getBundleExportPackage() != null )
         {
-            document.add( FLD_BUNDLE_EXPORT_PACKAGE.toField( artifactInfo.bundleExportPackage ) );
+            document.add( FLD_BUNDLE_EXPORT_PACKAGE.toField( artifactInfo.getBundleExportPackage() ) );
         }
 
-        if ( artifactInfo.bundleExportService != null )
+        if ( artifactInfo.getBundleExportService() != null )
         {
-            document.add( FLD_BUNDLE_EXPORT_SERVIVE.toField( artifactInfo.bundleExportService ) );
+            document.add( FLD_BUNDLE_EXPORT_SERVIVE.toField( artifactInfo.getBundleExportService() ) );
         }
 
-        if ( artifactInfo.bundleDescription != null )
+        if ( artifactInfo.getBundleDescription() != null )
         {
-            document.add( FLD_BUNDLE_DESCRIPTION.toField( artifactInfo.bundleDescription ) );
+            document.add( FLD_BUNDLE_DESCRIPTION.toField( artifactInfo.getBundleDescription() ) );
         }
 
-        if ( artifactInfo.bundleName != null )
+        if ( artifactInfo.getBundleName() != null )
         {
-            document.add( FLD_BUNDLE_NAME.toField( artifactInfo.bundleName ) );
+            document.add( FLD_BUNDLE_NAME.toField( artifactInfo.getBundleName() ) );
         }
 
-        if ( artifactInfo.bundleLicense != null )
+        if ( artifactInfo.getBundleLicense() != null )
         {
-            document.add( FLD_BUNDLE_LICENSE.toField( artifactInfo.bundleLicense ) );
+            document.add( FLD_BUNDLE_LICENSE.toField( artifactInfo.getBundleLicense() ) );
         }
 
-        if ( artifactInfo.bundleDocUrl != null )
+        if ( artifactInfo.getBundleDocUrl() != null )
         {
-            document.add( FLD_BUNDLE_DOCURL.toField( artifactInfo.bundleDocUrl ) );
+            document.add( FLD_BUNDLE_DOCURL.toField( artifactInfo.getBundleDocUrl() ) );
         }
 
-        if ( artifactInfo.bundleImportPackage != null )
+        if ( artifactInfo.getBundleImportPackage() != null )
         {
-            document.add( FLD_BUNDLE_IMPORT_PACKAGE.toField( artifactInfo.bundleImportPackage ) );
+            document.add( FLD_BUNDLE_IMPORT_PACKAGE.toField( artifactInfo.getBundleImportPackage() ) );
         }
 
-        if ( artifactInfo.bundleRequireBundle != null )
+        if ( artifactInfo.getBundleRequireBundle() != null )
         {
-            document.add( FLD_BUNDLE_REQUIRE_BUNDLE.toField( artifactInfo.bundleRequireBundle ) );
+            document.add( FLD_BUNDLE_REQUIRE_BUNDLE.toField( artifactInfo.getBundleRequireBundle() ) );
         }
     }
 
@@ -220,7 +220,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleSymbolicName != null )
         {
-            artifactInfo.bundleSymbolicName = bundleSymbolicName;
+            artifactInfo.setBundleSymbolicName( bundleSymbolicName );
 
             updated = true;
         }
@@ -229,7 +229,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleVersion != null )
         {
-            artifactInfo.bundleVersion = bundleVersion;
+            artifactInfo.setBundleVersion( bundleVersion );
 
             updated = true;
         }
@@ -238,7 +238,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleExportPackage != null )
         {
-            artifactInfo.bundleExportPackage = bundleExportPackage;
+            artifactInfo.setBundleExportPackage( bundleExportPackage );
 
             updated = true;
 
@@ -248,7 +248,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleExportService != null )
         {
-            artifactInfo.bundleExportService = bundleExportService;
+            artifactInfo.setBundleExportService( bundleExportService );
 
             updated = true;
 
@@ -258,7 +258,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleDescription != null )
         {
-            artifactInfo.bundleDescription = bundleDescription;
+            artifactInfo.setBundleDescription( bundleDescription );
 
             updated = true;
 
@@ -269,7 +269,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleName != null )
         {
-            artifactInfo.bundleName = bundleName;
+            artifactInfo.setBundleName( bundleName );
 
             updated = true;
 
@@ -280,7 +280,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleLicense != null )
         {
-            artifactInfo.bundleLicense = bundleLicense;
+            artifactInfo.setBundleLicense( bundleLicense );
 
             updated = true;
 
@@ -290,7 +290,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleDocUrl != null )
         {
-            artifactInfo.bundleDocUrl = bundleDocUrl;
+            artifactInfo.setBundleDocUrl( bundleDocUrl );
 
             updated = true;
 
@@ -300,7 +300,7 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleImportPackage != null )
         {
-            artifactInfo.bundleImportPackage = bundleImportPackage;
+            artifactInfo.setBundleImportPackage( bundleImportPackage );
 
             updated = true;
 
@@ -310,12 +310,11 @@ public class OsgiArtifactIndexCreator
 
         if ( bundleRequireBundle != null )
         {
-            artifactInfo.bundleRequireBundle = bundleRequireBundle;
+            artifactInfo.setBundleRequireBundle( bundleRequireBundle );
 
             updated = true;
 
         }
-
 
         return updated;
     }
@@ -346,111 +345,111 @@ public class OsgiArtifactIndexCreator
                         String attValue = mainAttributes.getValue( BSN );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleSymbolicName = attValue;
+                            ai.setBundleSymbolicName( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleSymbolicName = null;
+                            ai.setBundleSymbolicName( null );
                         }
 
                         attValue = mainAttributes.getValue( BV );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleVersion = attValue;
+                            ai.setBundleVersion( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleVersion = null;
+                            ai.setBundleVersion( null );
                         }
 
                         attValue = mainAttributes.getValue( BEP );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleExportPackage = attValue;
+                            ai.setBundleExportPackage( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleExportPackage = null;
+                            ai.setBundleExportPackage( null );
                         }
 
                         attValue = mainAttributes.getValue( BES );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleExportService = attValue;
+                            ai.setBundleExportService( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleExportService = null;
+                            ai.setBundleExportService( null );
                         }
 
                         attValue = mainAttributes.getValue( BD );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleDescription = attValue;
+                            ai.setBundleDescription( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleDescription = null;
+                            ai.setBundleDescription( null );
                         }
 
                         attValue = mainAttributes.getValue( BN );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleName = attValue;
+                            ai.setBundleName( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleName = null;
+                            ai.setBundleName( null );
                         }
 
                         attValue = mainAttributes.getValue( BL );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleLicense = attValue;
+                            ai.setBundleLicense( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleLicense = null;
+                            ai.setBundleLicense( null );
                         }
 
                         attValue = mainAttributes.getValue( BDU );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleDocUrl = attValue;
+                            ai.setBundleDocUrl( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleDocUrl = null;
+                            ai.setBundleDocUrl( null );
                         }
 
                         attValue = mainAttributes.getValue( BIP );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleImportPackage = attValue;
+                            ai.setBundleImportPackage( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleImportPackage = null;
+                            ai.setBundleImportPackage( null );
                         }
 
                         attValue = mainAttributes.getValue( BRB );
                         if ( StringUtils.isNotBlank( attValue ) )
                         {
-                            ai.bundleRequireBundle = attValue;
+                            ai.setBundleRequireBundle( attValue );
                             updated = true;
                         }
                         else
                         {
-                            ai.bundleRequireBundle = null;
+                            ai.setBundleRequireBundle( null );
                         }
 
                     }

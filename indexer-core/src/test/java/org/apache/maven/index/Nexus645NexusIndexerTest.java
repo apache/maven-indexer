@@ -57,34 +57,34 @@ public class Nexus645NexusIndexerTest
         // g a v p c #1
         ai = list.get( 0 );
 
-        assertEquals( "org.codehaus.tycho", ai.groupId );
-        assertEquals( "tycho-distribution", ai.artifactId );
-        assertEquals( "0.3.0-SNAPSHOT", ai.version );
-        assertEquals( "pom", ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-645", ai.repository );
-        assertEquals( "pom", ai.fextension );
+        assertEquals( "org.codehaus.tycho", ai.getGroupId() );
+        assertEquals( "tycho-distribution", ai.getArtifactId() );
+        assertEquals( "0.3.0-SNAPSHOT", ai.getVersion() );
+        assertEquals( "pom", ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-645", ai.getRepository() );
+        assertEquals( "pom", ai.getFileExtension() );
 
         // g a v p c #2
         ai = list.get( 1 );
 
-        assertEquals( "org.codehaus.tycho", ai.groupId );
-        assertEquals( "tycho-distribution", ai.artifactId );
-        assertEquals( "0.3.0-SNAPSHOT", ai.version );
-        assertEquals( "tar.gz", ai.packaging );
-        assertEquals( "bin", ai.classifier );
-        assertEquals( "nexus-645", ai.repository );
-        assertEquals( "tar.gz", ai.fextension );
+        assertEquals( "org.codehaus.tycho", ai.getGroupId() );
+        assertEquals( "tycho-distribution", ai.getArtifactId() );
+        assertEquals( "0.3.0-SNAPSHOT", ai.getVersion() );
+        assertEquals( "tar.gz", ai.getPackaging() );
+        assertEquals( "bin", ai.getClassifier() );
+        assertEquals( "nexus-645", ai.getRepository() );
+        assertEquals( "tar.gz", ai.getFileExtension() );
 
         // g a v p c #3
         ai = list.get( 2 );
 
-        assertEquals( "org.codehaus.tycho", ai.groupId );
-        assertEquals( "tycho-distribution", ai.artifactId );
-        assertEquals( "0.3.0-SNAPSHOT", ai.version );
-        assertEquals( "zip", ai.packaging );
-        assertEquals( "bin", ai.classifier );
-        assertEquals( "nexus-645", ai.repository );
-        assertEquals( "zip", ai.fextension );
+        assertEquals( "org.codehaus.tycho", ai.getGroupId() );
+        assertEquals( "tycho-distribution", ai.getArtifactId() );
+        assertEquals( "0.3.0-SNAPSHOT", ai.getVersion() );
+        assertEquals( "zip", ai.getPackaging() );
+        assertEquals( "bin", ai.getClassifier() );
+        assertEquals( "nexus-645", ai.getRepository() );
+        assertEquals( "zip", ai.getFileExtension() );
     }
 }

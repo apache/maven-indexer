@@ -59,12 +59,12 @@ public class Mindexer35NexusIndexerTest
         // g a v p c #1
         ai = list.get( 0 );
 
-        assertEquals( "org.apache.maven.indexer.test", ai.groupId );
-        assertEquals( "sample-war", ai.artifactId );
-        assertEquals( "1.0-SNAPSHOT", ai.version );
-        assertEquals( "war", ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "mindexer-35", ai.repository );
-        assertEquals( "war", ai.fextension );
+        assertEquals( "org.apache.maven.indexer.test", ai.getGroupId() );
+        assertEquals( "sample-war", ai.getArtifactId() );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
+        assertEquals( "war", ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "mindexer-35", ai.getRepository() );
+        assertEquals( "war", ai.getFileExtension() );
     }
 }

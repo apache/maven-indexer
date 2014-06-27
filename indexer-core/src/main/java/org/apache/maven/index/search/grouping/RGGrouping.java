@@ -46,7 +46,7 @@ public class RGGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.repository + ":" + artifactInfo.groupId;
+        return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId();
     }
 
 }

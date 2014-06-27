@@ -33,13 +33,6 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.ArtifactInfoGroup;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.GroupedSearchRequest;
-import org.apache.maven.index.GroupedSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 
@@ -80,15 +73,15 @@ public class Index20081108RegressionTest
 
             {
                 ArtifactInfo ai = list.get( 0 );
-                assertEquals( "1.6.1", ai.version );
-                assertEquals( "jar", ai.fextension );
-                assertEquals( "jar", ai.packaging );
+                assertEquals( "1.6.1", ai.getVersion() );
+                assertEquals( "jar", ai.getFileExtension() );
+                assertEquals( "jar", ai.getPackaging() );
             }
             {
                 ArtifactInfo ai = list.get( 1 );
-                assertEquals( "1.5", ai.version );
-                assertEquals( "jar", ai.fextension );
-                assertEquals( "jar", ai.packaging );
+                assertEquals( "1.5", ai.getVersion() );
+                assertEquals( "jar", ai.getFileExtension() );
+                assertEquals( "jar", ai.getPackaging() );
             }
         }
         {
@@ -97,8 +90,8 @@ public class Index20081108RegressionTest
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            assertEquals( "tar.gz", ai.packaging );
-            assertEquals( "tar.gz", ai.fextension );
+            assertEquals( "tar.gz", ai.getPackaging() );
+            assertEquals( "tar.gz", ai.getFileExtension() );
         }
         {
             Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "zip" ) );
@@ -106,8 +99,8 @@ public class Index20081108RegressionTest
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            assertEquals( "zip", ai.packaging );
-            assertEquals( "zip", ai.fextension );
+            assertEquals( "zip", ai.getPackaging() );
+            assertEquals( "zip", ai.getFileExtension() );
         }
     }
 

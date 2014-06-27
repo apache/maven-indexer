@@ -82,18 +82,18 @@ public class JarFileContentsIndexCreator
 
     public void updateDocument( final ArtifactInfo ai, final Document doc )
     {
-        if ( ai.classNames != null )
+        if ( ai.getClassNames() != null )
         {
-            doc.add( FLD_CLASSNAMES_KW.toField( ai.classNames ) );
-            doc.add( FLD_CLASSNAMES.toField( ai.classNames ) );
+            doc.add( FLD_CLASSNAMES_KW.toField( ai.getClassNames() ) );
+            doc.add( FLD_CLASSNAMES.toField( ai.getClassNames() ) );
         }
     }
 
     public void updateLegacyDocument( final ArtifactInfo ai, final Document doc )
     {
-        if ( ai.classNames != null )
+        if ( ai.getClassNames() != null )
         {
-            String classNames = ai.classNames;
+            String classNames = ai.getClassNames();
 
             // downgrade the classNames if needed
             if ( classNames.length() > 0 && classNames.charAt( 0 ) == '/' )
@@ -121,7 +121,7 @@ public class JarFileContentsIndexCreator
         {
             if ( names.length() == 0 || names.charAt( 0 ) == '/' )
             {
-                artifactInfo.classNames = names;
+                artifactInfo.setClassNames( names );
             }
             else
             {
@@ -132,7 +132,7 @@ public class JarFileContentsIndexCreator
                 {
                     sb.append( '/' ).append( line ).append( '\n' );
                 }
-                artifactInfo.classNames = sb.toString();
+                artifactInfo.setClassNames( sb.toString() );
             }
 
             return true;
@@ -201,11 +201,11 @@ public class JarFileContentsIndexCreator
 
             if ( fieldValue.length() != 0 )
             {
-                ai.classNames = fieldValue;
+                ai.setClassNames( fieldValue );
             }
             else
             {
-                ai.classNames = null;
+                ai.setClassNames( null );
             }
         }
         finally

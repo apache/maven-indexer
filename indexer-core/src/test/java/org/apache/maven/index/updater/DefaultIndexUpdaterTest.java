@@ -232,7 +232,7 @@ public class DefaultIndexUpdaterTest
 
         Set<ArtifactInfo> results = response.getResults();
         ArtifactInfo artifactInfo = results.iterator().next();
-        assertEquals( artifactInfo.artifactId, "dma.integration.tests" );
+        assertEquals( artifactInfo.getArtifactId(), "dma.integration.tests" );
     }
 
     public void testMergeGroups()

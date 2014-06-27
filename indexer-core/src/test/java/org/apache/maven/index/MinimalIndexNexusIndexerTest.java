@@ -56,12 +56,12 @@ public class MinimalIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "com.adobe.flexunit", ai.groupId );
-        assertEquals( "flexunit", ai.artifactId );
-        assertEquals( "0.90", ai.version );
-        assertEquals( null, ai.classifier );
-        assertEquals( "swc", ai.packaging );
+        assertEquals( "com.adobe.flexunit", ai.getGroupId() );
+        assertEquals( "flexunit", ai.getArtifactId() );
+        assertEquals( "0.90", ai.getVersion() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "swc", ai.getPackaging() );
 
-        assertEquals( "swc", ai.fextension );
+        assertEquals( "swc", ai.getFileExtension() );
     }
 }

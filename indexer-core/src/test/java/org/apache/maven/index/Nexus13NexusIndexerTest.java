@@ -98,9 +98,9 @@ public class Nexus13NexusIndexerTest
         assertEquals( r.toString(), 1, r.size() );
 
         ArtifactInfo ai = r.iterator().next();
-        assertEquals( "cisco.infra.dft", ai.groupId );
-        assertEquals( "archetype.sdf", ai.artifactId );
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "cisco.infra.dft", ai.getGroupId() );
+        assertEquals( "archetype.sdf", ai.getArtifactId() );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
     public void testIndexTimestamp()
@@ -141,13 +141,13 @@ public class Nexus13NexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
 
         ai = list.get( 1 );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
 
-        assertEquals( "nexus-13", ai.repository );
+        assertEquals( "nexus-13", ai.getRepository() );
 
         newContext.close( true );
     }
@@ -176,11 +176,11 @@ public class Nexus13NexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
 
         ai = list.get( 1 );
 
-        assertEquals( "nexus-13", ai.repository );
+        assertEquals( "nexus-13", ai.getRepository() );
 
     }
 
@@ -209,7 +209,7 @@ public class Nexus13NexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
     public void testSearchGroupedProblematicNames()
@@ -246,11 +246,11 @@ public class Nexus13NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "cisco.infra.dft", ai.groupId );
+        assertEquals( "cisco.infra.dft", ai.getGroupId() );
 
-        assertEquals( "dma.plugin.utils", ai.artifactId );
+        assertEquals( "dma.plugin.utils", ai.getArtifactId() );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
 
         // Using a file
 
@@ -266,10 +266,10 @@ public class Nexus13NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "cisco.infra.dft", ai.groupId );
+        assertEquals( "cisco.infra.dft", ai.getGroupId() );
 
-        assertEquals( "maven-dma-mgmt-plugin", ai.artifactId );
+        assertEquals( "maven-dma-mgmt-plugin", ai.getArtifactId() );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 }

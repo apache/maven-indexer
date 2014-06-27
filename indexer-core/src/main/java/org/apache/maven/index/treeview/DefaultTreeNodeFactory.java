@@ -57,11 +57,11 @@ public class DefaultTreeNodeFactory
 
     public TreeNode createANode( IndexTreeView tview, TreeViewRequest req, ArtifactInfo ai, String path )
     {
-        TreeNode result = createNode( tview, req, path, false, ai.artifactId, Type.A );
+        TreeNode result = createNode( tview, req, path, false, ai.getArtifactId(), Type.A );
 
-        result.setGroupId( ai.groupId );
+        result.setGroupId( ai.getGroupId() );
 
-        result.setArtifactId( ai.artifactId );
+        result.setArtifactId( ai.getArtifactId() );
 
         return decorateANode( tview, req, ai, path, result );
     }
@@ -74,13 +74,13 @@ public class DefaultTreeNodeFactory
 
     public TreeNode createVNode( IndexTreeView tview, TreeViewRequest req, ArtifactInfo ai, String path )
     {
-        TreeNode result = createNode( tview, req, path, false, ai.version, Type.V );
+        TreeNode result = createNode( tview, req, path, false, ai.getVersion(), Type.V );
 
-        result.setGroupId( ai.groupId );
+        result.setGroupId( ai.getGroupId() );
 
-        result.setArtifactId( ai.artifactId );
+        result.setArtifactId( ai.getArtifactId() );
 
-        result.setVersion( ai.version );
+        result.setVersion( ai.getVersion() );
 
         return decorateVNode( tview, req, ai, path, result );
     }
@@ -93,22 +93,22 @@ public class DefaultTreeNodeFactory
 
     public TreeNode createArtifactNode( IndexTreeView tview, TreeViewRequest req, ArtifactInfo ai, String path )
     {
-        StringBuilder sb = new StringBuilder( ai.artifactId ).append( "-" ).append( ai.version );
+        StringBuilder sb = new StringBuilder( ai.getArtifactId() ).append( "-" ).append( ai.getVersion() );
 
-        if ( ai.classifier != null )
+        if ( ai.getClassifier() != null )
         {
-            sb.append( "-" ).append( ai.classifier );
+            sb.append( "-" ).append( ai.getClassifier() );
         }
 
-        sb.append( "." ).append( ai.fextension == null ? "jar" : ai.fextension );
+        sb.append( "." ).append( ai.getFileExtension() == null ? "jar" : ai.getFileExtension() );
 
         TreeNode result = createNode( tview, req, path, true, sb.toString(), Type.artifact );
 
-        result.setGroupId( ai.groupId );
+        result.setGroupId( ai.getGroupId() );
 
-        result.setArtifactId( ai.artifactId );
+        result.setArtifactId( ai.getArtifactId() );
 
-        result.setVersion( ai.version );
+        result.setVersion( ai.getVersion() );
 
         return decorateArtifactNode( tview, req, ai, path, result );
     }

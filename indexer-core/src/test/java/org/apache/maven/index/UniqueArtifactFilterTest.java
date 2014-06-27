@@ -23,13 +23,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IteratorSearchRequest;
-import org.apache.maven.index.IteratorSearchResponse;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.SearchType;
-import org.apache.maven.index.UniqueArtifactFilterPostprocessor;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.util.FileUtils;
@@ -54,7 +47,7 @@ public class UniqueArtifactFilterTest
 
         for ( ArtifactInfo ai : response.getResults() )
         {
-            assertEquals( "GroupId must match \"qdox\"!", "qdox", ai.groupId );
+            assertEquals( "GroupId must match \"qdox\"!", "qdox", ai.getGroupId() );
         }
     }
 
@@ -82,11 +75,11 @@ public class UniqueArtifactFilterTest
         assertTrue( "Iterator has to have next (2 should be returned)", ai != null );
 
         assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.version );
+            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getVersion() );
         assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.packaging );
+            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getPackaging() );
         assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.classifier );
+            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getClassifier() );
     }
 
     // ==

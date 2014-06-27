@@ -99,7 +99,7 @@ public class ConcurrentUseTest
 
         //
 
-        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( ai.groupId ) );
+        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, new UserInputSearchExpression( ai.getGroupId() ) );
 
         FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q, context ) );
 

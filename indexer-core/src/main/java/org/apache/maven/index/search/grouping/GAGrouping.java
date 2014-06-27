@@ -46,7 +46,7 @@ public class GAGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.groupId + " : " + artifactInfo.artifactId;
+        return artifactInfo.getGroupId() + " : " + artifactInfo.getArtifactId();
     }
 
 }

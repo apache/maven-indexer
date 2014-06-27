@@ -138,7 +138,7 @@ public class DefaultScannerListener
             }
 
             groups.add( ac.getArtifactInfo().getRootGroup() );
-            allGroups.add( ac.getArtifactInfo().groupId );
+            allGroups.add( ac.getArtifactInfo().getGroupId() );
 
             count++;
         }
@@ -270,22 +270,22 @@ public class DefaultScannerListener
 
                     ArtifactInfo ai = new ArtifactInfo();
 
-                    ai.repository = context.getRepositoryId();
+                    ai.setRepository( context.getRepositoryId() );
 
-                    ai.groupId = ra[0];
+                    ai.setGroupId( ra[0] );
 
-                    ai.artifactId = ra[1];
+                    ai.setArtifactId( ra[1] );
 
-                    ai.version = ra[2];
+                    ai.setVersion( ra[2] );
 
                     if ( ra.length > 3 )
                     {
-                        ai.classifier = ArtifactInfo.renvl( ra[3] );
+                        ai.setClassifier( ArtifactInfo.renvl( ra[3] ) );
                     }
 
                     if ( ra.length > 4 )
                     {
-                        ai.packaging = ArtifactInfo.renvl( ra[4] );
+                        ai.setPackaging( ArtifactInfo.renvl( ra[4] ) );
                     }
 
                     // minimal ArtifactContext for removal

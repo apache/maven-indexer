@@ -46,7 +46,7 @@ public class GGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.groupId;
+        return artifactInfo.getGroupId();
     }
 
 }

@@ -56,7 +56,7 @@ public class JarFileContentsIndexCreatorTest
 
         indexCreator.populateArtifactInfo( artifactContext );
 
-        assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().classNames );
+        assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
     public void test_nexus_2318_indexJarWithSources()
@@ -73,7 +73,7 @@ public class JarFileContentsIndexCreatorTest
 
         indexCreator.populateArtifactInfo( artifactContext );
 
-        assertNull( "Classes should be null", artifactContext.getArtifactInfo().classNames );
+        assertNull( "Classes should be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
     public void testMindexer35ScanWar()
@@ -95,8 +95,8 @@ public class JarFileContentsIndexCreatorTest
         indexCreator.populateArtifactInfo( artifactContext );
 
         assertTrue( "Classes should contain WebappClass",
-            artifactContext.getArtifactInfo().classNames.contains( "WebappClass" ) );
+            artifactContext.getArtifactInfo().getClassNames().contains( "WebappClass" ) );
         assertEquals( "WebappClass should have proper package",
-            "/org/apache/maven/indexer/samples/webapp/WebappClass", artifactContext.getArtifactInfo().classNames );
+            "/org/apache/maven/indexer/samples/webapp/WebappClass", artifactContext.getArtifactInfo().getClassNames() );
     }
 }
