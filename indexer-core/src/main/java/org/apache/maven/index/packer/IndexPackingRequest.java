@@ -30,7 +30,7 @@ import org.apache.maven.index.context.IndexingContext;
  */
 public class IndexPackingRequest
 {
-    private static final int MAX_CHUNKS = 30;
+    public static final int MAX_CHUNKS = 30;
 
     private IndexingContext context;
 

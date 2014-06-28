@@ -29,9 +29,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
@@ -44,6 +43,8 @@ import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public class FullIndexNexusIndexerTest
     extends DefaultIndexNexusIndexerTest
@@ -110,7 +111,7 @@ public class FullIndexNexusIndexerTest
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals( r.toString(), 2, r.size() );
+            assertThat(r.toString(), r.size(), is(2));
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -491,6 +492,8 @@ public class FullIndexNexusIndexerTest
                 }
             }
         }
+        
+        assertThat(response.getTotalHitsCount(), is(5));
 
         assertEquals( "found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits() );
     }

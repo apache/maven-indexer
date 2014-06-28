@@ -19,6 +19,9 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactContext;
@@ -32,10 +35,8 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Olivier Lamy
@@ -270,7 +271,7 @@ public class OsgiArtifactIndexCreatorTest
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
 
             //System.out.println("results with export package query " + response.getResults() );
-            assertEquals( 1, response.getResults().size() );
+            assertThat(response.getResults().size(), is(1));
 
             ArtifactInfo ai = response.getResults().iterator().next();
             System.out.println( "ai " + ai );

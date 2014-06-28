@@ -30,11 +30,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
@@ -49,6 +49,7 @@ import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.ReturnValueAction;
 import org.jmock.lib.action.VoidAction;
+import org.junit.Ignore;
 
 /**
  * @author Eugene Kuleshov
@@ -149,7 +150,7 @@ public class DefaultIndexUpdaterTest
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
             assertEquals( tempContent.toString(), 3, tempContent.size() );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory() );
+            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -192,7 +193,7 @@ public class DefaultIndexUpdaterTest
             indexer.deleteArtifactFromIndex(
                 createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.4", null ), tempContext );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory() );
+            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -266,7 +267,7 @@ public class DefaultIndexUpdaterTest
             indexer.addArtifactToIndex(
                 createArtifactContext( repositoryId, "org.slf4j.foo", "jcl104-over-slf4j", "1.4.2", null ), context );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory() );
+            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -827,7 +828,8 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
-    public void testUpdateForceFullUpdateNoGZ()
+    @Ignore("Legacy format no longer supported with Lucene 4")
+    public void ignoreTestUpdateForceFullUpdateNoGZ()
         throws Exception
     {
         Mockery mockery = new Mockery();

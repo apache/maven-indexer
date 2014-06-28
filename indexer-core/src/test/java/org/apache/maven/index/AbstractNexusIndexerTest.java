@@ -19,13 +19,15 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.SimpleFSDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -45,6 +47,7 @@ public abstract class AbstractNexusIndexerTest
     protected void setUp()
         throws Exception
     {
+//        indexDir = new SimpleFSDirectory(new File("/tmp/nexus-test"));
         super.setUp();
         // FileUtils.deleteDirectory( indexDir );
         nexusIndexer = lookup( NexusIndexer.class );

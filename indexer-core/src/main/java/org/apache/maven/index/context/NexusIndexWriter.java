@@ -42,11 +42,12 @@ public class NexusIndexWriter
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
-        super( directory, analyzer, create, MaxFieldLength.LIMITED );
+        //super( directory, analyzer, create, MaxFieldLength.LIMITED );
+        this(directory, new IndexWriterConfig(Version.LUCENE_46, analyzer));
 
         // setSimilarity( new NexusSimilarity() );
     }
-
+    
     public NexusIndexWriter( final Directory directory, final IndexWriterConfig config )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
@@ -57,10 +58,11 @@ public class NexusIndexWriter
 
     public static IndexWriterConfig defaultConfig()
     {
-        final IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_36, new NexusAnalyzer() );
+        final IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_46, new NexusAnalyzer() );
         // default open mode is CreateOrAppend which suits us
         config.setRAMBufferSizeMB( 2.0 ); // old default
         config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
+        config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
         return config;
     }
 }

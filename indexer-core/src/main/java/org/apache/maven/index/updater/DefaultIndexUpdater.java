@@ -43,13 +43,22 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Bits;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -206,8 +215,7 @@ public class DefaultIndexUpdater
             else
             {
                 // legacy transfer format
-                timestamp = unpackIndexArchive( is, directory, //
-                    updateRequest.getIndexingContext() );
+                throw new IllegalArgumentException("The legacy format is no longer supported by this version of maven-indexer.");
             }
 
             if ( updateRequest.getDocumentFilter() != null )
@@ -310,7 +318,7 @@ public class DefaultIndexUpdater
                     continue;
                 }
 
-                IndexOutput io = directory.createOutput( entry.getName() );
+                IndexOutput io = directory.createOutput( entry.getName(), IOContext.DEFAULT );
                 try
                 {
                     int n = 0;
@@ -342,16 +350,31 @@ public class DefaultIndexUpdater
         {
             r = IndexReader.open( sourcedir );
             w = new NexusIndexWriter( targetdir, new NexusAnalyzer(), true );
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if (liveDocs == null || liveDocs.get(i) )
                 {
-                    w.addDocument( IndexUtils.updateDocument( r.document( i ), context ) );
+                    Document sourceDocument = r.document( i );
+                    Document targetDocument = IndexUtils.updateDocument( sourceDocument, context );
+                    
+                    //Lucene does not return metadata for stored documents, so we need to fix that
+                    for (IndexableField indexableField : targetDocument.getFields())
+                    {
+                        if(indexableField.name().equals(DefaultIndexingContext.FLD_DESCRIPTOR))
+                        {
+                            targetDocument = new Document();
+                            targetDocument.add(new StringField(DefaultIndexingContext.FLD_DESCRIPTOR, DefaultIndexingContext.FLD_DESCRIPTOR_CONTENTS, Field.Store.YES));
+                            targetDocument.add( new StringField( DefaultIndexingContext.FLD_IDXINFO, DefaultIndexingContext.VERSION + ArtifactInfo.FS + context.getRepositoryId(), Field.Store.YES) );
+                            break;
+                        }
+                    }
+                    w.addDocument( targetDocument );
                 }
             }
 
-            w.optimize();
+            w.forceMerge(1);
             w.commit();
         }
         finally
@@ -365,16 +388,19 @@ public class DefaultIndexUpdater
         throws IOException
     {
         IndexReader r = null;
+        IndexWriter w = null;
         try
         {
-            // explicitly RW reader needed
-            r = IndexReader.open( directory, false );
+            r = IndexReader.open( directory );
+            w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
+            
+            Bits liveDocs = MultiFields.getLiveDocs(r);
 
             int numDocs = r.maxDoc();
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if ( r.isDeleted( i ) )
+                if (liveDocs != null && ! liveDocs.get(i) )
                 {
                     continue;
                 }
@@ -383,23 +409,25 @@ public class DefaultIndexUpdater
 
                 if ( !filter.accept( d ) )
                 {
-                    r.deleteDocument( i );
+                    boolean success = w.tryDeleteDocument(r, i);
+                    //FIXME handle deletion failure
                 }
             }
+            w.commit();
         }
         finally
         {
             IndexUtils.close( r );
+            IndexUtils.close( w );
         }
 
-        IndexWriter w = null;
+        w = null;
         try
         {
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
-            w.optimize();
-
+            w.forceMerge(4);
             w.commit();
         }
         finally

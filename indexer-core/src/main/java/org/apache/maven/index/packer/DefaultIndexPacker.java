@@ -26,24 +26,33 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.LockObtainFailedException;
+import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -168,7 +177,7 @@ public class DefaultIndexPacker
         {
             info.setProperty( IndexingContext.INDEX_LEGACY_TIMESTAMP, format( timestamp ) );
 
-            writeIndexArchive( request.getContext(), legacyFile );
+            writeIndexArchive( request.getContext(), legacyFile, request.getMaxIndexChunks() );
 
             if ( request.isCreateChecksumFiles() )
             {
@@ -239,6 +248,12 @@ public class DefaultIndexPacker
     void writeIndexArchive( IndexingContext context, File targetArchive )
         throws IOException
     {
+        writeIndexArchive(context, targetArchive, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    void writeIndexArchive( IndexingContext context, File targetArchive, int maxSegments )
+        throws IOException
+    {
         if ( targetArchive.exists() )
         {
             targetArchive.delete();
@@ -264,6 +279,15 @@ public class DefaultIndexPacker
     public static void packIndexArchive( IndexingContext context, OutputStream os )
         throws IOException
     {
+        packIndexArchive(context, os, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    /**
+     * Pack legacy index archive into a specified output stream
+     */
+    public static void packIndexArchive( IndexingContext context, OutputStream os, int maxSegments )
+        throws IOException
+    {
         File indexArchive = File.createTempFile( "nexus-index", "" );
 
         File indexDir = new File( indexArchive.getAbsoluteFile().getParentFile(), indexArchive.getName() + ".dir" );
@@ -281,7 +305,7 @@ public class DefaultIndexPacker
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try
             {
-                copyLegacyDocuments( indexSearcher.getIndexReader(), fdir, context );
+                copyLegacyDocuments( indexSearcher.getIndexReader(), fdir, context, maxSegments);
             }
             finally
             {
@@ -300,20 +324,42 @@ public class DefaultIndexPacker
     static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
+        copyLegacyDocuments(r, targetdir, context, IndexPackingRequest.MAX_CHUNKS);
+    }
+    
+    static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context, int maxSegments)
+        throws CorruptIndexException, LockObtainFailedException, IOException
+    {
         IndexWriter w = null;
+        Bits liveDocs = MultiFields.getLiveDocs(r);
         try
         {
             w = new NexusIndexWriter( targetdir, new NexusLegacyAnalyzer(), true );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if ( !r.isDeleted( i ) )
+                if ( liveDocs == null || liveDocs.get(i) )
                 {
-                    w.addDocument( updateLegacyDocument( r.document( i ), context ) );
+                    Document legacyDocument = r.document( i );
+                    Document updatedLegacyDocument = updateLegacyDocument( legacyDocument, context );
+                    
+                    //Lucene does not return metadata for stored documents, so we need to fix that
+                    for (IndexableField indexableField : updatedLegacyDocument.getFields())
+                    {
+                        if(indexableField.name().equals(DefaultIndexingContext.FLD_DESCRIPTOR))
+                        {
+                            updatedLegacyDocument = new Document();
+                            updatedLegacyDocument.add(new StringField(DefaultIndexingContext.FLD_DESCRIPTOR, DefaultIndexingContext.FLD_DESCRIPTOR_CONTENTS, Field.Store.YES));
+                            updatedLegacyDocument.add( new StringField( DefaultIndexingContext.FLD_IDXINFO, DefaultIndexingContext.VERSION + ArtifactInfo.FS + context.getRepositoryId(), Field.Store.YES) );
+                            break;
+                        }
+                    }
+                    
+                    w.addDocument( updatedLegacyDocument );
                 }
             }
 
-            w.optimize();
+            w.forceMerge(maxSegments);
             w.commit();
         }
         finally
@@ -390,7 +436,7 @@ public class DefaultIndexPacker
 
         zos.putNextEntry( e );
 
-        IndexInput in = directory.openInput( name );
+        IndexInput in = directory.openInput( name, IOContext.DEFAULT );
 
         try
         {

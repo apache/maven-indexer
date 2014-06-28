@@ -26,8 +26,8 @@ import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -139,8 +139,8 @@ public class DefaultIndexerEngine
 
         for ( Object o : d.getFields() )
         {
-            Fieldable f = (Fieldable) o;
-            if ( f.isStored() )
+            IndexableField f = (IndexableField) o;
+            if ( f.fieldType().stored())
             {
                 result.put( f.name(), f.stringValue() );
             }
