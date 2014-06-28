@@ -36,11 +36,6 @@ under the License.
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.maven.indexer</groupId>
-      <artifactId>indexer-artifact</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-component-annotations</artifactId>
     </dependency>

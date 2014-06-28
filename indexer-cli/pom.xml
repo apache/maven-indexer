@@ -40,11 +40,6 @@ under the License.
     <!-- The indexer -->
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
-      <artifactId>indexer-artifact</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
       <version>${project.version}</version>
     </dependency>
