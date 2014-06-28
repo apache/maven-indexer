@@ -131,7 +131,7 @@ public class Nexus3293TimestampSnapshotTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "jar", ai.packaging );
-        assertEquals( "jar", ai.fextension );
+        assertEquals( "jar", ai.getPackaging() );
+        assertEquals( "jar", ai.getFileExtension() );
     }
 }

@@ -46,8 +46,8 @@ public class GAVGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.groupId + ":" + artifactInfo.artifactId + ":" + artifactInfo.version + ":"
-            + artifactInfo.classifier;
+        return artifactInfo.getGroupId() + ":" + artifactInfo.getArtifactId() + ":" + artifactInfo.getVersion() + ":"
+            + artifactInfo.getClassifier();
     }
 
 }

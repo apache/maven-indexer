@@ -190,9 +190,9 @@ public class DefaultIndexerEngine
         }
 
         Set<String> allGroups = context.getAllGroups();
-        if ( !allGroups.contains( ac.getArtifactInfo().groupId ) )
+        if ( !allGroups.contains( ac.getArtifactInfo().getGroupId() ) )
         {
-            allGroups.add( ac.getArtifactInfo().groupId );
+            allGroups.add( ac.getArtifactInfo().getGroupId() );
             context.setAllGroups( allGroups );
         }
     }

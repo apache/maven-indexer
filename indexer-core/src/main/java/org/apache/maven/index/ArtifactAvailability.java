@@ -22,7 +22,7 @@ package org.apache.maven.index;
 /**
  * Enumeration provides values indicating artifact availability
  */
-public enum ArtifactAvailablility
+public enum ArtifactAvailability
 {
     /**
      * Artifact is not present locally
@@ -41,7 +41,7 @@ public enum ArtifactAvailablility
 
     private final int n;
 
-    private ArtifactAvailablility( int n )
+    private ArtifactAvailability( int n )
     {
         this.n = n;
     }
@@ -52,7 +52,7 @@ public enum ArtifactAvailablility
         return Integer.toString( n );
     }
 
-    public static ArtifactAvailablility fromString( String s )
+    public static ArtifactAvailability fromString( String s )
     {
         try
         {

@@ -60,11 +60,11 @@ public abstract class AbstractArchetypeDataSource
             for ( ArtifactInfo info : searchResponse.getResults() )
             {
                 Archetype archetype = new Archetype();
-                archetype.setGroupId( info.groupId );
-                archetype.setArtifactId( info.artifactId );
-                archetype.setVersion( info.version );
-                archetype.setDescription( info.description );
-                archetype.setRepository( repositories.get( info.repository ) );
+                archetype.setGroupId( info.getGroupId() );
+                archetype.setArtifactId( info.getArtifactId() );
+                archetype.setVersion( info.getVersion() );
+                archetype.setDescription( info.getDescription() );
+                archetype.setRepository( repositories.get( info.getRepository() ) );
                 catalog.addArchetype( archetype );
             }
         }

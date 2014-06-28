@@ -39,21 +39,6 @@ import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.ArtifactInfoGroup;
-import org.apache.maven.index.Field;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.GroupedSearchRequest;
-import org.apache.maven.index.GroupedSearchResponse;
-import org.apache.maven.index.IteratorSearchRequest;
-import org.apache.maven.index.IteratorSearchResponse;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.MatchHighlight;
-import org.apache.maven.index.MatchHighlightMode;
-import org.apache.maven.index.MatchHighlightRequest;
-import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -273,13 +258,13 @@ public class FullIndexNexusIndexerTest
                 assertEquals( r.toString(), 2, list1.size() );
 
                 ArtifactInfo ai1 = list1.get( 0 );
-                assertEquals( "org.slf4j", ai1.groupId );
-                assertEquals( "slf4j-api", ai1.artifactId );
-                assertEquals( "1.4.2", ai1.version );
+                assertEquals( "org.slf4j", ai1.getGroupId() );
+                assertEquals( "slf4j-api", ai1.getArtifactId() );
+                assertEquals( "1.4.2", ai1.getVersion() );
                 ArtifactInfo ai2 = list1.get( 1 );
-                assertEquals( "org.slf4j", ai2.groupId );
-                assertEquals( "slf4j-api", ai2.artifactId );
-                assertEquals( "1.4.1", ai2.version );
+                assertEquals( "org.slf4j", ai2.getGroupId() );
+                assertEquals( "slf4j-api", ai2.getArtifactId() );
+                assertEquals( "1.4.1", ai2.getVersion() );
             }
 
             // this is fixed now, no more false hit
@@ -315,27 +300,27 @@ public class FullIndexNexusIndexerTest
         Iterator<ArtifactInfo> it = r.iterator();
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.apache.directory.server", ai.groupId );
-            assertEquals( "apacheds-schema-archetype", ai.artifactId );
-            assertEquals( "1.0.2", ai.version );
+            assertEquals( "org.apache.directory.server", ai.getGroupId() );
+            assertEquals( "apacheds-schema-archetype", ai.getArtifactId() );
+            assertEquals( "1.0.2", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.apache.servicemix.tooling", ai.groupId );
-            assertEquals( "servicemix-service-engine", ai.artifactId );
-            assertEquals( "3.1", ai.version );
+            assertEquals( "org.apache.servicemix.tooling", ai.getGroupId() );
+            assertEquals( "servicemix-service-engine", ai.getArtifactId() );
+            assertEquals( "3.1", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.terracotta.maven.archetypes", ai.groupId );
-            assertEquals( "pojo-archetype", ai.artifactId );
-            assertEquals( "1.0.3", ai.version );
+            assertEquals( "org.terracotta.maven.archetypes", ai.getGroupId() );
+            assertEquals( "pojo-archetype", ai.getArtifactId() );
+            assertEquals( "1.0.3", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "proptest", ai.groupId );
-            assertEquals( "proptest-archetype", ai.artifactId );
-            assertEquals( "1.0", ai.version );
+            assertEquals( "proptest", ai.getGroupId() );
+            assertEquals( "proptest-archetype", ai.getArtifactId() );
+            assertEquals( "1.0", ai.getVersion() );
         }
     }
 
@@ -377,13 +362,13 @@ public class FullIndexNexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.6.1", ai.version );
+        assertEquals( "1.6.1", ai.getVersion() );
 
         ai = list.get( 1 );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
-        assertEquals( "test", ai.repository );
+        assertEquals( "test", ai.getRepository() );
 
         Date timestamp = newContext.getTimestamp();
 
@@ -442,10 +427,10 @@ public class FullIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "brokenjar", ai.groupId );
-        assertEquals( "brokenjar", ai.artifactId );
-        assertEquals( "1.0", ai.version );
-        assertEquals( null, ai.classNames );
+        assertEquals( "brokenjar", ai.getGroupId() );
+        assertEquals( "brokenjar", ai.getArtifactId() );
+        assertEquals( "1.0", ai.getVersion() );
+        assertEquals( null, ai.getClassNames() );
     }
 
     public void testMissingPom()
@@ -463,11 +448,11 @@ public class FullIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "missingpom", ai.groupId );
-        assertEquals( "missingpom", ai.artifactId );
-        assertEquals( "1.0", ai.version );
+        assertEquals( "missingpom", ai.getGroupId() );
+        assertEquals( "missingpom", ai.getArtifactId() );
+        assertEquals( "1.0", ai.getVersion() );
         // See Nexus 2318. It should be null for a jar without classes
-        assertNull( ai.classNames );
+        assertNull( ai.getClassNames() );
     }
 
     // ==
@@ -493,9 +478,6 @@ public class FullIndexNexusIndexerTest
 
         for ( ArtifactInfo ai : response )
         {
-            // These are _all_ classnames
-            String classnames = ai.classNames;
-
             for ( MatchHighlight mh : ai.getMatchHighlights() )
             {
                 for ( String highlighted : mh.getHighlightedMatch() )

@@ -47,11 +47,11 @@ public class UniqueGAArtifactFilterPostprocessor
 
     public boolean accepts( IndexingContext ctx, ArtifactInfo ai )
     {
-        String key = ai.groupId + ai.artifactId + ai.packaging + ai.classifier;
+        String key = ai.getGroupId() + ai.getArtifactId() + ai.getPackaging() + ai.getClassifier();
 
         if ( !repositoriesIgnored )
         {
-            key = ai.repository + key;
+            key = ai.getRepository() + key;
         }
 
         if ( gas.contains( key ) )
@@ -70,13 +70,13 @@ public class UniqueGAArtifactFilterPostprocessor
 
     public void postprocess( IndexingContext ctx, ArtifactInfo ai )
     {
-        ai.version = VERSION_LATEST;
+        ai.setVersion( VERSION_LATEST );
 
         if ( repositoriesIgnored )
         {
-            ai.context = null;
+            ai.setContext( null );
 
-            ai.repository = null;
+            ai.setRepository( null );
         }
     }
 }

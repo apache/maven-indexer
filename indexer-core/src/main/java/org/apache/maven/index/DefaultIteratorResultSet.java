@@ -236,9 +236,9 @@ public class DefaultIteratorResultSet
 
                 result.setLuceneScore( hits.scoreDocs[pointer].score );
 
-                result.repository = context.getRepositoryId();
+                result.setRepository( context.getRepositoryId() );
 
-                result.context = context.getId();
+                result.setContext( context.getId() );
 
                 if ( filter != null )
                 {
@@ -351,7 +351,7 @@ public class DefaultIteratorResultSet
      * @param context
      * @param hr
      * @param field
-     * @param doc
+     * @param text
      * @return
      * @throws IOException
      */

@@ -86,11 +86,11 @@ public class DefaultIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "org.apache.maven.plugins", ai.groupId );
-        assertEquals( "maven-core-it-plugin", ai.artifactId );
-        assertEquals( "core-it", ai.prefix );
+        assertEquals( "org.apache.maven.plugins", ai.getGroupId() );
+        assertEquals( "maven-core-it-plugin", ai.getArtifactId() );
+        assertEquals( "core-it", ai.getPrefix() );
 
-        List<String> goals = ai.goals;
+        List<String> goals = ai.getGoals();
         assertEquals( 14, goals.size() );
         assertEquals( "catch", goals.get( 0 ) );
         assertEquals( "fork", goals.get( 1 ) );
@@ -135,27 +135,27 @@ public class DefaultIndexNexusIndexerTest
         Iterator<ArtifactInfo> it = r.iterator();
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.apache.directory.server", ai.groupId );
-            assertEquals( "apacheds-schema-archetype", ai.artifactId );
-            assertEquals( "1.0.2", ai.version );
+            assertEquals( "org.apache.directory.server", ai.getGroupId() );
+            assertEquals( "apacheds-schema-archetype", ai.getArtifactId() );
+            assertEquals( "1.0.2", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.apache.servicemix.tooling", ai.groupId );
-            assertEquals( "servicemix-service-engine", ai.artifactId );
-            assertEquals( "3.1", ai.version );
+            assertEquals( "org.apache.servicemix.tooling", ai.getGroupId() );
+            assertEquals( "servicemix-service-engine", ai.getArtifactId() );
+            assertEquals( "3.1", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "org.terracotta.maven.archetypes", ai.groupId );
-            assertEquals( "pojo-archetype", ai.artifactId );
-            assertEquals( "1.0.3", ai.version );
+            assertEquals( "org.terracotta.maven.archetypes", ai.getGroupId() );
+            assertEquals( "pojo-archetype", ai.getArtifactId() );
+            assertEquals( "1.0.3", ai.getVersion() );
         }
         {
             ArtifactInfo ai = it.next();
-            assertEquals( "proptest", ai.groupId );
-            assertEquals( "proptest-archetype", ai.artifactId );
-            assertEquals( "1.0", ai.version );
+            assertEquals( "proptest", ai.getGroupId() );
+            assertEquals( "proptest-archetype", ai.getArtifactId() );
+            assertEquals( "1.0", ai.getVersion() );
         }
     }
 
@@ -197,13 +197,13 @@ public class DefaultIndexNexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.6.1", ai.version );
+        assertEquals( "1.6.1", ai.getVersion() );
 
         ai = list.get( 1 );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
-        assertEquals( "test", ai.repository );
+        assertEquals( "test", ai.getRepository() );
 
         Date timestamp = newContext.getTimestamp();
 
@@ -262,10 +262,10 @@ public class DefaultIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "brokenjar", ai.groupId );
-        assertEquals( "brokenjar", ai.artifactId );
-        assertEquals( "1.0", ai.version );
-        assertEquals( null, ai.classNames );
+        assertEquals( "brokenjar", ai.getGroupId() );
+        assertEquals( "brokenjar", ai.getArtifactId() );
+        assertEquals( "1.0", ai.getVersion() );
+        assertEquals( null, ai.getClassNames() );
     }
 
     public void testMissingPom()
@@ -283,11 +283,11 @@ public class DefaultIndexNexusIndexerTest
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "missingpom", ai.groupId );
-        assertEquals( "missingpom", ai.artifactId );
-        assertEquals( "1.0", ai.version );
+        assertEquals( "missingpom", ai.getGroupId() );
+        assertEquals( "missingpom", ai.getArtifactId() );
+        assertEquals( "1.0", ai.getVersion() );
         // See Nexus 2318. It should be null for a jar without classes
-        assertNull( ai.classNames );
+        assertNull( ai.getClassNames() );
     }
 
 }

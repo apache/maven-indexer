@@ -82,30 +82,30 @@ public class OsgiArtifactIndexCreatorTest
 
         indexCreator.populateArtifactInfo( artifactContext );
 
-        assertNotNull( "bundleSymbolicName", artifactContext.getArtifactInfo().bundleSymbolicName );
+        assertNotNull( "bundleSymbolicName", artifactContext.getArtifactInfo().getBundleSymbolicName() );
 
-        assertNotNull( "bundleVersion", artifactContext.getArtifactInfo().bundleVersion );
+        assertNotNull( "bundleVersion", artifactContext.getArtifactInfo().getBundleVersion() );
 
-        assertNotNull( "bundleExportPackage", artifactContext.getArtifactInfo().bundleExportPackage );
+        assertNotNull( "bundleExportPackage", artifactContext.getArtifactInfo().getBundleExportPackage() );
 
-        assertEquals( "org.apache.karaf.features.command", artifactContext.getArtifactInfo().bundleSymbolicName );
+        assertEquals( "org.apache.karaf.features.command", artifactContext.getArtifactInfo().getBundleSymbolicName() );
 
-        assertEquals( "2.2.2", artifactContext.getArtifactInfo().bundleVersion );
+        assertEquals( "2.2.2", artifactContext.getArtifactInfo().getBundleVersion() );
 
         assertEquals(
             "org.apache.karaf.features.command.completers;uses:=\"org.apache.karaf.features,org.apache.karaf.shell.console,org.apache.karaf.shell.console.completer\";version=\"2.2.2\",org.apache.karaf.features.command;uses:=\"org.apache.felix.gogo.commands,org.apache.karaf.features,org.apache.karaf.shell.console,org.osgi.framework,org.apache.felix.service.command\";version=\"2.2.2\"",
-            artifactContext.getArtifactInfo().bundleExportPackage );
+            artifactContext.getArtifactInfo().getBundleExportPackage() );
 
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
-        assertEquals( "This bundle provides the Karaf shell commands to manipulate features.", ai.bundleDescription );
-        assertEquals( "Apache Karaf :: Features :: Command", ai.bundleName );
-        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.bundleLicense );
-        assertEquals( "http://www.apache.org/", ai.bundleDocUrl );
+        assertEquals( "This bundle provides the Karaf shell commands to manipulate features.", ai.getBundleDescription() );
+        assertEquals( "Apache Karaf :: Features :: Command", ai.getBundleName() );
+        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense() );
+        assertEquals( "http://www.apache.org/", ai.getBundleDocUrl() );
 
         assertEquals(
             "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
-            ai.bundleImportPackage );
+            ai.getBundleImportPackage() );
     }
 
 
@@ -228,21 +228,21 @@ public class OsgiArtifactIndexCreatorTest
 
             ArtifactInfo ai = response.getResults().iterator().next();
 
-            assertEquals( "org.apache.karaf.features", ai.groupId );
-            assertEquals( "org.apache.karaf.features.command", ai.artifactId );
-            assertEquals( "2.2.2", ai.version );
-            assertEquals( "org.apache.karaf.features.command", ai.bundleSymbolicName );
-            assertEquals( "2.2.2", ai.bundleVersion );
+            assertEquals( "org.apache.karaf.features", ai.getGroupId() );
+            assertEquals( "org.apache.karaf.features.command", ai.getArtifactId() );
+            assertEquals( "2.2.2", ai.getVersion() );
+            assertEquals( "org.apache.karaf.features.command", ai.getBundleSymbolicName() );
+            assertEquals( "2.2.2", ai.getBundleVersion() );
 
             assertEquals( "This bundle provides the Karaf shell commands to manipulate features.",
-                          ai.bundleDescription );
-            assertEquals( "Apache Karaf :: Features :: Command", ai.bundleName );
-            assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.bundleLicense );
-            assertEquals( "http://www.apache.org/", ai.bundleDocUrl );
+                          ai.getBundleDescription() );
+            assertEquals( "Apache Karaf :: Features :: Command", ai.getBundleName() );
+            assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense() );
+            assertEquals( "http://www.apache.org/", ai.getBundleDocUrl() );
 
             assertEquals(
                 "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
-                ai.bundleImportPackage );
+                ai.getBundleImportPackage() );
 
         }
         finally
@@ -275,12 +275,12 @@ public class OsgiArtifactIndexCreatorTest
             ArtifactInfo ai = response.getResults().iterator().next();
             System.out.println( "ai " + ai );
 
-            assertEquals( "org.apache.felix", ai.groupId );
-            assertEquals( "org.apache.felix.bundlerepository", ai.artifactId );
-            assertEquals( "1.6.6", ai.version );
-            assertEquals( "bundle", ai.packaging );
-            assertEquals( "org.apache.felix.bundlerepository", ai.bundleSymbolicName );
-            assertEquals( "1.6.6", ai.bundleVersion );
+            assertEquals( "org.apache.felix", ai.getGroupId() );
+            assertEquals( "org.apache.felix.bundlerepository", ai.getArtifactId() );
+            assertEquals( "1.6.6", ai.getVersion() );
+            assertEquals( "bundle", ai.getPackaging() );
+            assertEquals( "org.apache.felix.bundlerepository", ai.getBundleSymbolicName() );
+            assertEquals( "1.6.6", ai.getBundleVersion() );
 
         }
         finally

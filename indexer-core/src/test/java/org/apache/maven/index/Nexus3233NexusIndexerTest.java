@@ -49,11 +49,11 @@ public class Nexus3233NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "cisco.infra.dft", ai.groupId );
+        assertEquals( "cisco.infra.dft", ai.getGroupId() );
 
-        assertEquals( "dma.maven.plugins", ai.artifactId );
+        assertEquals( "dma.maven.plugins", ai.getArtifactId() );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
 
         // POM2
         ais = nexusIndexer.identify( MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
@@ -64,10 +64,10 @@ public class Nexus3233NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "cisco.infra.dft", ai.groupId );
+        assertEquals( "cisco.infra.dft", ai.getGroupId() );
 
-        assertEquals( "parent.pom", ai.artifactId );
+        assertEquals( "parent.pom", ai.getArtifactId() );
 
-        assertEquals( "1.0-SNAPSHOT", ai.version );
+        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 }

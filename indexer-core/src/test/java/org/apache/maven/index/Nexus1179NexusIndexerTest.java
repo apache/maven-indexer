@@ -65,45 +65,46 @@ public class Nexus1179NexusIndexerTest
         // g a v p c #1
         ai = list.get( 0 );
 
-        assertEquals( "ant", ai.groupId );
-        assertEquals( "ant", ai.artifactId );
-        assertEquals( "1.6.5", ai.version );
-        assertEquals( "jar", ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-1179", ai.repository );
-        assertEquals( "jar", ai.fextension );
+        assertEquals( "ant", ai.getGroupId() );
+        assertEquals( "ant", ai.getArtifactId() );
+        assertEquals( "1.6.5", ai.getVersion() );
+        assertEquals( "jar", ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-1179", ai.getRepository() );
+        assertEquals( "jar", ai.getFileExtension() );
 
         // g a v p c #2
         ai = list.get( 1 );
 
-        assertEquals( "ant", ai.groupId );
-        assertEquals( "ant", ai.artifactId );
-        assertEquals( "1.5.1", ai.version );
-        assertEquals( null, ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-1179", ai.repository );
-        assertEquals( "pom", ai.fextension );
+        assertEquals( "ant", ai.getGroupId() );
+        assertEquals( "ant", ai.getArtifactId() );
+        assertEquals( "1.5.1", ai.getVersion() );
+        assertEquals( null, ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-1179", ai.getRepository() );
+        assertEquals( "pom", ai.getFileExtension() );
 
         // g a v p c #3
         ai = list.get( 2 );
 
-        assertEquals( "asm", ai.groupId );
-        assertEquals( "asm-commons", ai.artifactId );
-        assertEquals( "3.1", ai.version );
-        assertEquals( "jar", ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-1179", ai.repository );
-        assertEquals( "pom", ai.fextension );
+        assertEquals( "asm", ai.getGroupId() );
+        assertEquals( "asm-commons", ai.getArtifactId() );
+        assertEquals( "3.1", ai.getVersion() );
+        assertEquals( "jar", ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-1179", ai.getRepository() );
+        assertEquals( "pom", ai.getFileExtension() );
 
         // g a v p c #4
         ai = list.get( 3 );
 
-        assertEquals( "org", ai.groupId );
-        assertEquals( "test", ai.artifactId );
-        assertEquals( "1.0", ai.version );
-        assertEquals( null, ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-1179", ai.repository );
-        assertEquals( "pom", ai.fextension );
+        assertEquals( "org", ai.getGroupId() );
+        assertEquals( "test", ai.getArtifactId() );
+        assertEquals( "1.0", ai.getVersion() );
+        assertEquals( null, ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-1179", ai.getRepository() );
+        assertEquals( "pom", ai.getFileExtension() );
+
     }
 }

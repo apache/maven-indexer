@@ -111,13 +111,13 @@ public class DefaultArtifactContextProducer
         ArtifactInfo ai = new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier );
 
         // store extension if classifier is not empty
-        if ( !StringUtils.isEmpty( ai.classifier ) )
+        if ( !StringUtils.isEmpty( ai.getClassifier() ) )
         {
-            ai.packaging = gav.getExtension();
+            ai.setPackaging( gav.getExtension() );
         }
 
-        ai.fname = file.getName();
-        ai.fextension = gav.getExtension();
+        ai.setFileName( file.getName() );
+        ai.setFileExtension( gav.getExtension() );
 
         File metadata = ml.locate( pom );
 

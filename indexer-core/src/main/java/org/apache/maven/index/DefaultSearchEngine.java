@@ -160,8 +160,8 @@ public class DefaultSearchEngine
 
                     if ( artifactInfo != null )
                     {
-                        artifactInfo.repository = context.getRepositoryId();
-                        artifactInfo.context = context.getId();
+                        artifactInfo.setRepository( context.getRepositoryId() );
+                        artifactInfo.setContext( context.getId() );
 
                         if ( req.getArtifactInfoFilter() != null )
                         {
@@ -215,8 +215,8 @@ public class DefaultSearchEngine
 
                         if ( artifactInfo != null )
                         {
-                            artifactInfo.repository = context.getRepositoryId();
-                            artifactInfo.context = context.getId();
+                            artifactInfo.setRepository( context.getRepositoryId() );
+                            artifactInfo.setContext( context.getId() );
 
                             if ( req.getArtifactInfoFilter() != null )
                             {

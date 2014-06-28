@@ -60,14 +60,14 @@ public class MavenPluginArtifactInfoIndexCreatorTest
         ArtifactInfo artifactInfo =
             new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null );
 
-        artifactInfo.packaging = "maven-plugin";
-        artifactInfo.fextension = "jar";
+        artifactInfo.setPackaging( "maven-plugin" );
+        artifactInfo.setFileExtension( "jar" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
         indexCreator.populateArtifactInfo( artifactContext );
 
-        assertEquals( "dependency", artifactContext.getArtifactInfo().prefix );
+        assertEquals( "dependency", artifactContext.getArtifactInfo().getPrefix() );
 
         List<String> goals = new ArrayList<String>( 16 );
         goals.add( "analyze-dep-mgt" );
@@ -87,7 +87,7 @@ public class MavenPluginArtifactInfoIndexCreatorTest
         goals.add( "tree" );
         goals.add( "unpack-dependencies" );
 
-        assertEquals( goals, artifactContext.getArtifactInfo().goals );
+        assertEquals( goals, artifactContext.getArtifactInfo().getGoals() );
 
     }
 }

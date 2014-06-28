@@ -281,7 +281,7 @@ public class NexusIndexerTest
 
         for ( ArtifactInfo ai : res )
         {
-            line = ai.context + " :: " + ai.toString();
+            line = ai.getContext() + " :: " + ai.toString();
 
             if ( print )
             {
@@ -337,7 +337,7 @@ public class NexusIndexerTest
 
         for ( ArtifactInfo ai : response.getResults() )
         {
-            assertEquals( "GroupId must match \"qdox\"!", "qdox", ai.groupId );
+            assertEquals( "GroupId must match \"qdox\"!", "qdox", ai.getGroupId() );
         }
     }
 
@@ -353,7 +353,7 @@ public class NexusIndexerTest
             public boolean accepts( IndexingContext ctx, ArtifactInfo ai )
             {
                 // we reject version "1.5" for fun
-                return !StringUtils.equals( ai.version, "1.5" );
+                return !StringUtils.equals( ai.getVersion(), "1.5" );
             }
         } );
 
@@ -365,7 +365,7 @@ public class NexusIndexerTest
 
         ArtifactInfo ai = response.getResults().next();
 
-        assertEquals( "1.5 is filtered out, so 1.6.1 must appear here!", "1.6.1", ai.version );
+        assertEquals( "1.5 is filtered out, so 1.6.1 must appear here!", "1.6.1", ai.getVersion() );
     }
 
     public void testSearchGrouped()
@@ -384,10 +384,10 @@ public class NexusIndexerTest
             assertEquals( "qdox : qdox", gi0.getGroupKey() );
             List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( gi0.getArtifactInfos() );
             ArtifactInfo ai0 = list.get( 0 );
-            assertEquals( "1.6.1", ai0.version );
+            assertEquals( "1.6.1", ai0.getVersion() );
             ArtifactInfo ai1 = list.get( 1 );
-            assertEquals( "1.5", ai1.version );
-            assertEquals( "test", ai1.repository );
+            assertEquals( "1.5", ai1.getVersion() );
+            assertEquals( "test", ai1.getRepository() );
         }
         {
             WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "commons-log*" ) );
@@ -453,13 +453,13 @@ public class NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "qdox", ai.groupId );
+        assertEquals( "qdox", ai.getGroupId() );
 
-        assertEquals( "qdox", ai.artifactId );
+        assertEquals( "qdox", ai.getArtifactId() );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
-        assertEquals( "test", ai.repository );
+        assertEquals( "test", ai.getRepository() );
 
         // Using a file
 
@@ -473,13 +473,13 @@ public class NexusIndexerTest
 
         assertNotNull( ai );
 
-        assertEquals( "qdox", ai.groupId );
+        assertEquals( "qdox", ai.getGroupId() );
 
-        assertEquals( "qdox", ai.artifactId );
+        assertEquals( "qdox", ai.getArtifactId() );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
-        assertEquals( "test", ai.repository );
+        assertEquals( "test", ai.getRepository() );
     }
 
     public void testUpdateArtifact()
@@ -498,13 +498,13 @@ public class NexusIndexerTest
 
         ArtifactInfo ai = res1.iterator().next();
 
-        assertEquals( "Maven Core Integration Test Plugin", ai.name );
+        assertEquals( "Maven Core Integration Test Plugin", ai.getName() );
 
-        long oldSize = ai.size;
+        long oldSize = ai.getSize();
 
-        ai.name = "bla bla bla";
+        ai.setName( "bla bla bla" );
 
-        ai.size += 100;
+        ai.setSize( ai.getSize() + 100 );
 
         IndexingContext indexingContext = indexer.getIndexingContexts().get( "test" );
 
@@ -523,9 +523,9 @@ public class NexusIndexerTest
 
         ArtifactInfo ai2 = res2.iterator().next();
 
-        assertEquals( oldSize + 100, ai2.size );
+        assertEquals( oldSize + 100, ai2.getSize() );
 
-        assertEquals( "bla bla bla", ai2.name );
+        assertEquals( "bla bla bla", ai2.getName() );
     }
 
     public void testUnpack()

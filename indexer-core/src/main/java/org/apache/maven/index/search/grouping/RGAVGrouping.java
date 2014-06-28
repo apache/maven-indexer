@@ -46,8 +46,8 @@ public class RGAVGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.repository + ":" + artifactInfo.groupId + ":" + artifactInfo.artifactId + ":"
-            + artifactInfo.version + ":" + artifactInfo.classifier;
+        return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId() + ":" + artifactInfo.getArtifactId() + ":"
+            + artifactInfo.getVersion() + ":" + artifactInfo.getClassifier();
     }
 
 }

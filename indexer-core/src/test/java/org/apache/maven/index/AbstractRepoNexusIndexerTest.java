@@ -109,12 +109,12 @@ public abstract class AbstractRepoNexusIndexerTest
 
         {
             ArtifactInfo ai = list.get( 0 );
-            assertEquals( "1.6.1", ai.version );
+            assertEquals( "1.6.1", ai.getVersion() );
         }
         {
             ArtifactInfo ai = list.get( 1 );
-            assertEquals( "1.5", ai.version );
-            assertEquals( "test", ai.repository );
+            assertEquals( "1.5", ai.getVersion() );
+            assertEquals( "test", ai.getRepository() );
         }
     }
 
@@ -144,13 +144,13 @@ public abstract class AbstractRepoNexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "1.6.1", ai.version );
+        assertEquals( "1.6.1", ai.getVersion() );
 
         ai = list.get( 1 );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
-        assertEquals( "test", ai.repository );
+        assertEquals( "test", ai.getRepository() );
     }
 
     public void testSearchGroupedProblematicNames()
@@ -401,11 +401,11 @@ public abstract class AbstractRepoNexusIndexerTest
         
         assertNotNull( ai );
 
-        assertEquals( "qdox", ai.groupId );
+        assertEquals( "qdox", ai.getGroupId() );
 
-        assertEquals( "qdox", ai.artifactId );
+        assertEquals( "qdox", ai.getArtifactId() );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
 
         // Using a file
 
@@ -419,11 +419,11 @@ public abstract class AbstractRepoNexusIndexerTest
 
         assertNotNull( "Can't identify qdox-1.5.jar", ai );
 
-        assertEquals( "qdox", ai.groupId );
+        assertEquals( "qdox", ai.getGroupId() );
 
-        assertEquals( "qdox", ai.artifactId );
+        assertEquals( "qdox", ai.getArtifactId() );
 
-        assertEquals( "1.5", ai.version );
+        assertEquals( "1.5", ai.getVersion() );
     }
 
     // Paging is currently disabled
@@ -548,8 +548,8 @@ public abstract class AbstractRepoNexusIndexerTest
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            assertEquals( "tar.gz", ai.packaging );
-            assertEquals( "tar.gz", ai.fextension );
+            assertEquals( "tar.gz", ai.getPackaging() );
+            assertEquals( "tar.gz", ai.getFileExtension() );
         }
         {
             Query query = nexusIndexer.constructQuery( MAVEN.PACKAGING, "zip", SearchType.EXACT );
@@ -557,8 +557,8 @@ public abstract class AbstractRepoNexusIndexerTest
             assertEquals( response.getResults().toString(), 1, response.getTotalHits() );
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            assertEquals( "zip", ai.packaging );
-            assertEquals( "zip", ai.fextension );
+            assertEquals( "zip", ai.getPackaging() );
+            assertEquals( "zip", ai.getFileExtension() );
         }
     }
 

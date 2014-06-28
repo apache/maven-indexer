@@ -561,10 +561,10 @@ public class NexusIndexerCli
 
             ArtifactInfo ai = ac.getArtifactInfo();
 
-            if ( !quiet && debug && "maven-plugin".equals( ai.packaging ) )
+            if ( !quiet && debug && "maven-plugin".equals( ai.getPackaging() ) )
             {
                 System.err.printf( "Plugin: %s:%s:%s - %s %s\n", //
-                    ai.groupId, ai.artifactId, ai.version, ai.prefix, "" + ai.goals );
+                    ai.getGroupId(), ai.getArtifactId(), ai.getVersion(), ai.getPrefix(), "" + ai.getGoals() );
             }
 
             if ( !quiet && ( debug || ( t - ts ) > 2000L ) )

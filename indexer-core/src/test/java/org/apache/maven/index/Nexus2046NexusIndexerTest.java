@@ -25,10 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 
 public class Nexus2046NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -62,12 +58,12 @@ public class Nexus2046NexusIndexerTest
         // g a v p c #1
         ai = list.get( 0 );
 
-        assertEquals( "org.maven.ide.eclipse", ai.groupId );
-        assertEquals( "org.maven.ide.eclipse.feature", ai.artifactId );
-        assertEquals( "0.9.7", ai.version );
-        assertEquals( "eclipse-feature", ai.packaging );
-        assertEquals( null, ai.classifier );
-        assertEquals( "nexus-2046", ai.repository );
-        assertEquals( "jar", ai.fextension );
+        assertEquals( "org.maven.ide.eclipse", ai.getGroupId() );
+        assertEquals( "org.maven.ide.eclipse.feature", ai.getArtifactId() );
+        assertEquals( "0.9.7", ai.getVersion() );
+        assertEquals( "eclipse-feature", ai.getPackaging() );
+        assertEquals( null, ai.getClassifier() );
+        assertEquals( "nexus-2046", ai.getRepository() );
+        assertEquals( "jar", ai.getFileExtension() );
     }
 }

@@ -715,7 +715,7 @@ public class DefaultIndexingContext
                 {
                     ArtifactInfo info = IndexUtils.constructArtifactInfo( d, this );
                     rootGroups.add( info.getRootGroup() );
-                    allGroups.add( info.groupId );
+                    allGroups.add( info.getGroupId() );
                 }
             }
 

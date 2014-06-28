@@ -60,12 +60,12 @@ public class Nexus687NexusIndexerTest
 
         ArtifactInfo ai = list.get( 0 );
 
-        assertEquals( "xstream", ai.groupId );
+        assertEquals( "xstream", ai.getGroupId() );
 
-        assertEquals( "xstream", ai.artifactId );
+        assertEquals( "xstream", ai.getArtifactId() );
 
-        assertEquals( "1.2.2", ai.version );
+        assertEquals( "1.2.2", ai.getVersion() );
 
-        assertNull( ai.packaging );
+        assertNull( ai.getPackaging() );
     }
 }

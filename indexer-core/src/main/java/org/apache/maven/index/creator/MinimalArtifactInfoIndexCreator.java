@@ -28,13 +28,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.maven.index.ArtifactAvailablility;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.IndexerFieldVersion;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.NEXUS;
+import org.apache.maven.index.*;
+import org.apache.maven.index.ArtifactAvailability;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.locator.JavadocLocator;
@@ -127,40 +122,40 @@ public class MinimalArtifactInfoIndexCreator
 
         if ( pom != null )
         {
-            ai.lastModified = pom.lastModified();
+            ai.setLastModified( pom.lastModified() );
 
-            ai.fextension = "pom";
+            ai.setFileExtension( "pom" );
         }
 
         // TODO handle artifacts without poms
         if ( pom != null )
         {
-            if ( ai.classifier != null )
+            if ( ai.getClassifier() != null )
             {
-                ai.sourcesExists = ArtifactAvailablility.NOT_AVAILABLE;
+                ai.setSourcesExists( ArtifactAvailability.NOT_AVAILABLE );
 
-                ai.javadocExists = ArtifactAvailablility.NOT_AVAILABLE;
+                ai.setJavadocExists( ArtifactAvailability.NOT_AVAILABLE );
             }
             else
             {
                 File sources = sl.locate( pom );
                 if ( !sources.exists() )
                 {
-                    ai.sourcesExists = ArtifactAvailablility.NOT_PRESENT;
+                    ai.setSourcesExists( ArtifactAvailability.NOT_PRESENT );
                 }
                 else
                 {
-                    ai.sourcesExists = ArtifactAvailablility.PRESENT;
+                    ai.setSourcesExists( ArtifactAvailability.PRESENT );
                 }
 
                 File javadoc = jl.locate( pom );
                 if ( !javadoc.exists() )
                 {
-                    ai.javadocExists = ArtifactAvailablility.NOT_PRESENT;
+                    ai.setJavadocExists( ArtifactAvailability.NOT_PRESENT );
                 }
                 else
                 {
-                    ai.javadocExists = ArtifactAvailablility.PRESENT;
+                    ai.setJavadocExists( ArtifactAvailability.PRESENT );
                 }
             }
         }
@@ -169,18 +164,18 @@ public class MinimalArtifactInfoIndexCreator
 
         if ( model != null )
         {
-            ai.name = model.getName();
+            ai.setName( model.getName() );
 
-            ai.description = model.getDescription();
+            ai.setDescription( model.getDescription() );
 
             // for main artifacts (without classifier) only:
-            if ( ai.classifier == null )
+            if ( ai.getClassifier() == null )
             {
                 // only when this is not a classified artifact
                 if ( model.getPackaging() != null )
                 {
                     // set the read value that is coming from POM
-                    ai.packaging = model.getPackaging();
+                    ai.setPackaging( model.getPackaging() );
                 }
                 else
                 {
@@ -191,7 +186,7 @@ public class MinimalArtifactInfoIndexCreator
             }
         }
 
-        if ( "pom".equals( ai.packaging ) )
+        if ( "pom".equals( ai.getPackaging() ) )
         {
             // special case, the POM _is_ the artifact
             artifact = pom;
@@ -201,7 +196,7 @@ public class MinimalArtifactInfoIndexCreator
         {
             File signature = sigl.locate( artifact );
 
-            ai.signatureExists = signature.exists() ? ArtifactAvailablility.PRESENT : ArtifactAvailablility.NOT_PRESENT;
+            ai.setSignatureExists( signature.exists() ? ArtifactAvailability.PRESENT : ArtifactAvailability.NOT_PRESENT );
 
             File sha1 = sha1l.locate( artifact );
 
@@ -209,7 +204,7 @@ public class MinimalArtifactInfoIndexCreator
             {
                 try
                 {
-                    ai.sha1 = StringUtils.chomp( FileUtils.fileRead( sha1 ) ).trim().split( " " )[0];
+                    ai.setSha1( StringUtils.chomp( FileUtils.fileRead( sha1 ) ).trim().split( " " )[0] );
                 }
                 catch ( IOException e )
                 {
@@ -217,15 +212,15 @@ public class MinimalArtifactInfoIndexCreator
                 }
             }
 
-            ai.lastModified = artifact.lastModified();
+            ai.setLastModified( artifact.lastModified() );
 
-            ai.size = artifact.length();
+            ai.setSize( artifact.length() );
 
-            ai.fextension = getExtension( artifact, ac.getGav() );
+            ai.setFileExtension( getExtension( artifact, ac.getGav() ) );
 
-            if ( ai.packaging == null )
+            if ( ai.getPackaging() == null )
             {
-                ai.packaging = ai.fextension;
+                ai.setPackaging( ai.getFileExtension() );
             }
         }
     }
@@ -257,46 +252,46 @@ public class MinimalArtifactInfoIndexCreator
     public void updateDocument( ArtifactInfo ai, Document doc )
     {
         String info =
-            new StringBuilder().append( ai.packaging ).append( ArtifactInfo.FS ).append(
-                Long.toString( ai.lastModified ) ).append( ArtifactInfo.FS ).append( Long.toString( ai.size ) ).append(
-                ArtifactInfo.FS ).append( ai.sourcesExists.toString() ).append( ArtifactInfo.FS ).append(
-                ai.javadocExists.toString() ).append( ArtifactInfo.FS ).append( ai.signatureExists.toString() ).append(
-                ArtifactInfo.FS ).append( ai.fextension ).toString();
+            new StringBuilder().append( ai.getPackaging() ).append( ArtifactInfo.FS ).append(
+                Long.toString( ai.getLastModified() ) ).append( ArtifactInfo.FS ).append( Long.toString( ai.getSize() ) ).append(
+                ArtifactInfo.FS ).append( ai.getSourcesExists().toString() ).append( ArtifactInfo.FS ).append(
+                ai.getJavadocExists().toString() ).append( ArtifactInfo.FS ).append( ai.getSignatureExists().toString() ).append(
+                ArtifactInfo.FS ).append( ai.getFileExtension() ).toString();
 
         doc.add( FLD_INFO.toField( info ) );
 
-        doc.add( FLD_GROUP_ID_KW.toField( ai.groupId ) );
-        doc.add( FLD_ARTIFACT_ID_KW.toField( ai.artifactId ) );
-        doc.add( FLD_VERSION_KW.toField( ai.version ) );
+        doc.add( FLD_GROUP_ID_KW.toField( ai.getGroupId() ) );
+        doc.add( FLD_ARTIFACT_ID_KW.toField( ai.getArtifactId() ) );
+        doc.add( FLD_VERSION_KW.toField( ai.getVersion() ) );
 
         // V3
-        doc.add( FLD_GROUP_ID.toField( ai.groupId ) );
-        doc.add( FLD_ARTIFACT_ID.toField( ai.artifactId ) );
-        doc.add( FLD_VERSION.toField( ai.version ) );
+        doc.add( FLD_GROUP_ID.toField( ai.getGroupId() ) );
+        doc.add( FLD_ARTIFACT_ID.toField( ai.getArtifactId() ) );
+        doc.add( FLD_VERSION.toField( ai.getVersion() ) );
 
-        if ( ai.name != null )
+        if ( ai.getName() != null )
         {
-            doc.add( FLD_NAME.toField( ai.name ) );
+            doc.add( FLD_NAME.toField( ai.getName() ) );
         }
 
-        if ( ai.description != null )
+        if ( ai.getDescription() != null )
         {
-            doc.add( FLD_DESCRIPTION.toField( ai.description ) );
+            doc.add( FLD_DESCRIPTION.toField( ai.getDescription() ) );
         }
 
-        if ( ai.packaging != null )
+        if ( ai.getPackaging() != null )
         {
-            doc.add( FLD_PACKAGING.toField( ai.packaging ) );
+            doc.add( FLD_PACKAGING.toField( ai.getPackaging() ) );
         }
 
-        if ( ai.classifier != null )
+        if ( ai.getClassifier() != null )
         {
-            doc.add( FLD_CLASSIFIER.toField( ai.classifier ) );
+            doc.add( FLD_CLASSIFIER.toField( ai.getClassifier() ) );
         }
 
-        if ( ai.sha1 != null )
+        if ( ai.getSha1() != null )
         {
-            doc.add( FLD_SHA1.toField( ai.sha1 ) );
+            doc.add( FLD_SHA1.toField( ai.getSha1() ) );
         }
     }
 
@@ -305,19 +300,19 @@ public class MinimalArtifactInfoIndexCreator
         updateDocument( ai, doc );
 
         // legacy!
-        if ( ai.prefix != null )
+        if ( ai.getPrefix() != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.prefix, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.getPrefix(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
         }
 
-        if ( ai.goals != null )
+        if ( ai.getGoals() != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_GOALS, ArtifactInfo.lst2str( ai.goals ), Field.Store.YES,
+            doc.add( new Field( ArtifactInfo.PLUGIN_GOALS, ArtifactInfo.lst2str( ai.getGoals() ), Field.Store.YES,
                 Field.Index.NO ) );
         }
 
         doc.removeField( ArtifactInfo.GROUP_ID );
-        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.groupId, Field.Store.NO, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.getGroupId(), Field.Store.NO, Field.Index.NOT_ANALYZED ) );
     }
 
     public boolean updateArtifactInfo( Document doc, ArtifactInfo ai )
@@ -330,15 +325,15 @@ public class MinimalArtifactInfoIndexCreator
         {
             String[] r = ArtifactInfo.FS_PATTERN.split( uinfo );
 
-            ai.groupId = r[0];
+            ai.setGroupId( r[0] );
 
-            ai.artifactId = r[1];
+            ai.setArtifactId( r[1] );
 
-            ai.version = r[2];
+            ai.setVersion( r[2] );
 
             if ( r.length > 3 )
             {
-                ai.classifier = ArtifactInfo.renvl( r[3] );
+                ai.setClassifier( ArtifactInfo.renvl( r[3] ) );
             }
 
             res = true;
@@ -350,34 +345,34 @@ public class MinimalArtifactInfoIndexCreator
         {
             String[] r = ArtifactInfo.FS_PATTERN.split( info );
 
-            ai.packaging = r[0];
+            ai.setPackaging( r[0] );
 
-            ai.lastModified = Long.parseLong( r[1] );
+            ai.setLastModified( Long.parseLong( r[1] ) );
 
-            ai.size = Long.parseLong( r[2] );
+            ai.setSize( Long.parseLong( r[2] ) );
 
-            ai.sourcesExists = ArtifactAvailablility.fromString( r[3] );
+            ai.setSourcesExists( ArtifactAvailability.fromString( r[ 3 ] ) );
 
-            ai.javadocExists = ArtifactAvailablility.fromString( r[4] );
+            ai.setJavadocExists( ArtifactAvailability.fromString( r[ 4 ] ) );
 
-            ai.signatureExists = ArtifactAvailablility.fromString( r[5] );
+            ai.setSignatureExists( ArtifactAvailability.fromString( r[ 5 ] ) );
 
             if ( r.length > 6 )
             {
-                ai.fextension = r[6];
+                ai.setFileExtension( r[6] );
             }
             else
             {
-                if ( ai.classifier != null //
-                    || "pom".equals( ai.packaging ) //
-                    || "war".equals( ai.packaging ) //
-                    || "ear".equals( ai.packaging ) )
+                if ( ai.getClassifier() != null //
+                    || "pom".equals( ai.getPackaging() ) //
+                    || "war".equals( ai.getPackaging() ) //
+                    || "ear".equals( ai.getPackaging() ) )
                 {
-                    ai.fextension = ai.packaging;
+                    ai.setFileExtension( ai.getPackaging() );
                 }
                 else
                 {
-                    ai.fextension = "jar"; // best guess
+                    ai.setFileExtension( "jar" ); // best guess
                 }
             }
 
@@ -388,7 +383,7 @@ public class MinimalArtifactInfoIndexCreator
 
         if ( name != null )
         {
-            ai.name = name;
+            ai.setName( name );
 
             res = true;
         }
@@ -397,23 +392,23 @@ public class MinimalArtifactInfoIndexCreator
 
         if ( description != null )
         {
-            ai.description = description;
+            ai.setDescription( description );
 
             res = true;
         }
 
         // sometimes there's a pom without packaging(default to jar), but no artifact, then the value will be a "null"
         // String
-        if ( "null".equals( ai.packaging ) )
+        if ( "null".equals( ai.getPackaging() ) )
         {
-            ai.packaging = null;
+            ai.setPackaging( null );
         }
 
         String sha1 = doc.get( ArtifactInfo.SHA1 );
 
         if ( sha1 != null )
         {
-            ai.sha1 = sha1;
+            ai.setSha1( sha1 );
         }
 
         return res;
