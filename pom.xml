@@ -86,13 +86,16 @@ under the License.
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
 
-    <sisu-inject-plexus.version>2.2.3</sisu-inject-plexus.version>
+    <eclipse-sisu.version>0.2.1</eclipse-sisu.version>
+    <sisu-guice.version>3.2.2</sisu-guice.version>
+
     <lucene.version>4.8.1</lucene.version>
+    <truezip.version>7.6.6</truezip.version>
+
     <maven.version>3.0.5</maven.version>
-    <aether.version>1.13.1</aether.version>
+    <aether.version>1.0.0.v20140518</aether.version>
     <archetype.version>2.2</archetype.version>
     <wagon.version>2.3</wagon.version>
-    <truezip.version>7.6.6</truezip.version>
 
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
   </properties>
@@ -100,24 +103,76 @@ under the License.
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-component-annotations</artifactId>
-        <version>1.5.5</version>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.plexus</groupId>
-        <artifactId>plexus-utils</artifactId>
-        <version>3.0.8</version>
-        <scope>compile</scope>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.7.5</version>
       </dependency>
 
-      <!-- Plexus (as provided since you have to provide it when embedding MI) -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-simple</artifactId>
+        <version>1.7.5</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>16.0.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>2.0.3</version>
+      </dependency>
+
+      <!-- DI -->
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>1.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>aopalliance</groupId>
+        <artifactId>aopalliance</artifactId>
+        <version>1.0</version>
+      </dependency>
+
       <dependency>
         <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-inject-plexus</artifactId>
-        <version>${sisu-inject-plexus.version}</version>
-        <scope>provided</scope>
+        <artifactId>sisu-guice</artifactId>
+        <version>${sisu-guice.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-multibindings</artifactId>
+        <version>${sisu-guice.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.sonatype.sisu.inject</groupId>
+        <artifactId>guice-assistedinject</artifactId>
+        <version>${sisu-guice.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.inject</artifactId>
+        <version>${eclipse-sisu.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>org.eclipse.sisu.plexus</artifactId>
+        <version>${eclipse-sisu.version}</version>
       </dependency>
 
       <!-- Lucene -->
@@ -126,16 +181,19 @@ under the License.
         <artifactId>lucene-core</artifactId>
         <version>${lucene.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${lucene.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-analyzers-common</artifactId>
         <version>${lucene.version}</version>
       </dependency>
+
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-highlighter</artifactId>
@@ -144,16 +202,17 @@ under the License.
 
       <!-- Aether -->
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-api</artifactId>
         <version>${aether.version}</version>
       </dependency>
+
       <dependency>
-        <groupId>org.sonatype.aether</groupId>
+        <groupId>org.eclipse.aether</groupId>
         <artifactId>aether-util</artifactId>
         <version>${aether.version}</version>
       </dependency>
-
+      
       <!-- Maven -->
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -166,7 +225,6 @@ under the License.
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-provider-api</artifactId>
         <version>${wagon.version}</version>
-        <optional>true</optional>
       </dependency>
 
       <!-- Using org.apache.maven.archetype.source.ArchetypeDataSource from it only -->
@@ -174,59 +232,62 @@ under the License.
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-common</artifactId>
         <version>${archetype.version}</version>
-        <optional>true</optional>
         <exclusions>
+          <exclusion>
+            <groupId>org.apache.maven.archetype</groupId>
+            <artifactId>archetype-registry</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jdom</groupId>
+            <artifactId>jdom</artifactId>
+          </exclusion>
           <exclusion>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-container-default</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-velocity</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>net.sourceforge.jchardet</groupId>
+            <artifactId>jchardet</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
+            <artifactId>maven-model</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-utils</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.archetype</groupId>
+            <artifactId>archetype-descriptor</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.maven.shared</groupId>
+            <artifactId>maven-invoker</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-component-annotations</artifactId>
           </exclusion>
           <exclusion>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-project</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>velocity</groupId>
-            <artifactId>velocity</artifactId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jchardet</artifactId>
-            <groupId>net.sourceforge.jchardet</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>dom4j</artifactId>
-            <groupId>dom4j</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>jdom</artifactId>
-            <groupId>jdom</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>maven-model</artifactId>
-            <groupId>org.apache.maven</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>plexus-velocity</artifactId>
-            <groupId>org.codehaus.plexus</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>velocity</artifactId>
-            <groupId>org.apache.velocity</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-io</artifactId>
-            <groupId>commons-io</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-collections</artifactId>
-            <groupId>commons-collections</groupId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -237,6 +298,7 @@ under the License.
         <artifactId>truezip-file</artifactId>
         <version>${truezip.version}</version>
       </dependency>
+
       <dependency>
         <groupId>de.schlichtherle.truezip</groupId>
         <artifactId>truezip-driver-zip</artifactId>
