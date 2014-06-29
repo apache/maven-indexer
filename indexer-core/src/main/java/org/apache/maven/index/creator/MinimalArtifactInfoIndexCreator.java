@@ -84,6 +84,9 @@ public class MinimalArtifactInfoIndexCreator
     public static final IndexerField FLD_PACKAGING = new IndexerField( MAVEN.PACKAGING, IndexerFieldVersion.V1, "p",
         "Artifact Packaging (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
+    public static final IndexerField FLD_EXTENSION = new IndexerField( MAVEN.EXTENSION, IndexerFieldVersion.V1, "e",
+        "Artifact extension (as keyword)", Store.NO, Index.NOT_ANALYZED );
+
     public static final IndexerField FLD_CLASSIFIER = new IndexerField( MAVEN.CLASSIFIER, IndexerFieldVersion.V1, "l",
         "Artifact classifier (as keyword)", Store.NO, Index.NOT_ANALYZED );
 
@@ -263,6 +266,7 @@ public class MinimalArtifactInfoIndexCreator
         doc.add( FLD_GROUP_ID.toField( ai.getGroupId() ) );
         doc.add( FLD_ARTIFACT_ID.toField( ai.getArtifactId() ) );
         doc.add( FLD_VERSION.toField( ai.getVersion() ) );
+        doc.add( FLD_EXTENSION.toField( ai.getFileExtension() ) );
 
         if ( ai.getName() != null )
         {
