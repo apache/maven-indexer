@@ -497,12 +497,23 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <groups>
+            <group>
+              <title>Indexer core</title>
+              <packages>org.apache.maven.index*</packages>
+            </group>
+            <group>
+              <title>Indexer CLI</title>
+              <packages>org.apache.maven.index.cli*</packages>
+            </group>
+          </groups>
+        </configuration>
         <reportSets>
           <reportSet>
             <inherited>false</inherited>
             <reports>
               <report>aggregate</report>
-              <report>test-javadoc</report>
             </reports>
           </reportSet>
         </reportSets>
