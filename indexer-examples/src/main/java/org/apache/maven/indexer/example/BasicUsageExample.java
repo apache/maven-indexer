@@ -72,9 +72,6 @@ import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 
-/**
- * Hello world!
- */
 public class BasicUsageExample
 {
     public static void main( String[] args )

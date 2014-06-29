@@ -21,9 +21,6 @@ package org.apache.maven.indexer.example;
 
 import junit.framework.TestCase;
 
-/**
- * Unit test for simple App.
- */
 public class BasicUsageExampleTest
     extends TestCase
 {
