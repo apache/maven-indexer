@@ -21,6 +21,7 @@ package org.apache.maven.index;
 
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
@@ -240,9 +241,15 @@ public class SearchWithAnEmptyIndexTest
         indexingContext.optimize();
 
         File managedRepository = new File( repoIndex );
-        final File indexLocation = new File( managedRepository, ".index" );
-        IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexLocation );
-        indexPacker.packIndex( request );
+        final IndexSearcher indexSearcher = indexingContext.acquireIndexSearcher();
+        try
+        {
+            final File indexLocation = new File( managedRepository, ".index" );
+            IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexSearcher.getIndexReader(), indexLocation );
+            indexPacker.packIndex( request );
+        } finally {
+            indexingContext.releaseIndexSearcher( indexSearcher );
+        }
 
     }
 }

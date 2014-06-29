@@ -19,46 +19,18 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.IndexInput;
-import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.DefaultIndexingContext;
-import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.context.IndexUtils;
+
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.NexusIndexWriter;
-import org.apache.maven.index.context.NexusLegacyAnalyzer;
-import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
 import org.codehaus.plexus.component.annotations.Component;
@@ -69,7 +41,7 @@ import org.codehaus.plexus.util.IOUtil;
 
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
- * 
+ *
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
@@ -94,13 +66,13 @@ public class DefaultIndexPacker
             if ( !request.getTargetDir().isDirectory() )
             {
                 throw new IllegalArgumentException( //
-                    String.format( "Specified target path %s is not a directory",
-                        request.getTargetDir().getAbsolutePath() ) );
+                                                    String.format( "Specified target path %s is not a directory",
+                                                                   request.getTargetDir().getAbsolutePath() ) );
             }
             if ( !request.getTargetDir().canWrite() )
             {
                 throw new IllegalArgumentException( String.format( "Specified target path %s is not writtable",
-                    request.getTargetDir().getAbsolutePath() ) );
+                                                                   request.getTargetDir().getAbsolutePath() ) );
             }
         }
         else
@@ -138,13 +110,11 @@ public class DefaultIndexPacker
                 }
                 else
                 {
-                    File file =
-                        new File( request.getTargetDir(), //
-                            IndexingContext.INDEX_FILE_PREFIX + "."
-                                + info.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
+                    File file = new File( request.getTargetDir(), //
+                                          IndexingContext.INDEX_FILE_PREFIX + "." + info.getProperty(
+                                              IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
 
-                    writeIndexData( request.getContext(), //
-                        chunk, file );
+                    writeIndexData( request, chunk, file );
 
                     if ( request.isCreateChecksumFiles() )
                     {
@@ -173,37 +143,19 @@ public class DefaultIndexPacker
             timestamp = new Date( 0 ); // never updated
         }
 
-        if ( request.getFormats().contains( IndexPackingRequest.IndexFormat.FORMAT_LEGACY ) )
-        {
-            info.setProperty( IndexingContext.INDEX_LEGACY_TIMESTAMP, format( timestamp ) );
-
-            writeIndexArchive( request.getContext(), legacyFile, request.getMaxIndexChunks() );
-
-            if ( request.isCreateChecksumFiles() )
-            {
-                FileUtils.fileWrite(
-                    new File( legacyFile.getParentFile(), legacyFile.getName() + ".sha1" ).getAbsolutePath(),
-                    DigesterUtils.getSha1Digest( legacyFile ) );
-
-                FileUtils.fileWrite(
-                    new File( legacyFile.getParentFile(), legacyFile.getName() + ".md5" ).getAbsolutePath(),
-                    DigesterUtils.getMd5Digest( legacyFile ) );
-            }
-        }
-
         if ( request.getFormats().contains( IndexPackingRequest.IndexFormat.FORMAT_V1 ) )
         {
             info.setProperty( IndexingContext.INDEX_TIMESTAMP, format( timestamp ) );
 
-            writeIndexData( request.getContext(), null, v1File );
+            writeIndexData( request, null, v1File );
 
             if ( request.isCreateChecksumFiles() )
             {
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".sha1" ).getAbsolutePath(),
-                    DigesterUtils.getSha1Digest( v1File ) );
+                                     DigesterUtils.getSha1Digest( v1File ) );
 
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".md5" ).getAbsolutePath(),
-                    DigesterUtils.getMd5Digest( v1File ) );
+                                     DigesterUtils.getMd5Digest( v1File ) );
             }
         }
 
@@ -245,226 +197,7 @@ public class DefaultIndexPacker
         return properties;
     }
 
-    void writeIndexArchive( IndexingContext context, File targetArchive )
-        throws IOException
-    {
-        writeIndexArchive(context, targetArchive, IndexPackingRequest.MAX_CHUNKS);
-    }
-    
-    void writeIndexArchive( IndexingContext context, File targetArchive, int maxSegments )
-        throws IOException
-    {
-        if ( targetArchive.exists() )
-        {
-            targetArchive.delete();
-        }
-
-        OutputStream os = null;
-
-        try
-        {
-            os = new BufferedOutputStream( new FileOutputStream( targetArchive ), 4096 );
-
-            packIndexArchive( context, os );
-        }
-        finally
-        {
-            IOUtil.close( os );
-        }
-    }
-
-    /**
-     * Pack legacy index archive into a specified output stream
-     */
-    public static void packIndexArchive( IndexingContext context, OutputStream os )
-        throws IOException
-    {
-        packIndexArchive(context, os, IndexPackingRequest.MAX_CHUNKS);
-    }
-    
-    /**
-     * Pack legacy index archive into a specified output stream
-     */
-    public static void packIndexArchive( IndexingContext context, OutputStream os, int maxSegments )
-        throws IOException
-    {
-        File indexArchive = File.createTempFile( "nexus-index", "" );
-
-        File indexDir = new File( indexArchive.getAbsoluteFile().getParentFile(), indexArchive.getName() + ".dir" );
-
-        indexDir.mkdirs();
-
-        FSDirectory fdir = FSDirectory.open( indexDir );
-
-        try
-        {
-            // force the timestamp update
-            IndexUtils.updateTimestamp( context.getIndexDirectory(), context.getTimestamp() );
-            IndexUtils.updateTimestamp( fdir, context.getTimestamp() );
-
-            final IndexSearcher indexSearcher = context.acquireIndexSearcher();
-            try
-            {
-                copyLegacyDocuments( indexSearcher.getIndexReader(), fdir, context, maxSegments);
-            }
-            finally
-            {
-                context.releaseIndexSearcher( indexSearcher );
-            }
-            packDirectory( fdir, os );
-        }
-        finally
-        {
-            IndexUtils.close( fdir );
-            indexArchive.delete();
-            IndexUtils.delete( indexDir );
-        }
-    }
-
-    static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context )
-        throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-        copyLegacyDocuments(r, targetdir, context, IndexPackingRequest.MAX_CHUNKS);
-    }
-    
-    static void copyLegacyDocuments( IndexReader r, Directory targetdir, IndexingContext context, int maxSegments)
-        throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-        IndexWriter w = null;
-        Bits liveDocs = MultiFields.getLiveDocs(r);
-        try
-        {
-            w = new NexusIndexWriter( targetdir, new NexusLegacyAnalyzer(), true );
-
-            for ( int i = 0; i < r.maxDoc(); i++ )
-            {
-                if ( liveDocs == null || liveDocs.get(i) )
-                {
-                    Document legacyDocument = r.document( i );
-                    Document updatedLegacyDocument = updateLegacyDocument( legacyDocument, context );
-                    
-                    //Lucene does not return metadata for stored documents, so we need to fix that
-                    for (IndexableField indexableField : updatedLegacyDocument.getFields())
-                    {
-                        if(indexableField.name().equals(DefaultIndexingContext.FLD_DESCRIPTOR))
-                        {
-                            updatedLegacyDocument = new Document();
-                            updatedLegacyDocument.add(new StringField(DefaultIndexingContext.FLD_DESCRIPTOR, DefaultIndexingContext.FLD_DESCRIPTOR_CONTENTS, Field.Store.YES));
-                            updatedLegacyDocument.add( new StringField( DefaultIndexingContext.FLD_IDXINFO, DefaultIndexingContext.VERSION + ArtifactInfo.FS + context.getRepositoryId(), Field.Store.YES) );
-                            break;
-                        }
-                    }
-                    
-                    w.addDocument( updatedLegacyDocument );
-                }
-            }
-
-            w.forceMerge(maxSegments);
-            w.commit();
-        }
-        finally
-        {
-            IndexUtils.close( w );
-        }
-    }
-
-    static Document updateLegacyDocument( Document doc, IndexingContext context )
-    {
-        ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
-        if ( ai == null )
-        {
-            return doc;
-        }
-
-        Document document = new Document();
-        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-
-        for ( IndexCreator ic : context.getIndexCreators() )
-        {
-            if ( ic instanceof LegacyDocumentUpdater )
-            {
-                ( (LegacyDocumentUpdater) ic ).updateLegacyDocument( ai, document );
-            }
-        }
-
-        return document;
-    }
-
-    static void packDirectory( Directory directory, OutputStream os )
-        throws IOException
-    {
-        ZipOutputStream zos = null;
-        try
-        {
-            zos = new ZipOutputStream( os );
-            zos.setLevel( 9 );
-
-            String[] names = directory.listAll();
-
-            boolean savedTimestamp = false;
-
-            byte[] buf = new byte[8192];
-
-            for ( int i = 0; i < names.length; i++ )
-            {
-                String name = names[i];
-
-                writeFile( name, zos, directory, buf );
-
-                if ( name.equals( IndexUtils.TIMESTAMP_FILE ) )
-                {
-                    savedTimestamp = true;
-                }
-            }
-
-            // FSDirectory filter out the foreign files
-            if ( !savedTimestamp && directory.fileExists( IndexUtils.TIMESTAMP_FILE ) )
-            {
-                writeFile( IndexUtils.TIMESTAMP_FILE, zos, directory, buf );
-            }
-        }
-        finally
-        {
-            IndexUtils.close( zos );
-        }
-    }
-
-    static void writeFile( String name, ZipOutputStream zos, Directory directory, byte[] buf )
-        throws IOException
-    {
-        ZipEntry e = new ZipEntry( name );
-
-        zos.putNextEntry( e );
-
-        IndexInput in = directory.openInput( name, IOContext.DEFAULT );
-
-        try
-        {
-            int toRead = 0;
-
-            int bytesLeft = (int) in.length();
-
-            while ( bytesLeft > 0 )
-            {
-                toRead = ( bytesLeft >= buf.length ) ? buf.length : bytesLeft;
-                bytesLeft -= toRead;
-
-                in.readBytes( buf, 0, toRead, false );
-
-                zos.write( buf, 0, toRead );
-            }
-        }
-        finally
-        {
-            IndexUtils.close( in );
-        }
-
-        zos.flush();
-
-        zos.closeEntry();
-    }
-
-    void writeIndexData( IndexingContext context, List<Integer> docIndexes, File targetArchive )
+    void writeIndexData( IndexPackingRequest request, List<Integer> docIndexes, File targetArchive )
         throws IOException
     {
         if ( targetArchive.exists() )
@@ -479,7 +212,7 @@ public class DefaultIndexPacker
             os = new FileOutputStream( targetArchive );
 
             IndexDataWriter dw = new IndexDataWriter( os );
-            dw.write( context, docIndexes );
+            dw.write( request.getContext(), request.getIndexReader(), docIndexes );
 
             os.flush();
         }
@@ -524,9 +257,9 @@ public class DefaultIndexPacker
 
         if ( request.isCreateChecksumFiles() )
         {
-            FileUtils.fileWrite(
-                new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".sha1" ).getAbsolutePath(),
-                DigesterUtils.getSha1Digest( targetPropertyFile ) );
+            FileUtils.fileWrite( new File( targetPropertyFile.getParentFile(),
+                                           targetPropertyFile.getName() + ".sha1" ).getAbsolutePath(),
+                                 DigesterUtils.getSha1Digest( targetPropertyFile ) );
 
             FileUtils.fileWrite(
                 new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".md5" ).getAbsolutePath(),

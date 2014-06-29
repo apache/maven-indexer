@@ -66,6 +66,6 @@ public class Nexus687NexusIndexerTest
 
         assertEquals( "1.2.2", ai.getVersion() );
 
-        assertNull( ai.getPackaging() );
+        assertEquals( "jar",  ai.getPackaging() );
     }
 }

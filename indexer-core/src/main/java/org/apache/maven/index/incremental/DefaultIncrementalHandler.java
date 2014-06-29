@@ -19,6 +19,18 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.util.Bits;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.codehaus.plexus.component.annotations.Component;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.StringUtils;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -35,20 +47,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.StringUtils;
-
-@Component( role = IncrementalHandler.class )
+@Component(role = IncrementalHandler.class)
 public class DefaultIncrementalHandler
     extends AbstractLogEnabled
     implements IncrementalHandler
@@ -143,43 +142,34 @@ public class DefaultIncrementalHandler
         }
     }
 
-    // Note Toni:
     private List<Integer> getIndexChunk( IndexPackingRequest request, Date timestamp )
         throws IOException
     {
         final List<Integer> chunk = new ArrayList<Integer>();
-        final IndexSearcher indexSearcher = request.getContext().acquireIndexSearcher();
-        try
+        final IndexReader r = request.getIndexReader();
+        Bits liveDocs = MultiFields.getLiveDocs( r );
+        for ( int i = 0; i < r.maxDoc(); i++ )
         {
-            final IndexReader r = indexSearcher.getIndexReader();
-            Bits liveDocs = MultiFields.getLiveDocs(r);
-            for ( int i = 0; i < r.maxDoc(); i++ )
+            if ( liveDocs == null || liveDocs.get( i ) )
             {
-                if (liveDocs == null || liveDocs.get(i) )
+                Document d = r.document( i );
+
+                String lastModified = d.get( ArtifactInfo.LAST_MODIFIED );
+
+                if ( lastModified != null )
                 {
-                    Document d = r.document( i );
+                    Date t = new Date( Long.parseLong( lastModified ) );
 
-                    String lastModified = d.get( ArtifactInfo.LAST_MODIFIED );
-
-                    if ( lastModified != null )
+                    // Only add documents that were added after the last time we indexed
+                    if ( t.after( timestamp ) )
                     {
-                        Date t = new Date( Long.parseLong( lastModified ) );
-
-                        // Only add documents that were added after the last time we indexed
-                        if ( t.after( timestamp ) )
-                        {
-                            chunk.add( i );
-                        }
+                        chunk.add( i );
                     }
                 }
             }
+        }
 
-            return chunk;
-        }
-        finally
-        {
-            request.getContext().releaseIndexSearcher( indexSearcher );
-        }
+        return chunk;
     }
 
     private void updateProperties( Properties properties, IndexPackingRequest request )
@@ -236,8 +226,8 @@ public class DefaultIncrementalHandler
             {
                 String[] parts = name.split( "\\." );
 
-                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX )
-                    && parts[2].equals( "gz" ) )
+                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals(
+                    "gz" ) )
                 {
                     return true;
                 }
@@ -321,8 +311,8 @@ public class DefaultIncrementalHandler
                 String value = remoteProps.getProperty( sKey );
 
                 // If we have the current counter, or the next counter, we are good to go
-                if ( Integer.toString( currentLocalCounter ).equals( value )
-                    || Integer.toString( currentLocalCounter + 1 ).equals( value ) )
+                if ( Integer.toString( currentLocalCounter ).equals( value ) || Integer.toString(
+                    currentLocalCounter + 1 ).equals( value ) )
                 {
                     return true;
                 }

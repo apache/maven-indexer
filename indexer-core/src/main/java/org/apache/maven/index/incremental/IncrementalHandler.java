@@ -19,12 +19,12 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdateRequest;
 
 public interface IncrementalHandler
 {

@@ -28,6 +28,7 @@ import java.util.List;
 import junit.framework.Assert;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.NexusIndexer;
@@ -126,11 +127,17 @@ public class NEXUS4149TransferFormatTest
 
         IndexPacker packer = lookup( IndexPacker.class );
 
-        IndexPackingRequest request = new IndexPackingRequest( context, packTargetDir );
-        request.setCreateIncrementalChunks( false );
-        request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), packTargetDir );
+            request.setCreateIncrementalChunks( false );
+            request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
 
-        packer.packIndex( request );
+            packer.packIndex( request );
+        } finally {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         // read it up and verify, but stay "low level", directly consume the GZ file and count
         FileInputStream fis = new FileInputStream( new File( packTargetDir, "nexus-maven-repository-index.gz" ) );

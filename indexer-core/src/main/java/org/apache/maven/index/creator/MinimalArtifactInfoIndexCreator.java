@@ -120,7 +120,7 @@ public class MinimalArtifactInfoIndexCreator
 
         ArtifactInfo ai = ac.getArtifactInfo();
 
-        if ( pom != null )
+        if ( pom != null && pom.isFile() )
         {
             ai.setLastModified( pom.lastModified() );
 
@@ -128,7 +128,7 @@ public class MinimalArtifactInfoIndexCreator
         }
 
         // TODO handle artifacts without poms
-        if ( pom != null )
+        if ( pom != null && pom.isFile() )
         {
             if ( ai.getClassifier() != null )
             {
@@ -181,7 +181,7 @@ public class MinimalArtifactInfoIndexCreator
                 {
                     // default it, since POM is present, is read, but does not contain explicit packaging
                     // TODO: this change breaks junit tests, but not sure why is "null" expected value?
-                    // ai.packaging = "jar";
+                    ai.setPackaging( "jar" );
                 }
             }
         }
@@ -217,11 +217,6 @@ public class MinimalArtifactInfoIndexCreator
             ai.setSize( artifact.length() );
 
             ai.setFileExtension( getExtension( artifact, ac.getGav() ) );
-
-            if ( ai.getPackaging() == null )
-            {
-                ai.setPackaging( ai.getFileExtension() );
-            }
         }
     }
 
@@ -252,7 +247,7 @@ public class MinimalArtifactInfoIndexCreator
     public void updateDocument( ArtifactInfo ai, Document doc )
     {
         String info =
-            new StringBuilder().append( ai.getPackaging() ).append( ArtifactInfo.FS ).append(
+            new StringBuilder().append( ArtifactInfo.nvl( ai.getPackaging() )).append( ArtifactInfo.FS ).append(
                 Long.toString( ai.getLastModified() ) ).append( ArtifactInfo.FS ).append( Long.toString( ai.getSize() ) ).append(
                 ArtifactInfo.FS ).append( ai.getSourcesExists().toString() ).append( ArtifactInfo.FS ).append(
                 ai.getJavadocExists().toString() ).append( ArtifactInfo.FS ).append( ai.getSignatureExists().toString() ).append(
@@ -331,9 +326,11 @@ public class MinimalArtifactInfoIndexCreator
 
             ai.setVersion( r[2] );
 
-            if ( r.length > 3 )
+            ai.setClassifier( ArtifactInfo.renvl( r[3] ) );
+
+            if ( r.length > 4 ) 
             {
-                ai.setClassifier( ArtifactInfo.renvl( r[3] ) );
+              ai.setFileExtension( r[4] );
             }
 
             res = true;
@@ -345,7 +342,7 @@ public class MinimalArtifactInfoIndexCreator
         {
             String[] r = ArtifactInfo.FS_PATTERN.split( info );
 
-            ai.setPackaging( r[0] );
+            ai.setPackaging( ArtifactInfo.renvl( r[0] ));
 
             ai.setLastModified( Long.parseLong( r[1] ) );
 

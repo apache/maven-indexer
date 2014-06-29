@@ -23,11 +23,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import org.apache.maven.index.ArtifactContext.ModelReader;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.model.Model;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
  * Artifact locator.
@@ -56,7 +57,7 @@ public class ArtifactLocator
         try
         {
             // need to read the pom model to get packaging
-            Model model = new ModelReader().readModel( new FileInputStream( source ) );
+            final Model model = new MavenXpp3Reader().read( new FileInputStream( source ), false );
 
             if ( model == null )
             {
@@ -79,6 +80,12 @@ public class ArtifactLocator
         }
         catch ( IOException e )
         {
+            e.printStackTrace();
+            return null;
+        }
+        catch ( XmlPullParserException e )
+        {
+            e.printStackTrace();
             return null;
         }
     }

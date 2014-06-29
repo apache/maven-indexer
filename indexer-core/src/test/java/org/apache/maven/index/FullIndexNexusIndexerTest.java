@@ -29,9 +29,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -40,9 +42,14 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.DefaultIndexPacker;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -328,9 +335,22 @@ public class FullIndexNexusIndexerTest
     public void testIndexTimestamp()
         throws Exception
     {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
+        targetDir.delete();
+        targetDir.mkdirs();
 
-        DefaultIndexPacker.packIndexArchive( context, os );
+        final IndexPacker indexPacker = lookup( IndexPacker.class );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            final IndexPackingRequest request =
+                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            indexPacker.packIndex( request );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         Thread.sleep( 1000L );
 
@@ -338,10 +358,12 @@ public class FullIndexNexusIndexerTest
 
         Directory newIndexDir = FSDirectory.open( newIndex );
 
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
-
         IndexingContext newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+
+        final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
+        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
+
 
         assertEquals( context.getTimestamp().getTime(), newContext.getTimestamp().getTime() );
 
@@ -377,10 +399,10 @@ public class FullIndexNexusIndexerTest
 
         newIndexDir = FSDirectory.open( newIndex );
 
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
-
         newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+
+        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( timestamp, newContext.getTimestamp() );
 

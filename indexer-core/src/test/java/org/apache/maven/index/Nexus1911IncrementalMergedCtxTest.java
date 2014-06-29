@@ -40,6 +40,7 @@ public class Nexus1911IncrementalMergedCtxTest
         member = context;
 
         indexMergedDir = super.getDirectory( "index/nexus-1911-merged" );
+        indexMergedDir.mkdirs();
 
         context =
             indexer.addMergedIndexingContext( "merged", "merged", member.getRepository(), indexMergedDir, false,

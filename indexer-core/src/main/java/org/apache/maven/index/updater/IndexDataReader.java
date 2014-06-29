@@ -28,11 +28,14 @@ import java.io.InputStream;
 import java.io.UTFDataFormatException;
 import java.util.Date;
 import java.util.zip.GZIPInputStream;
+
+import com.google.common.base.Strings;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 
@@ -136,6 +139,21 @@ public class IndexDataReader
         for ( int i = 0; i < fieldCount; i++ )
         {
             doc.add( readField() );
+        }
+
+        // Fix up UINFO field wrt MINDEXER-41
+        final Field uinfoField = (Field) doc.getField( ArtifactInfo.UINFO );
+        final String info =  doc.get( ArtifactInfo.INFO );
+        if (uinfoField!= null && !Strings.isNullOrEmpty(info)) {
+            final String[] splitInfo = ArtifactInfo.FS_PATTERN.split( info );
+            if ( splitInfo.length > 6 )
+            {
+                final String extension = splitInfo[6];
+                final String uinfoString = uinfoField.stringValue();
+                if (uinfoString.endsWith( ArtifactInfo.FS + ArtifactInfo.NA )) {
+                    uinfoField.setStringValue( uinfoString + ArtifactInfo.FS + ArtifactInfo.nvl( extension ) );
+                }
+            }
         }
 
         return doc;

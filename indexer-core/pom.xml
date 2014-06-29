@@ -45,7 +45,7 @@ under the License.
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
     </dependency>
-    
+
     <!-- DI -->
     <dependency>
       <groupId>javax.inject</groupId>

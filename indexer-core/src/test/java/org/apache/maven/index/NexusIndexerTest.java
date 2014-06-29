@@ -33,9 +33,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
@@ -47,9 +49,14 @@ import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.packer.DefaultIndexPacker;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -245,7 +252,7 @@ public class NexusIndexerTest
         assertTrue( ai != null );
 
         // we assure we found what we wanted
-        assertEquals( "commons-logging:commons-logging:1.0.4:null:jar", ai.toString() );
+        assertEquals( "commons-logging:commons-logging:1.0.4:null:jar", ai.getGroupId() + ":"  + ai.getArtifactId() + ":" + ai.getVersion() + ":" + ai.getClassifier() + ":" + ai.getPackaging() );
     }
 
     public void testQueryCreatorNGSearch()
@@ -301,7 +308,7 @@ public class NexusIndexerTest
 
         for ( ArtifactInfo ai : res )
         {
-            line = ai.getContext() + " :: " + ai.toString();
+            line = ai.getContext() + " :: "  + ai.getGroupId() + ":"  + ai.getArtifactId() + ":" + ai.getVersion() + ":" + ai.getClassifier() + ":" + ai.getPackaging();
 
             if ( print )
             {
@@ -508,7 +515,7 @@ public class NexusIndexerTest
         NexusIndexer indexer = prepare();
 
         Query q =
-            new TermQuery( new Term( ArtifactInfo.UINFO, "org.apache.maven.plugins|maven-core-it-plugin|1.0|NA" ) );
+            new TermQuery( new Term( ArtifactInfo.UINFO, "org.apache.maven.plugins|maven-core-it-plugin|1.0|NA|jar" ) );
 
         FlatSearchRequest request = new FlatSearchRequest( q );
 
@@ -560,19 +567,32 @@ public class NexusIndexerTest
         List<IndexCreator> indexCreators = context.getIndexCreators();
         // Directory directory = context.getIndexDirectory();
 
-        RAMDirectory newDirectory = new RAMDirectory();
+        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
+        targetDir.delete();
+        targetDir.mkdirs();
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        DefaultIndexPacker.packIndexArchive( context, bos );
-
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( bos.toByteArray() ), newDirectory, //
-            context );
+        final IndexPacker indexPacker = lookup( IndexPacker.class );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            final IndexPackingRequest request =
+                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            indexPacker.packIndex( request );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         indexer.removeIndexingContext( context, false );
 
-        indexer.addIndexingContext( indexId, //
+        RAMDirectory newDirectory = new RAMDirectory();
+
+        IndexingContext newContext = indexer.addIndexingContext( indexId, //
             repositoryId, repository, newDirectory, repositoryUrl, null, indexCreators );
+
+        final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
+        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.PACKAGING, "maven-plugin" ) );
         FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( q ) );

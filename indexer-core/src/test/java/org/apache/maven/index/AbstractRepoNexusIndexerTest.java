@@ -535,7 +535,7 @@ public abstract class AbstractRepoNexusIndexerTest
                 if ( uinfo != null )
                 {
                     String info = document.get( ArtifactInfo.INFO );
-                    assertFalse( info.startsWith( "null" ) );
+                    assertFalse( "Bad:" + info,  info.startsWith( "null" ) );
                 }
             }
         }

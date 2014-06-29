@@ -19,6 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
@@ -73,11 +74,15 @@ public class ConcurrentUseWithMergedContextPublishingTest
         // it was probably publish rubbish anyway.
         final File publish = new File( repoPublish, "publish-" + counter.getAndIncrement() );
 
-        final IndexPackingRequest request = new IndexPackingRequest( context, publish );
-
-        request.setCreateIncrementalChunks( false );
-
-        packer.packIndex( request );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), publish );
+            request.setCreateIncrementalChunks( false );
+            packer.packIndex( request );
+        } finally {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         return 1;
     }

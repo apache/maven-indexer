@@ -57,7 +57,7 @@ public class Nexus737NexusIndexerTest
 
                 String uinfo = document.get( ArtifactInfo.UINFO );
 
-                if ( "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA".equals( uinfo )
+                if ( "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA|jar".equals( uinfo )
                     || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|zip".equals( uinfo )
                     || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|tar.gz".equals( uinfo ) )
                 {

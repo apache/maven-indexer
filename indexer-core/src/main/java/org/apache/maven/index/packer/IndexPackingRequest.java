@@ -23,7 +23,11 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * An index packing request.
@@ -32,9 +36,11 @@ public class IndexPackingRequest
 {
     public static final int MAX_CHUNKS = 30;
 
-    private IndexingContext context;
+    private final IndexingContext context;
 
-    private File targetDir;
+    private final IndexReader indexReader;
+
+    private final File targetDir;
 
     private boolean createIncrementalChunks;
 
@@ -46,11 +52,13 @@ public class IndexPackingRequest
 
     private Collection<IndexFormat> formats;
 
-    public IndexPackingRequest( IndexingContext context, File targetDir )
+    public IndexPackingRequest( final IndexingContext context, final IndexReader indexReader, final File targetDir )
     {
-        this.context = context;
+        this.context = checkNotNull(context);
 
-        this.targetDir = targetDir;
+        this.indexReader = checkNotNull( indexReader );
+
+        this.targetDir = checkNotNull( targetDir );
 
         this.createIncrementalChunks = true;
 
@@ -60,7 +68,7 @@ public class IndexPackingRequest
 
         this.useTargetProperties = false;
 
-        this.formats = Arrays.asList( IndexFormat.FORMAT_LEGACY, IndexFormat.FORMAT_V1 );
+        this.formats = Arrays.asList( IndexFormat.FORMAT_V1 );
     }
 
     public IndexingContext getContext()
@@ -68,10 +76,7 @@ public class IndexPackingRequest
         return context;
     }
 
-    public void setContext( IndexingContext context )
-    {
-        this.context = context;
-    }
+    public IndexReader getIndexReader() { return indexReader; }
 
     /**
      * Sets index formats to be created
@@ -92,11 +97,6 @@ public class IndexPackingRequest
     public File getTargetDir()
     {
         return targetDir;
-    }
-
-    public void setTargetDir( File targetDir )
-    {
-        this.targetDir = targetDir;
     }
 
     public boolean isCreateIncrementalChunks()
@@ -144,6 +144,6 @@ public class IndexPackingRequest
      */
     public static enum IndexFormat
     {
-        FORMAT_LEGACY, FORMAT_V1;
+        FORMAT_V1;
     }
 }

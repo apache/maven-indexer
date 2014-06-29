@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Strings;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
@@ -282,8 +283,6 @@ public class ArtifactInfo
      */
     private String bundleRequireBundle;
 
-    private String uinfo = null;
-
     private final Map<String, String> attributes = new HashMap<String, String>();
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
@@ -336,18 +335,14 @@ public class ArtifactInfo
 
     public String getUinfo()
     {
-        if ( uinfo == null )
-        {
-            uinfo = new StringBuilder() //
-            .append( groupId ).append( FS ) //
-            .append( artifactId ).append( FS ) //
-            .append( version ).append( FS ) //
-            .append( nvl( classifier ) ) //
-            .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS + packaging ) //
-            .toString(); // extension is stored in the packaging field when classifier is not used
-        }
-
-        return uinfo;
+        return new StringBuilder() //
+        .append( groupId ).append( FS ) //
+        .append( artifactId ).append( FS ) //
+        .append( version ).append( FS ) //
+        .append( nvl( classifier ) ).append( FS ) //
+        .append( fileExtension )
+        // .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS + packaging ) //
+        .toString(); // extension is stored in the packaging field when classifier is not used
     }
 
     public String getRootGroup()
@@ -384,10 +379,12 @@ public class ArtifactInfo
     @Override
     public String toString()
     {
-        return new StringBuilder( groupId ).append( ':' ).append( artifactId ) //
-        .append( ':' ).append( version ) //
-        .append( ':' ).append( classifier ) //
-        .append( ':' ).append( packaging ).toString();
+        final StringBuilder result = new StringBuilder( getUinfo() );
+        if ( !Strings.isNullOrEmpty( getPackaging() ) )
+        {
+            result.append( "[" ).append( getPackaging() ).append( "]" );
+        }
+        return result.toString();
     }
 
     private static final List<Field> DEFAULT_FIELDS = new ArrayList<Field>();
@@ -1003,11 +1000,6 @@ public class ArtifactInfo
     public void setBundleRequireBundle( String bundleRequireBundle )
     {
         this.bundleRequireBundle = bundleRequireBundle;
-    }
-
-    public void setUinfo( String uinfo )
-    {
-        this.uinfo = uinfo;
     }
 
     public VersionScheme getVersionScheme( )

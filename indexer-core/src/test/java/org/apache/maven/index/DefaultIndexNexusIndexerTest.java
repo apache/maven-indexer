@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.QueryWrapperFilter;
@@ -43,7 +44,11 @@ import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.DefaultIndexPacker;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
 
 public class DefaultIndexNexusIndexerTest
     extends MinimalIndexNexusIndexerTest
@@ -162,9 +167,22 @@ public class DefaultIndexNexusIndexerTest
     public void testIndexTimestamp()
         throws Exception
     {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
+        targetDir.delete();
+        targetDir.mkdirs();
 
-        DefaultIndexPacker.packIndexArchive( context, os );
+        final IndexPacker indexPacker = lookup( IndexPacker.class );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            final IndexPackingRequest request =
+                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            indexPacker.packIndex( request );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         Thread.sleep( 1000L );
 
@@ -172,10 +190,11 @@ public class DefaultIndexNexusIndexerTest
 
         Directory newIndexDir = FSDirectory.open( newIndex );
 
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
-
         IndexingContext newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+
+        final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
+        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( context.getTimestamp().getTime(), newContext.getTimestamp().getTime() );
 
@@ -188,6 +207,8 @@ public class DefaultIndexNexusIndexerTest
         FlatSearchRequest request = new FlatSearchRequest( query, newContext );
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Collection<ArtifactInfo> r = response.getResults();
+
+        System.out.println(r);
 
         assertEquals( 2, r.size() );
 
@@ -211,10 +232,10 @@ public class DefaultIndexNexusIndexerTest
 
         newIndexDir = FSDirectory.open( newIndex );
 
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, context );
-
         newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+
+        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( timestamp, newContext.getTimestamp() );
 

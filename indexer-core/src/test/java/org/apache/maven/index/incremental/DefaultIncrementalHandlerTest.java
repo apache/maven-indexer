@@ -19,13 +19,7 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-import java.util.Properties;
-
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.AbstractIndexCreatorHelper;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -33,6 +27,13 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.codehaus.plexus.util.FileUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Properties;
 
 public class DefaultIncrementalHandlerTest
     extends AbstractIndexCreatorHelper
@@ -76,23 +77,31 @@ public class DefaultIncrementalHandlerTest
     public void testUpdateInvalidProperties()
         throws Exception
     {
-        Properties properties = new Properties();
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            Properties properties = new Properties();
 
-        IndexPackingRequest request = new IndexPackingRequest( context, indexDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexDir );
 
-        // No properties definite fail
-        assertNull( handler.getIncrementalUpdates( request, properties ) );
+            // No properties definite fail
+            assertNull( handler.getIncrementalUpdates( request, properties ) );
 
-        properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "junk" );
+            properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "junk" );
 
-        // property set, but invalid
-        assertNull( handler.getIncrementalUpdates( request, properties ) );
+            // property set, but invalid
+            assertNull( handler.getIncrementalUpdates( request, properties ) );
 
-        properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600" );
+            properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600" );
 
-        List<Integer> updates = handler.getIncrementalUpdates( request, properties );
+            List<Integer> updates = handler.getIncrementalUpdates( request, properties );
 
-        assertEquals( updates.size(), 0 );
+            assertEquals( updates.size(), 0 );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
     }
 
     public void testUpdateValid()
@@ -100,17 +109,24 @@ public class DefaultIncrementalHandlerTest
     {
         Properties properties = new Properties();
 
-        IndexPackingRequest request = new IndexPackingRequest( context, indexDir );
-
         properties.setProperty( IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600" );
 
         FileUtils.copyDirectoryStructure( new File( getBasedir(), "src/test/repo/ch" ), new File( repoDir, "ch" ) );
 
         indexer.scan( context );
 
-        List<Integer> updates = handler.getIncrementalUpdates( request, properties );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexDir );
+            List<Integer> updates = handler.getIncrementalUpdates( request, properties );
 
-        assertEquals( updates.size(), 1 );
+            assertEquals( updates.size(), 1 );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
     }
 
     public void testRemoteUpdatesInvalidProperties()

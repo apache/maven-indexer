@@ -29,14 +29,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.DefaultIndexPacker;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus13NexusIndexerTest
@@ -106,9 +111,22 @@ public class Nexus13NexusIndexerTest
     public void testIndexTimestamp()
         throws Exception
     {
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
+        targetDir.delete();
+        targetDir.mkdirs();
 
-        DefaultIndexPacker.packIndexArchive( context, os );
+        final IndexPacker indexPacker = lookup( IndexPacker.class );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            final IndexPackingRequest request =
+                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            indexPacker.packIndex( request );
+        }
+        finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         Thread.sleep( 1000L );
 
@@ -117,10 +135,9 @@ public class Nexus13NexusIndexerTest
         IndexingContext newContext =
             nexusIndexer.addIndexingContext( "test-new", "nexus-13", null, indexDir, null, null, DEFAULT_CREATORS );
 
-        Directory newIndexDir = new RAMDirectory();
-
-        DefaultIndexUpdater.unpackIndexArchive( new ByteArrayInputStream( os.toByteArray() ), newIndexDir, newContext );
-        newContext.replace( newIndexDir );
+        final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
+        final IndexUpdateRequest updateRequest = new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) );
+        indexUpdater.fetchAndUpdateIndex( updateRequest );
 
         assertEquals( 0, newContext.getTimestamp().getTime() - context.getTimestamp().getTime() );
 

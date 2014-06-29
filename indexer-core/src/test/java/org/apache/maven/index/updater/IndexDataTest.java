@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.AbstractRepoNexusIndexerTest;
@@ -69,7 +70,14 @@ public class IndexDataTest
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         IndexDataWriter dw = new IndexDataWriter( bos );
-        dw.write( context, null );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            dw.write( context, indexSearcher.getIndexReader(), null );
+        } finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
 
@@ -99,7 +107,14 @@ public class IndexDataTest
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         IndexDataWriter dw = new IndexDataWriter( bos );
-        dw.write( context, null );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            dw.write( context, indexSearcher.getIndexReader(), null );
+        }finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
 
         ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
 

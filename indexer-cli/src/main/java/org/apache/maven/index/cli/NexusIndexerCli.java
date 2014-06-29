@@ -33,6 +33,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
@@ -94,8 +95,6 @@ public class NexusIndexerCli
     public static final char CREATE_FILE_CHECKSUMS = 's';
 
     public static final char INCREMENTAL_CHUNK_KEEP_COUNT = 'k';
-
-    public static final char LEGACY = 'l';
 
     public static final char UNPACK = 'u';
 
@@ -206,9 +205,6 @@ public class NexusIndexerCli
         options.addOption( OptionBuilder.withLongOpt( "type" ).hasArg() //
         .withDescription( "Indexer type (default, min, full or coma separated list of custom types)." ).create( TYPE ) );
 
-        options.addOption( OptionBuilder.withLongOpt( "legacy" ) //
-        .withDescription( "Build legacy .zip index file" ).create( LEGACY ) );
-
         options.addOption( OptionBuilder.withLongOpt( "unpack" ) //
         .withDescription( "Unpack an index file" ).create( UNPACK ) );
 
@@ -297,8 +293,6 @@ public class NexusIndexerCli
 
         boolean createIncrementalChunks = cli.hasOption( CREATE_INCREMENTAL_CHUNKS );
 
-        boolean createLegacyIndex = cli.hasOption( LEGACY );
-
         boolean debug = cli.hasOption( DEBUG );
 
         boolean quiet = cli.hasOption( QUIET );
@@ -332,11 +326,6 @@ public class NexusIndexerCli
             {
                 System.err.printf( "Will create baseline file.\n" );
             }
-
-            if ( createLegacyIndex )
-            {
-                System.err.printf( "Will also create legacy .zip index file.\n" );
-            }
         }
 
         NexusIndexer indexer = plexus.lookup( NexusIndexer.class );
@@ -352,6 +341,7 @@ public class NexusIndexerCli
             null, // index update url
             indexers );
 
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
             IndexPacker packer = plexus.lookup( IndexPacker.class );
@@ -360,20 +350,13 @@ public class NexusIndexerCli
 
             indexer.scan( context, listener, true );
 
-            IndexPackingRequest request = new IndexPackingRequest( context, outputFolder );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), outputFolder );
 
             request.setCreateChecksumFiles( createChecksums );
 
             request.setCreateIncrementalChunks( createIncrementalChunks );
 
-            if ( createLegacyIndex )
-            {
-                request.setFormats( Arrays.asList( IndexFormat.FORMAT_LEGACY, IndexFormat.FORMAT_V1 ) );
-            }
-            else
-            {
-                request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
-            }
+            request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
 
             if ( chunkCount != null )
             {
@@ -389,6 +372,7 @@ public class NexusIndexerCli
         }
         finally
         {
+            context.releaseIndexSearcher( indexSearcher );
             indexer.removeIndexingContext( context, false );
         }
     }

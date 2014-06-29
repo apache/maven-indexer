@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.AbstractIndexCreatorHelper;
 import org.apache.maven.index.ArtifactContext;
@@ -124,9 +125,16 @@ public abstract class AbstractIndexUpdaterTest
     protected void packIndex( File targetDir, IndexingContext context )
         throws IllegalArgumentException, IOException
     {
-        IndexPackingRequest request = new IndexPackingRequest( context, targetDir );
-        request.setUseTargetProperties( true );
-        packer.packIndex( request );
+        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+        try
+        {
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            request.setUseTargetProperties( true );
+            packer.packIndex( request );
+        } finally
+        {
+            context.releaseIndexSearcher( indexSearcher );
+        }
     }
 
     protected void searchFor( String groupId, int expected, IndexingContext context )

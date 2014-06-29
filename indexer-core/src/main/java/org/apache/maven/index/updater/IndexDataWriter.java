@@ -84,21 +84,12 @@ public class IndexDataWriter
         this.descriptorWritten = false;
     }
 
-    public int write( IndexingContext context, List<Integer> docIndexes )
+    public int write( IndexingContext context, IndexReader indexReader, List<Integer> docIndexes )
         throws IOException
     {
         writeHeader( context );
 
-        int n = 0;
-        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
-        try
-        {
-            n = writeDocuments( indexSearcher.getIndexReader(), docIndexes );
-        }
-        finally
-        {
-            context.releaseIndexSearcher( indexSearcher );
-        }
+        int n = writeDocuments( indexReader, docIndexes );
 
         writeGroupFields();
 
