@@ -479,11 +479,7 @@ under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
-          <version>1.0</version>
-          <configuration>
-            <checkoutDirectory>${maven.site.cache}/${maven.site.path}</checkoutDirectory>
-            <tryUpdate>true</tryUpdate>
-          </configuration>
+          <version>1.1</version>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
           itself. -->
@@ -500,16 +496,7 @@ under the License.
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.9.1</version>
-        <configuration>
-          <notimestamp>true</notimestamp>
-        </configuration>
         <reportSets>
           <reportSet>
             <inherited>false</inherited>
