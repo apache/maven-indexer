@@ -19,6 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -28,7 +29,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Requirement;
 
 /**
  * A default repository scanner for Maven 2 repository.
@@ -41,8 +41,15 @@ import org.codehaus.plexus.component.annotations.Requirement;
 public class DefaultScanner
     implements Scanner
 {
-    @Requirement
-    private ArtifactContextProducer artifactContextProducer;
+
+    private final ArtifactContextProducer artifactContextProducer;
+
+
+    @Inject
+    public DefaultScanner( ArtifactContextProducer artifactContextProducer )
+    {
+        this.artifactContextProducer = artifactContextProducer;
+    }
 
     public ScanningResult scan( ScanningRequest request )
     {

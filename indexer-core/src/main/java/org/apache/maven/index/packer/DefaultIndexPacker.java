@@ -19,6 +19,7 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.BufferedOutputStream;
@@ -59,7 +60,6 @@ import org.apache.maven.index.context.NexusLegacyAnalyzer;
 import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
@@ -84,8 +84,14 @@ public class DefaultIndexPacker
         return logger;
     }
 
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+    private final IncrementalHandler incrementalHandler;
+
+
+    @Inject
+    public DefaultIndexPacker( IncrementalHandler incrementalHandler )
+    {
+        this.incrementalHandler = incrementalHandler;
+    }
 
     public void packIndex( IndexPackingRequest request )
         throws IOException, IllegalArgumentException

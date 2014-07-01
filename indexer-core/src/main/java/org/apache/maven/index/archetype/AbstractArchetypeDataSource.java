@@ -19,6 +19,7 @@ package org.apache.maven.index.archetype;
  * under the License.
  */
 
+import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,6 @@ import org.apache.maven.index.Indexer;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +51,14 @@ public abstract class AbstractArchetypeDataSource
         return logger;
     }
 
-    @Requirement
-    private Indexer indexer;
+    private final Indexer indexer;
+
+
+    @Inject
+    protected AbstractArchetypeDataSource( Indexer indexer )
+    {
+        this.indexer = indexer;
+    }
 
     public ArchetypeCatalog getArchetypeCatalog( final Properties properties )
         throws ArchetypeDataSourceException

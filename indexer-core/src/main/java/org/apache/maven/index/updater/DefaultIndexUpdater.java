@@ -19,6 +19,7 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.BufferedInputStream;
@@ -69,7 +70,6 @@ import org.apache.maven.index.fs.Lock;
 import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
@@ -95,21 +95,16 @@ public class DefaultIndexUpdater
         return logger;
     }
 
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+    private final IncrementalHandler incrementalHandler;
 
-    @Requirement( role = IndexUpdateSideEffect.class )
-    private List<IndexUpdateSideEffect> sideEffects;
+    private final List<IndexUpdateSideEffect> sideEffects;
 
-    public DefaultIndexUpdater( final IncrementalHandler handler, final List<IndexUpdateSideEffect> mySideeffects )
+
+    @Inject
+    public DefaultIndexUpdater( final IncrementalHandler incrementalHandler, final List<IndexUpdateSideEffect> sideEffects )
     {
-        incrementalHandler = handler;
-        sideEffects = mySideeffects;
-    }
-
-    public DefaultIndexUpdater()
-    {
-
+        this.incrementalHandler = incrementalHandler;
+        this.sideEffects = sideEffects;
     }
 
     public IndexUpdateResult fetchAndUpdateIndex( final IndexUpdateRequest updateRequest )

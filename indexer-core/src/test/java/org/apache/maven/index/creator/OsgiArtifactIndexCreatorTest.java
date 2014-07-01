@@ -33,7 +33,7 @@ import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
-import org.codehaus.plexus.PlexusTestCase;
+import org.apache.maven.index.AbstractTestSupport;
 import org.codehaus.plexus.util.FileUtils;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -42,7 +42,7 @@ import static org.junit.Assert.assertThat;
  * @author Olivier Lamy
  */
 public class OsgiArtifactIndexCreatorTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 

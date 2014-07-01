@@ -19,14 +19,15 @@ package org.apache.maven.index.archetype;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.index.Indexer;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Requirement;
 
 /**
  * Nexus Archetype Data Source.
@@ -40,8 +41,17 @@ import org.codehaus.plexus.component.annotations.Requirement;
 public class NexusArchetypeDataSource
     extends AbstractArchetypeDataSource
 {
-    @Requirement
-    private NexusIndexer nexusIndexer;
+
+    private final NexusIndexer nexusIndexer;
+
+
+    @Inject
+    public NexusArchetypeDataSource( Indexer indexer,
+                                     NexusIndexer nexusIndexer )
+    {
+        super( indexer );
+        this.nexusIndexer = nexusIndexer;
+    }
 
     @Override
     protected List<IndexingContext> getIndexingContexts()

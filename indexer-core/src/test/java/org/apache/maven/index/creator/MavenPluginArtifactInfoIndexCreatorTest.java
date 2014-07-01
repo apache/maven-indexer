@@ -26,14 +26,13 @@ import java.util.List;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
-import org.codehaus.plexus.PlexusTestCase;
+import org.apache.maven.index.AbstractTestSupport;
 
 /**
  * @author juven
  */
 public class MavenPluginArtifactInfoIndexCreatorTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 

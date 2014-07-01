@@ -19,6 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -31,7 +32,6 @@ import org.apache.maven.index.locator.GavHelpedLocator;
 import org.apache.maven.index.locator.Locator;
 import org.apache.maven.index.locator.MetadataLocator;
 import org.apache.maven.index.locator.PomLocator;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -45,12 +45,19 @@ import org.codehaus.plexus.util.StringUtils;
 public class DefaultArtifactContextProducer
     implements ArtifactContextProducer
 {
-    @Requirement
-    private ArtifactPackagingMapper mapper;
+
+    private final ArtifactPackagingMapper mapper;
 
     private GavHelpedLocator pl = new PomLocator();
 
     private Locator ml = new MetadataLocator();
+
+
+    @Inject
+    public DefaultArtifactContextProducer( ArtifactPackagingMapper mapper )
+    {
+        this.mapper = mapper;
+    }
 
     /**
      * Get ArtifactContext for given pom or artifact (jar, war, etc). A file can be

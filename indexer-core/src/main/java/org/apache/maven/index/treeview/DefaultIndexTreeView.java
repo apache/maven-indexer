@@ -19,6 +19,7 @@ package org.apache.maven.index.treeview;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -38,7 +39,6 @@ import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.StringUtils;
 
 @Singleton
@@ -46,8 +46,15 @@ import org.codehaus.plexus.util.StringUtils;
 public class DefaultIndexTreeView
     implements IndexTreeView
 {
-    @Requirement
-    private Indexer indexer;
+
+    private final Indexer indexer;
+
+
+    @Inject
+    public DefaultIndexTreeView( Indexer indexer )
+    {
+        this.indexer = indexer;
+    }
 
     protected Indexer getIndexer()
     {

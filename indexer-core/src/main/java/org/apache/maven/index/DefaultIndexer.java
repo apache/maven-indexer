@@ -19,6 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -41,7 +42,6 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
@@ -54,14 +54,23 @@ import org.codehaus.plexus.util.IOUtil;
 public class DefaultIndexer
     implements Indexer
 {
-    @Requirement
-    private SearchEngine searcher;
 
-    @Requirement
-    private IndexerEngine indexerEngine;
+    private final SearchEngine searcher;
 
-    @Requirement
-    private QueryCreator queryCreator;
+    private final IndexerEngine indexerEngine;
+
+    private final QueryCreator queryCreator;
+
+
+    @Inject
+    public DefaultIndexer( SearchEngine searcher,
+                           IndexerEngine indexerEngine,
+                           QueryCreator queryCreator )
+    {
+        this.searcher = searcher;
+        this.indexerEngine = indexerEngine;
+        this.queryCreator = queryCreator;
+    }
 
     // ----------------------------------------------------------------------------
     // Contexts

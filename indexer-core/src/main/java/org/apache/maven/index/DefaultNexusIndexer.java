@@ -19,6 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -43,7 +44,6 @@ import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -63,19 +63,28 @@ public class DefaultNexusIndexer
     implements NexusIndexer
 {
 
-    @Requirement
-    private Indexer indexer;
+    private final Indexer indexer;
 
-    @Requirement
-    private Scanner scanner;
+    private final Scanner scanner;
 
-    @Requirement
-    private IndexerEngine indexerEngine;
+    private final IndexerEngine indexerEngine;
 
-    @Requirement
-    private QueryCreator queryCreator;
+    private final QueryCreator queryCreator;
 
     private final Map<String, IndexingContext> indexingContexts = new ConcurrentHashMap<String, IndexingContext>();
+
+
+    @Inject
+    public DefaultNexusIndexer( Indexer indexer,
+                                Scanner scanner,
+                                IndexerEngine indexerEngine,
+                                QueryCreator queryCreator )
+    {
+        this.indexer = indexer;
+        this.scanner = scanner;
+        this.indexerEngine = indexerEngine;
+        this.queryCreator = queryCreator;
+    }
 
     // ----------------------------------------------------------------------------
     // Contexts
