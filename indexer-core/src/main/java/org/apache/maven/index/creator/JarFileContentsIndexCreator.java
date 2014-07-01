@@ -19,6 +19,8 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -33,17 +35,16 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
  * An index creator used to index Java class names from a Maven artifact (JAR or WAR for now). Will open up the file and
  * collect all the class names from it.
  */
-@Component( role = IndexCreator.class, hint = JarFileContentsIndexCreator.ID )
+@Singleton
+@Named (JarFileContentsIndexCreator.ID)
 public class JarFileContentsIndexCreator
     extends AbstractIndexCreator
     implements LegacyDocumentUpdater

@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -41,7 +43,6 @@ import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
@@ -57,7 +58,8 @@ import org.codehaus.plexus.util.FileUtils;
  *             it's behavior less intuitive.
  */
 @Deprecated
-@Component( role = NexusIndexer.class )
+@Singleton
+@Named
 public class DefaultNexusIndexer
     extends AbstractLogEnabled
     implements NexusIndexer

@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,7 +28,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -36,7 +37,8 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Jason Van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = Scanner.class )
+@Singleton
+@Named
 public class DefaultScanner
     extends AbstractLogEnabled
     implements Scanner

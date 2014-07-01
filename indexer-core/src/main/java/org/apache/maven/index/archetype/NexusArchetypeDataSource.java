@@ -19,13 +19,13 @@ package org.apache.maven.index.archetype;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.archetype.source.ArchetypeDataSource;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 
 /**
@@ -35,7 +35,8 @@ import org.codehaus.plexus.component.annotations.Requirement;
  * @deprecated Extend {@link AbstractArchetypeDataSource} instead, and make it suit your case.
  */
 @Deprecated
-@Component( role = ArchetypeDataSource.class, hint = "nexus" )
+@Named("nexus")
+@Singleton
 public class NexusArchetypeDataSource
     extends AbstractArchetypeDataSource
 {

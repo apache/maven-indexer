@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
@@ -29,7 +31,6 @@ import org.apache.maven.index.locator.GavHelpedLocator;
 import org.apache.maven.index.locator.Locator;
 import org.apache.maven.index.locator.MetadataLocator;
 import org.apache.maven.index.locator.PomLocator;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -39,7 +40,8 @@ import org.codehaus.plexus.util.StringUtils;
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
-@Component( role = ArtifactContextProducer.class )
+@Singleton
+@Named
 public class DefaultArtifactContextProducer
     implements ArtifactContextProducer
 {

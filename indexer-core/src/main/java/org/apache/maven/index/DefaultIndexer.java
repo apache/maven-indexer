@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,7 +41,6 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
@@ -49,7 +50,8 @@ import org.codehaus.plexus.util.IOUtil;
  * 
  * @author Tamas Cservenak
  */
-@Component( role = Indexer.class )
+@Singleton
+@Named
 public class DefaultIndexer
     extends AbstractLogEnabled
     implements Indexer

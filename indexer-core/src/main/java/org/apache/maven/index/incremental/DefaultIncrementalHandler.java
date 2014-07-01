@@ -19,6 +19,8 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -44,11 +46,11 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
-@Component( role = IncrementalHandler.class )
+@Singleton
+@Named
 public class DefaultIncrementalHandler
     extends AbstractLogEnabled
     implements IncrementalHandler

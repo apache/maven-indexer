@@ -19,6 +19,8 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -36,10 +38,8 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
@@ -51,7 +51,8 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  * 
  * @author cstamas
  */
-@Component( role = IndexCreator.class, hint = MavenPluginArtifactInfoIndexCreator.ID )
+@Singleton
+@Named (MavenPluginArtifactInfoIndexCreator.ID)
 public class MavenPluginArtifactInfoIndexCreator
     extends AbstractIndexCreator
 {

@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +41,6 @@ import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiReader;
 import org.apache.maven.index.context.NexusIndexMultiSearcher;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -48,7 +49,8 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Eugene Kuleshov
  * @author Tamas Cservenak
  */
-@Component( role = SearchEngine.class )
+@Singleton
+@Named
 public class DefaultSearchEngine
     extends AbstractLogEnabled
     implements SearchEngine

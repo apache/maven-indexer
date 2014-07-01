@@ -19,6 +19,8 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -46,7 +48,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -68,7 +69,6 @@ import org.apache.maven.index.fs.Lock;
 import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.component.annotations.Requirement;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
@@ -81,7 +81,8 @@ import org.codehaus.plexus.util.io.RawInputStreamFacade;
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
-@Component( role = IndexUpdater.class )
+@Singleton
+@Named
 public class DefaultIndexUpdater
     extends AbstractLogEnabled
     implements IndexUpdater
