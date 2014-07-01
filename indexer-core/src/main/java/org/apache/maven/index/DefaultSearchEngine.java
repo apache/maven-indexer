@@ -41,7 +41,8 @@ import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiReader;
 import org.apache.maven.index.context.NexusIndexMultiSearcher;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default search engine implementation
@@ -52,9 +53,16 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 @Singleton
 @Named
 public class DefaultSearchEngine
-    extends AbstractLogEnabled
     implements SearchEngine
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
     @Deprecated
     public Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
                                          IndexingContext indexingContext, Query query )

@@ -40,8 +40,8 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTyped;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default {@link QueryCreator} constructs Lucene query for provided query text.
@@ -68,8 +68,8 @@ import org.codehaus.plexus.logging.Logger;
 public class DefaultQueryCreator
     implements QueryCreator
 {
-    @Requirement
-    private Logger logger;
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
     protected Logger getLogger()
     {

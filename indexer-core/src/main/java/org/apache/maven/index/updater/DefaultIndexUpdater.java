@@ -70,10 +70,11 @@ import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default index updater implementation
@@ -84,9 +85,15 @@ import org.codehaus.plexus.util.io.RawInputStreamFacade;
 @Singleton
 @Named
 public class DefaultIndexUpdater
-    extends AbstractLogEnabled
     implements IndexUpdater
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
 
     @Requirement( role = IncrementalHandler.class )
     IncrementalHandler incrementalHandler;

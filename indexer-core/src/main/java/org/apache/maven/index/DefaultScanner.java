@@ -29,7 +29,6 @@ import java.util.TreeSet;
 
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default repository scanner for Maven 2 repository.
@@ -40,7 +39,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 @Singleton
 @Named
 public class DefaultScanner
-    extends AbstractLogEnabled
     implements Scanner
 {
     @Requirement

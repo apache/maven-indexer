@@ -24,7 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.index.context.IndexCreator;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An abstract base class for {@link IndexCreator} implementations.
@@ -32,9 +33,16 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Jason van Zyl
  */
 public abstract class AbstractIndexCreator
-    extends AbstractLogEnabled
     implements IndexCreator
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
     private final String id;
 
     private final List<String> creatorDependencies;

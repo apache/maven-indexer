@@ -36,7 +36,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default {@link IndexerEngine} implementation.
@@ -46,7 +45,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 @Singleton
 @Named
 public class DefaultIndexerEngine
-    extends AbstractLogEnabled
     implements IndexerEngine
 {
 

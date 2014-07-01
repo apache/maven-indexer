@@ -60,9 +60,10 @@ import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
@@ -73,9 +74,16 @@ import org.codehaus.plexus.util.IOUtil;
 @Singleton
 @Named
 public class DefaultIndexPacker
-    extends AbstractLogEnabled
     implements IndexPacker
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
     @Requirement( role = IncrementalHandler.class )
     IncrementalHandler incrementalHandler;
 

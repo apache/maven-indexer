@@ -39,13 +39,11 @@ import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
 @Singleton
 @Named
 public class DefaultIndexTreeView
-    extends AbstractLogEnabled
     implements IndexTreeView
 {
     @Requirement

@@ -44,7 +44,6 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -61,7 +60,6 @@ import org.codehaus.plexus.util.FileUtils;
 @Singleton
 @Named
 public class DefaultNexusIndexer
-    extends AbstractLogEnabled
     implements NexusIndexer
 {
 

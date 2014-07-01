@@ -42,7 +42,6 @@ import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
 
 /**
@@ -53,7 +52,6 @@ import org.codehaus.plexus.util.IOUtil;
 @Singleton
 @Named
 public class DefaultIndexer
-    extends AbstractLogEnabled
     implements Indexer
 {
     @Requirement
