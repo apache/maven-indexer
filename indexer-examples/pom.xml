@@ -33,7 +33,21 @@ under the License.
     This module contains Maven Indexer usage examples.
   </description>
 
-  <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.17</version>
+
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI
     UNWORKABLE! -->
 
   <dependencies>
@@ -84,5 +98,28 @@ under the License.
         <scope>test</scope>
       </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>tests</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.17</version>
+
+            <configuration>
+              <skipTests>false</skipTests>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

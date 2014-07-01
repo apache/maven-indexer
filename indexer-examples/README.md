@@ -7,12 +7,13 @@ Try following steps:
 
 ```
 $ cd indexer-examples
-$ mvn clean test
+$ mvn clean test -Ptests
   ... first run will take few minutes to download the index, and then will run showing some output
-$ mvn test
+$ mvn test -Ptests
   ... (no clean goal!) second run will finish quickly, as target folder will already contain an up-to-date index
 ```
 
+Please, note that the tests in this module will only compile by default; the will not be executed, unless you activate the profile (-Ptests).
 
 Have fun,  
 ~t~
