@@ -46,6 +46,9 @@ import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.codehaus.plexus.DefaultContainerConfiguration;
+import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -240,6 +243,14 @@ public class NexusIndexerCli
     public void invokePlexusComponent( final CommandLine cli, PlexusContainer plexus )
         throws Exception
     {
+        final DefaultContainerConfiguration configuration = new DefaultContainerConfiguration();
+        configuration.setClassWorld( ( (DefaultPlexusContainer) plexus ).getClassWorld() );
+        configuration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+
+        // replace plexus, as PlexusCli is blunt, does not allow to modify configuration
+        // TODO: get rid of PlexusCli use!
+        plexus = new DefaultPlexusContainer( configuration );
+
         if ( cli.hasOption( QUIET ) )
         {
             setLogLevel( plexus, Logger.LEVEL_DISABLED );

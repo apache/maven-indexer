@@ -19,6 +19,9 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,9 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -36,9 +37,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -61,11 +60,10 @@ import org.apache.maven.index.context.NexusLegacyAnalyzer;
 import org.apache.maven.index.creator.LegacyDocumentUpdater;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
@@ -73,13 +71,27 @@ import org.codehaus.plexus.util.IOUtil;
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
-@Component( role = IndexPacker.class )
+@Singleton
+@Named
 public class DefaultIndexPacker
-    extends AbstractLogEnabled
     implements IndexPacker
 {
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
+    private final IncrementalHandler incrementalHandler;
+
+
+    @Inject
+    public DefaultIndexPacker( IncrementalHandler incrementalHandler )
+    {
+        this.incrementalHandler = incrementalHandler;
+    }
 
     public void packIndex( IndexPackingRequest request )
         throws IOException, IllegalArgumentException

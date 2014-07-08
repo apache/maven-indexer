@@ -19,6 +19,8 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -44,15 +46,23 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Component( role = IncrementalHandler.class )
+@Singleton
+@Named
 public class DefaultIncrementalHandler
-    extends AbstractLogEnabled
     implements IncrementalHandler
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
     public List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
         throws IOException
     {
