@@ -55,7 +55,7 @@ public class Mindexer14HitLimitTest
 
         for ( int i = 0; i < count; i++ )
         {
-            final ArtifactInfo ai = new ArtifactInfo( "mindexer14", gid, aid, String.valueOf( version++ ), null );
+            final ArtifactInfo ai = new ArtifactInfo( "mindexer14", gid, aid, String.valueOf( version++ ), null, "jar" );
 
             final ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
 

@@ -50,7 +50,7 @@ public class JarFileContentsIndexCreatorTest
 
         File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null, "jar" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
@@ -67,7 +67,7 @@ public class JarFileContentsIndexCreatorTest
 
         File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null, "jar" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
@@ -88,7 +88,7 @@ public class JarFileContentsIndexCreatorTest
                 "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom" );
 
         ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.maven.indexer.test", "sample-war", "1.0-SNAPSHOT", null );
+            new ArtifactInfo( "test", "org.apache.maven.indexer.test", "sample-war", "1.0-SNAPSHOT", null, "war" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 

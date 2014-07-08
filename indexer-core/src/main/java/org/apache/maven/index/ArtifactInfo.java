@@ -27,17 +27,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.OsgiArtifactIndexCreator;
-import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
+
+import com.google.common.base.Strings;
 
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
@@ -295,7 +295,7 @@ public class ArtifactInfo
         versionScheme = new GenericVersionScheme();
     }
 
-    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier )
+    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier, String extension )
     {
         this();
         this.repository = repository;
@@ -303,6 +303,7 @@ public class ArtifactInfo
         this.artifactId = artifactId;
         this.version = version;
         this.classifier = classifier;
+        this.fileExtension = extension;
     }
 
     public Version getArtifactVersion()

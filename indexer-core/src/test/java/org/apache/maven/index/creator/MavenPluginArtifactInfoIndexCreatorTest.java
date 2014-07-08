@@ -57,7 +57,7 @@ public class MavenPluginArtifactInfoIndexCreatorTest
                 "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom" );
 
         ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null );
+            new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null, "jar" );
 
         artifactInfo.setPackaging( "maven-plugin" );
         artifactInfo.setFileExtension( "jar" );

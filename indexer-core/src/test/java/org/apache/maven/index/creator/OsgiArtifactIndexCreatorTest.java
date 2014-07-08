@@ -77,7 +77,7 @@ public class OsgiArtifactIndexCreatorTest
                              "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.pom" );
 
         ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.karaf.features", "org.apache.karaf.features.command", "2.2.2", null );
+            new ArtifactInfo( "test", "org.apache.karaf.features", "org.apache.karaf.features.command", "2.2.2", null, "jar" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 

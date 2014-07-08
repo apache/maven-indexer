@@ -63,7 +63,7 @@ public class ConcurrentUseTest
         IndexUserThread[] threads = new IndexUserThread[THREAD_COUNT];
 
         ArtifactInfo ai =
-            new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact", "", null );
+            new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact", "", null, "jar" );
 
         for ( int i = 0; i < THREAD_COUNT; i++ )
         {
@@ -115,7 +115,7 @@ public class ConcurrentUseTest
     {
         final ArtifactInfo artifactInfo =
             new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact", "1."
-                + String.valueOf( versionSource.getAndIncrement() ), null );
+                + String.valueOf( versionSource.getAndIncrement() ), null , "jar");
 
         final ArtifactContext ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
 

@@ -69,7 +69,7 @@ public class Nexus3293TimestampSnapshotTest
 
         File pom = new File( getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
-        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null, "jar" );
 
         M2GavCalculator gavCalc = new M2GavCalculator();
 

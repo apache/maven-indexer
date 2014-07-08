@@ -72,6 +72,7 @@ public class MergedIndexingContext
         this.gavCalculator = new M2GavCalculator();
         this.directory = indexDirectory;
         this.searchable = searchable;
+        setIndexDirectoryFile( null );
     }
 
     public MergedIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -80,7 +81,7 @@ public class MergedIndexingContext
     {
         this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile ), searchable );
 
-        this.directoryFile = indexDirectoryFile;
+        setIndexDirectoryFile( indexDirectoryFile );
     }
 
     @Deprecated
@@ -92,7 +93,7 @@ public class MergedIndexingContext
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            this.directoryFile = ( (FSDirectory) indexDirectory ).getDirectory();
+            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory() );
         }
     }
 
@@ -289,6 +290,26 @@ public class MergedIndexingContext
     public File getIndexDirectoryFile()
     {
         return directoryFile;
+    }
+
+    /**
+     * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
+     * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
+     */
+    protected void setIndexDirectoryFile(File dir) throws IOException
+    {
+        if ( dir == null )
+        {
+            // best effort, to have a directory thru the life of a ctx
+            File tmpFile = File.createTempFile( "mindexer-ctx" + id, "tmp" );
+            tmpFile.delete();
+            tmpFile.mkdirs();
+            this.directoryFile = tmpFile;
+        }
+        else
+        {
+            this.directoryFile = dir;
+        }
     }
 
     public GavCalculator getGavCalculator()

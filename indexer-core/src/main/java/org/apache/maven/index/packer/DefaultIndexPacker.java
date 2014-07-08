@@ -183,7 +183,7 @@ public class DefaultIndexPacker
     {
         File file = null;
 
-        if ( request.isUseTargetProperties() )
+        if ( request.isUseTargetProperties() || request.getContext().getIndexDirectoryFile() == null )
         {
             file = new File( request.getTargetDir(), IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
         }

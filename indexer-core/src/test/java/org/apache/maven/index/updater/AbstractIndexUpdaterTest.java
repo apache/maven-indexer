@@ -109,7 +109,7 @@ public abstract class AbstractIndexUpdaterTest
         File pomFile = new File( path + ".pom" );
         File artifact = new File( path + ".jar" );
         File metadata = null;
-        ArtifactInfo artifactInfo = new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier );
+        ArtifactInfo artifactInfo = new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier, "jar");
         Gav gav =
             new Gav( groupId, artifactId, version, classifier, "jar", null, null, artifact.getName(), false,
                 null, false, null );

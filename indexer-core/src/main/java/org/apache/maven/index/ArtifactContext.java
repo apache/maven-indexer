@@ -84,7 +84,7 @@ public class ArtifactContext
     public Model getPomModel()
     {
         // First check for local pom file
-        if ( getPom() != null && getPom().exists() )
+        if ( getPom() != null && getPom().isFile() )
         {
             try
             {
@@ -100,7 +100,7 @@ public class ArtifactContext
             }
         }
         // Otherwise, check for pom contained in maven generated artifact
-        else if ( getArtifact() != null )
+        else if ( getArtifact() != null && getArtifact().isFile() )
         {
             ZipHandle handle = null;
 

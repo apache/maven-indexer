@@ -44,7 +44,7 @@ public interface MAVEN
     // Artifact Packaging (extension for secondary artifacts!).
     Field PACKAGING = new Field( null, MAVEN_NAMESPACE, "packaging", "Packaging/Extension" );
 
-    // Artifact Packaging (extension for secondary artifacts!).
+    // Artifact extension
     Field EXTENSION = new Field( null, MAVEN_NAMESPACE, "extension", "Extension" );
 
     Field CLASSIFIER = new Field( null, MAVEN_NAMESPACE, "classifier", "Classifier" );

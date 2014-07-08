@@ -146,6 +146,8 @@ public class DefaultIndexingContext
         this.gavCalculator = new M2GavCalculator();
 
         prepareIndex( reclaimIndex );
+
+        setIndexDirectoryFile( null );
     }
 
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -156,7 +158,7 @@ public class DefaultIndexingContext
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
             FSDirectory.open( indexDirectoryFile ), reclaimIndex );
 
-        this.indexDirectoryFile = indexDirectoryFile;
+        setIndexDirectoryFile( indexDirectoryFile );
     }
 
     @Deprecated
@@ -169,13 +171,33 @@ public class DefaultIndexingContext
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            this.indexDirectoryFile = ( (FSDirectory) indexDirectory ).getDirectory();
+            setIndexDirectoryFile(( (FSDirectory) indexDirectory ).getDirectory() );
         }
     }
 
     public Directory getIndexDirectory()
     {
         return indexDirectory;
+    }
+    
+    /**
+     * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
+     * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
+     */
+    protected void setIndexDirectoryFile(File dir) throws IOException
+    {
+        if ( dir == null )
+        {
+            // best effort, to have a directory thru the life of a ctx
+            File tmpFile = File.createTempFile( "mindexer-ctx" + id, "tmp" );
+            tmpFile.delete();
+            tmpFile.mkdirs();
+            this.indexDirectoryFile = tmpFile;
+        }
+        else
+        {
+            this.indexDirectoryFile = dir;
+        }
     }
 
     public File getIndexDirectoryFile()

@@ -62,7 +62,7 @@ public class ZipFacade
             }
         }
 
-        throw new IOException( "The targetFile should point to an existing ZIP file!" );
+        throw new IOException( "The targetFile should point to an existing ZIP file:" + targetFile );
     }
 
     public static void close( ZipHandle handle )
