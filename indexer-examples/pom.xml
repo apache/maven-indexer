@@ -38,8 +38,6 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.17</version>
-
         <configuration>
           <skipTests>true</skipTests>
         </configuration>
@@ -55,15 +53,16 @@ under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
         <scope>compile</scope>
       </dependency>
+
       <dependency>
         <groupId>org.apache.maven.indexer</groupId>
         <artifactId>indexer-core</artifactId>
         <version>6.0-SNAPSHOT</version>
         <scope>compile</scope>
       </dependency>
+
       <!-- For ResourceFetcher implementation, if used -->
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
@@ -76,43 +75,36 @@ under the License.
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.sonatype.sisu</groupId>
         <artifactId>sisu-guice</artifactId>
-        <version>3.2.2</version>
       </dependency>
 
       <!-- Test -->
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>1.7.5</version>
         <scope>test</scope>
       </dependency>
   </dependencies>
 
   <profiles>
     <profile>
-      <id>tests</id>
+      <id>examples</id>
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
-
       <build>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.17</version>
-
             <configuration>
               <skipTests>false</skipTests>
             </configuration>
