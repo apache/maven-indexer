@@ -31,8 +31,8 @@ under the License.
 
   <custom>
     <fluidoSkin>
-      <topBarEnabled>true</topBarEnabled>
-      <sideBarEnabled>false</sideBarEnabled>
+      <topBarEnabled>false</topBarEnabled>
+      <sideBarEnabled>true</sideBarEnabled>
       <googleSearch>
         <sitesearch>${project.url}</sitesearch>
       </googleSearch>
@@ -56,6 +56,7 @@ under the License.
 
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
+      <item name="JavaDocs" href="apidocs/index.html"/>
       <!-- According to http://jira.codehaus.org/browse/MNGSITE-152 -->
       <item name="License" href="http://www.apache.org/licenses/"/>
       <item name="Download" href="download.html"/>

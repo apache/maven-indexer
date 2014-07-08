@@ -19,6 +19,9 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.maven.index.ArtifactContext;
@@ -26,10 +29,8 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.OSGI;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -58,7 +59,8 @@ import java.util.jar.Manifest;
  * @author Olivier Lamy
  * @since 4.1.2
  */
-@Component( role = IndexCreator.class, hint = OsgiArtifactIndexCreator.ID )
+@Singleton
+@Named (OsgiArtifactIndexCreator.ID)
 public class OsgiArtifactIndexCreator
     extends AbstractIndexCreator
 {

@@ -32,6 +32,8 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.codehaus.plexus.ContainerConfiguration;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Ignore;
@@ -61,6 +63,13 @@ public abstract class AbstractNexusIndexerCliTest
     private static final String TEST_REPO = new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
 
     protected OutputStream out;
+
+    @Override
+    protected void customizeContainerConfiguration( final ContainerConfiguration containerConfiguration )
+    {
+        super.customizeContainerConfiguration( containerConfiguration );
+        containerConfiguration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+    }
 
     @Override
     protected void setUp()

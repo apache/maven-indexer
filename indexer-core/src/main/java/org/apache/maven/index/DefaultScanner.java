@@ -19,6 +19,9 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,9 +29,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default repository scanner for Maven 2 repository.
@@ -36,13 +36,20 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Jason Van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = Scanner.class )
+@Singleton
+@Named
 public class DefaultScanner
-    extends AbstractLogEnabled
     implements Scanner
 {
-    @Requirement
-    private ArtifactContextProducer artifactContextProducer;
+
+    private final ArtifactContextProducer artifactContextProducer;
+
+
+    @Inject
+    public DefaultScanner( ArtifactContextProducer artifactContextProducer )
+    {
+        this.artifactContextProducer = artifactContextProducer;
+    }
 
     public ScanningResult scan( ScanningRequest request )
     {

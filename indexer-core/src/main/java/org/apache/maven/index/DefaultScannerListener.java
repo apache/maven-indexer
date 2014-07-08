@@ -35,7 +35,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default scanning listener
@@ -43,7 +42,6 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * @author Eugene Kuleshov
  */
 public class DefaultScannerListener
-    extends AbstractLogEnabled
     implements ArtifactScanningListener
 {
     private final IndexingContext context;

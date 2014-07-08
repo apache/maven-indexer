@@ -19,10 +19,10 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import org.codehaus.plexus.component.annotations.Component;
 
 /**
  * An M2 <code>GavCalculator</code>.
@@ -30,7 +30,8 @@ import org.codehaus.plexus.component.annotations.Component;
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
-@Component( role = GavCalculator.class, hint = "maven2" )
+@Singleton
+@Named ("maven2")
 public class M2GavCalculator
     implements GavCalculator
 {

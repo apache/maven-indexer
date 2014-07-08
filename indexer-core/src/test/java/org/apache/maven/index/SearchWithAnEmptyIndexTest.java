@@ -27,7 +27,6 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 import java.io.File;
@@ -39,7 +38,7 @@ import java.util.List;
  * @author Olivier Lamy
  */
 public class SearchWithAnEmptyIndexTest
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     protected List<IndexCreator> indexCreators;
 

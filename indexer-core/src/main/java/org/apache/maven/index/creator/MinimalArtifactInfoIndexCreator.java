@@ -19,6 +19,8 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,7 +52,8 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author cstamas
  */
-@Component( role = IndexCreator.class, hint = MinimalArtifactInfoIndexCreator.ID )
+@Singleton
+@Named (MinimalArtifactInfoIndexCreator.ID)
 public class MinimalArtifactInfoIndexCreator
     extends AbstractIndexCreator
     implements LegacyDocumentUpdater

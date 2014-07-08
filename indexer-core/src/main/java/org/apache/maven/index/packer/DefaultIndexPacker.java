@@ -30,14 +30,17 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
@@ -45,13 +48,27 @@ import org.codehaus.plexus.util.IOUtil;
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
-@Component( role = IndexPacker.class )
+@Singleton
+@Named
 public class DefaultIndexPacker
-    extends AbstractLogEnabled
     implements IndexPacker
 {
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
+
+    private final IncrementalHandler incrementalHandler;
+
+
+    @Inject
+    public DefaultIndexPacker( IncrementalHandler incrementalHandler )
+    {
+        this.incrementalHandler = incrementalHandler;
+    }
 
     public void packIndex( IndexPackingRequest request )
         throws IOException, IllegalArgumentException
@@ -84,7 +101,6 @@ public class DefaultIndexPacker
         }
 
         // These are all of the files we'll be dealing with (except for the incremental chunks of course)
-        File legacyFile = new File( request.getTargetDir(), IndexingContext.INDEX_FILE_PREFIX + ".zip" );
         File v1File = new File( request.getTargetDir(), IndexingContext.INDEX_FILE_PREFIX + ".gz" );
 
         Properties info = null;

@@ -19,6 +19,8 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -26,9 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.IOUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A very simple artifact packaging mapper, that has everything for quick-start wired in this class. Also, it takes into
@@ -37,11 +39,18 @@ import org.codehaus.plexus.util.IOUtil;
  *
  * @author cstamas
  */
-@Component( role = ArtifactPackagingMapper.class )
+@Singleton
+@Named
 public class DefaultArtifactPackagingMapper
-    extends AbstractLogEnabled
     implements ArtifactPackagingMapper
 {
+
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
+
+    protected Logger getLogger()
+    {
+        return logger;
+    }
 
     public static final String MAPPING_PROPERTIES_FILE = "packaging2extension-mapping.properties";
 

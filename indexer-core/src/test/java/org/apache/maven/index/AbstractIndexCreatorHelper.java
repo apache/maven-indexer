@@ -25,17 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
 
 public class AbstractIndexCreatorHelper
-    extends PlexusTestCase
+    extends AbstractTestSupport
 {
     public List<IndexCreator> DEFAULT_CREATORS;
 

@@ -19,6 +19,9 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -46,7 +49,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -68,12 +70,11 @@ import org.apache.maven.index.fs.Lock;
 import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.component.annotations.Requirement;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default index updater implementation
@@ -81,27 +82,29 @@ import org.codehaus.plexus.util.io.RawInputStreamFacade;
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
-@Component( role = IndexUpdater.class )
+@Singleton
+@Named
 public class DefaultIndexUpdater
-    extends AbstractLogEnabled
     implements IndexUpdater
 {
 
-    @Requirement( role = IncrementalHandler.class )
-    IncrementalHandler incrementalHandler;
+    private final Logger logger = LoggerFactory.getLogger( getClass() );
 
-    @Requirement( role = IndexUpdateSideEffect.class )
-    private List<IndexUpdateSideEffect> sideEffects;
-
-    public DefaultIndexUpdater( final IncrementalHandler handler, final List<IndexUpdateSideEffect> mySideeffects )
+    protected Logger getLogger()
     {
-        incrementalHandler = handler;
-        sideEffects = mySideeffects;
+        return logger;
     }
 
-    public DefaultIndexUpdater()
-    {
+    private final IncrementalHandler incrementalHandler;
 
+    private final List<IndexUpdateSideEffect> sideEffects;
+
+
+    @Inject
+    public DefaultIndexUpdater( final IncrementalHandler incrementalHandler, final List<IndexUpdateSideEffect> sideEffects )
+    {
+        this.incrementalHandler = incrementalHandler;
+        this.sideEffects = sideEffects;
     }
 
     public IndexUpdateResult fetchAndUpdateIndex( final IndexUpdateRequest updateRequest )

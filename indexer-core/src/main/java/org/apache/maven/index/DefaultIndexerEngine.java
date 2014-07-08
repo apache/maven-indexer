@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,17 +36,15 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.codehaus.plexus.component.annotations.Component;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * A default {@link IndexerEngine} implementation.
  * 
  * @author Tamas Cservenak
  */
-@Component( role = IndexerEngine.class )
+@Singleton
+@Named
 public class DefaultIndexerEngine
-    extends AbstractLogEnabled
     implements IndexerEngine
 {
 
