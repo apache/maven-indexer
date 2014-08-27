@@ -206,7 +206,7 @@ public class NexusIndexerCli
         .withDescription( "Create checksums for all files (sha1, md5)." ).create( CREATE_FILE_CHECKSUMS ) );
 
         options.addOption( OptionBuilder.withLongOpt( "type" ).hasArg() //
-        .withDescription( "Indexer type (default, min, full or coma separated list of custom types)." ).create( TYPE ) );
+        .withDescription( "Indexer type (default, min, full or comma separated list of custom types)." ).create( TYPE ) );
 
         options.addOption( OptionBuilder.withLongOpt( "unpack" ) //
         .withDescription( "Unpack an index file" ).create( UNPACK ) );
