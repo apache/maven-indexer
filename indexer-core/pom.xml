@@ -180,6 +180,25 @@ under the License.
   <build>
     <plugins>
       <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>1.9</version>
+        <executions>
+          <execution>
+            <id>reserve-network-port</id>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>port.jetty</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <executions>
@@ -193,7 +212,7 @@ under the License.
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</indexerJar>
-                <index-server>${index-server}</index-server>
+                <port.jetty>${port.jetty}</port.jetty>
               </systemPropertyVariables>
             </configuration>
           </execution>

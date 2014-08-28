@@ -60,7 +60,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     {
         // FIXME: Try to detect the port from the system environment.
         int port = -1;
-        String portStr = System.getProperty( "index-server" );
+        String portStr = System.getProperty( "port.jetty" );
         if ( portStr != null )
         {
             port = Integer.parseInt( portStr );
