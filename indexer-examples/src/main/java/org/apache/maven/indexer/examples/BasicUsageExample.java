@@ -63,7 +63,9 @@ import org.apache.maven.wagon.Wagon;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.observers.AbstractTransferListener;
+import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
+import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
@@ -101,7 +103,9 @@ public class BasicUsageExample
         // MI is a Plexus component ;)
         // If needed more info, ask on Maven Users list or Plexus Users list
         // google is your friend!
-        this.plexusContainer = new DefaultPlexusContainer();
+        final DefaultContainerConfiguration config = new DefaultContainerConfiguration();
+        config.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
+        this.plexusContainer = new DefaultPlexusContainer(config);
 
         // lookup the indexer components from plexus
         this.indexer = plexusContainer.lookup( Indexer.class );
