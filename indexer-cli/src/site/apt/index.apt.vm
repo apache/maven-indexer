@@ -31,4 +31,4 @@ ${project.name}
 
 %{snippet|file=${project.basedir}/target/test-classes/options.html|verbatim=false}
 
-  Either unpack or index with <<<--repository>>> must be used.
+  Either unpack (<<<-u,--unpack>>>) or index (<<<-i,--index>>> and <<<-r,--repository>>>) must be used.
