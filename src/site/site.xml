@@ -57,7 +57,7 @@ under the License.
     <menu name="Overview">
       <item name="Introduction" href="index.html"/>
       <item name="JavaDocs" href="apidocs/index.html"/>
-      <!--item name="FAQ" href="faq.html"/-->
+      <item name="FAQ" href="faq.html"/>
       <item name="stackoverflow" href="http://stackoverflow.com/questions/tagged/maven-indexer"/>
       <!-- According to http://jira.codehaus.org/browse/MNGSITE-152 -->
       <item name="License" href="http://www.apache.org/licenses/"/>
