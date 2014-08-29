@@ -193,7 +193,6 @@ under the License.
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</indexerJar>
-                <index-server>${index-server}</index-server>
               </systemPropertyVariables>
             </configuration>
           </execution>

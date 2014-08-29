@@ -21,6 +21,7 @@ package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,18 +59,11 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void setUp()
         throws Exception
     {
-        // FIXME: Try to detect the port from the system environment.
-        int port = -1;
-        String portStr = System.getProperty( "index-server" );
-        if ( portStr != null )
+        int port;
+        try ( final ServerSocket ss = new ServerSocket( 0 ) )
         {
-            port = Integer.parseInt( portStr );
-        }
-
-        if ( port < 1024 )
-        {
-            System.out.println( "Using default port: 8080" );
-            port = 8080;
+            ss.setReuseAddress( true );
+            port = ss.getLocalPort();
         }
 
         baseUrl = "http://127.0.0.1:" + port + "/";
