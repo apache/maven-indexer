@@ -7,9 +7,9 @@ Try following steps:
 
 ```
 $ cd indexer-examples
-$ mvn clean test -Ptests
+$ mvn clean test -Pexamples
   ... first run will take few minutes to download the index, and then will run showing some output
-$ mvn test -Ptests
+$ mvn test -Pexamples
   ... (no clean goal!) second run will finish quickly, as target folder will already contain an up-to-date index
 ```
 
