@@ -27,91 +27,16 @@ under the License.
   </parent>
 
   <artifactId>indexer-examples</artifactId>
+  <packaging>pom</packaging>
 
   <name>Maven :: Indexer Examples</name>
   <description>
-    This module contains Maven Indexer usage examples.
+    This module contains Maven Indexer modules.
   </description>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skipTests>true</skipTests>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI
-    UNWORKABLE! -->
-
-  <dependencies>
-      <!-- For search app in general -->
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <scope>compile</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.indexer</groupId>
-        <artifactId>indexer-core</artifactId>
-        <version>6.0-SNAPSHOT</version>
-        <scope>compile</scope>
-      </dependency>
-
-      <!-- For ResourceFetcher implementation, if used -->
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http-lightweight</artifactId>
-        <version>2.3</version>
-        <scope>compile</scope>
-      </dependency>
-
-      <!-- Runtime: DI, but using Plexus Shim as we use Wagon -->
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-      </dependency>
-      <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-guice</artifactId>
-      </dependency>
-
-      <!-- Test -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <scope>test</scope>
-      </dependency>
-  </dependencies>
-
-  <profiles>
-    <profile>
-      <id>examples</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <skipTests>false</skipTests>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
-
+  <modules>
+    <module>indexer-examples-basic</module>
+    <module>indexer-examples-spring</module>
+  </modules>
+  
 </project>
