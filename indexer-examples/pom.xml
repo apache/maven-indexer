@@ -32,7 +32,7 @@ under the License.
 
   <name>Maven :: Indexer Examples</name>
   <description>
-    This module contains Maven Indexer modules.
+    This module contains Maven Indexer examples.
   </description>
 
   <modules>
