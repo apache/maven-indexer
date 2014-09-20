@@ -440,26 +440,6 @@ under the License.
             <goals>
               <goal>check</goal>
             </goals>
-            <configuration>
-              <excludes>
-                <exclude>README.md</exclude>
-                <exclude>.gitignore</exclude>
-                <exclude>NOTICE</exclude>
-                <exclude>.git/**</exclude>
-                <exclude>.idea/**</exclude>
-                <!-- exlude some test resources from rat analysis -->
-                <exclude>src/test/**/*.sha1</exclude>
-                <exclude>src/test/**/*.md5</exclude>
-                <exclude>src/test/**/*.xml</exclude>
-                <exclude>src/test/**/*.pom</exclude>
-                <exclude>src/test/**/*.asc</exclude>
-                <exclude>src/test/**/*.properties</exclude>
-                <exclude>src/test/**/*.swc</exclude>
-                <exclude>src/test/**/*.txt</exclude>
-                <exclude>src/test/**/*.filename</exclude>
-                <exclude>src/test/**/.placeholder</exclude>
-              </excludes>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -493,6 +473,15 @@ under the License.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-scm-publish-plugin</artifactId>
           <version>1.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>README.md</exclude>
+            </excludes>
+          </configuration>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
           itself. -->
