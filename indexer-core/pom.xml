@@ -205,8 +205,8 @@ under the License.
           <groupId>org.apache.rat</groupId>
           <artifactId>apache-rat-plugin</artifactId>
           <configuration>
-            <excludes>
-              <exclude>README.md</exclude>
+            <!-- Combine the excludes from the parent with the ones defined in this project -->
+            <excludes combine.children="append">
               <!-- The following directories are repositories -->
               <exclude>src/test/repo*/**</exclude>
               <exclude>src/test/mindexer-35/**</exclude>
