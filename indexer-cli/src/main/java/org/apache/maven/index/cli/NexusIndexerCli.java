@@ -352,7 +352,6 @@ public class NexusIndexerCli
             null, // index update url
             indexers );
 
-        final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
             IndexPacker packer = plexus.lookup( IndexPacker.class );
@@ -361,20 +360,30 @@ public class NexusIndexerCli
 
             indexer.scan( context, listener, true );
 
-            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), outputFolder );
+            IndexSearcher indexSearcher = context.acquireIndexSearcher();
 
-            request.setCreateChecksumFiles( createChecksums );
-
-            request.setCreateIncrementalChunks( createIncrementalChunks );
-
-            request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
-
-            if ( chunkCount != null )
+            try
             {
-                request.setMaxIndexChunks( chunkCount.intValue() );
-            }
+                IndexPackingRequest request =
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), outputFolder);
 
-            packIndex( packer, request, debug, quiet );
+                request.setCreateChecksumFiles(createChecksums);
+
+                request.setCreateIncrementalChunks(createIncrementalChunks);
+
+                request.setFormats(Arrays.asList(IndexFormat.FORMAT_V1));
+
+                if (chunkCount != null)
+                {
+                    request.setMaxIndexChunks(chunkCount.intValue());
+                }
+
+                packIndex(packer, request, debug, quiet);
+            }
+            finally
+            {
+                context.releaseIndexSearcher(indexSearcher);
+            }
 
             if ( !quiet )
             {
@@ -383,7 +392,6 @@ public class NexusIndexerCli
         }
         finally
         {
-            context.releaseIndexSearcher( indexSearcher );
             indexer.removeIndexingContext( context, false );
         }
     }
