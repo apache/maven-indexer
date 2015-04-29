@@ -122,6 +122,10 @@ public class IndexUtils
 
         ArtifactInfo artifactInfo = new ArtifactInfo();
 
+        // Add minimal information to the artifact info linking it to the context it belongs to.
+        artifactInfo.setRepository(context.getRepositoryId());
+        artifactInfo.setContext(context.getId());
+
         for ( IndexCreator ic : context.getIndexCreators() )
         {
             res |= ic.updateArtifactInfo( doc, artifactInfo );
