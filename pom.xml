@@ -160,6 +160,7 @@ under the License.
     <module>indexer-core</module>
     <module>indexer-artifact</module>
     <module>indexer-cli</module>
+    <module>indexer-reader</module>
   </modules>
 
   <build>
