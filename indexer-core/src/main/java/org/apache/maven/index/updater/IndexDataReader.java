@@ -46,11 +46,10 @@ public class IndexDataReader
 {
     private final DataInputStream dis;
 
-    public IndexDataReader( InputStream is )
+    public IndexDataReader( final InputStream is )
         throws IOException
     {
-        BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-
+        BufferedInputStream bis = new BufferedInputStream(is, 1024 * 8);
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
@@ -59,7 +58,7 @@ public class IndexDataReader
         if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
             bis.reset();
-            data = new GZIPInputStream( bis, 2 * 1024 );
+            data = new GZIPInputStream( bis, 1024 * 8 );
         }
         else
         {
@@ -95,7 +94,6 @@ public class IndexDataReader
         }
 
         w.commit();
-        w.optimize();
 
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
