@@ -378,6 +378,7 @@ under the License.
   <modules>
     <module>indexer-core</module>
     <module>indexer-cli</module>
+    <module>indexer-reader</module>
     <module>indexer-examples</module>
   </modules>
 
