@@ -253,6 +253,7 @@ under the License.
                 <exclude>NOTICE</exclude>
                 <exclude>.git/**</exclude>
                 <exclude>.idea/**</exclude>
+                <exclude>**/*.iml</exclude>
                 <!-- exlude some test resources from rat analysis -->
                 <exclude>src/test/**/*.sha1</exclude>
                 <exclude>src/test/**/*.md5</exclude>
