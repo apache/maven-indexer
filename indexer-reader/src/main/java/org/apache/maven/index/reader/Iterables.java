@@ -153,6 +153,10 @@ public final class Iterables
     public O next() {
       return function.apply(iterator.next());
     }
+
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
   }
 
   private static final class ConcatIterator<T>
@@ -180,6 +184,10 @@ public final class Iterables
       T result = nextElement;
       nextElement = getNextElement();
       return result;
+    }
+
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
     }
 
     protected T getNextElement() {

@@ -265,5 +265,9 @@ public class IndexReader
         throw new RuntimeException("IO problem while switching chunk readers", e);
       }
     }
+
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
   }
 }
