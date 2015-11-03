@@ -21,6 +21,7 @@ package org.apache.maven.index.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A trivial caching {@link ResourceHandler} that caches forever during single session (existence of the instance).
@@ -49,12 +50,31 @@ public class CachingResourceHandler
     if (inputStream == null) {
       return null;
     }
-    local.save(name, inputStream);
+    writeLocal(name, inputStream);
     return local.open(name);
   }
 
   public void close() throws IOException {
     remote.close();
     local.close();
+  }
+
+  private void writeLocal(final String name, final InputStream inputStream) throws IOException {
+    try {
+      final OutputStream outputStream = local.openWrite(name);
+      try {
+        int read;
+        byte[] bytes = new byte[8192];
+        while ((read = inputStream.read(bytes)) != -1) {
+          outputStream.write(bytes, 0, read);
+        }
+      }
+      finally {
+        outputStream.close();
+      }
+    }
+    finally {
+      inputStream.close();
+    }
   }
 }

@@ -19,14 +19,18 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.reader.Record.Type;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -34,33 +38,56 @@ import static org.junit.Assert.assertThat;
  * UT for {@link ChunkReader}
  */
 public class ChunkReaderTest
+    extends TestSupport
 {
   @Test
   public void simple() throws IOException {
-    final Map<Type, Integer> recordTypes = new HashMap<Type, Integer>();
-    recordTypes.put(Type.DESCRIPTOR, 0);
-    recordTypes.put(Type.ROOT_GROUPS, 0);
-    recordTypes.put(Type.ALL_GROUPS, 0);
-    recordTypes.put(Type.ARTIFACT_ADD, 0);
-    recordTypes.put(Type.ARTIFACT_REMOVE, 0);
+    final ChunkReader chunkReader = new ChunkReader(
+        "full",
+        testResourceHandler("simple").open("nexus-maven-repository-index.gz")
+    );
+    final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
+    assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
+    assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
+  }
 
-    final ChunkReader chunkReader = new ChunkReader("full",
-        new FileInputStream("src/test/resources/nexus-maven-repository-index.gz"));
-    try {
-      assertThat(chunkReader.getVersion(), equalTo(1));
-      assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-      for (Record record : chunkReader) {
-        recordTypes.put(record.getType(), recordTypes.get(record.getType()) + 1);
+  @Test
+  public void roundtrip() throws IOException {
+    final Date published;
+    File tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
+    {
+      final ChunkReader chunkReader = new ChunkReader(
+          "full",
+          testResourceHandler("simple").open("nexus-maven-repository-index.gz")
+      );
+      final ChunkWriter chunkWriter = new ChunkWriter(
+          chunkReader.getName(),
+          new FileOutputStream(tempChunkFile), 1, new Date()
+      );
+      try {
+        chunkWriter.writeChunk(chunkReader.iterator());
       }
-    }
-    finally {
-      chunkReader.close();
+      finally {
+        chunkWriter.close();
+        chunkReader.close();
+      }
+      published = chunkWriter.getTimestamp();
     }
 
-    assertThat(recordTypes.get(Type.DESCRIPTOR), equalTo(1));
-    assertThat(recordTypes.get(Type.ROOT_GROUPS), equalTo(1));
-    assertThat(recordTypes.get(Type.ALL_GROUPS), equalTo(1));
-    assertThat(recordTypes.get(Type.ARTIFACT_ADD), equalTo(2));
-    assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), equalTo(0));
+    final ChunkReader chunkReader = new ChunkReader(
+        "full",
+        new FileInputStream(tempChunkFile)
+    );
+    assertThat(chunkReader.getVersion(), equalTo(1));
+    assertThat(chunkReader.getTimestamp().getTime(), equalTo(published.getTime()));
+    final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
+    assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
+    assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
+    assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
   }
 }

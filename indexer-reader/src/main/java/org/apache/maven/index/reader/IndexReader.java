@@ -19,39 +19,28 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
+import java.io.OutputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.TimeZone;
+
+import static org.apache.maven.index.reader.Utils.loadProperties;
 
 /**
- * Maven 2 Index reader that handles incremental updates if possible.
+ * Maven 2 Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
+ * read all the required records.
  *
  * @since 5.1.2
  */
 public class IndexReader
     implements Iterable<ChunkReader>, Closeable
 {
-  private static final String INDEX_FILE_PREFIX = "nexus-maven-repository-index";
-
-  private static final DateFormat INDEX_DATE_FORMAT;
-
-  static {
-    INDEX_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSS Z");
-    INDEX_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-  }
-
   private final WritableResourceHandler local;
 
   private final ResourceHandler remote;
@@ -74,10 +63,10 @@ public class IndexReader
     }
     this.local = local;
     this.remote = remote;
-    remoteIndexProperties = loadProperties(remote.open(INDEX_FILE_PREFIX + ".properties"));
+    remoteIndexProperties = loadProperties(remote.open(Utils.INDEX_FILE_PREFIX + ".properties"));
     try {
       if (local != null) {
-        localIndexProperties = loadProperties(local.open(INDEX_FILE_PREFIX + ".properties"));
+        localIndexProperties = loadProperties(local.open(Utils.INDEX_FILE_PREFIX + ".properties"));
         String remoteIndexId = remoteIndexProperties.getProperty("nexus.index.id");
         String localIndexId = localIndexProperties.getProperty("nexus.index.id");
         if (remoteIndexId == null || localIndexId == null || !remoteIndexId.equals(localIndexId)) {
@@ -86,14 +75,16 @@ public class IndexReader
                   remoteIndexId);
         }
         this.indexId = localIndexId;
-        this.publishedTimestamp = INDEX_DATE_FORMAT.parse(localIndexProperties.getProperty("nexus.index.timestamp"));
+        this.publishedTimestamp = Utils.INDEX_DATE_FORMAT
+            .parse(localIndexProperties.getProperty("nexus.index.timestamp"));
         this.incremental = canRetrieveAllChunks();
         this.chunkNames = calculateChunkNames();
       }
       else {
         localIndexProperties = null;
         this.indexId = remoteIndexProperties.getProperty("nexus.index.id");
-        this.publishedTimestamp = INDEX_DATE_FORMAT.parse(remoteIndexProperties.getProperty("nexus.index.timestamp"));
+        this.publishedTimestamp = Utils.INDEX_DATE_FORMAT
+            .parse(remoteIndexProperties.getProperty("nexus.index.timestamp"));
         this.incremental = false;
         this.chunkNames = calculateChunkNames();
       }
@@ -170,9 +161,13 @@ public class IndexReader
    * for future incremental updates.
    */
   private void syncLocalWithRemote() throws IOException {
-    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    remoteIndexProperties.store(bos, "Maven Indexer Reader");
-    local.save(INDEX_FILE_PREFIX + ".properties", new ByteArrayInputStream(bos.toByteArray()));
+    final OutputStream outputStream = local.openWrite(Utils.INDEX_FILE_PREFIX + ".properties");
+    try {
+      remoteIndexProperties.store(outputStream, "Maven Indexer Reader");
+    }
+    finally {
+      outputStream.close();
+    }
   }
 
   /**
@@ -185,12 +180,12 @@ public class IndexReader
       int currentCounter = Integer.parseInt(localIndexProperties.getProperty("nexus.index.last-incremental"));
       currentCounter++;
       while (currentCounter <= maxCounter) {
-        chunkNames.add(INDEX_FILE_PREFIX + "." + currentCounter++ + ".gz");
+        chunkNames.add(Utils.INDEX_FILE_PREFIX + "." + currentCounter++ + ".gz");
       }
       return Collections.unmodifiableList(chunkNames);
     }
     else {
-      return Collections.singletonList(INDEX_FILE_PREFIX + ".gz");
+      return Collections.singletonList(Utils.INDEX_FILE_PREFIX + ".gz");
     }
   }
 
@@ -262,20 +257,6 @@ public class IndexReader
       catch (IOException e) {
         throw new RuntimeException("IO problem while switching chunk readers", e);
       }
-    }
-  }
-
-  /**
-   * Creates and loads {@link Properties} from provided {@link InputStream} and closes the stream.
-   */
-  private static Properties loadProperties(final InputStream inputStream) throws IOException {
-    try {
-      final Properties properties = new Properties();
-      properties.load(inputStream);
-      return properties;
-    }
-    finally {
-      inputStream.close();
     }
   }
 }
