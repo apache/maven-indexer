@@ -23,9 +23,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * A trivial {@link File} directory handler that does not perform any locking or extra bits, and just serves up files
@@ -46,24 +48,22 @@ public class DirectoryResourceHandler
     this.rootDirectory = rootDirectory;
   }
 
-  public InputStream open(final String name) throws IOException {
-    return new BufferedInputStream(new FileInputStream(new File(rootDirectory, name)));
+  public File getRootDirectory() {
+    return rootDirectory;
   }
 
-  public void save(final String name, final InputStream inputStream) throws IOException {
+  public InputStream open(final String name) throws IOException {
     try {
-      final BufferedOutputStream outputStream = new BufferedOutputStream(
-          new FileOutputStream(new File(rootDirectory, name)));
-      int read;
-      byte[] bytes = new byte[8192];
-      while ((read = inputStream.read(bytes)) != -1) {
-        outputStream.write(bytes, 0, read);
-      }
-      outputStream.close();
+      return new BufferedInputStream(new FileInputStream(new File(rootDirectory, name)));
     }
-    finally {
-      inputStream.close();
+    catch (FileNotFoundException e) {
+      return null;
     }
+  }
+
+  public OutputStream openWrite(final String name) throws IOException {
+    return new BufferedOutputStream(
+        new FileOutputStream(new File(rootDirectory, name)));
   }
 
   public void close() throws IOException {

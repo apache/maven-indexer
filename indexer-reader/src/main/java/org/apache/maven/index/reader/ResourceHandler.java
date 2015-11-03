@@ -37,7 +37,7 @@ public interface ResourceHandler
 {
   /**
    * Returns the {@link InputStream} of resource with {@code name} or {@code null} if no such resource. Closing the
-   * stream is the responsibility of the caller.
+   * stream is the responsibility of the caller. The stream should be buffered if possible.
    *
    * @param name Resource name, guaranteed to be non-{@code null} and is FS name and URL safe string.
    */

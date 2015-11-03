@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,12 +37,14 @@ import static org.junit.Assert.assertThat;
  * UT for {@link IndexReader}
  */
 public class IndexReaderTest
+    extends TestSupport
 {
   @Test
   public void simple() throws IOException {
     final IndexReader indexReader = new IndexReader(
         null,
-        new DirectoryResourceHandler(new File("src/test/resources/")));
+        testResourceHandler("simple")
+    );
     try {
       assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
       assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(1243533418015L));
@@ -54,7 +57,62 @@ public class IndexReaderTest
         assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
         assertThat(chunkReader.getVersion(), equalTo(1));
         assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : chunkReader) {
+        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+          records++;
+        }
+      }
+
+      assertThat(chunks, equalTo(1));
+      assertThat(records, equalTo(5));
+    }
+    finally {
+      indexReader.close();
+    }
+  }
+
+  @Test
+  public void roundtrip() throws IOException {
+    WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
+    Date published;
+    {
+      final IndexReader indexReader = new IndexReader(
+          null,
+          testResourceHandler("simple")
+      );
+      final IndexWriter indexWriter = new IndexWriter(
+          writableResourceHandler,
+          indexReader.getIndexId(),
+          false
+      );
+      try {
+        for (ChunkReader chunkReader : indexReader) {
+          indexWriter.writeChunk(chunkReader.iterator());
+        }
+      }
+      finally {
+        indexWriter.close();
+        published = indexWriter.getPublishedTimestamp();
+        indexReader.close();
+      }
+    }
+
+    final IndexReader indexReader = new IndexReader(
+        null,
+        writableResourceHandler
+    );
+    try {
+      assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
+      assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(published.getTime()));
+      assertThat(indexReader.isIncremental(), equalTo(false));
+      assertThat(indexReader.getChunkNames(), equalTo(Arrays.asList("nexus-maven-repository-index.gz")));
+      int chunks = 0;
+      int records = 0;
+      for (ChunkReader chunkReader : indexReader) {
+        chunks++;
+        assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
+        assertThat(chunkReader.getVersion(), equalTo(1));
+        // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
+        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
           records++;
         }
       }
@@ -87,10 +145,8 @@ public class IndexReaderTest
         writer.write("chunkVersion=" + chunkReader.getVersion() + "\n");
         writer.write("chunkPublished=" + chunkReader.getTimestamp() + "\n");
         writer.write("= = = = = = \n");
-        for (Record record : chunkReader) {
+        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
           writer.write(record.getExpanded() + "\n");
-          writer.write("--------- \n");
-          writer.write(record.getRaw() + "\n");
         }
       }
     }

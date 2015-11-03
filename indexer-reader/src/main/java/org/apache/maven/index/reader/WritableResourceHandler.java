@@ -20,7 +20,7 @@ package org.apache.maven.index.reader;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * Maven 2 Index writable {@link ResourceHandler}, is capable of saving resources too. Needed only if incremental index
@@ -34,11 +34,10 @@ public interface WritableResourceHandler
     extends ResourceHandler
 {
   /**
-   * Stores (creates or overwrites if resource with name exists) the resource under {@code name} with content provided
-   * by the stream. The {@link InputStream} should be closed when method returns.
+   * Returns the {@link OutputStream} of resource with {@code name}, never {@code null}. Closing the stream is the
+   * responsibility of the caller. The stream should be buffered if possible.
    *
-   * @param name        Resource name, guaranteed to be non-{@code null} and is FS name and URL safe string.
-   * @param inputStream the content of the resource, guaranteed to be non-{@code null}.
+   * @param name Resource name, guaranteed to be non-{@code null} and is FS name and URL safe string.
    */
-  void save(final String name, final InputStream inputStream) throws IOException;
+  OutputStream openWrite(final String name) throws IOException;
 }
