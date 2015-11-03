@@ -125,6 +125,10 @@ public class ChunkReader
       return result;
     }
 
+    public void remove() {
+      throw new UnsupportedOperationException("remove");
+    }
+
     private Map<String, String> nextRecord() {
       try {
         return readRecord(dataInputStream);
