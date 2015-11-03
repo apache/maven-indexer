@@ -43,12 +43,30 @@ public class HttpResourceHandler
     this.root = root.toURI();
   }
 
-  public InputStream open(final String name) throws IOException {
-    URL target = root.resolve(name).toURL();
-    HttpURLConnection conn = (HttpURLConnection) target.openConnection();
-    conn.setRequestMethod("GET");
-    conn.setRequestProperty("User-Agent", "ASF Maven-Indexer-Reader/1.0");
-    return new BufferedInputStream(conn.getInputStream());
+  public Resource locate(final String name) throws IOException {
+    return new HttpResource(name);
+  }
+
+  private class HttpResource
+      implements Resource
+  {
+    private final String name;
+
+    private HttpResource(final String name) {
+      this.name = name;
+    }
+
+    public InputStream read() throws IOException {
+      URL target = root.resolve(name).toURL();
+      HttpURLConnection conn = (HttpURLConnection) target.openConnection();
+      conn.setRequestMethod("GET");
+      conn.setRequestProperty("User-Agent", "ASF Maven-Indexer-Reader/1.0");
+      return new BufferedInputStream(conn.getInputStream());
+    }
+
+    public void close() throws IOException {
+      // nop
+    }
   }
 
   public void close() throws IOException {

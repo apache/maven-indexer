@@ -22,6 +22,10 @@ package org.apache.maven.index.reader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
 /**
  * A trivial caching {@link ResourceHandler} that caches forever during single session (existence of the instance).
@@ -29,52 +33,99 @@ import java.io.OutputStream;
 public class CachingResourceHandler
     implements ResourceHandler
 {
-  private final DirectoryResourceHandler local;
+  private static final Resource NOT_EXISTING_RESOURCE = new Resource()
+  {
+    public InputStream read() throws IOException {
+      return null;
+    }
+
+    public void close() throws IOException {
+      // nop
+    }
+  };
+
+  private final WritableResourceHandler local;
 
   private final ResourceHandler remote;
 
-  public CachingResourceHandler(final DirectoryResourceHandler local, final ResourceHandler remote) {
+  private final Set<String> notFoundResources;
+
+  public CachingResourceHandler(final WritableResourceHandler local, final ResourceHandler remote) {
     if (local == null || remote == null) {
       throw new NullPointerException("null resource handler");
     }
     this.local = local;
     this.remote = remote;
+    this.notFoundResources = new HashSet<String>();
   }
 
-  public InputStream open(final String name) throws IOException {
-    InputStream inputStream = local.open(name);
-    if (inputStream != null) {
-      return inputStream;
+  public Resource locate(final String name) throws IOException {
+    if (notFoundResources.contains(name)) {
+      return NOT_EXISTING_RESOURCE;
     }
-    inputStream = remote.open(name);
-    if (inputStream == null) {
+    else {
+      return new CachingResource(name, local.locate(name));
+    }
+  }
+
+  private class CachingResource
+      implements Resource
+  {
+    private final String name;
+
+    private final WritableResource localResource;
+
+    private CachingResource(final String name, final WritableResource localResource) {
+      this.name = name;
+      this.localResource = localResource;
+    }
+
+    public InputStream read() throws IOException {
+      InputStream inputStream = localResource.read();
+      if (inputStream != null) {
+        return inputStream;
+      }
+      if (cacheLocally(name)) {
+        return localResource.read();
+      }
+      notFoundResources.add(name);
       return null;
     }
-    writeLocal(name, inputStream);
-    return local.open(name);
+
+    private boolean cacheLocally(final String name) throws IOException {
+      final Resource remoteResource = remote.locate(name);
+      try {
+        final InputStream inputStream = remoteResource.read();
+        if (inputStream != null) {
+          final OutputStream outputStream = localResource.write();
+          try {
+            int read;
+            byte[] bytes = new byte[8192];
+            while ((read = inputStream.read(bytes)) != -1) {
+              outputStream.write(bytes, 0, read);
+            }
+            outputStream.flush();
+            return true;
+          }
+          finally {
+            outputStream.close();
+            inputStream.close();
+          }
+        }
+        return false;
+      }
+      finally {
+        remoteResource.close();
+      }
+    }
+
+    public void close() throws IOException {
+      // nop
+    }
   }
 
   public void close() throws IOException {
     remote.close();
     local.close();
-  }
-
-  private void writeLocal(final String name, final InputStream inputStream) throws IOException {
-    try {
-      final OutputStream outputStream = local.openWrite(name);
-      try {
-        int read;
-        byte[] bytes = new byte[8192];
-        while ((read = inputStream.read(bytes)) != -1) {
-          outputStream.write(bytes, 0, read);
-        }
-      }
-      finally {
-        outputStream.close();
-      }
-    }
-    finally {
-      inputStream.close();
-    }
   }
 }

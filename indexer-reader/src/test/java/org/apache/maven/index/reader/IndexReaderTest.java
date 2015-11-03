@@ -31,6 +31,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -68,6 +70,40 @@ public class IndexReaderTest
     finally {
       indexReader.close();
     }
+  }
+
+  @Test
+  public void simpleWithLocal() throws IOException {
+    WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
+    final IndexReader indexReader = new IndexReader(
+        writableResourceHandler,
+        testResourceHandler("simple")
+    );
+    try {
+      assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
+      assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(1243533418015L));
+      assertThat(indexReader.isIncremental(), equalTo(false));
+      assertThat(indexReader.getChunkNames(), equalTo(Arrays.asList("nexus-maven-repository-index.gz")));
+      int chunks = 0;
+      int records = 0;
+      for (ChunkReader chunkReader : indexReader) {
+        chunks++;
+        assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
+        assertThat(chunkReader.getVersion(), equalTo(1));
+        assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
+        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+          records++;
+        }
+      }
+
+      assertThat(chunks, equalTo(1));
+      assertThat(records, equalTo(5));
+    }
+    finally {
+      indexReader.close();
+    }
+
+    assertThat(writableResourceHandler.locate("nexus-maven-repository-index.properties").read(), not(nullValue()));
   }
 
   @Test

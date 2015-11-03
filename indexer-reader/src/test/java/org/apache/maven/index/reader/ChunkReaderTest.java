@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.reader.Record.Type;
+import org.apache.maven.index.reader.ResourceHandler.Resource;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -44,7 +45,7 @@ public class ChunkReaderTest
   public void simple() throws IOException {
     final ChunkReader chunkReader = new ChunkReader(
         "full",
-        testResourceHandler("simple").open("nexus-maven-repository-index.gz")
+        testResourceHandler("simple").locate("nexus-maven-repository-index.gz").read()
     );
     final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
     assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
@@ -59,22 +60,28 @@ public class ChunkReaderTest
     final Date published;
     File tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
     {
-      final ChunkReader chunkReader = new ChunkReader(
-          "full",
-          testResourceHandler("simple").open("nexus-maven-repository-index.gz")
-      );
-      final ChunkWriter chunkWriter = new ChunkWriter(
-          chunkReader.getName(),
-          new FileOutputStream(tempChunkFile), 1, new Date()
-      );
+      final Resource resource = testResourceHandler("simple").locate("nexus-maven-repository-index.gz");
       try {
-        chunkWriter.writeChunk(chunkReader.iterator());
+        final ChunkReader chunkReader = new ChunkReader(
+            "full",
+            resource.read()
+        );
+        final ChunkWriter chunkWriter = new ChunkWriter(
+            chunkReader.getName(),
+            new FileOutputStream(tempChunkFile), 1, new Date()
+        );
+        try {
+          chunkWriter.writeChunk(chunkReader.iterator());
+        }
+        finally {
+          chunkWriter.close();
+          chunkReader.close();
+        }
+        published = chunkWriter.getTimestamp();
       }
       finally {
-        chunkWriter.close();
-        chunkReader.close();
+        resource.close();
       }
-      published = chunkWriter.getTimestamp();
     }
 
     final ChunkReader chunkReader = new ChunkReader(
