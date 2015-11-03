@@ -21,7 +21,6 @@ package org.apache.maven.index.reader;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +29,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+
 import static org.apache.maven.index.reader.Utils.loadProperties;
+import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
  * Maven 2 Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
@@ -63,31 +65,38 @@ public class IndexReader
     }
     this.local = local;
     this.remote = remote;
-    remoteIndexProperties = loadProperties(remote.open(Utils.INDEX_FILE_PREFIX + ".properties"));
+    remoteIndexProperties = loadProperties(remote.locate(Utils.INDEX_FILE_PREFIX + ".properties"));
+    if (remoteIndexProperties == null) {
+      throw new NullPointerException("remote index properties null");
+    }
     try {
       if (local != null) {
-        localIndexProperties = loadProperties(local.open(Utils.INDEX_FILE_PREFIX + ".properties"));
-        String remoteIndexId = remoteIndexProperties.getProperty("nexus.index.id");
-        String localIndexId = localIndexProperties.getProperty("nexus.index.id");
-        if (remoteIndexId == null || localIndexId == null || !remoteIndexId.equals(localIndexId)) {
-          throw new IllegalArgumentException(
-              "local and remote index IDs does not match or is null: " + localIndexId + ", " +
-                  remoteIndexId);
+        Properties localProperties = loadProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"));
+        if (localProperties != null) {
+          this.localIndexProperties = localProperties;
+          String remoteIndexId = remoteIndexProperties.getProperty("nexus.index.id");
+          String localIndexId = localIndexProperties.getProperty("nexus.index.id");
+          if (remoteIndexId == null || localIndexId == null || !remoteIndexId.equals(localIndexId)) {
+            throw new IllegalArgumentException(
+                "local and remote index IDs does not match or is null: " + localIndexId + ", " +
+                    remoteIndexId);
+          }
+          this.indexId = localIndexId;
+          this.incremental = canRetrieveAllChunks();
         }
-        this.indexId = localIndexId;
-        this.publishedTimestamp = Utils.INDEX_DATE_FORMAT
-            .parse(localIndexProperties.getProperty("nexus.index.timestamp"));
-        this.incremental = canRetrieveAllChunks();
-        this.chunkNames = calculateChunkNames();
+        else {
+          localIndexProperties = null;
+          this.indexId = remoteIndexProperties.getProperty("nexus.index.id");
+          this.incremental = false;
+        }
       }
       else {
         localIndexProperties = null;
         this.indexId = remoteIndexProperties.getProperty("nexus.index.id");
-        this.publishedTimestamp = Utils.INDEX_DATE_FORMAT
-            .parse(remoteIndexProperties.getProperty("nexus.index.timestamp"));
         this.incremental = false;
-        this.chunkNames = calculateChunkNames();
       }
+      this.publishedTimestamp = Utils.INDEX_DATE_FORMAT.parse(remoteIndexProperties.getProperty("nexus.index.timestamp"));
+      this.chunkNames = calculateChunkNames();
     }
     catch (ParseException e) {
       IOException ex = new IOException("Index properties corrupted");
@@ -161,13 +170,7 @@ public class IndexReader
    * for future incremental updates.
    */
   private void syncLocalWithRemote() throws IOException {
-    final OutputStream outputStream = local.openWrite(Utils.INDEX_FILE_PREFIX + ".properties");
-    try {
-      remoteIndexProperties.store(outputStream, "Maven Indexer Reader");
-    }
-    finally {
-      outputStream.close();
-    }
+    storeProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"), remoteIndexProperties);
   }
 
   /**
@@ -234,6 +237,8 @@ public class IndexReader
 
     private final Iterator<String> chunkNamesIterator;
 
+    private Resource currentResource;
+
     private ChunkReader currentChunkReader;
 
     private ChunkReaderIterator(final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator) {
@@ -250,8 +255,10 @@ public class IndexReader
       try {
         if (currentChunkReader != null) {
           currentChunkReader.close();
+          currentResource.close();
         }
-        currentChunkReader = new ChunkReader(chunkName, resourceHandler.open(chunkName));
+        currentResource = resourceHandler.locate(chunkName);
+        currentChunkReader = new ChunkReader(chunkName, currentResource.read());
         return currentChunkReader;
       }
       catch (IOException e) {

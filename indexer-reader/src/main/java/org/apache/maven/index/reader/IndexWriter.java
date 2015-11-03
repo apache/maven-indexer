@@ -21,8 +21,6 @@ package org.apache.maven.index.reader;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
@@ -30,7 +28,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
+
 import static org.apache.maven.index.reader.Utils.loadProperties;
+import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
  * Maven 2 Index writer that writes chunk and maintains published property file.
@@ -65,10 +66,10 @@ public class IndexWriter
       throw new NullPointerException("indexId null");
     }
     this.local = local;
-    InputStream localIndexPropertiesInputStream = local.open(Utils.INDEX_FILE_PREFIX + ".properties");
-    if (incrementalSupported && localIndexPropertiesInputStream != null) {
+    Properties indexProperties = loadProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"));
+    if (incrementalSupported && indexProperties != null) {
+      this.localIndexProperties = indexProperties;
       // existing index, this is incremental publish, and we will add new chunk
-      this.localIndexProperties = loadProperties(local.open(Utils.INDEX_FILE_PREFIX + ".properties"));
       String localIndexId = localIndexProperties.getProperty("nexus.index.id");
       if (localIndexId == null || !localIndexId.equals(indexId)) {
         throw new IllegalArgumentException(
@@ -142,17 +143,23 @@ public class IndexWriter
    */
   public int writeChunk(final Iterator<Map<String, String>> iterator) throws IOException {
     int written;
-    final ChunkWriter chunkWriter = new ChunkWriter(nextChunkName, local.openWrite(nextChunkName), INDEX_V1, new Date());
+    WritableResource writableResource = local.locate(nextChunkName);
     try {
-      written = chunkWriter.writeChunk(iterator);
+      final ChunkWriter chunkWriter = new ChunkWriter(nextChunkName, writableResource.write(), INDEX_V1, new Date());
+      try {
+        written = chunkWriter.writeChunk(iterator);
+      }
+      finally {
+        chunkWriter.close();
+      }
+      if (incremental) {
+        // TODO: update main gz file
+      }
+      return written;
     }
     finally {
-      chunkWriter.close();
+      writableResource.close();
     }
-    if (incremental) {
-      // TODO: update main gz file
-    }
-    return written;
   }
 
   /**
@@ -167,14 +174,7 @@ public class IndexWriter
         localIndexProperties.setProperty("nexus.index.last-incremental", nextChunkCounter);
       }
       localIndexProperties.setProperty("nexus.index.timestamp", Utils.INDEX_DATE_FORMAT.format(new Date()));
-
-      final OutputStream outputStream = local.openWrite(Utils.INDEX_FILE_PREFIX + ".properties");
-      try {
-        localIndexProperties.store(outputStream, "Maven Indexer Writer");
-      }
-      finally {
-        outputStream.close();
-      }
+      storeProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"), localIndexProperties);
     }
     finally {
       local.close();

@@ -23,7 +23,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,21 +51,37 @@ public class DirectoryResourceHandler
     return rootDirectory;
   }
 
-  public InputStream open(final String name) throws IOException {
-    try {
-      return new BufferedInputStream(new FileInputStream(new File(rootDirectory, name)));
-    }
-    catch (FileNotFoundException e) {
-      return null;
-    }
-  }
-
-  public OutputStream openWrite(final String name) throws IOException {
-    return new BufferedOutputStream(
-        new FileOutputStream(new File(rootDirectory, name)));
+  public WritableResource locate(final String name) throws IOException {
+    return new FileResource(new File(rootDirectory, name));
   }
 
   public void close() throws IOException {
     // nop
   }
+
+  private class FileResource
+      implements WritableResource
+  {
+    private final File file;
+
+    private FileResource(final File file) {
+      this.file = file;
+    }
+
+    public InputStream read() throws IOException {
+      if (file.isFile()) {
+        return new BufferedInputStream(new FileInputStream(file));
+      }
+      return null;
+    }
+
+    public OutputStream write() throws IOException {
+      return new BufferedOutputStream(new FileOutputStream(file));
+    }
+
+    public void close() throws IOException {
+      // nop
+    }
+  }
+
 }

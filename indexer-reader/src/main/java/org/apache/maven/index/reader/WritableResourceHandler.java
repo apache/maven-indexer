@@ -33,11 +33,22 @@ import java.io.OutputStream;
 public interface WritableResourceHandler
     extends ResourceHandler
 {
+  interface WritableResource
+      extends Resource
+  {
+    /**
+     * Returns the {@link OutputStream} stream of the resource, if exists, it will replace the existing content, or if
+     * not exists, the resource will be created. The stream should be closed by caller, otherwise resource leaks might
+     * be introduced.
+     */
+    OutputStream write() throws IOException;
+  }
+
   /**
-   * Returns the {@link OutputStream} of resource with {@code name}, never {@code null}. Closing the stream is the
-   * responsibility of the caller. The stream should be buffered if possible.
+   * Returns the {@link WritableResource} of resource with {@code name}. Returned locator should be handled as
+   * resource.
    *
-   * @param name Resource name, guaranteed to be non-{@code null} and is FS name and URL safe string.
+   * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
    */
-  OutputStream openWrite(final String name) throws IOException;
+  WritableResource locate(String name) throws IOException;
 }
