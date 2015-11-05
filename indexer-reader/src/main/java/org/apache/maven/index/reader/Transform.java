@@ -34,13 +34,13 @@ import org.apache.maven.index.reader.Record.EntryKey;
 import org.apache.maven.index.reader.Record.Type;
 
 /**
- * Helpers to transform {@link Iterable}.
+ * Helpers to transform records from one to another representation, and, some helpers for publishing.
  *
  * @since 5.1.2
  */
-public final class Iterables
+public final class Transform
 {
-  private Iterables() {
+  private Transform() {
     // nothing
   }
 
@@ -66,7 +66,7 @@ public final class Iterables
 
   /**
    * Helper method, that "decorates" the stream of records to be written out with "special" Maven Indexer records, so
-   * all the caller is needed to provide {@Link Iterable} or {@link Record}s <strong>to be</strong> on the index, with
+   * all the caller is needed to provide {@link Iterable} or {@link Record}s <strong>to be</strong> on the index, with
    * record type {@link Record.Type#ARTIFACT_ADD}. This method will create the output as "proper" Maven Indexer record
    * streeam, by adding the {@link Type#DESCRIPTOR}, {@link Type#ROOT_GROUPS} and {@link Type#ALL_GROUPS} special
    * records.

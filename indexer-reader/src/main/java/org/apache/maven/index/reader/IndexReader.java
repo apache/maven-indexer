@@ -67,7 +67,7 @@ public class IndexReader
     this.remote = remote;
     remoteIndexProperties = loadProperties(remote.locate(Utils.INDEX_FILE_PREFIX + ".properties"));
     if (remoteIndexProperties == null) {
-      throw new NullPointerException("remote index properties null");
+      throw new IllegalArgumentException("Non-existent remote index");
     }
     try {
       if (local != null) {

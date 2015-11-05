@@ -22,7 +22,7 @@ package org.apache.maven.index.reader;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.maven.index.reader.Iterables.Function;
+import org.apache.maven.index.reader.Transform.Function;
 import org.apache.maven.index.reader.Record.Type;
 
 import static org.apache.maven.index.reader.Utils.FIELD_SEPARATOR;
