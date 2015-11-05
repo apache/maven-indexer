@@ -34,9 +34,9 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * UT for {@link Iterables}
+ * UT for {@link Transform}
  */
-public class IterablesTest
+public class TransformTest
     extends TestSupport
 {
   @Test
@@ -45,7 +45,7 @@ public class IterablesTest
     final Record r1 = new Record(Type.ARTIFACT_ADD, artifactMap("org.apache"));
     final Record r2 = new Record(Type.ARTIFACT_ADD, artifactMap("org.foo"));
     final Record r3 = new Record(Type.ARTIFACT_ADD, artifactMap("com.bar"));
-    Iterable<Map<String, String>> iterable = Iterables.decorateAndTransform(Arrays.asList(r1, r2, r3), indexId);
+    Iterable<Map<String, String>> iterable = Transform.decorateAndTransform(Arrays.asList(r1, r2, r3), indexId);
 
     WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
     try {

@@ -25,7 +25,6 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.reader.Record.Type;
@@ -61,7 +60,7 @@ public class IndexReaderTest
         assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
         assertThat(chunkReader.getVersion(), equalTo(1));
         assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+        for (Record record : Transform.transform(chunkReader, new RecordExpander())) {
           records++;
         }
       }
@@ -93,7 +92,7 @@ public class IndexReaderTest
         assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
         assertThat(chunkReader.getVersion(), equalTo(1));
         assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+        for (Record record : Transform.transform(chunkReader, new RecordExpander())) {
           records++;
         }
       }
@@ -150,7 +149,7 @@ public class IndexReaderTest
         assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
         assertThat(chunkReader.getVersion(), equalTo(1));
         // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+        for (Record record : Transform.transform(chunkReader, new RecordExpander())) {
           records++;
         }
       }

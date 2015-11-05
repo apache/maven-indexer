@@ -76,7 +76,7 @@ public class IndexWriterTest
         assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
         assertThat(chunkReader.getVersion(), equalTo(1));
         // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
+        for (Record record : Transform.transform(chunkReader, new RecordExpander())) {
           records++;
         }
       }
