@@ -64,7 +64,7 @@ public class CachingResourceHandler
       return NOT_EXISTING_RESOURCE;
     }
     else {
-      return new CachingResource(name, local.locate(name));
+      return new CachingResource(name);
     }
   }
 
@@ -73,20 +73,17 @@ public class CachingResourceHandler
   {
     private final String name;
 
-    private final WritableResource localResource;
-
-    private CachingResource(final String name, final WritableResource localResource) {
+    private CachingResource(final String name) {
       this.name = name;
-      this.localResource = localResource;
     }
 
     public InputStream read() throws IOException {
-      InputStream inputStream = localResource.read();
+      InputStream inputStream = local.locate(name).read();
       if (inputStream != null) {
         return inputStream;
       }
       if (cacheLocally(name)) {
-        return localResource.read();
+        return local.locate(name).read();
       }
       notFoundResources.add(name);
       return null;
@@ -94,6 +91,7 @@ public class CachingResourceHandler
 
     private boolean cacheLocally(final String name) throws IOException {
       final Resource remoteResource = remote.locate(name);
+      final WritableResource localResource = local.locate(name);
       try {
         final InputStream inputStream = remoteResource.read();
         if (inputStream != null) {
@@ -115,7 +113,7 @@ public class CachingResourceHandler
         return false;
       }
       finally {
-        remoteResource.close();
+        localResource.close();
       }
     }
 

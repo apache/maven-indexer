@@ -114,21 +114,42 @@ public class TestSupport
   }
 
   /**
-   * Consumes {@link ChunkReader} and creates "statistics" of index by record type.
+   * Consumes {@link ChunkReader} and creates a map "by type" with records.
    */
-  protected Map<Type, List<Record>> countRecordTypes(final ChunkReader chunkReader) throws IOException {
+  protected Map<Type, List<Record>> loadRecordsByType(final ChunkReader chunkReader) throws IOException {
     HashMap<Type, List<Record>> stat = new HashMap<Type, List<Record>>();
     try {
       assertThat(chunkReader.getVersion(), equalTo(1));
       final RecordExpander recordExpander = new RecordExpander();
       for (Map<String, String> rec : chunkReader) {
-        System.out.println(rec);
         final Record record = recordExpander.apply(rec);
-        System.out.println(record);
         if (!stat.containsKey(record.getType())) {
           stat.put(record.getType(), new ArrayList<Record>());
         }
         stat.get(record.getType()).add(record);
+      }
+    }
+    finally {
+      chunkReader.close();
+    }
+    return stat;
+  }
+
+
+  /**
+   * Consumes {@link ChunkReader} and creates a map "by type" with record type counts.
+   */
+  protected Map<Type, Integer> countRecordsByType(final ChunkReader chunkReader) throws IOException {
+    HashMap<Type, Integer> stat = new HashMap<Type, Integer>();
+    try {
+      assertThat(chunkReader.getVersion(), equalTo(1));
+      final RecordExpander recordExpander = new RecordExpander();
+      for (Map<String, String> rec : chunkReader) {
+        final Record record = recordExpander.apply(rec);
+        if (!stat.containsKey(record.getType())) {
+          stat.put(record.getType(), 0);
+        }
+        stat.put(record.getType(), stat.get(record.getType()) + 1);
       }
     }
     finally {
