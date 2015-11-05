@@ -25,10 +25,8 @@ import java.io.InputStream;
 
 /**
  * Maven 2 Index resource abstraction, that should be handled as a resource (is {@link Closeable}. That means, that
- * implementations could perform any extra activity as FS locking or so (if uses FS as backing store). If the
- * implementation plans to fetch from remote, it could implement very simple "cache" mechanism, to fetch only once
- * during the lifespan of the instance, as for indexer there is no reason to re-fetch during single session, nor
- * yo have any advanced caching (ie. TTLs etc).
+ * implementations could perform any extra activity as FS locking or so (if uses FS as backing store). Is used by single
+ * thread only.
  *
  * @since 5.1.2
  */
@@ -36,7 +34,6 @@ public interface ResourceHandler
     extends Closeable
 {
   interface Resource
-      extends Closeable
   {
     /**
      * Returns the {@link InputStream} stream of the resource, if exists, {@code null} otherwise. The stream should
@@ -46,7 +43,7 @@ public interface ResourceHandler
   }
 
   /**
-   * Returns the {@link Resource} of resource with {@code name}. Returned locator should be handled as resource.
+   * Returns the {@link Resource} with {@code name}, non {@code null}.
    *
    * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
    */

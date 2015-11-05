@@ -64,7 +64,7 @@ public class IterablesTest
     IndexReader indexReader = new IndexReader(null, writableResourceHandler);
     assertThat(indexReader.getChunkNames(), equalTo(Arrays.asList("nexus-maven-repository-index.gz")));
     ChunkReader chunkReader = indexReader.iterator().next();
-    final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
+    final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
     assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));

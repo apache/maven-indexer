@@ -80,16 +80,11 @@ public final class Utils
    * exists, returns {@code null}.
    */
   static Properties loadProperties(final Resource resource) throws IOException {
-    try {
-      final InputStream inputStream = resource.read();
-      if (inputStream == null) {
-        return null;
-      }
-      return loadProperties(resource.read());
+    final InputStream inputStream = resource.read();
+    if (inputStream == null) {
+      return null;
     }
-    finally {
-      resource.close();
-    }
+    return loadProperties(resource.read());
   }
 
   /**

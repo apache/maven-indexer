@@ -255,7 +255,6 @@ public class IndexReader
       try {
         if (currentChunkReader != null) {
           currentChunkReader.close();
-          currentResource.close();
         }
         currentResource = resourceHandler.locate(chunkName);
         currentChunkReader = new ChunkReader(chunkName, currentResource.read());

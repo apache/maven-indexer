@@ -47,7 +47,7 @@ public class ChunkReaderTest
         "full",
         testResourceHandler("simple").locate("nexus-maven-repository-index.gz").read()
     );
-    final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
+    final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
     assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
@@ -61,27 +61,22 @@ public class ChunkReaderTest
     File tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
     {
       final Resource resource = testResourceHandler("simple").locate("nexus-maven-repository-index.gz");
+      final ChunkReader chunkReader = new ChunkReader(
+          "full",
+          resource.read()
+      );
+      final ChunkWriter chunkWriter = new ChunkWriter(
+          chunkReader.getName(),
+          new FileOutputStream(tempChunkFile), 1, new Date()
+      );
       try {
-        final ChunkReader chunkReader = new ChunkReader(
-            "full",
-            resource.read()
-        );
-        final ChunkWriter chunkWriter = new ChunkWriter(
-            chunkReader.getName(),
-            new FileOutputStream(tempChunkFile), 1, new Date()
-        );
-        try {
-          chunkWriter.writeChunk(chunkReader.iterator());
-        }
-        finally {
-          chunkWriter.close();
-          chunkReader.close();
-        }
-        published = chunkWriter.getTimestamp();
+        chunkWriter.writeChunk(chunkReader.iterator());
       }
       finally {
-        resource.close();
+        chunkWriter.close();
+        chunkReader.close();
       }
+      published = chunkWriter.getTimestamp();
     }
 
     final ChunkReader chunkReader = new ChunkReader(
@@ -90,7 +85,7 @@ public class ChunkReaderTest
     );
     assertThat(chunkReader.getVersion(), equalTo(1));
     assertThat(chunkReader.getTimestamp().getTime(), equalTo(published.getTime()));
-    final Map<Type, List<Record>> recordTypes = countRecordTypes(chunkReader);
+    final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
     assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
     assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));

@@ -21,12 +21,14 @@ package org.apache.maven.index.reader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.maven.index.reader.Record.Type;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -161,34 +163,46 @@ public class IndexReaderTest
     }
   }
 
+  /**
+   * This UT is here for demonstration purposes only. Bashing Central is not something you want to do, and risk your
+   * IP address being banned. You were warned!
+   */
   @Test
-  @Ignore("Here for example but test depending on external resource is not nice thing to have")
+  @Ignore("For eyes only")
   public void central() throws Exception {
-    final File tempDir = File.createTempFile("index-reader", "tmp");
-    tempDir.mkdirs();
-    final Writer writer = new OutputStreamWriter(System.out);
-    final IndexReader indexReader = new IndexReader(
-        new DirectoryResourceHandler(tempDir),
+    // local index location, against which we perform incremental updates
+    final File indexDir = createTempDirectory();
+    // cache of remote, to not rely on HTTP transport possible failures, or, to detect them early
+    final File cacheDir = createTempDirectory();
+
+    final PrintWriter writer = new PrintWriter(System.out, true);
+    final WritableResourceHandler local = new DirectoryResourceHandler(indexDir);
+    final CachingResourceHandler remote = new CachingResourceHandler(
+        new DirectoryResourceHandler(cacheDir),
         new HttpResourceHandler(new URL("http://repo1.maven.org/maven2/.index/"))
     );
+    final IndexReader indexReader = new IndexReader(local, remote);
     try {
-      writer.write("indexRepoId=" + indexReader.getIndexId() + "\n");
-      writer.write("indexLastPublished=" + indexReader.getPublishedTimestamp() + "\n");
-      writer.write("isIncremental=" + indexReader.isIncremental() + "\n");
-      writer.write("indexRequiredChunkNames=" + indexReader.getChunkNames() + "\n");
+      writer.println("indexRepoId=" + indexReader.getIndexId());
+      writer.println("indexLastPublished=" + indexReader.getPublishedTimestamp());
+      writer.println("isIncremental=" + indexReader.isIncremental());
+      writer.println("indexRequiredChunkNames=" + indexReader.getChunkNames());
       for (ChunkReader chunkReader : indexReader) {
-        writer.write("chunkName=" + chunkReader.getName() + "\n");
-        writer.write("chunkVersion=" + chunkReader.getVersion() + "\n");
-        writer.write("chunkPublished=" + chunkReader.getTimestamp() + "\n");
-        writer.write("= = = = = = \n");
-        for (Record record : Iterables.transform(chunkReader, new RecordExpander())) {
-          writer.write(record.getExpanded() + "\n");
+        writer.println("chunkName=" + chunkReader.getName());
+        writer.println("chunkVersion=" + chunkReader.getVersion());
+        writer.println("chunkPublished=" + chunkReader.getTimestamp());
+        writer.println("Chunk stats:");
+        Map<Type, Integer> stats = countRecordsByType(chunkReader);
+        for (Map.Entry<Type, Integer> entry : stats.entrySet()) {
+          writer.println(entry.getKey() + " = " + entry.getValue());
         }
+        writer.println("= = = = = =");
       }
     }
     finally {
       indexReader.close();
-      writer.close();
+      remote.close();
+      local.close();
     }
   }
 }
