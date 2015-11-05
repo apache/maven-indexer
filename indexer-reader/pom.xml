@@ -28,6 +28,7 @@ under the License.
   </parent>
 
   <artifactId>indexer-reader</artifactId>
+  <packaging>bundle</packaging>
 
   <name>Maven :: Indexer Reader</name>
   <description>
@@ -44,5 +45,16 @@ under the License.
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>3.0.0</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
