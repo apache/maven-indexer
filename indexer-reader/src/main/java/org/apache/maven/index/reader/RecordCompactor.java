@@ -153,7 +153,7 @@ public class RecordCompactor
         .append(FIELD_SEPARATOR)
         .append(nvl(classifier));
     if (classifier != null) {
-      sb.append(record.get(Record.FILE_EXTENSION));
+      sb.append(FIELD_SEPARATOR).append(record.get(Record.FILE_EXTENSION));
     }
     return sb.toString();
   }
