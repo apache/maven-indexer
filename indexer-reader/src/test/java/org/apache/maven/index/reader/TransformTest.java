@@ -29,12 +29,15 @@ import org.apache.maven.index.reader.Record.EntryKey;
 import org.apache.maven.index.reader.Record.Type;
 import org.junit.Test;
 
+import static org.apache.maven.index.reader.TestUtils.decorate;
+import static org.apache.maven.index.reader.TestUtils.compactFunction;
+import static com.google.common.collect.Iterables.transform;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * UT for {@link Transform}
+ * UT for {@link RecordCompactor} and {@linl RecordExpander}.
  */
 public class TransformTest
     extends TestSupport
@@ -45,7 +48,10 @@ public class TransformTest
     final Record r1 = new Record(Type.ARTIFACT_ADD, artifactMap("org.apache"));
     final Record r2 = new Record(Type.ARTIFACT_ADD, artifactMap("org.foo"));
     final Record r3 = new Record(Type.ARTIFACT_ADD, artifactMap("com.bar"));
-    Iterable<Map<String, String>> iterable = Transform.decorateAndTransform(Arrays.asList(r1, r2, r3), indexId);
+    Iterable<Map<String, String>> iterable = transform(
+        decorate(Arrays.asList(r1, r2, r3), indexId),
+        compactFunction
+    );
 
     WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
     try {
