@@ -34,10 +34,10 @@ public class SearchRequest
 
     public SearchRequest()
     {
+        // no op
     }
 
-    public SearchRequest( String repository,
-                          String query )
+    public SearchRequest( String repository, String query )
     {
         this.repository = repository;
         this.query = query;

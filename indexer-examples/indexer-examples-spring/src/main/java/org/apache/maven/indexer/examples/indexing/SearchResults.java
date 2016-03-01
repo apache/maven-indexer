@@ -19,11 +19,11 @@ package org.apache.maven.indexer.examples.indexing;
  * under the License.
  */
 
+import org.apache.maven.index.ArtifactInfo;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.apache.maven.index.ArtifactInfo;
 
 /**
  * This is a convenience class for holding search results mapped by repository.
@@ -42,6 +42,7 @@ public class SearchResults
 
     public SearchResults()
     {
+        // no op
     }
 
     public Map<String, Collection<ArtifactInfo>> getResults()

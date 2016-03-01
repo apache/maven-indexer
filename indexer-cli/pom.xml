@@ -41,7 +41,6 @@ under the License.
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- Plexus (as compile since it has to end up in CLI) -->
