@@ -200,14 +200,9 @@ public class DefaultIndexUpdater
         indexDir.delete();
         indexDir.mkdirs();
 
-        final Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir );
-
-        BufferedInputStream is = null;
-
-        try
+        try(BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
+            Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ))
         {
-            is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) );
-
             Date timestamp = null;
 
             if ( remoteIndexFile.endsWith( ".gz" ) )
@@ -247,13 +242,6 @@ public class DefaultIndexUpdater
         }
         finally
         {
-            IOUtil.close( is );
-
-            if ( directory != null )
-            {
-                directory.close();
-            }
-
             try
             {
                 FileUtils.deleteDirectory( indexDir );
@@ -321,13 +309,9 @@ public class DefaultIndexUpdater
     {
         File indexProperties = new File( indexDirectoryFile, remoteIndexPropertiesName );
 
-        FileInputStream fis = null;
-
-        try
+        try ( FileInputStream fis = new FileInputStream( indexProperties ))
         {
             Properties properties = new Properties();
-
-            fis = new FileInputStream( indexProperties );
 
             properties.load( fis );
 
@@ -337,11 +321,6 @@ public class DefaultIndexUpdater
         {
             getLogger().debug( "Unable to read remote properties stored locally", e );
         }
-        finally
-        {
-            IOUtil.close( fis );
-        }
-
         return null;
     }
 
@@ -352,14 +331,9 @@ public class DefaultIndexUpdater
 
         if ( properties != null )
         {
-            OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) );
-            try
+            try (OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) ))
             {
                 properties.store( os, null );
-            }
-            finally
-            {
-                IOUtil.close( os );
             }
         }
         else
@@ -371,19 +345,13 @@ public class DefaultIndexUpdater
     private Properties downloadIndexProperties( final ResourceFetcher fetcher )
         throws IOException
     {
-        InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
-
-        try
+        try (InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ))
         {
             Properties properties = new Properties();
 
             properties.load( fis );
 
             return properties;
-        }
-        finally
-        {
-            IOUtil.close( fis );
         }
     }
 
@@ -643,20 +611,14 @@ public class DefaultIndexUpdater
             throws IOException
         {
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) );
-            Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING );
-            try
+            try (BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) ); //
+                 Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING ))
             {
                 for ( String filename : newChunks )
                 {
                     w.write( filename + "\n" );
                 }
                 w.flush();
-            }
-            finally
-            {
-                IOUtil.close( w );
-                IOUtil.close( os );
             }
             super.commit();
         }
@@ -667,19 +629,14 @@ public class DefaultIndexUpdater
             ArrayList<String> chunks = new ArrayList<String>();
 
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            BufferedReader r =
-                new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) );
-            try
+            try (BufferedReader r =
+                     new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) ))
             {
                 String str;
                 while ( ( str = r.readLine() ) != null )
                 {
                     chunks.add( str );
                 }
-            }
-            finally
-            {
-                IOUtil.close( r );
             }
             return chunks;
         }

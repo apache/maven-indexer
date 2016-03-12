@@ -923,18 +923,13 @@ public class DefaultIndexUpdaterTest
         {
             Properties properties = getProperties();
 
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            try
+            try (ByteArrayOutputStream buf = new ByteArrayOutputStream())
             {
                 properties.store( buf, null );
                 buf.flush();
-            }
-            finally
-            {
-                IOUtil.close( buf );
+                return new ByteArrayInputStream( buf.toByteArray() );
             }
 
-            return new ByteArrayInputStream( buf.toByteArray() );
         }
 
         abstract Properties getProperties();
@@ -952,16 +947,9 @@ public class DefaultIndexUpdaterTest
 
             this.file = new File( basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
 
-            FileOutputStream fos = null;
-            try
+            try ( FileOutputStream fos = new FileOutputStream( this.file ))
             {
-                fos = new FileOutputStream( this.file );
-
                 properties.store( fos, "" );
-            }
-            finally
-            {
-                IOUtil.close( fos );
             }
         }
 
