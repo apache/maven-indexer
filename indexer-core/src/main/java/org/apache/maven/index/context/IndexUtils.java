@@ -123,8 +123,22 @@ public class IndexUtils
         ArtifactInfo artifactInfo = new ArtifactInfo();
 
         // Add minimal information to the artifact info linking it to the context it belongs to.
-        artifactInfo.setRepository(context.getRepositoryId());
-        artifactInfo.setContext(context.getId());
+        try
+        {
+            artifactInfo.setRepository(context.getRepositoryId());
+        }
+        catch ( UnsupportedOperationException e )
+        {
+            // we ignore that as PartialImplementation can generate this UnsupportedOperationException
+        }
+        try
+        {
+            artifactInfo.setContext(context.getId());
+        }
+        catch ( Exception e )
+        {
+            // we ignore that as PartialImplementation can generate this UnsupportedOperationException
+        }
 
         for ( IndexCreator ic : context.getIndexCreators() )
         {
