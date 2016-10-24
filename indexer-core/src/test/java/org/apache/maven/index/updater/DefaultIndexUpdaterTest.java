@@ -150,7 +150,11 @@ public class DefaultIndexUpdaterTest
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
             assertEquals( tempContent.toString(), 3, tempContent.size() );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -193,7 +197,11 @@ public class DefaultIndexUpdaterTest
             indexer.deleteArtifactFromIndex(
                 createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.4", null ), tempContext );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -267,7 +275,11 @@ public class DefaultIndexUpdaterTest
             indexer.addArtifactToIndex(
                 createArtifactContext( repositoryId, "org.slf4j.foo", "jcl104-over-slf4j", "1.4.2", null ), context );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 

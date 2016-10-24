@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -134,7 +135,7 @@ public class IndexDataTest
 
         Map<String, ArtifactInfo> r1map = readIndex( r1 );
 
-        IndexReader r2 = IndexReader.open( newDir );
+        IndexReader r2 = DirectoryReader.open( newDir );
 
         Map<String, ArtifactInfo> r2map = readIndex( r2 );
 

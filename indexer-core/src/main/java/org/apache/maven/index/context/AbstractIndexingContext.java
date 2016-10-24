@@ -28,7 +28,8 @@ public abstract class AbstractIndexingContext
     {
         try
         {
-            return getIndexDirectory().fileExists( INDEX_UPDATER_PROPERTIES_FILE );
+            getIndexDirectory().fileLength(INDEX_UPDATER_PROPERTIES_FILE);
+            return true;
         }
         catch ( IOException e )
         {

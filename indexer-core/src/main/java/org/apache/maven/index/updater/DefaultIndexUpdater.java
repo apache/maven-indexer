@@ -49,6 +49,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
@@ -260,7 +261,7 @@ public class DefaultIndexUpdater
         IndexWriter w = null;
         try
         {
-            r = IndexReader.open( directory );
+            r = DirectoryReader.open( directory );
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
             
             Bits liveDocs = MultiFields.getLiveDocs(r);

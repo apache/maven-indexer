@@ -53,13 +53,13 @@ public class FSDirectoryDeleteTest
 
         nexusIndexer = lookup( NexusIndexer.class );
 
-        indexDir = FSDirectory.open( indexDirFile );
+        indexDir = FSDirectory.open( indexDirFile.toPath() );
 
         context = nexusIndexer.addIndexingContext( "one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( context );
 
-        otherIndexDir = FSDirectory.open( otherIndexDirFile );
+        otherIndexDir = FSDirectory.open( otherIndexDirFile.toPath() );
 
         otherContext =
             nexusIndexer.addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );

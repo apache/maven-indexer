@@ -28,7 +28,6 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.SerialMergeScheduler;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Version;
 
 /**
  * An extension of <a
@@ -43,7 +42,7 @@ public class NexusIndexWriter
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
         //super( directory, analyzer, create, MaxFieldLength.LIMITED );
-        this(directory, new IndexWriterConfig(Version.LUCENE_46, analyzer));
+        this(directory, new IndexWriterConfig(analyzer));
 
         // setSimilarity( new NexusSimilarity() );
     }
@@ -58,7 +57,7 @@ public class NexusIndexWriter
 
     public static IndexWriterConfig defaultConfig()
     {
-        final IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_46, new NexusAnalyzer() );
+        final IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
         // default open mode is CreateOrAppend which suits us
         config.setRAMBufferSizeMB( 2.0 ); // old default
         config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
