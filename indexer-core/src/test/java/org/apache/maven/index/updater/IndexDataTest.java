@@ -84,7 +84,7 @@ public class IndexDataTest
 
         newDir = new RAMDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context );
+        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
 
         assertEquals( timestamp, newTimestamp );
 
@@ -121,7 +121,7 @@ public class IndexDataTest
 
         newDir = new RAMDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context );
+        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
 
         assertEquals( null, newTimestamp );
 

@@ -125,6 +125,7 @@ public class DefaultIndexingContext
                                     boolean reclaimIndex )
         throws ExistingLuceneIndexMismatchException, IOException
     {
+
         this.id = id;
 
         this.searchable = true;
@@ -612,6 +613,12 @@ public class DefaultIndexingContext
     public synchronized void replace( Directory directory )
         throws IOException
     {
+        replace(directory, null, null);
+    }
+
+    public synchronized void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups)
+        throws IOException
+    {
         final Date ts = IndexUtils.getTimestamp( directory );
         closeReaders();
         deleteIndexFiles( false );
@@ -619,7 +626,16 @@ public class DefaultIndexingContext
         openAndWarmup();
         // reclaim the index as mine
         storeDescriptor();
+        if(allGroups == null && rootGroups == null) {
         rebuildGroups();
+        } else {
+            if(allGroups != null) {
+                setAllGroups(allGroups);
+            }
+            if(rootGroups != null) {
+                setRootGroups(rootGroups);
+            }
+        }
         updateTimestamp( true, ts );
         optimize();
     }

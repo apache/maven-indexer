@@ -268,6 +268,9 @@ public interface IndexingContext
     void replace( Directory directory )
         throws IOException;
 
+    void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
+        throws IOException;
+
     Directory getIndexDirectory();
 
     File getIndexDirectoryFile();

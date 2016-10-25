@@ -282,6 +282,12 @@ public class MergedIndexingContext
         // noop
     }
 
+    public void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
+        throws IOException
+    {
+        // noop
+    }
+
     public Directory getIndexDirectory()
     {
         return directory;

@@ -420,7 +420,7 @@ public class DefaultIndexUpdaterTest
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 oneOf( mockFetcher ).disconnect();
             }
@@ -578,7 +578,7 @@ public class DefaultIndexUpdaterTest
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 never( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
@@ -822,7 +822,7 @@ public class DefaultIndexUpdaterTest
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 oneOf( mockFetcher ).disconnect();
             }

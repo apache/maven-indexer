@@ -61,8 +61,6 @@ public class RepositoryIndexer
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryIndexer.class );
 
-    private static final Version luceneVersion = Version.LUCENE_4_8;
-
     private static final String[] luceneFields = new String[]{ "g", "a", "v", "p", "c" };
 
     private static final WhitespaceAnalyzer luceneAnalyzer = new WhitespaceAnalyzer( );

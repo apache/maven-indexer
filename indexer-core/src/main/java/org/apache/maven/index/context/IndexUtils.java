@@ -129,12 +129,18 @@ public class IndexUtils
 
     public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified )
     {
-        ArtifactInfo ai = constructArtifactInfo( doc, context );
-        if ( ai == null )
-        {
-            return doc;
-        }
+         return updateDocument(doc, context, updateLastModified, null);
+    }
 
+    public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified, ArtifactInfo ai )
+    {
+        if( ai == null ) {
+            ai = constructArtifactInfo( doc, context );
+            if ( ai == null )
+            {
+                return doc;
+            }
+        }
         Document document = new Document();
 
         // unique key
