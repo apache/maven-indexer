@@ -53,27 +53,26 @@ public class IndexDataReader
     public IndexDataReader( InputStream is )
         throws IOException
     {
-        BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
-        bis.mark( 2 );
+        is.mark( 2 );
         InputStream data;
-        if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
+        if ( is.read() == 0x1f && is.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
-            bis.reset();
-            data = new GZIPInputStream( bis, 2 * 1024 );
+            is.reset();
+            data = new BufferedInputStream(new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
         }
         else
         {
+            BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
             bis.reset();
             data = bis;
         }
 
         this.dis = new DataInputStream( data );
     }
-
+    
     public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context )
         throws IOException
     {
