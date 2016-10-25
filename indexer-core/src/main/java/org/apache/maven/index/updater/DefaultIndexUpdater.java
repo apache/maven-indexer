@@ -289,7 +289,6 @@ public class DefaultIndexUpdater
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
-            w.forceMerge(4);
             w.commit();
         }
         finally
