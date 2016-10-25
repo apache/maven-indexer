@@ -141,7 +141,7 @@ public class DefaultQueryCreator
         }
         else
         {
-            QueryParser qp = new QueryParser( Version.LUCENE_46, field, new NexusAnalyzer() );
+            QueryParser qp = new QueryParser( field, new NexusAnalyzer() );
 
             // small cheap trick
             // if a query is not "expert" (does not contain field:val kind of expression)
@@ -273,7 +273,7 @@ public class DefaultQueryCreator
             {
                 String qpQuery = query.toLowerCase().replaceAll( "\\.", " " ).replaceAll( "/", " " );
                 // tokenization should happen against the field!
-                QueryParser qp = new QueryParser( Version.LUCENE_46, indexerField.getKey(), new NexusAnalyzer() );
+                QueryParser qp = new QueryParser( indexerField.getKey(), new NexusAnalyzer() );
                 qp.setDefaultOperator( Operator.AND );
                 return qp.parse( qpQuery );
             }
@@ -306,7 +306,7 @@ public class DefaultQueryCreator
                 String qpQuery = query;
 
                 // tokenization should happen against the field!
-                QueryParser qp = new QueryParser( Version.LUCENE_46, indexerField.getKey(), new NexusAnalyzer() );
+                QueryParser qp = new QueryParser( indexerField.getKey(), new NexusAnalyzer() );
                 qp.setDefaultOperator( Operator.AND );
 
                 // small cheap trick

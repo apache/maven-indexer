@@ -118,13 +118,13 @@ public class NexusIndexerTest
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.PACKAGING, "maven-archetype", SearchType.SCORED );
 
-        assertEquals( "p:maven-archetype p:maven-archetype*^0.8", q.toString() );
+        assertEquals( "p:maven-archetype p:maven-archetype*", q.toString() );
 
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.SCORED );
 
         assertEquals(
-            "(a:commons-logging a:commons-logging*^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
+            "(a:commons-logging a:commons-logging*) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
             q.toString() );
 
         // scored search against field having tokenized IndexerField only (should be impossible).

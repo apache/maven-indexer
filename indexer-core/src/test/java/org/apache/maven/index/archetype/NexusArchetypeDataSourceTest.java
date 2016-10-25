@@ -70,7 +70,7 @@ public class NexusArchetypeDataSourceTest
 
             super.deleteDirectory( indexDirFile );
 
-            indexDir = FSDirectory.open( indexDirFile );
+            indexDir = FSDirectory.open( indexDirFile.toPath() );
         }
 
         File repo = new File( getBasedir(), "src/test/repo" );

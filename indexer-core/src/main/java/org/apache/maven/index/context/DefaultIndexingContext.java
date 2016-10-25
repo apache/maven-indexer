@@ -21,6 +21,11 @@ package org.apache.maven.index.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +50,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.FSLockFactory;
+import org.apache.lucene.store.Lock;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.artifact.GavCalculator;
@@ -76,6 +84,8 @@ public class DefaultIndexingContext
     private static final Term DESCRIPTOR_TERM = new Term( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS );
 
     private Directory indexDirectory;
+
+    private TrackingLockFactory lockFactory;
 
     private File indexDirectoryFile;
 
@@ -111,9 +121,11 @@ public class DefaultIndexingContext
                                     File repository, //
                                     String repositoryUrl, String indexUpdateUrl,
                                     List<? extends IndexCreator> indexCreators, Directory indexDirectory,
+                                    TrackingLockFactory lockFactory,
                                     boolean reclaimIndex )
         throws ExistingLuceneIndexMismatchException, IOException
     {
+
         this.id = id;
 
         this.searchable = true;
@@ -134,6 +146,8 @@ public class DefaultIndexingContext
 
         this.indexDirectory = indexDirectory;
 
+        this.lockFactory = lockFactory;
+
         // eh?
         // Guice does NOT initialize these, and we have to do manually?
         // While in Plexus, all is well, but when in guice-shim,
@@ -150,15 +164,24 @@ public class DefaultIndexingContext
         setIndexDirectoryFile( null );
     }
 
+    private DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
+                                   TrackingLockFactory lockFactory, String repositoryUrl, String indexUpdateUrl,
+                                   List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
+        throws IOException, ExistingLuceneIndexMismatchException
+    {
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
+            FSDirectory.open( indexDirectoryFile.toPath(), lockFactory ), lockFactory, reclaimIndex );
+
+        setIndexDirectoryFile( indexDirectoryFile );
+    }
+    
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
                                    String repositoryUrl, String indexUpdateUrl,
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, ExistingLuceneIndexMismatchException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
-            FSDirectory.open( indexDirectoryFile ), reclaimIndex );
-
-        setIndexDirectoryFile( indexDirectoryFile );
+                this( id, repositoryId, repository, indexDirectoryFile, new TrackingLockFactory(FSLockFactory.getDefault()),
+                        repositoryUrl, indexUpdateUrl, indexCreators, reclaimIndex);
     }
 
     @Deprecated
@@ -167,11 +190,11 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, ExistingLuceneIndexMismatchException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, reclaimIndex );
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null, reclaimIndex ); //Lock factory already installed - pass null
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            setIndexDirectoryFile(( (FSDirectory) indexDirectory ).getDirectory() );
+            setIndexDirectoryFile(( (FSDirectory) indexDirectory ).getDirectory().toFile() );
         }
     }
 
@@ -215,7 +238,7 @@ public class DefaultIndexingContext
                 // unlock the dir forcibly
                 if ( IndexWriter.isLocked( indexDirectory ) )
                 {
-                    IndexWriter.unlock( indexDirectory );
+                    unlockForciebly( lockFactory, indexDirectory );
                 }
 
                 openAndWarmup();
@@ -252,7 +275,7 @@ public class DefaultIndexingContext
             // unlock the dir forcibly
             if ( IndexWriter.isLocked( indexDirectory ) )
             {
-                IndexWriter.unlock( indexDirectory );
+                unlockForciebly( lockFactory, indexDirectory );
             }
 
             deleteIndexFiles( true );
@@ -281,7 +304,7 @@ public class DefaultIndexingContext
         // check for descriptor if this is not a "virgin" index
         if ( getSize() > 0 )
         {
-            final TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
+            final TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
             final IndexSearcher indexSearcher = acquireIndexSearcher();
             try
             {
@@ -369,14 +392,17 @@ public class DefaultIndexingContext
 
             if ( full )
             {
-                if ( indexDirectory.fileExists( INDEX_PACKER_PROPERTIES_FILE ) )
-                {
+                
+                try {
                     indexDirectory.deleteFile( INDEX_PACKER_PROPERTIES_FILE );
+                } catch (IOException ioe) {
+                    //Does not exist
                 }
 
-                if ( indexDirectory.fileExists( INDEX_UPDATER_PROPERTIES_FILE ) )
-                {
+                try {
                     indexDirectory.deleteFile( INDEX_UPDATER_PROPERTIES_FILE );
+                } catch (IOException ioe) {
+                    //Does not exist
                 }
             }
 
@@ -546,7 +572,6 @@ public class DefaultIndexingContext
     public synchronized void optimize()
         throws CorruptIndexException, IOException
     {
-        getIndexWriter().forceMerge(1);
         commit();
     }
 
@@ -587,6 +612,12 @@ public class DefaultIndexingContext
     public synchronized void replace( Directory directory )
         throws IOException
     {
+        replace(directory, null, null);
+    }
+
+    public synchronized void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups)
+        throws IOException
+    {
         final Date ts = IndexUtils.getTimestamp( directory );
         closeReaders();
         deleteIndexFiles( false );
@@ -594,7 +625,16 @@ public class DefaultIndexingContext
         openAndWarmup();
         // reclaim the index as mine
         storeDescriptor();
+        if(allGroups == null && rootGroups == null) {
         rebuildGroups();
+        } else {
+            if(allGroups != null) {
+                setAllGroups(allGroups);
+            }
+            if(rootGroups != null) {
+                setRootGroups(rootGroups);
+            }
+        }
         updateTimestamp( true, ts );
         optimize();
     }
@@ -612,7 +652,7 @@ public class DefaultIndexingContext
         try
         {
             final IndexWriter w = getIndexWriter();
-            final IndexReader directoryReader = IndexReader.open( directory);
+            final IndexReader directoryReader = DirectoryReader.open( directory);
             TopScoreDocCollector collector = null;
             try
             {
@@ -635,7 +675,7 @@ public class DefaultIndexingContext
                     String uinfo = d.get( ArtifactInfo.UINFO );
                     if ( uinfo != null )
                     {
-                        collector = TopScoreDocCollector.create( 1, false );
+                        collector = TopScoreDocCollector.create( 1 );
                         s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
                         if ( collector.getTotalHits() == 0 )
                         {
@@ -706,7 +746,7 @@ public class DefaultIndexingContext
 
     public List<IndexCreator> getIndexCreators()
     {
-        return Collections.unmodifiableList( indexCreators );
+        return Collections.<IndexCreator>unmodifiableList( indexCreators );
     }
 
     // groups
@@ -784,7 +824,7 @@ public class DefaultIndexingContext
     protected Set<String> getGroups( String field, String filedValue, String listField )
         throws IOException, CorruptIndexException
     {
-        final TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
+        final TopScoreDocCollector collector = TopScoreDocCollector.create( 1);
         final IndexSearcher indexSearcher = acquireIndexSearcher();
         try
         {
@@ -832,5 +872,44 @@ public class DefaultIndexingContext
     public String toString()
     {
         return id + " : " + timestamp;
+    }
+
+    private static void unlockForciebly(final TrackingLockFactory lockFactory, final Directory dir) throws IOException
+    {
+        //Warning: Not doable in lucene >= 5.3 consider to remove it as IndexWriter.unlock
+        //was always strongly non recommended by Lucene.
+        //For now try to do the best to simulate the IndexWriter.unlock at least on FSDirectory
+        //using FSLockFactory, the RAMDirectory uses SingleInstanceLockFactory.
+        //custom lock factory?
+        if (lockFactory != null) {
+            final Set<? extends Lock> emittedLocks = lockFactory.getEmittedLocks(IndexWriter.WRITE_LOCK_NAME);
+            for (Lock emittedLock : emittedLocks) {
+                emittedLock.close();
+            }
+        }
+        if (dir instanceof FSDirectory) {
+            final FSDirectory fsdir = (FSDirectory) dir;
+            final Path dirPath = fsdir.getDirectory();
+            if (Files.isDirectory(dirPath)) {
+                Path lockPath = dirPath.resolve(IndexWriter.WRITE_LOCK_NAME);
+                try {
+                    lockPath = lockPath.toRealPath();
+                } catch (IOException ioe) {
+                    //Not locked
+                    return;
+                }
+                try (final FileChannel fc = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                    final FileLock lck = fc.tryLock();
+                    if (lck == null) {
+                        //Still active
+                        throw new LockObtainFailedException("Lock held by another process: " + lockPath);
+                    } else {
+                        //Not held fine to release
+                        lck.close();
+                    }
+                }
+                Files.delete(lockPath);
+            }
+        }
     }
 }
