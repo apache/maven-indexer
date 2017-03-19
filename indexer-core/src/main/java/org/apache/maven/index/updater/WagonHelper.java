@@ -198,6 +198,7 @@ public class WagonHelper
             throws IOException, FileNotFoundException
         {
             final File target = File.createTempFile( name, "" );
+            target.deleteOnExit();
             retrieve( name, target );
             return new FileInputStream( target )
             {
@@ -220,6 +221,7 @@ public class WagonHelper
             }
             catch ( AuthorizationException e )
             {
+                targetFile.delete();
                 String msg = "Authorization exception retrieving " + name;
                 logError( msg, e );
                 IOException ioException = new IOException( msg );
@@ -228,6 +230,7 @@ public class WagonHelper
             }
             catch ( ResourceDoesNotExistException e )
             {
+                targetFile.delete();
                 String msg = "Resource " + name + " does not exist";
                 logError( msg, e );
                 FileNotFoundException fileNotFoundException = new FileNotFoundException( msg );
@@ -236,6 +239,7 @@ public class WagonHelper
             }
             catch ( WagonException e )
             {
+                targetFile.delete();
                 String msg = "Transfer for " + name + " failed";
                 logError( msg, e );
                 IOException ioException = new IOException( msg + "; " + e.getMessage() );
