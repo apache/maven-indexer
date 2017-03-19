@@ -147,7 +147,7 @@ public class ArtifactInfo
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
     public static final Comparator<ArtifactInfo> CONTEXT_VERSION_COMPARATOR = new ContextVersionComparator();
-    private static final long serialVersionUID = 6028843453477511104L;
+    private static final long serialVersionUID = 6028843453477511105L;
     private static final List<Field> DEFAULT_FIELDS = new ArrayList<Field>();
 
     static {
