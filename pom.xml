@@ -441,8 +441,8 @@ under the License.
         <artifactId>apache-rat-plugin</artifactId>
         <executions>
           <execution>
-            <id>rat-verify</id>
-            <phase>test</phase>
+            <id>rat-check</id>
+            <phase>validate</phase>
             <goals>
               <goal>check</goal>
             </goals>
@@ -451,6 +451,7 @@ under the License.
                 <exclude>README.md</exclude>
                 <exclude>.gitignore</exclude>
                 <exclude>NOTICE</exclude>
+                <exclude>**/packageinfo</exclude>
                 <exclude>.git/**</exclude>
                 <exclude>.idea/**</exclude>
                 <exclude>**/*.iml</exclude>
