@@ -39,39 +39,6 @@ import static org.apache.maven.index.reader.Utils.renvl;
  */
 public class RecordExpander
 {
-  /**
-   * Expands MI low level record into {@link Record}.
-   */
-  public Record apply(final Map<String, String> recordMap) {
-    if (recordMap.containsKey("DESCRIPTOR")) {
-      return expandDescriptor(recordMap);
-    }
-    else if (recordMap.containsKey("allGroups")) {
-      return expandAllGroups(recordMap);
-    }
-    else if (recordMap.containsKey("rootGroups")) {
-      return expandRootGroups(recordMap);
-    }
-    else if (recordMap.containsKey("del")) {
-      return expandDeletedArtifact(recordMap);
-    }
-    else {
-      // Fix up UINFO field wrt MINDEXER-41
-      final String uinfo = recordMap.get(UINFO);
-      final String info = recordMap.get(INFO);
-      if (uinfo != null && !(info == null || info.trim().length() == 0)) {
-        final String[] splitInfo = FS_PATTERN.split(info);
-        if (splitInfo.length > 6) {
-          final String extension = splitInfo[6];
-          if (uinfo.endsWith(FIELD_SEPARATOR + NOT_AVAILABLE)) {
-            recordMap.put(UINFO, uinfo + FIELD_SEPARATOR + extension);
-          }
-        }
-      }
-      return expandAddedArtifact(recordMap);
-    }
-  }
-
   private static Record expandDescriptor(final Map<String, String> raw) {
     final Record result = new Record(Type.DESCRIPTOR, new HashMap<EntryKey, Object>());
     String[] r = FS_PATTERN.split(raw.get("IDXINFO"));
@@ -156,6 +123,10 @@ public class RecordExpander
     putIfNotNull(raw, "Bundle-DocURL", result, Record.OSGI_EXPORT_DOCURL);
     putIfNotNull(raw, "Import-Package", result, Record.OSGI_IMPORT_PACKAGE);
     putIfNotNull(raw, "Require-Bundle", result, Record.OSGI_REQUIRE_BUNDLE);
+    putIfNotNull(raw, "Provide-Capability", result, Record.OSGI_PROVIDE_CAPABILITY);
+    putIfNotNull(raw, "Require-Capability", result, Record.OSGI_REQUIRE_CAPABILITY);
+    putIfNotNull(raw, "Fragment-Host", result, Record.OSGI_FRAGMENT_HOST);
+    putIfNotNull(raw, "SHA-256", result, Record.OSGI_SHA_256);
 
     return result;
   }
@@ -224,6 +195,35 @@ public class RecordExpander
     String value = source.get(sourceName);
     if (value != null && value.trim().length() != 0) {
       target.put(targetName, FS_PATTERN.split(value));
+    }
+  }
+
+  /**
+   * Expands MI low level record into {@link Record}.
+   */
+  public Record apply(final Map<String, String> recordMap) {
+    if (recordMap.containsKey("DESCRIPTOR")) {
+      return expandDescriptor(recordMap);
+    } else if (recordMap.containsKey("allGroups")) {
+      return expandAllGroups(recordMap);
+    } else if (recordMap.containsKey("rootGroups")) {
+      return expandRootGroups(recordMap);
+    } else if (recordMap.containsKey("del")) {
+      return expandDeletedArtifact(recordMap);
+    } else {
+      // Fix up UINFO field wrt MINDEXER-41
+      final String uinfo = recordMap.get(UINFO);
+      final String info = recordMap.get(INFO);
+      if (uinfo != null && !(info == null || info.trim().length() == 0)) {
+        final String[] splitInfo = FS_PATTERN.split(info);
+        if (splitInfo.length > 6) {
+          final String extension = splitInfo[6];
+          if (uinfo.endsWith(FIELD_SEPARATOR + NOT_AVAILABLE)) {
+            recordMap.put(UINFO, uinfo + FIELD_SEPARATOR + extension);
+          }
+        }
+      }
+      return expandAddedArtifact(recordMap);
     }
   }
 }

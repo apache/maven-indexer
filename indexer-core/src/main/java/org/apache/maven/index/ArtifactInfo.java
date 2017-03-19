@@ -48,261 +48,267 @@ import org.sonatype.aether.version.VersionScheme;
 public class ArtifactInfo
     extends ArtifactInfoRecord
 {
-    private static final long serialVersionUID = 6028843453477511104L;
-
-    // --
-
     public static final String ROOT_GROUPS = "rootGroups";
 
+    // --
     public static final String ROOT_GROUPS_VALUE = "rootGroups";
-
     public static final String ROOT_GROUPS_LIST = "rootGroupsList";
-
     public static final String ALL_GROUPS = "allGroups";
-
     public static final String ALL_GROUPS_VALUE = "allGroups";
-
     public static final String ALL_GROUPS_LIST = "allGroupsList";
-
-    // ----------
-
     /**
      * Unique groupId, artifactId, version, classifier, extension (or packaging). Stored, indexed untokenized
      */
     public static final String UINFO = FLD_UINFO.getKey();
 
+    // ----------
     /**
      * Field that contains {@link #UINFO} value for deleted artifact
      */
     public static final String DELETED = FLD_DELETED.getKey();
-
     /**
      * GroupId. Not stored, indexed untokenized
      */
     public static final String GROUP_ID = MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW.getKey();
-
     /**
      * ArtifactId. Not stored, indexed tokenized
      */
     public static final String ARTIFACT_ID = MinimalArtifactInfoIndexCreator.FLD_ARTIFACT_ID_KW.getKey();
-
     /**
      * Version. Not stored, indexed tokenized
      */
     public static final String VERSION = MinimalArtifactInfoIndexCreator.FLD_VERSION_KW.getKey();
-
     /**
      * Packaging. Not stored, indexed untokenized
      */
     public static final String PACKAGING = MinimalArtifactInfoIndexCreator.FLD_PACKAGING.getKey();
-
     /**
      * Classifier. Not stored, indexed untokenized
      */
     public static final String CLASSIFIER = MinimalArtifactInfoIndexCreator.FLD_CLASSIFIER.getKey();
-
     /**
      * Info: packaging, lastModified, size, sourcesExists, javadocExists, signatureExists. Stored, not indexed.
      */
     public static final String INFO = MinimalArtifactInfoIndexCreator.FLD_INFO.getKey();
-
     /**
      * Name. Stored, not indexed
      */
     public static final String NAME = MinimalArtifactInfoIndexCreator.FLD_NAME.getKey();
-
     /**
      * Description. Stored, not indexed
      */
     public static final String DESCRIPTION = MinimalArtifactInfoIndexCreator.FLD_DESCRIPTION.getKey();
-
     /**
      * Last modified. Stored, not indexed
      */
     public static final String LAST_MODIFIED = MinimalArtifactInfoIndexCreator.FLD_LAST_MODIFIED.getKey();
-
     /**
      * SHA1. Stored, indexed untokenized
      */
     public static final String SHA1 = MinimalArtifactInfoIndexCreator.FLD_SHA1.getKey();
-
     /**
      * Class names Stored compressed, indexed tokeninzed
      */
     public static final String NAMES = JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey();
-
     /**
      * Plugin prefix. Stored, not indexed
      */
     public static final String PLUGIN_PREFIX = MavenPluginArtifactInfoIndexCreator.FLD_PLUGIN_PREFIX.getKey();
-
     /**
      * Plugin goals. Stored, not indexed
      */
     public static final String PLUGIN_GOALS = MavenPluginArtifactInfoIndexCreator.FLD_PLUGIN_GOALS.getKey();
-
-
     /**
      * @since 1.4.2
      */
     public static final String BUNDLE_SYMBOLIC_NAME = OsgiArtifactIndexCreator.FLD_BUNDLE_SYMBOLIC_NAME.getKey();
-
     /**
      * @since 1.4.2
      */
     public static final String BUNDLE_VERSION = OsgiArtifactIndexCreator.FLD_BUNDLE_VERSION.getKey();
-
     /**
      * @since 1.4.2
      */
     public static final String BUNDLE_EXPORT_PACKAGE = OsgiArtifactIndexCreator.FLD_BUNDLE_EXPORT_PACKAGE.getKey();
-
+    /**
+     * OSGI Provide-Capability header
+     *
+     * @since 5.1.2
+     */
+    public static final String BUNDLE_PROVIDE_CAPABILITY =
+            OsgiArtifactIndexCreator.FLD_BUNDLE_PROVIDE_CAPABILITY.getKey();
+    /**
+     * OSGI Provide-Capability header
+     *
+     * @since 5.1.2
+     */
+    public static final String BUNDLE_REQUIRE_CAPABILITY =
+            OsgiArtifactIndexCreator.FLD_BUNDLE_REQUIRE_CAPABILITY.getKey();
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
-
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
-
     public static final Comparator<ArtifactInfo> CONTEXT_VERSION_COMPARATOR = new ContextVersionComparator();
+    private static final long serialVersionUID = 6028843453477511104L;
+    private static final List<Field> DEFAULT_FIELDS = new ArrayList<Field>();
 
+    static {
+        DEFAULT_FIELDS.add(MAVEN.GROUP_ID);
+        DEFAULT_FIELDS.add(MAVEN.ARTIFACT_ID);
+        DEFAULT_FIELDS.add(MAVEN.VERSION);
+        DEFAULT_FIELDS.add(MAVEN.PACKAGING);
+        DEFAULT_FIELDS.add(MAVEN.CLASSIFIER);
+        DEFAULT_FIELDS.add(MAVEN.SHA1);
+        DEFAULT_FIELDS.add(MAVEN.NAME);
+        DEFAULT_FIELDS.add(MAVEN.DESCRIPTION);
+        DEFAULT_FIELDS.add(MAVEN.CLASSNAMES);
+        DEFAULT_FIELDS.add(MAVEN.REPOSITORY_ID);
+    }
+
+    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
+    private final transient VersionScheme versionScheme;
     public String fname;
-
     public String fextension;
-
     public String groupId;
-
     public String artifactId;
-
     public String version;
-
-    private transient Version artifactVersion;
-
-    private transient float luceneScore;
-
     public String classifier;
-
     /**
      * Artifact packaging for the main artifact and extension for secondary artifact (no classifier)
      */
     public String packaging;
-
     public String name;
-
     public String description;
-
     public long lastModified = -1;
-
     public long size = -1;
-
     public String md5;
-
     public String sha1;
-
     public ArtifactAvailablility sourcesExists = ArtifactAvailablility.NOT_PRESENT;
-
     public ArtifactAvailablility javadocExists = ArtifactAvailablility.NOT_PRESENT;
-
     public ArtifactAvailablility signatureExists = ArtifactAvailablility.NOT_PRESENT;
-
     public String classNames;
-
     public String repository;
-
     public String path;
-
     public String remoteUrl;
-
     public String context;
-
     /**
      * Plugin goal prefix (only if packaging is "maven-plugin")
      */
     public String prefix;
-
     /**
      * Plugin goals (only if packaging is "maven-plugin")
      */
     public List<String> goals;
-
     /**
      * contains osgi metadata Bundle-Version if available
      * @since 4.1.2
      */
     public String bundleVersion;
-
     /**
      * contains osgi metadata Bundle-SymbolicName if available
      * @since 4.1.2
      */
     public String bundleSymbolicName;
-
     /**
      * contains osgi metadata Export-Package if available
      * @since 4.1.2
      */
     public String bundleExportPackage;
-
     /**
      * contains osgi metadata Export-Service if available
      * @since 4.1.2
      */
     public String bundleExportService;
-
     /**
      * contains osgi metadata Bundle-Description if available
      * @since 4.1.2
      */
     public String bundleDescription;
-
     /**
      * contains osgi metadata Bundle-Name if available
      * @since 4.1.2
      */
     public String bundleName;
-
     /**
      * contains osgi metadata Bundle-License if available
      * @since 4.1.2
      */
     public String bundleLicense;
-
     /**
      * contains osgi metadata Bundle-DocURL if available
      * @since 4.1.2
      */
     public String bundleDocUrl;
-
     /**
      * contains osgi metadata Import-Package if available
      * @since 4.1.2
      */
     public String bundleImportPackage;
-
     /**
      * contains osgi metadata Require-Bundle if available
      * @since 4.1.2
      */
     public String bundleRequireBundle;
-
+    /**
+     * contains osgi metadata Provide-Capability if available
+     *
+     * @since 5.1.2
+     */
+    public String bundleProvideCapability;
+    /**
+     * contains osgi metadata Require-Capability if available
+     *
+     * @since 5.1.2
+     */
+    public String bundleRequireCapability;
+    /**
+     * sha256 digest (for OSGI repository resolvers)
+     *
+     * @since 5.1.2
+     */
+    public String sha256;
+    /**
+     * bundle Fragment Host
+     *
+     * @since 5.1.2
+     */
+    public String bundleFragmentHost;
+    private transient Version artifactVersion;
+    private transient float luceneScore;
     private String uinfo = null;
-
-    private final Map<String, String> attributes = new HashMap<String, String>();
-
-    private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
-
-    private final transient VersionScheme versionScheme;
+    private List<Field> fields;
 
     public ArtifactInfo()
     {
         versionScheme = new GenericVersionScheme();
     }
 
-    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier )
-    {
+    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier ) {
         this();
         this.repository = repository;
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.classifier = classifier;
+    }
+
+    public static String nvl(String v) {
+        return v == null ? NA : v;
+    }
+
+    public static String renvl(String v) {
+        return NA.equals(v) ? null : v;
+    }
+
+    public static String lst2str(Collection<String> list) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : list) {
+            sb.append(s).append(ArtifactInfo.FS);
+        }
+        return sb.length() == 0 ? sb.toString() : sb.substring(0, sb.length() - 1);
+    }
+
+    public static List<String> str2lst(String str) {
+        return Arrays.asList(ArtifactInfo.FS_PATTERN.split( str ) );
     }
 
     public Version getArtifactVersion()
@@ -375,10 +381,13 @@ public class ArtifactInfo
         return attributes;
     }
 
-    public List<MatchHighlight> getMatchHighlights()
-    {
+    public List<MatchHighlight> getMatchHighlights() {
         return matchHighlights;
     }
+
+    // ----------------------------------------------------------------------------
+    // Utils
+    // ----------------------------------------------------------------------------
 
     @Override
     public String toString()
@@ -388,23 +397,6 @@ public class ArtifactInfo
         .append( ':' ).append( classifier ) //
         .append( ':' ).append( packaging ).toString();
     }
-
-    private static final List<Field> DEFAULT_FIELDS = new ArrayList<Field>();
-    static
-    {
-        DEFAULT_FIELDS.add( MAVEN.GROUP_ID );
-        DEFAULT_FIELDS.add( MAVEN.ARTIFACT_ID );
-        DEFAULT_FIELDS.add( MAVEN.VERSION );
-        DEFAULT_FIELDS.add( MAVEN.PACKAGING );
-        DEFAULT_FIELDS.add( MAVEN.CLASSIFIER );
-        DEFAULT_FIELDS.add( MAVEN.SHA1 );
-        DEFAULT_FIELDS.add( MAVEN.NAME );
-        DEFAULT_FIELDS.add( MAVEN.DESCRIPTION );
-        DEFAULT_FIELDS.add( MAVEN.CLASSNAMES );
-        DEFAULT_FIELDS.add( MAVEN.REPOSITORY_ID );
-    }
-
-    private List<Field> fields;
 
     public Collection<Field> getFields()
     {
@@ -420,7 +412,7 @@ public class ArtifactInfo
 
     /**
      * This method will disappear, once we drop ArtifactInfo.
-     * 
+     *
      * @param field
      * @return
      */
@@ -516,35 +508,6 @@ public class ArtifactInfo
 
         // no match
         return this;
-    }
-
-    // ----------------------------------------------------------------------------
-    // Utils
-    // ----------------------------------------------------------------------------
-
-    public static String nvl( String v )
-    {
-        return v == null ? NA : v;
-    }
-
-    public static String renvl( String v )
-    {
-        return NA.equals( v ) ? null : v;
-    }
-
-    public static String lst2str( Collection<String> list )
-    {
-        StringBuilder sb = new StringBuilder();
-        for ( String s : list )
-        {
-            sb.append( s ).append( ArtifactInfo.FS );
-        }
-        return sb.length() == 0 ? sb.toString() : sb.substring( 0, sb.length() - 1 );
-    }
-
-    public static List<String> str2lst( String str )
-    {
-        return Arrays.asList( ArtifactInfo.FS_PATTERN.split( str ) );
     }
 
     /**

@@ -31,9 +31,12 @@ import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.StringUtils;
-
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -63,84 +66,74 @@ public class OsgiArtifactIndexCreator
     extends AbstractIndexCreator
 {
     public static final String ID = "osgi-metadatas";
-
+    public static final IndexerField FLD_SHA256 =
+            new IndexerField(OSGI.SHA256, IndexerFieldVersion.V4, "SHA-256", "SHA-256 (not analyzed, stored)",
+                    Field.Store.YES, Field.Index.NOT_ANALYZED);
     private static final String BSN = "Bundle-SymbolicName";
-
     public static final IndexerField FLD_BUNDLE_SYMBOLIC_NAME =
         new IndexerField( OSGI.SYMBOLIC_NAME, IndexerFieldVersion.V4, BSN, "Bundle-SymbolicName (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
-
-
     private static final String BV = "Bundle-Version";
-
     public static final IndexerField FLD_BUNDLE_VERSION =
         new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, BV, "Bundle-Version (indexed, stored)", Field.Store.YES,
                           Field.Index.ANALYZED );
-
-
     private static final String BEP = "Export-Package";
-
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
         new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, BEP, "Export-Package (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
-
+    @Deprecated
     private static final String BES = "Export-Service";
-
+    @Deprecated
     public static final IndexerField FLD_BUNDLE_EXPORT_SERVIVE =
-        new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
-
-
+            new IndexerField(OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
     private static final String BD = "Bundle-Description";
-
     public static final IndexerField FLD_BUNDLE_DESCRIPTION =
         new IndexerField( OSGI.DESCRIPTION, IndexerFieldVersion.V4, BD, "Bundle-Description (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
-
     private static final String BN = "Bundle-Name";
-
     public static final IndexerField FLD_BUNDLE_NAME =
         new IndexerField( OSGI.NAME, IndexerFieldVersion.V4, BN, "Bundle-Name (indexed, stored)", Field.Store.YES,
                           Field.Index.ANALYZED );
-
     private static final String BL = "Bundle-License";
-
     public static final IndexerField FLD_BUNDLE_LICENSE =
         new IndexerField( OSGI.LICENSE, IndexerFieldVersion.V4, BL, "Bundle-License (indexed, stored)", Field.Store.YES,
                           Field.Index.ANALYZED );
-
     private static final String BDU = "Bundle-DocURL";
-
     public static final IndexerField FLD_BUNDLE_DOCURL =
         new IndexerField( OSGI.DOCURL, IndexerFieldVersion.V4, BDU, "Bundle-DocURL (indexed, stored)", Field.Store.YES,
                           Field.Index.ANALYZED );
-
     private static final String BIP = "Import-Package";
-
     public static final IndexerField FLD_BUNDLE_IMPORT_PACKAGE =
         new IndexerField( OSGI.IMPORT_PACKAGE, IndexerFieldVersion.V4, BIP, "Import-Package (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
-
-
     private static final String BRB = "Require-Bundle";
-
     public static final IndexerField FLD_BUNDLE_REQUIRE_BUNDLE =
         new IndexerField( OSGI.REQUIRE_BUNDLE, IndexerFieldVersion.V4, BRB, "Require-Bundle (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
+    private static final String PROVIDE_CAPABILITY = "Provide-Capability";
+    public static final IndexerField FLD_BUNDLE_PROVIDE_CAPABILITY =
+            new IndexerField(OSGI.PROVIDE_CAPABILITY, IndexerFieldVersion.V4, PROVIDE_CAPABILITY, "Provide-Capability (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+    private static final String REQUIRE_CAPABILITY = "Require-Capability";
+    public static final IndexerField FLD_BUNDLE_REQUIRE_CAPABILITY =
+            new IndexerField(OSGI.REQUIRE_CAPABILITY, IndexerFieldVersion.V4, REQUIRE_CAPABILITY, "Require-Capability (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+    private static final String FRAGMENT_HOST = "Fragment-Host";
+    public static final IndexerField FLD_BUNDLE_FRAGMENT_HOST =
+            new IndexerField(OSGI.FRAGMENT_HOST, IndexerFieldVersion.V4, FRAGMENT_HOST, "Fragment-Host (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
 
-
-
+    public OsgiArtifactIndexCreator() {
+        super(ID);
+    }
 
     public Collection<IndexerField> getIndexerFields()
     {
-        return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
-                              FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
-                              FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE );
-    }
-
-    public OsgiArtifactIndexCreator()
-    {
-        super( ID );
+        return Arrays.asList(FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
+                FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
+                FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE,
+                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST, FLD_SHA256);
     }
 
     public void populateArtifactInfo( ArtifactContext artifactContext )
@@ -210,6 +203,23 @@ public class OsgiArtifactIndexCreator
         {
             document.add( FLD_BUNDLE_REQUIRE_BUNDLE.toField( artifactInfo.bundleRequireBundle ) );
         }
+
+        if (artifactInfo.bundleProvideCapability != null) {
+            document.add(FLD_BUNDLE_PROVIDE_CAPABILITY.toField(artifactInfo.bundleProvideCapability));
+        }
+
+        if (artifactInfo.bundleRequireCapability != null) {
+            document.add(FLD_BUNDLE_REQUIRE_CAPABILITY.toField(artifactInfo.bundleRequireCapability));
+        }
+
+        if (artifactInfo.bundleFragmentHost != null) {
+            document.add(FLD_BUNDLE_FRAGMENT_HOST.toField(artifactInfo.bundleFragmentHost));
+        }
+
+        if (artifactInfo.sha256 != null) {
+            document.add(FLD_SHA256.toField(artifactInfo.sha256));
+        }
+
     }
 
     public boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo )
@@ -315,7 +325,37 @@ public class OsgiArtifactIndexCreator
             updated = true;
 
         }
+        String bundleProvideCapability = document.get(FLD_BUNDLE_PROVIDE_CAPABILITY.getKey());
 
+        if (bundleProvideCapability != null) {
+            artifactInfo.bundleProvideCapability = bundleProvideCapability;
+
+            updated = true;
+
+        }
+        String bundleRequireCapability = document.get(FLD_BUNDLE_REQUIRE_CAPABILITY.getKey());
+
+        if (bundleRequireCapability != null) {
+            artifactInfo.bundleRequireCapability = bundleRequireCapability;
+
+            updated = true;
+
+        }
+        String bundleFragmentHost = document.get(FLD_BUNDLE_FRAGMENT_HOST.getKey());
+
+        if (bundleFragmentHost != null) {
+            artifactInfo.bundleFragmentHost = bundleFragmentHost;
+
+            updated = true;
+
+        }
+
+        String sha256 = document.get(FLD_SHA256.getKey());
+
+        if (sha256 != null) {
+            artifactInfo.sha256 = sha256;
+            updated = true;
+        }
 
         return updated;
     }
@@ -326,6 +366,7 @@ public class OsgiArtifactIndexCreator
         ZipHandle handle = null;
 
         boolean updated = false;
+
 
         try
         {
@@ -453,6 +494,30 @@ public class OsgiArtifactIndexCreator
                             ai.bundleRequireBundle = null;
                         }
 
+                        attValue = mainAttributes.getValue(PROVIDE_CAPABILITY);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.bundleProvideCapability = attValue;
+                            updated = true;
+                        } else {
+                            ai.bundleProvideCapability = null;
+                        }
+
+                        attValue = mainAttributes.getValue(REQUIRE_CAPABILITY);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.bundleRequireCapability = attValue;
+                            updated = true;
+                        } else {
+                            ai.bundleRequireCapability = null;
+                        }
+
+                        attValue = mainAttributes.getValue(FRAGMENT_HOST);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.bundleFragmentHost = attValue;
+                            updated = true;
+                        } else {
+                            ai.bundleFragmentHost = null;
+                        }
+
                     }
                 }
             }
@@ -469,7 +534,44 @@ public class OsgiArtifactIndexCreator
                 getLogger().error( "Could not close jar file properly.", e );
             }
         }
+
+        // only calculate sha256 digest for if we are indexing a bundle.
+        if (ai.bundleSymbolicName != null) {
+            String sha256 = computeSha256(f);
+            if (sha256 != null) {
+                ai.sha256 = sha256;
+                updated = true;
+            } else {
+                ai.sha256 = null;
+            }
+        }
+
         return updated;
+    }
+
+    private String computeSha256(File f) throws IOException {
+        String sha256 = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            DigestInputStream in = new DigestInputStream(new FileInputStream(f), digest);
+
+            try {
+                byte buf[] = new byte[8192];
+                while (in.read(buf) >= 0) ;
+                byte digestBytes[] = digest.digest();
+                StringBuilder builder = new StringBuilder(64);
+                for (int b : digestBytes) {
+                    b &= 0xff;
+                    builder.append(String.format("%02x", b));
+                    sha256 = builder.toString();
+                }
+            } finally {
+                in.close();
+            }
+
+        } catch (NoSuchAlgorithmException e) {
+        }
+        return sha256;
     }
 
     @Override
