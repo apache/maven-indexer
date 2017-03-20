@@ -247,6 +247,28 @@ public final class Record
   public static final EntryKey<String> OSGI_REQUIRE_BUNDLE = new EntryKey<String>("Require-Bundle", String.class);
 
   /**
+   * Key of OSGi "Provide-Capability" manifest entry, that contains {@link String}. Extracted by {@code
+   * OsgiArtifactIndexCreator}.
+   */
+  public static final EntryKey<String> OSGI_PROVIDE_CAPABILITY = new EntryKey<String>("Provide-Capability", String.class);
+  /**
+   * Key of OSGi "Require-Capability" manifest entry, that contains {@link String}. Extracted by {@code
+   * OsgiArtifactIndexCreator}.
+   */
+  public static final EntryKey<String> OSGI_REQUIRE_CAPABILITY = new EntryKey<String>("Require-Capability", String.class);
+  /**
+   * Key of OSGi "Fragment-Host" manifest entry, that contains {@link String}. Extracted by {@code
+   * OsgiArtifactIndexCreator}.
+   */
+  public static final EntryKey<String> OSGI_FRAGMENT_HOST = new EntryKey<String>("Fragment-Host", String.class);
+  /**
+   * Key of OSGi "SHA-256" manifest entry, that contains {@link String}. Extracted by {@code
+   * OsgiArtifactIndexCreator}.
+   */
+  public static final EntryKey<String> OSGI_SHA_256 = new EntryKey<String>("SHA-256", String.class);
+
+
+  /**
    * Types of returned records returned from index.
    */
   public enum Type

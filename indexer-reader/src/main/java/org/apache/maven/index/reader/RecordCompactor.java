@@ -137,6 +137,10 @@ public class RecordCompactor
     putIfNotNull(record.get(Record.OSGI_EXPORT_DOCURL), result, "Bundle-DocURL");
     putIfNotNull(record.get(Record.OSGI_IMPORT_PACKAGE), result, "Import-Package");
     putIfNotNull(record.get(Record.OSGI_REQUIRE_BUNDLE), result, "Require-Bundle");
+    putIfNotNull(record.get(Record.OSGI_PROVIDE_CAPABILITY), result, "Provide-Capability");
+    putIfNotNull(record.get(Record.OSGI_REQUIRE_CAPABILITY), result, "Require-Capability");
+    putIfNotNull(record.get(Record.OSGI_FRAGMENT_HOST), result, "Fragment-Host");
+    putIfNotNull(record.get(Record.OSGI_SHA_256), result, "SHA-256");
 
     return result;
   }

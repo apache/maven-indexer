@@ -156,6 +156,10 @@ public class RecordExpander
     putIfNotNull(raw, "Bundle-DocURL", result, Record.OSGI_EXPORT_DOCURL);
     putIfNotNull(raw, "Import-Package", result, Record.OSGI_IMPORT_PACKAGE);
     putIfNotNull(raw, "Require-Bundle", result, Record.OSGI_REQUIRE_BUNDLE);
+    putIfNotNull(raw, "Provide-Capability", result, Record.OSGI_PROVIDE_CAPABILITY);
+    putIfNotNull(raw, "Require-Capability", result, Record.OSGI_REQUIRE_CAPABILITY);
+    putIfNotNull(raw, "Fragment-Host", result, Record.OSGI_FRAGMENT_HOST);
+    putIfNotNull(raw, "SHA-256", result, Record.OSGI_SHA_256);
 
     return result;
   }
