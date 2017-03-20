@@ -49,7 +49,7 @@ import com.google.common.base.Strings;
 public class ArtifactInfo
     extends ArtifactInfoRecord
 {
-    private static final long serialVersionUID = 6028843453477511104L;
+    private static final long serialVersionUID = 6028843453477511105L;
 
     // --
 
@@ -157,7 +157,20 @@ public class ArtifactInfo
      * @since 1.4.2
      */
     public static final String BUNDLE_EXPORT_PACKAGE = OsgiArtifactIndexCreator.FLD_BUNDLE_EXPORT_PACKAGE.getKey();
-
+    /**
+     * OSGI Provide-Capability header
+     *
+     * @since 5.1.2
+     */
+    public static final String BUNDLE_PROVIDE_CAPABILITY =
+            OsgiArtifactIndexCreator.FLD_BUNDLE_PROVIDE_CAPABILITY.getKey();
+    /**
+     * OSGI Provide-Capability header
+     *
+     * @since 5.1.2
+     */
+    public static final String BUNDLE_REQUIRE_CAPABILITY =
+            OsgiArtifactIndexCreator.FLD_BUNDLE_REQUIRE_CAPABILITY.getKey();
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
 
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
@@ -283,11 +296,39 @@ public class ArtifactInfo
      */
     private String bundleRequireBundle;
 
+
+    /**
+     * contains osgi metadata Provide-Capability if available
+     *
+     * @since 5.1.2
+     */
+    private String bundleProvideCapability;
+    /**
+     * contains osgi metadata Require-Capability if available
+     *
+     * @since 5.1.2
+     */
+    private String bundleRequireCapability;
+    /**
+     * sha256 digest (for OSGI repository resolvers)
+     *
+     * @since 5.1.2
+     */
+    private String sha256;
+    /**
+     * bundle Fragment Host
+     *
+     * @since 5.1.2
+     */
+    private String bundleFragmentHost;
+
     private final Map<String, String> attributes = new HashMap<String, String>();
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
 
     private final transient VersionScheme versionScheme;
+
+    private String uinfo = null;
 
 
     public ArtifactInfo()
@@ -1013,4 +1054,35 @@ public class ArtifactInfo
         this.fields = fields;
     }
 
+    public String getBundleProvideCapability() {
+        return bundleProvideCapability;
+    }
+
+    public void setBundleProvideCapability(String bundleProvideCapability) {
+        this.bundleProvideCapability = bundleProvideCapability;
+    }
+
+    public String getBundleRequireCapability() {
+        return bundleRequireCapability;
+    }
+
+    public void setBundleRequireCapability(String bundleRequireCapability) {
+        this.bundleRequireCapability = bundleRequireCapability;
+    }
+
+    public String getSha256() {
+        return sha256;
+    }
+
+    public void setSha256(String sha256) {
+        this.sha256 = sha256;
+    }
+
+    public String getBundleFragmentHost() {
+        return bundleFragmentHost;
+    }
+
+    public void setBundleFragmentHost(String bundleFragmentHost) {
+        this.bundleFragmentHost = bundleFragmentHost;
+    }
 }

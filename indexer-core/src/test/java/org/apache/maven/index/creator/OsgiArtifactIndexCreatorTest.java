@@ -44,11 +44,13 @@ import static org.junit.Assert.assertThat;
 public class OsgiArtifactIndexCreatorTest
     extends AbstractTestSupport
 {
-    protected IndexCreator indexCreator;
-
-    private NexusIndexer nexusIndexer;
-
+    public static final String CORE_4_1_0_SHA256 = "3f71f30d5245ab0c0bcb5261afedbbdcb0549bb36e536345279b616924b0ea4a";
+    public static final String CORE_4_1_0_PROVIDED_CAPABILITY = "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.FeaturesService\"," +
+            "osgi.service;effective:=active;objectClass=\"org.eclipse.equinox.region.RegionDigraph\"," +
+            "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.RegionDigraphPersistence\"";
     static final String INDEX_ID = "osgi-test1";
+    protected IndexCreator indexCreator;
+    private NexusIndexer nexusIndexer;
 
     @Override
     public void setUp()
@@ -109,6 +111,51 @@ public class OsgiArtifactIndexCreatorTest
             ai.getBundleImportPackage() );
     }
 
+    public void testPopulateFragmentHost() throws Exception {
+        File artifact = new File(getBasedir(),
+                "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
+
+        File pom = new File(getBasedir(),
+                "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom");
+        ArtifactInfo artifactInfo =
+                new ArtifactInfo("test", "org.slf4j", "slf4j-simple", "1.7.7", null,"jar");
+
+        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        indexCreator.populateArtifactInfo(artifactContext);
+        assertEquals("slf4j.api", artifactInfo.getBundleFragmentHost());
+
+    }
+
+    public void testPopulateCapabilityAndSha256() throws Exception {
+        File artifact = new File(getBasedir(),
+                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar");
+
+        File pom = new File(getBasedir(),
+                "src/test/repo-with-osgi/org/apache/karaf/features/oorg.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.pom");
+
+        ArtifactInfo artifactInfo =
+                new ArtifactInfo("test", "org.apache.karaf.features", "org.apache.karaf.features.core", "4.1.0", null,"jar");
+
+        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+
+        indexCreator.populateArtifactInfo(artifactContext);
+
+
+        ArtifactInfo ai = artifactContext.getArtifactInfo();
+        assertEquals("org.apache.karaf.features.core", ai.getBundleSymbolicName());
+
+        assertEquals("4.1.0", ai.getBundleVersion());
+
+        assertEquals(
+                CORE_4_1_0_PROVIDED_CAPABILITY,
+                ai.getBundleProvideCapability());
+        assertEquals("osgi.service;effective:=active;filter:=\"(objectClass=org.osgi.service.cm.ConfigurationAdmin)\"," +
+                        "osgi.service;effective:=active;filter:=\"(&(objectClass=org.osgi.service.url.URLStreamHandlerService)(url.handler.protocol=mvn))\"," +
+                        "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.8))\"",
+                ai.getBundleRequireCapability());
+        assertEquals(CORE_4_1_0_SHA256, ai.getSha256());
+
+    }
 
     private void indexOSGIRepo()
         throws Exception
@@ -168,7 +215,7 @@ public class OsgiArtifactIndexCreatorTest
             response = nexusIndexer.searchFlat( request );
 
             // here two results !
-            assertEquals( 2, response.getResults().size() );
+            assertEquals(3, response.getResults().size());
         }
         finally
         {
@@ -203,6 +250,34 @@ public class OsgiArtifactIndexCreatorTest
         finally
         {
             nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
+        }
+
+    }
+
+    public void testIndexOSGIRepoThenSearchWithSha256()
+            throws Exception {
+
+        indexOSGIRepo();
+
+        try {
+
+            BooleanQuery q = new BooleanQuery();
+
+
+            q.add(nexusIndexer.constructQuery(OSGI.SHA256, new StringSearchExpression(CORE_4_1_0_SHA256)),
+                    BooleanClause.Occur.MUST);
+
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
+
+            // here only one results as we use version
+            assertEquals(1, response.getResults().size());
+            ArtifactInfo ai = response.getResults().iterator().next();
+            assertEquals("org.apache.karaf.features.core", ai.getBundleSymbolicName());
+            assertEquals("4.1.0", ai.getBundleVersion());
+            assertEquals(CORE_4_1_0_PROVIDED_CAPABILITY, ai.getBundleProvideCapability());
+        } finally {
+            nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
         }
 
     }
@@ -274,7 +349,7 @@ public class OsgiArtifactIndexCreatorTest
             assertThat(response.getResults().size(), is(1));
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            System.out.println( "ai " + ai );
+            //System.out.println( "ai " + ai );
 
             assertEquals( "org.apache.felix", ai.getGroupId() );
             assertEquals( "org.apache.felix.bundlerepository", ai.getArtifactId() );
