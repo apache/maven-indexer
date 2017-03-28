@@ -262,10 +262,16 @@ public final class Record
    */
   public static final EntryKey<String> OSGI_FRAGMENT_HOST = new EntryKey<String>("Fragment-Host", String.class);
   /**
-   * Key of OSGi "SHA-256" manifest entry, that contains {@link String}. Extracted by {@code
+   * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}. Extracted by {@code
    * OsgiArtifactIndexCreator}.
    */
-  public static final EntryKey<String> OSGI_SHA_256 = new EntryKey<String>("SHA-256", String.class);
+  public static final EntryKey<String> OSGI_BREE = new EntryKey<String>("Bundle-RequiredExecutionEnvironment", String.class);
+
+  /**
+   * Key for SHA-256 checksum  needed for OSGI content capability that contains {@link String}. Extracted by {@code
+   * OsgiArtifactIndexCreator}.
+   */
+  public static final EntryKey<String> SHA_256 = new EntryKey<String>("sha256", String.class);
 
 
   /**
