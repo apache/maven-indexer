@@ -272,6 +272,14 @@ public class ArtifactInfo
      * @since 5.1.2
      */
     public String bundleFragmentHost;
+
+    /**
+     * bundle requiredExecutionEnvironment
+     *
+     * @since 5.1.2
+     */
+    public String bundleRequiredExecutionEnvironment;
+
     private transient Version artifactVersion;
     private transient float luceneScore;
     private String uinfo = null;

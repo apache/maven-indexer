@@ -120,9 +120,15 @@ public class OsgiArtifactIndexCreator
             new IndexerField(OSGI.REQUIRE_CAPABILITY, IndexerFieldVersion.V4, REQUIRE_CAPABILITY, "Require-Capability (indexed, stored)",
                     Field.Store.YES, Field.Index.ANALYZED);
     private static final String FRAGMENT_HOST = "Fragment-Host";
+
     public static final IndexerField FLD_BUNDLE_FRAGMENT_HOST =
             new IndexerField(OSGI.FRAGMENT_HOST, IndexerFieldVersion.V4, FRAGMENT_HOST, "Fragment-Host (indexed, stored)",
                     Field.Store.YES, Field.Index.ANALYZED);
+    public static final String BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = "Bundle-RequiredExecutionEnvironment";
+    public static final IndexerField FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT =
+            new IndexerField(OSGI.BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, IndexerFieldVersion.V4, BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, "Fragment-Host (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+
 
     public OsgiArtifactIndexCreator() {
         super(ID);
@@ -133,7 +139,8 @@ public class OsgiArtifactIndexCreator
         return Arrays.asList(FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
                 FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
                 FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE,
-                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST, FLD_SHA256);
+                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST, FLD_SHA256,
+                FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT);
     }
 
     public void populateArtifactInfo( ArtifactContext artifactContext )
@@ -214,6 +221,10 @@ public class OsgiArtifactIndexCreator
 
         if (artifactInfo.bundleFragmentHost != null) {
             document.add(FLD_BUNDLE_FRAGMENT_HOST.toField(artifactInfo.bundleFragmentHost));
+        }
+
+        if (artifactInfo.bundleRequiredExecutionEnvironment != null) {
+            document.add(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.toField(artifactInfo.bundleRequiredExecutionEnvironment));
         }
 
         if (artifactInfo.sha256 != null) {
@@ -345,6 +356,15 @@ public class OsgiArtifactIndexCreator
 
         if (bundleFragmentHost != null) {
             artifactInfo.bundleFragmentHost = bundleFragmentHost;
+
+            updated = true;
+
+        }
+
+        String bundleRequiredExecutionEnvironment = document.get(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.getKey());
+
+        if (bundleRequiredExecutionEnvironment != null) {
+            artifactInfo.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
 
             updated = true;
 
@@ -508,6 +528,14 @@ public class OsgiArtifactIndexCreator
                             updated = true;
                         } else {
                             ai.bundleRequireCapability = null;
+                        }
+
+                        attValue = mainAttributes.getValue(BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.bundleRequiredExecutionEnvironment = attValue;
+                            updated = true;
+                        } else {
+                            ai.bundleRequiredExecutionEnvironment = null;
                         }
 
                         attValue = mainAttributes.getValue(FRAGMENT_HOST);
