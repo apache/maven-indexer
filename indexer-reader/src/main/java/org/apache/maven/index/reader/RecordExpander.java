@@ -126,7 +126,8 @@ public class RecordExpander
     putIfNotNull(raw, "Provide-Capability", result, Record.OSGI_PROVIDE_CAPABILITY);
     putIfNotNull(raw, "Require-Capability", result, Record.OSGI_REQUIRE_CAPABILITY);
     putIfNotNull(raw, "Fragment-Host", result, Record.OSGI_FRAGMENT_HOST);
-    putIfNotNull(raw, "SHA-256", result, Record.OSGI_SHA_256);
+    putIfNotNull(raw, "Bundle-RequiredExecutionEnvironment", result, Record.OSGI_BREE);
+    putIfNotNull(raw, "sha256", result, Record.SHA_256);
 
     return result;
   }
