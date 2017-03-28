@@ -90,4 +90,12 @@ public interface OSGI
      */
     final Field FRAGMENT_HOST = new Field(null, OSGI_NAMESPACE, "fragmentHost", "Bundle Fragment-Host");
 
+    /**
+     * used to hold the Fragment Host header  for an OSGI Fragment bundle.
+     *
+     * @since 5.1.2
+     */
+    final Field BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = new Field(null, OSGI_NAMESPACE, "bree",
+            "Bundle Required Execution Environment");
+
 }

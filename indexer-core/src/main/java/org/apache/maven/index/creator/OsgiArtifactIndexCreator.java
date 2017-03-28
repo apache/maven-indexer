@@ -70,7 +70,7 @@ public class OsgiArtifactIndexCreator
 {
     public static final String ID = "osgi-metadatas";
     public static final IndexerField FLD_SHA256 =
-            new IndexerField(OSGI.SHA256, IndexerFieldVersion.V4, "SHA-256", "SHA-256 (not analyzed, stored)",
+            new IndexerField(OSGI.SHA256, IndexerFieldVersion.V4, "sha256", "SHA-256 (not analyzed, stored)",
                     Field.Store.YES, Field.Index.NOT_ANALYZED);
     private static final String BSN = "Bundle-SymbolicName";
 
@@ -148,6 +148,12 @@ public class OsgiArtifactIndexCreator
             new IndexerField(OSGI.FRAGMENT_HOST, IndexerFieldVersion.V4, FRAGMENT_HOST, "Fragment-Host (indexed, stored)",
                     Field.Store.YES, Field.Index.ANALYZED);
 
+    private static final String BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = "Bundle-RequiredExecutionEnvironment";
+    public static final IndexerField FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT =
+            new IndexerField(OSGI.BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, IndexerFieldVersion.V4, BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT,
+                    "Bundle-RequiredExecutionEnvironment (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+
 
 
 
@@ -156,7 +162,8 @@ public class OsgiArtifactIndexCreator
         return Arrays.asList(FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
                 FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
                 FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE,
-                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST, FLD_SHA256);
+                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST,
+                FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, FLD_SHA256);
     }
 
     public OsgiArtifactIndexCreator()
@@ -242,6 +249,11 @@ public class OsgiArtifactIndexCreator
 
         if (artifactInfo.getBundleFragmentHost() != null) {
             document.add(FLD_BUNDLE_FRAGMENT_HOST.toField(artifactInfo.getBundleFragmentHost()));
+        }
+
+        String bree = artifactInfo.getBundleRequiredExecutionEnvironment();
+        if (bree != null) {
+            document.add(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.toField(bree));
         }
 
         if (artifactInfo.getSha256() != null) {
@@ -373,6 +385,15 @@ public class OsgiArtifactIndexCreator
 
         if (bundleFragmentHost != null) {
             artifactInfo.setBundleFragmentHost(bundleFragmentHost);
+
+            updated = true;
+
+        }
+
+        String bundleRequiredExecutionEnvironment = document.get(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.getKey());
+
+        if (bundleRequiredExecutionEnvironment != null) {
+            artifactInfo.setBundleRequiredExecutionEnvironment(bundleRequiredExecutionEnvironment);
 
             updated = true;
 
@@ -544,6 +565,14 @@ public class OsgiArtifactIndexCreator
                             updated = true;
                         } else {
                             ai.setBundleFragmentHost(null);
+                        }
+
+                        attValue = mainAttributes.getValue(BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.setBundleRequiredExecutionEnvironment(attValue);
+                            updated = true;
+                        } else {
+                            ai.setBundleRequiredExecutionEnvironment(null);
                         }
 
                     }

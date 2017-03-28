@@ -322,6 +322,14 @@ public class ArtifactInfo
      */
     private String bundleFragmentHost;
 
+
+    /**
+     * bundle required execution environment
+     *
+     * @since 5.1.2
+     */
+    private String bundleRequiredExecutionEnvironment;
+
     private final Map<String, String> attributes = new HashMap<String, String>();
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
@@ -1085,4 +1093,13 @@ public class ArtifactInfo
     public void setBundleFragmentHost(String bundleFragmentHost) {
         this.bundleFragmentHost = bundleFragmentHost;
     }
+
+    public String getBundleRequiredExecutionEnvironment() {
+        return bundleRequiredExecutionEnvironment;
+    }
+
+    public void setBundleRequiredExecutionEnvironment(String bundleRequiredExecutionEnvironment) {
+        this.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
+    }
+
 }
