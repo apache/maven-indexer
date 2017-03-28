@@ -40,14 +40,10 @@ import java.util.List;
 public class SearchWithAnEmptyIndexTest
     extends PlexusTestCase
 {
-    protected List<IndexCreator> indexCreators;
-
-    private NexusIndexer nexusIndexer;
-
     static final String INDEX_ID1 = "osgi-test1";
-
     static final String INDEX_ID2 = "empty-repo";
-
+    protected List<IndexCreator> indexCreators;
+    private NexusIndexer nexusIndexer;
     private IndexPacker indexPacker;
 
     @Override
@@ -119,7 +115,7 @@ public class SearchWithAnEmptyIndexTest
 
             response = nexusIndexer.searchFlat( request );
 
-            assertEquals( 2, response.getResults().size() );
+            assertEquals(3, response.getResults().size());
 
             String term = "org.apache.karaf.features";
 
@@ -143,7 +139,7 @@ public class SearchWithAnEmptyIndexTest
 
             System.out.println( " result size with term usage " + response.getResults().size() );
 
-            assertEquals( 3, response.getResults().size() );
+            assertEquals(4, response.getResults().size());
 
         }
         finally

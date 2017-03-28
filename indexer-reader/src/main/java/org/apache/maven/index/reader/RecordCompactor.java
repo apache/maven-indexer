@@ -36,31 +36,6 @@ import static org.apache.maven.index.reader.Utils.nvl;
  */
 public class RecordCompactor
 {
-  /**
-   * Compacts {@link Record} into low level MI record with all the encoded fields as physically present in MI binary
-   * chunk.
-   */
-  public Map<String, String> apply(final Record record) {
-    if (Type.DESCRIPTOR == record.getType()) {
-      return compactDescriptor(record);
-    }
-    else if (Type.ALL_GROUPS == record.getType()) {
-      return compactAllGroups(record);
-    }
-    else if (Type.ROOT_GROUPS == record.getType()) {
-      return compactRootGroups(record);
-    }
-    else if (Type.ARTIFACT_REMOVE == record.getType()) {
-      return compactDeletedArtifact(record);
-    }
-    else if (Type.ARTIFACT_ADD == record.getType()) {
-      return compactAddedArtifact(record);
-    }
-    else {
-      throw new IllegalArgumentException("Unknown record: " + record);
-    }
-  }
-
   private static Map<String, String> compactDescriptor(final Record record) {
     final Map<String, String> result = new HashMap<String, String>();
     result.put("DESCRIPTOR", "NexusIndex");
@@ -137,6 +112,11 @@ public class RecordCompactor
     putIfNotNull(record.get(Record.OSGI_EXPORT_DOCURL), result, "Bundle-DocURL");
     putIfNotNull(record.get(Record.OSGI_IMPORT_PACKAGE), result, "Import-Package");
     putIfNotNull(record.get(Record.OSGI_REQUIRE_BUNDLE), result, "Require-Bundle");
+    putIfNotNull(record.get(Record.OSGI_PROVIDE_CAPABILITY), result, "Provide-Capability");
+    putIfNotNull(record.get(Record.OSGI_REQUIRE_CAPABILITY), result, "Require-Capability");
+    putIfNotNull(record.get(Record.OSGI_FRAGMENT_HOST), result, "Fragment-Host");
+    putIfNotNull(record.get(Record.OSGI_BREE), result, "Bundle-RequiredExecutionEnvironment");
+    putIfNotNull(record.get(Record.SHA_256), result, "sha256");
 
     return result;
   }
@@ -202,6 +182,26 @@ public class RecordCompactor
         sb.append(FIELD_SEPARATOR).append(source[i]);
       }
       target.put(targetName, sb.toString());
+    }
+  }
+
+  /**
+   * Compacts {@link Record} into low level MI record with all the encoded fields as physically present in MI binary
+   * chunk.
+   */
+  public Map<String, String> apply(final Record record) {
+    if (Type.DESCRIPTOR == record.getType()) {
+      return compactDescriptor(record);
+    } else if (Type.ALL_GROUPS == record.getType()) {
+      return compactAllGroups(record);
+    } else if (Type.ROOT_GROUPS == record.getType()) {
+      return compactRootGroups(record);
+    } else if (Type.ARTIFACT_REMOVE == record.getType()) {
+      return compactDeletedArtifact(record);
+    } else if (Type.ARTIFACT_ADD == record.getType()) {
+      return compactAddedArtifact(record);
+    } else {
+      throw new IllegalArgumentException("Unknown record: " + record);
     }
   }
 }
