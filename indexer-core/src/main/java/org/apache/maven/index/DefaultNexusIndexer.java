@@ -279,7 +279,7 @@ public class DefaultNexusIndexer
         IndexingContext tmpContext = null;
         try
         {
-            final FSDirectory directory = FSDirectory.open( tmpDir );
+            final FSDirectory directory = FSDirectory.open( tmpDir.toPath() );
             if ( update )
             {
                 IndexUtils.copyDirectory( context.getIndexDirectory(), directory );

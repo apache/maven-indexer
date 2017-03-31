@@ -34,6 +34,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
@@ -242,7 +243,7 @@ public class IndexDataWriter
     public void writeField( IndexableField field )
         throws IOException
     {
-        int flags = ( field.fieldType().indexed() ? F_INDEXED : 0 ) //
+        int flags = ( field.fieldType().indexOptions() != IndexOptions.NONE  ? F_INDEXED : 0 ) //
             + ( field.fieldType().tokenized() ? F_TOKENIZED : 0 ) //
             + ( field.fieldType().stored() ? F_STORED : 0 ); //
         // + ( false ? F_COMPRESSED : 0 ); // Compressed not supported anymore

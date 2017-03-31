@@ -418,7 +418,7 @@ public class NexusIndexerCli
         final List<IndexCreator> indexers = getIndexers( cli, plexus );
 
         try (BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
-             FSDirectory directory = FSDirectory.open( outputFolder ))
+             FSDirectory directory = FSDirectory.open( outputFolder.toPath() ))
         {
             DefaultIndexUpdater.unpackIndexData( is, directory, (IndexingContext) Proxy.newProxyInstance(
                 getClass().getClassLoader(), new Class[] { IndexingContext.class }, new PartialImplementation()

@@ -356,7 +356,7 @@ public class FullIndexNexusIndexerTest
 
         File newIndex = new File( getBasedir(), "target/test-new" );
 
-        Directory newIndexDir = FSDirectory.open( newIndex );
+        Directory newIndexDir = FSDirectory.open( newIndex.toPath() );
 
         IndexingContext newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
@@ -397,7 +397,7 @@ public class FullIndexNexusIndexerTest
 
         newContext.close( false );
 
-        newIndexDir = FSDirectory.open( newIndex );
+        newIndexDir = FSDirectory.open( newIndex.toPath() );
 
         newContext =
             nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );

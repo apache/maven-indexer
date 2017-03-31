@@ -40,7 +40,7 @@ public interface FSDirectoryFactory
         public FSDirectory open( File indexDir )
             throws IOException
         {
-            return FSDirectory.open( indexDir );
+            return FSDirectory.open( indexDir.toPath() );
         }
     };
 

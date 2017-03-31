@@ -41,26 +41,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.IndexOutput;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -71,7 +61,6 @@ import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,10 +194,14 @@ public class DefaultIndexUpdater
         {
             Date timestamp = null;
 
+            Set<String> rootGroups = null;
+            Set<String> allGroups = null;
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
-                timestamp = unpackIndexData( is, directory, //
-                    updateRequest.getIndexingContext() );
+                IndexDataReadResult result = unpackIndexData( is, directory, updateRequest.getIndexingContext() );
+                timestamp = result.getTimestamp();
+                rootGroups = result.getRootGroups();
+                allGroups = result.getAllGroups();
             }
             else
             {
@@ -227,7 +220,7 @@ public class DefaultIndexUpdater
             }
             else
             {
-                updateRequest.getIndexingContext().replace( directory );
+                updateRequest.getIndexingContext().replace( directory, rootGroups, allGroups );
             }
             if ( sideEffects != null && sideEffects.size() > 0 )
             {
@@ -260,7 +253,7 @@ public class DefaultIndexUpdater
         IndexWriter w = null;
         try
         {
-            r = IndexReader.open( directory );
+            r = DirectoryReader.open( directory );
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
             
             Bits liveDocs = MultiFields.getLiveDocs(r);
@@ -296,7 +289,6 @@ public class DefaultIndexUpdater
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
-            w.forceMerge(4);
             w.commit();
         }
         finally
@@ -381,7 +373,7 @@ public class DefaultIndexUpdater
      * @param w a writer to save index data
      * @param ics a collection of index creators for updating unpacked documents.
      */
-    public static Date unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
+    public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
         throws IOException
     {
         NexusIndexWriter w = new NexusIndexWriter( d, new NexusAnalyzer(), true );
@@ -389,9 +381,7 @@ public class DefaultIndexUpdater
         {
             IndexDataReader dr = new IndexDataReader( is );
 
-            IndexDataReadResult result = dr.readIndex( w, context );
-
-            return result.getTimestamp();
+            return dr.readIndex( w, context );
         }
         finally
         {

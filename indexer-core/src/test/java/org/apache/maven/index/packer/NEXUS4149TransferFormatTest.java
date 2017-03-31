@@ -19,9 +19,11 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,7 +142,7 @@ public class NEXUS4149TransferFormatTest
         }
 
         // read it up and verify, but stay "low level", directly consume the GZ file and count
-        FileInputStream fis = new FileInputStream( new File( packTargetDir, "nexus-maven-repository-index.gz" ) );
+        InputStream fis = new BufferedInputStream( new FileInputStream( new File( packTargetDir, "nexus-maven-repository-index.gz" ) ) );
         IndexDataReader reader = new IndexDataReader( fis );
         try
         {

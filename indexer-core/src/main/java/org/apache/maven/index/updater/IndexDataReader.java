@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
 import com.google.common.base.Strings;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -51,19 +53,19 @@ public class IndexDataReader
     public IndexDataReader( final InputStream is )
         throws IOException
     {
-        BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
-        bis.mark( 2 );
+        is.mark( 2 );
         InputStream data;
-        if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
+        if ( is.read() == 0x1f && is.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
-            bis.reset();
-            data = new GZIPInputStream( bis, 1024 * 8 );
+            is.reset();
+            data = new BufferedInputStream(new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
         }
         else
         {
+            BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
             bis.reset();
             data = bis;
         }
@@ -88,21 +90,32 @@ public class IndexDataReader
         int n = 0;
 
         Document doc;
+        Set<String> rootGroups = new LinkedHashSet<>();
+        Set<String> allGroups = new LinkedHashSet<>();
+
         while ( ( doc = readDocument() ) != null )
         {
-            w.addDocument( IndexUtils.updateDocument( doc, context, false ) );
+            ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
+            if(ai != null) {
+                w.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
 
+                rootGroups.add( ai.getRootGroup() );
+                allGroups.add( ai.getGroupId() );
+
+            } else {
+                w.addDocument( doc );
+            }
             n++;
         }
 
         w.commit();
 
-        w.forceMerge(1);
-        w.commit();
-
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
         result.setTimestamp( date );
+        result.setRootGroups( rootGroups );
+        result.setAllGroups( allGroups );
+
         return result;
     }
 
@@ -291,6 +304,10 @@ public class IndexDataReader
 
         private int documentCount;
 
+        private Set<String> rootGroups;
+
+        private Set<String> allGroups;
+
         public void setDocumentCount( int documentCount )
         {
             this.documentCount = documentCount;
@@ -309,6 +326,26 @@ public class IndexDataReader
         public Date getTimestamp()
         {
             return timestamp;
+        }
+
+        public void setRootGroups(Set<String> rootGroups)
+        {
+            this.rootGroups = rootGroups;
+        }
+
+        public Set<String> getRootGroups()
+        {
+            return rootGroups;
+        }
+
+        public void setAllGroups(Set<String> allGroups)
+        {
+            this.allGroups = allGroups;
+        }
+
+        public Set<String> getAllGroups()
+        {
+            return allGroups;
         }
 
     }

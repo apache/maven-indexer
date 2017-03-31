@@ -29,7 +29,6 @@ import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.SerialMergeScheduler;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.util.Version;
 
 /**
  * An extension of <a
@@ -43,21 +42,11 @@ public class NexusIndexWriter
         IndexWriterConfig create(Analyzer analyzer);
     }
 
-    public static IndexWriterConfigFactory CONFIG_FACTORY = new IndexWriterConfigFactory() {
-        public IndexWriterConfig create(final Analyzer analyzer) {
-            IndexWriterConfig config = new IndexWriterConfig( Version.LUCENE_46, analyzer );
-            config.setRAMBufferSizeMB( 2.0 ); // old default
-            config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
-            config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
-            return config;
-        }
-    };
-
     @Deprecated
     public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
         throws CorruptIndexException, LockObtainFailedException, IOException
     {
-        this(directory, CONFIG_FACTORY.create(analyzer).setOpenMode(create ? OpenMode.CREATE : OpenMode.APPEND));
+        this(directory, new IndexWriterConfig(analyzer));
     }
 
     public NexusIndexWriter( final Directory directory, final IndexWriterConfig config )
@@ -70,6 +59,11 @@ public class NexusIndexWriter
 
     public static IndexWriterConfig defaultConfig()
     {
-        return CONFIG_FACTORY.create(new NexusAnalyzer());
+        final IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
+        // default open mode is CreateOrAppend which suits us
+        config.setRAMBufferSizeMB( 2.0 ); // old default
+        config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
+        config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
+        return config;
     }
 }

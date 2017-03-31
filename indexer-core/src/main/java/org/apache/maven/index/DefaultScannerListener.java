@@ -261,7 +261,7 @@ public class DefaultScannerListener
         {
             for ( String uinfo : uinfos )
             {
-                TopScoreDocCollector collector = TopScoreDocCollector.create( 1, false );
+                TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
 
                 indexSearcher.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
 

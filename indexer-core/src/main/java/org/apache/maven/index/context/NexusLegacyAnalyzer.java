@@ -19,15 +19,11 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.IOException;
-import java.io.Reader;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.AnalyzerWrapper;
 import org.apache.lucene.analysis.util.CharTokenizer;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
@@ -38,29 +34,14 @@ import org.apache.maven.index.ArtifactInfo;
  * @author Jason van Zyl
  */
 public final class NexusLegacyAnalyzer
-    extends Analyzer
+    extends AnalyzerWrapper
 {
-    private static final Analyzer DEFAULT_ANALYZER = new StandardAnalyzer( Version.LUCENE_46 );
-    
-    @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader)
-    {
-        try
+    private static final Analyzer DEFAULT_ANALYZER = new StandardAnalyzer();
+    private static final Analyzer LETTER_OR_DIGIT_ANALYZER = new Analyzer() {
+        @Override
+        protected TokenStreamComponents createComponents(final String fieldName)
         {
-            return new TokenStreamComponents((Tokenizer) tokenizer(fieldName, reader));
-        }
-        catch (IOException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-    }
-
-
-    protected TokenStream tokenizer( String field, final Reader reader ) throws IOException
-    {
-        if ( !isTextField( field ) )
-        {
-            return new CharTokenizer(Version.LUCENE_46, reader )
+            return new TokenStreamComponents(new CharTokenizer()
             {
                 @Override
                 protected boolean isTokenChar(int c )
@@ -73,11 +54,24 @@ public final class NexusLegacyAnalyzer
                 {
                     return Character.toLowerCase( c );
                 }
-            };
+            });
         }
-        else
+    };
+
+    public NexusLegacyAnalyzer()
+    {
+        super(PER_FIELD_REUSE_STRATEGY);
+    }
+
+    @Override
+    protected Analyzer getWrappedAnalyzer(String fieldName)
+    {
+        if (!isTextField( fieldName ))
         {
-            return DEFAULT_ANALYZER.tokenStream(field, reader );
+            return LETTER_OR_DIGIT_ANALYZER;
+        } else
+        {
+            return DEFAULT_ANALYZER;
         }
     }
 
@@ -87,6 +81,4 @@ public final class NexusLegacyAnalyzer
             || ArtifactInfo.NAMES.equals( field );
 
     }
-
-    
 }

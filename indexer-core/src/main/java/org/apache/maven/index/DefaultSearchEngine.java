@@ -330,7 +330,7 @@ public class DefaultSearchEngine
         if ( AbstractSearchRequest.UNDEFINED != topHitCount )
         {
             // count is set, simply just execute it as-is
-            final TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
+            final TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount );
 
             indexSearcher.search( query, hits );
 
@@ -342,7 +342,7 @@ public class DefaultSearchEngine
             topHitCount = 1000;
 
             // perform search
-            TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount, true );
+            TopScoreDocCollector hits = TopScoreDocCollector.create( topHitCount );
             indexSearcher.search( query, hits );
 
             // check total hits against, does it fit?
@@ -361,7 +361,7 @@ public class DefaultSearchEngine
                 }
 
                 // redo all, but this time with correct numbers
-                hits = TopScoreDocCollector.create( topHitCount, true );
+                hits = TopScoreDocCollector.create( topHitCount );
                 indexSearcher.search( query, hits );
             }
 

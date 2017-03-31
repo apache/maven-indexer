@@ -79,7 +79,7 @@ public class MergedIndexingContext
                                   boolean searchable, ContextMemberProvider membersProvider )
         throws IOException
     {
-        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile ), searchable );
+        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ), searchable );
 
         setIndexDirectoryFile( indexDirectoryFile );
     }
@@ -93,7 +93,7 @@ public class MergedIndexingContext
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory() );
+            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory().toFile() );
         }
     }
 
@@ -277,6 +277,12 @@ public class MergedIndexingContext
     }
 
     public void replace( Directory directory )
+        throws IOException
+    {
+        // noop
+    }
+
+    public void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
         throws IOException
     {
         // noop
