@@ -238,7 +238,7 @@ under the License.
         <artifactId>aether-util</artifactId>
         <version>${aether.version}</version>
       </dependency>
-      
+
       <!-- Maven -->
       <dependency>
         <groupId>org.apache.maven</groupId>
@@ -341,7 +341,7 @@ under the License.
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.12</version>
         <scope>test</scope>
       </dependency>
 
@@ -378,6 +378,7 @@ under the License.
   <modules>
     <module>indexer-core</module>
     <module>indexer-cli</module>
+    <module>indexer-reader</module>
     <module>indexer-examples</module>
   </modules>
 
@@ -440,11 +441,33 @@ under the License.
         <artifactId>apache-rat-plugin</artifactId>
         <executions>
           <execution>
-            <id>rat-verify</id>
-            <phase>test</phase>
+            <id>rat-check</id>
+            <phase>validate</phase>
             <goals>
               <goal>check</goal>
             </goals>
+            <configuration>
+              <excludes>
+                <exclude>README.md</exclude>
+                <exclude>.gitignore</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>**/packageinfo</exclude>
+                <exclude>.git/**</exclude>
+                <exclude>.idea/**</exclude>
+                <exclude>**/*.iml</exclude>
+                <!-- exlude some test resources from rat analysis -->
+                <exclude>src/test/**/*.sha1</exclude>
+                <exclude>src/test/**/*.md5</exclude>
+                <exclude>src/test/**/*.xml</exclude>
+                <exclude>src/test/**/*.pom</exclude>
+                <exclude>src/test/**/*.asc</exclude>
+                <exclude>src/test/**/*.properties</exclude>
+                <exclude>src/test/**/*.swc</exclude>
+                <exclude>src/test/**/*.txt</exclude>
+                <exclude>src/test/**/*.filename</exclude>
+                <exclude>src/test/**/.placeholder</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -501,7 +524,7 @@ under the License.
             </excludes>
           </configuration>
         </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build 
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
           itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>

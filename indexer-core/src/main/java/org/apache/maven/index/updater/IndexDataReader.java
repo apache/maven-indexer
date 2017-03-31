@@ -9,7 +9,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -41,18 +41,17 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * An index data reader used to parse transfer index format.
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class IndexDataReader
 {
     private final DataInputStream dis;
 
-    public IndexDataReader( InputStream is )
+    public IndexDataReader( final InputStream is )
         throws IOException
     {
         BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
@@ -61,7 +60,7 @@ public class IndexDataReader
         if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
             bis.reset();
-            data = new GZIPInputStream( bis, 2 * 1024 );
+            data = new GZIPInputStream( bis, 1024 * 8 );
         }
         else
         {
@@ -97,7 +96,7 @@ public class IndexDataReader
         }
 
         w.commit();
-        
+
         w.forceMerge(1);
         w.commit();
 
@@ -317,7 +316,7 @@ public class IndexDataReader
     /**
      * Reads index content by using a visitor. <br>
      * The visitor is called for each read documents after it has been populated with Lucene fields.
-     * 
+     *
      * @param visitor an index data visitor
      * @param context indexing context
      * @return statistics about read data
@@ -361,7 +360,7 @@ public class IndexDataReader
 
         /**
          * Called on each read document. The document is already populated with fields.
-         * 
+         *
          * @param document read document
          */
         void visitDocument( Document document );
