@@ -415,14 +415,11 @@ public class NexusIndexerCli
 
         long tstart = System.currentTimeMillis();
 
-        final FSDirectory directory = FSDirectory.open( outputFolder );
-
         final List<IndexCreator> indexers = getIndexers( cli, plexus );
 
-        BufferedInputStream is = null;
-        try
+        try (BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
+             FSDirectory directory = FSDirectory.open( outputFolder.toPath() ))
         {
-            is = new BufferedInputStream( new FileInputStream( indexArchive ) );
             DefaultIndexUpdater.unpackIndexData( is, directory, (IndexingContext) Proxy.newProxyInstance(
                 getClass().getClassLoader(), new Class[] { IndexingContext.class }, new PartialImplementation()
                 {
@@ -433,14 +430,6 @@ public class NexusIndexerCli
                 } )
 
             );
-        }
-        finally
-        {
-            IOUtil.close( is );
-            if ( directory != null )
-            {
-                directory.close();
-            }
         }
 
         if ( !quiet )

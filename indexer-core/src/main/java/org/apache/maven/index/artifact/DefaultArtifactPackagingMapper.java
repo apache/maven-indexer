@@ -104,12 +104,8 @@ public class DefaultArtifactPackagingMapper
 
                         Properties userMappings = new Properties();
 
-                        FileInputStream fis = null;
-
-                        try
+                        try (FileInputStream fis= new FileInputStream( propertiesFile ))
                         {
-                            fis = new FileInputStream( propertiesFile );
-
                             userMappings.load( fis );
 
                             if ( userMappings.keySet().size() > 0 )
@@ -130,10 +126,6 @@ public class DefaultArtifactPackagingMapper
                         {
                             getLogger().warn(
                                 "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
-                        }
-                        finally
-                        {
-                            IOUtil.close( fis );
                         }
 
                     }

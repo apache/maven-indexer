@@ -221,20 +221,12 @@ public class DefaultIndexPacker
             targetArchive.delete();
         }
 
-        OutputStream os = null;
-
-        try
+        try( OutputStream os = new FileOutputStream( targetArchive ) )
         {
-            os = new FileOutputStream( targetArchive );
-
             IndexDataWriter dw = new IndexDataWriter( os );
             dw.write( request.getContext(), request.getIndexReader(), docIndexes );
 
             os.flush();
-        }
-        finally
-        {
-            IOUtil.close( os );
         }
     }
 
@@ -247,28 +239,14 @@ public class DefaultIndexPacker
 
         info.setProperty( IndexingContext.INDEX_ID, request.getContext().getId() );
 
-        OutputStream os = null;
-
-        try
+        try (OutputStream os = new FileOutputStream( propertyFile ))
         {
-            os = new FileOutputStream( propertyFile );
-
             info.store( os, null );
         }
-        finally
-        {
-            IOUtil.close( os );
-        }
 
-        try
+        try (OutputStream os = new FileOutputStream( targetPropertyFile ))
         {
-            os = new FileOutputStream( targetPropertyFile );
-
             info.store( os, null );
-        }
-        finally
-        {
-            IOUtil.close( os );
         }
 
         if ( request.isCreateChecksumFiles() )

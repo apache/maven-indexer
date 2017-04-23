@@ -150,7 +150,11 @@ public class DefaultIndexUpdaterTest
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
             assertEquals( tempContent.toString(), 3, tempContent.size() );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -193,7 +197,11 @@ public class DefaultIndexUpdaterTest
             indexer.deleteArtifactFromIndex(
                 createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.4", null ), tempContext );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -267,7 +275,11 @@ public class DefaultIndexUpdaterTest
             indexer.addArtifactToIndex(
                 createArtifactContext( repositoryId, "org.slf4j.foo", "jcl104-over-slf4j", "1.4.2", null ), context );
 
-            RAMDirectory tempDir2 = new RAMDirectory( tempContext.getIndexDirectory(), IOContext.DEFAULT );
+            RAMDirectory tempDir2 = new RAMDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll())
+            {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
 
             indexer.removeIndexingContext( tempContext, false );
 
@@ -408,7 +420,7 @@ public class DefaultIndexUpdaterTest
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 oneOf( mockFetcher ).disconnect();
             }
@@ -566,7 +578,7 @@ public class DefaultIndexUpdaterTest
                 will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 never( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
@@ -810,7 +822,7 @@ public class DefaultIndexUpdaterTest
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
-                oneOf( tempContext ).replace( with( any( Directory.class ) ) );
+                oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
                 oneOf( mockFetcher ).disconnect();
             }
@@ -923,18 +935,13 @@ public class DefaultIndexUpdaterTest
         {
             Properties properties = getProperties();
 
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
-            try
+            try (ByteArrayOutputStream buf = new ByteArrayOutputStream())
             {
                 properties.store( buf, null );
                 buf.flush();
-            }
-            finally
-            {
-                IOUtil.close( buf );
+                return new ByteArrayInputStream( buf.toByteArray() );
             }
 
-            return new ByteArrayInputStream( buf.toByteArray() );
         }
 
         abstract Properties getProperties();
@@ -952,16 +959,9 @@ public class DefaultIndexUpdaterTest
 
             this.file = new File( basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
 
-            FileOutputStream fos = null;
-            try
+            try ( FileOutputStream fos = new FileOutputStream( this.file ))
             {
-                fos = new FileOutputStream( this.file );
-
                 properties.store( fos, "" );
-            }
-            finally
-            {
-                IOUtil.close( fos );
             }
         }
 

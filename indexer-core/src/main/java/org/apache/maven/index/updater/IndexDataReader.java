@@ -9,7 +9,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.zip.GZIPInputStream;
 
 import com.google.common.base.Strings;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -41,30 +43,29 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * An index data reader used to parse transfer index format.
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class IndexDataReader
 {
     private final DataInputStream dis;
 
-    public IndexDataReader( InputStream is )
+    public IndexDataReader( final InputStream is )
         throws IOException
     {
-        BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
-        bis.mark( 2 );
+        is.mark( 2 );
         InputStream data;
-        if ( bis.read() == 0x1f && bis.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
+        if ( is.read() == 0x1f && is.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
-            bis.reset();
-            data = new GZIPInputStream( bis, 2 * 1024 );
+            is.reset();
+            data = new BufferedInputStream(new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
         }
         else
         {
+            BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
             bis.reset();
             data = bis;
         }
@@ -89,21 +90,32 @@ public class IndexDataReader
         int n = 0;
 
         Document doc;
+        Set<String> rootGroups = new LinkedHashSet<>();
+        Set<String> allGroups = new LinkedHashSet<>();
+
         while ( ( doc = readDocument() ) != null )
         {
-            w.addDocument( IndexUtils.updateDocument( doc, context, false ) );
+            ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
+            if(ai != null) {
+                w.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
 
+                rootGroups.add( ai.getRootGroup() );
+                allGroups.add( ai.getGroupId() );
+
+            } else {
+                w.addDocument( doc );
+            }
             n++;
         }
 
-        w.commit();
-        
-        w.forceMerge(1);
         w.commit();
 
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
         result.setTimestamp( date );
+        result.setRootGroups( rootGroups );
+        result.setAllGroups( allGroups );
+
         return result;
     }
 
@@ -292,6 +304,10 @@ public class IndexDataReader
 
         private int documentCount;
 
+        private Set<String> rootGroups;
+
+        private Set<String> allGroups;
+
         public void setDocumentCount( int documentCount )
         {
             this.documentCount = documentCount;
@@ -312,12 +328,32 @@ public class IndexDataReader
             return timestamp;
         }
 
+        public void setRootGroups(Set<String> rootGroups)
+        {
+            this.rootGroups = rootGroups;
+        }
+
+        public Set<String> getRootGroups()
+        {
+            return rootGroups;
+        }
+
+        public void setAllGroups(Set<String> allGroups)
+        {
+            this.allGroups = allGroups;
+        }
+
+        public Set<String> getAllGroups()
+        {
+            return allGroups;
+        }
+
     }
 
     /**
      * Reads index content by using a visitor. <br>
      * The visitor is called for each read documents after it has been populated with Lucene fields.
-     * 
+     *
      * @param visitor an index data visitor
      * @param context indexing context
      * @return statistics about read data
@@ -361,7 +397,7 @@ public class IndexDataReader
 
         /**
          * Called on each read document. The document is already populated with fields.
-         * 
+         *
          * @param document read document
          */
         void visitDocument( Document document );

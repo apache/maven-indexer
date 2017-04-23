@@ -19,19 +19,17 @@ package org.apache.maven.indexer.examples.boot;
  * under the License.
  */
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.maven.indexer.examples.indexing.RepositoryIndexManager;
 import org.apache.maven.indexer.examples.indexing.RepositoryIndexer;
 import org.apache.maven.indexer.examples.indexing.RepositoryIndexerFactory;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This is a dummy artifact repository creator.
@@ -53,13 +51,12 @@ public class RepositoryBooter
 
     public RepositoryBooter()
     {
+        // no op
     }
 
     @PostConstruct
     public void initialize()
-            throws IOException,
-                   PlexusContainerException,
-                   ComponentLookupException
+        throws IOException
     {
         File repositoriesBaseDir = new File( "target/repositories" );
 
@@ -77,7 +74,7 @@ public class RepositoryBooter
     }
 
     private void createLockFile( File repositoriesRootDir )
-            throws IOException
+        throws IOException
     {
         final File lockFile = new File( repositoriesRootDir, "repositories.lock" );
         //noinspection ResultOfMethodCallIgnored
@@ -87,7 +84,7 @@ public class RepositoryBooter
     }
 
     private boolean lockExists( File repositoriesRootDir )
-            throws IOException
+        throws IOException
     {
         File lockFile = new File( repositoriesRootDir, "repositories.lock" );
 
@@ -95,28 +92,22 @@ public class RepositoryBooter
     }
 
     private void initializeRepositories( File repositoriesBaseDir )
-            throws IOException,
-                   PlexusContainerException,
-                   ComponentLookupException
+        throws IOException
     {
         initializeRepository( repositoriesBaseDir, "releases" );
         initializeRepository( repositoriesBaseDir, "snapshots" );
     }
 
-    private void initializeRepository( File repositoriesBaseDir,
-                                       String repositoryName )
-            throws IOException,
-                   PlexusContainerException,
-                   ComponentLookupException
+    private void initializeRepository( File repositoriesBaseDir, String repositoryName )
+        throws IOException
     {
         createRepositoryStructure( repositoriesBaseDir.getAbsolutePath(), repositoryName );
 
         initializeRepositoryIndex( new File( repositoriesBaseDir.getAbsoluteFile(), repositoryName ), repositoryName );
     }
 
-    public void createRepositoryStructure( String repositoriesBaseDir,
-                                           String repositoryName )
-            throws IOException
+    public void createRepositoryStructure( String repositoriesBaseDir, String repositoryName )
+        throws IOException
     {
         final File repositoriesBasedir = new File( repositoriesBaseDir );
         //noinspection ResultOfMethodCallIgnored
@@ -125,20 +116,16 @@ public class RepositoryBooter
         new File( repositoriesBasedir, repositoryName + File.separatorChar + ".index" ).mkdirs();
 
         logger.debug( "Created directory structure for repository '" +
-                      repositoriesBasedir.getAbsolutePath() + File.separatorChar + repositoryName + "'." );
+                          repositoriesBasedir.getAbsolutePath() + File.separatorChar + repositoryName + "'." );
     }
 
-    private void initializeRepositoryIndex( File repositoryBasedir,
-                                            String repositoryId )
-            throws PlexusContainerException,
-                   ComponentLookupException,
-                   IOException
+    private void initializeRepositoryIndex( File repositoryBasedir, String repositoryId )
+        throws IOException
     {
         final File indexDir = new File( repositoryBasedir, ".index" );
 
-        RepositoryIndexer repositoryIndexer = repositoryIndexerFactory.createRepositoryIndexer( repositoryId,
-                                                                                                repositoryBasedir,
-                                                                                                indexDir );
+        RepositoryIndexer repositoryIndexer =
+            repositoryIndexerFactory.createRepositoryIndexer( repositoryId, repositoryBasedir, indexDir );
 
         repositoryIndexManager.addRepositoryIndex( repositoryId, repositoryIndexer );
     }

@@ -19,15 +19,15 @@ package org.apache.maven.indexer.examples.indexing;
  * under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 /**
  * This class represents a mapping between repositoryId-s and their respective indexes.
@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 public class RepositoryIndexManager
 {
 
-    private static final Logger logger = LoggerFactory.getLogger( RepositoryIndexManager.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryIndexManager.class );
 
     /**
      * K: repositoryId
@@ -50,6 +50,7 @@ public class RepositoryIndexManager
 
     public RepositoryIndexManager()
     {
+        // no op
     }
 
     /**
@@ -67,15 +68,15 @@ public class RepositoryIndexManager
             {
                 final RepositoryIndexer repositoryIndexer = indexes.get( repositoryId );
 
-                logger.debug( "Closing indexer for " + repositoryIndexer.getRepositoryId() + "..." );
+                LOGGER.debug( "Closing indexer for " + repositoryIndexer.getRepositoryId() + "..." );
 
                 repositoryIndexer.close();
 
-                logger.debug( "Closed indexer for " + repositoryIndexer.getRepositoryId() + "." );
+                LOGGER.debug( "Closed indexer for " + repositoryIndexer.getRepositoryId() + "." );
             }
             catch ( IOException e )
             {
-                logger.error( e.getMessage(), e );
+                LOGGER.error( e.getMessage(), e );
             }
         }
     }
@@ -95,8 +96,7 @@ public class RepositoryIndexManager
         return indexes.get( repositoryId );
     }
 
-    public RepositoryIndexer addRepositoryIndex( String repositoryId,
-                                                 RepositoryIndexer value )
+    public RepositoryIndexer addRepositoryIndex( String repositoryId, RepositoryIndexer value )
     {
         return indexes.put( repositoryId, value );
     }

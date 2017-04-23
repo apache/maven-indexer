@@ -41,6 +41,7 @@ public class SimpleArtifactGenerator
 
     public SimpleArtifactGenerator()
     {
+        // no op
     }
 
     public File generateArtifact( String repositoryBasedir,

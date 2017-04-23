@@ -19,12 +19,12 @@ package org.apache.maven.indexer.examples.services;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.indexer.examples.indexing.SearchRequest;
 import org.apache.maven.indexer.examples.indexing.SearchResults;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * A simple indexing and search service.
@@ -34,27 +34,18 @@ import org.apache.maven.indexer.examples.indexing.SearchResults;
 public interface ArtifactIndexingService
 {
 
-    void addToIndex( String repositoryId,
-                     File artifactFile,
-                     String groupId,
-                     String artifactId,
-                     String version,
-                     String extension,
-                     String classifier )
-            throws IOException;
+    void addToIndex( String repositoryId, File artifactFile, String groupId, String artifactId, String version,
+                     String extension, String classifier )
+        throws IOException;
 
-    void deleteFromIndex( String repositoryId,
-                          String groupId,
-                          String artifactId,
-                          String version,
-                          String extension,
+    void deleteFromIndex( String repositoryId, String groupId, String artifactId, String version, String extension,
                           String classifier )
-            throws IOException;
+        throws IOException;
 
     SearchResults search( SearchRequest searchRequest )
-            throws IOException, ParseException;
+        throws IOException, ParseException;
 
     boolean contains( SearchRequest searchRequest )
-            throws IOException, ParseException;
+        throws IOException, ParseException;
 
 }

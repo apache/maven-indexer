@@ -42,7 +42,7 @@ public class DigesterUtils
      * Calculates a digest for a String user the requested algorithm.
      * 
      * @param alg
-     * @param content
+     * @param is
      * @return
      * @throws NoSuchAlgorithmException
      */
@@ -119,7 +119,7 @@ public class DigesterUtils
     /**
      * Calculates a SHA1 digest for a stream.
      * 
-     * @param content
+     * @param is
      * @return
      */
     public static String getSha1Digest( InputStream is )
@@ -138,17 +138,14 @@ public class DigesterUtils
     /**
      * Calculates a SHA1 digest for a file.
      * 
-     * @param content
+     * @param file
      * @return
      */
     public static String getSha1Digest( File file )
+        throws IOException
     {
-        FileInputStream fis = null;
-
-        try
+        try (FileInputStream fis = new FileInputStream( file ))
         {
-            fis = new FileInputStream( file );
-
             return getDigest( "SHA1", fis );
         }
         catch ( NoSuchAlgorithmException e )
@@ -160,10 +157,6 @@ public class DigesterUtils
         {
             // will not happen
             return null;
-        }
-        finally
-        {
-            IOUtil.close( fis );
         }
     }
 
@@ -198,7 +191,7 @@ public class DigesterUtils
     /**
      * Calculates a SHA1 digest for a stream.
      * 
-     * @param content
+     * @param is
      * @return
      */
     public static String getMd5Digest( InputStream is )
@@ -217,17 +210,15 @@ public class DigesterUtils
     /**
      * Calculates a SHA1 digest for a file.
      * 
-     * @param content
+     * @param file
      * @return
      */
     public static String getMd5Digest( File file )
+        throws IOException
     {
-        FileInputStream fis = null;
 
-        try
+        try (InputStream fis = new FileInputStream( file ))
         {
-            fis = new FileInputStream( file );
-
             return getDigest( "MD5", fis );
         }
         catch ( NoSuchAlgorithmException e )
@@ -239,10 +230,6 @@ public class DigesterUtils
         {
             // will not happen
             return null;
-        }
-        finally
-        {
-            IOUtil.close( fis );
         }
     }
 

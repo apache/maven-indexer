@@ -19,18 +19,18 @@ package org.apache.maven.indexer.examples.indexing;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.util.Map;
-
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.Scanner;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * A factory for pre-configured RepositoryIndexers.
@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
 public class RepositoryIndexerFactory
 {
 
-    private static final Logger logger = LoggerFactory.getLogger( RepositoryIndexerFactory.class );
-
     private IndexerConfiguration indexerConfiguration;
 
 
@@ -52,10 +50,8 @@ public class RepositoryIndexerFactory
         this.indexerConfiguration = indexerConfiguration;
     }
 
-    public RepositoryIndexer createRepositoryIndexer( String repositoryId,
-                                                      File repositoryBasedir,
-                                                      File indexDir )
-            throws IOException
+    public RepositoryIndexer createRepositoryIndexer( String repositoryId, File repositoryBasedir, File indexDir )
+        throws IOException
     {
         RepositoryIndexer repositoryIndexer = new RepositoryIndexer();
         repositoryIndexer.setRepositoryId( repositoryId );
@@ -68,22 +64,16 @@ public class RepositoryIndexerFactory
         return repositoryIndexer;
     }
 
-    private IndexingContext createIndexingContext( String repositoryId,
-                                                   File repositoryBasedir,
-                                                   File indexDir )
-            throws IOException
+    private IndexingContext createIndexingContext( String repositoryId, File repositoryBasedir, File indexDir )
+        throws IOException
     {
-        return getIndexer().createIndexingContext( repositoryId + "/ctx",
-                                                   repositoryId,
-                                                   repositoryBasedir,
-                                                   indexDir,
-                                                   null,
-                                                   null,
-                                                   true, // if context should be searched in non-targeted mode.
+        return getIndexer().createIndexingContext( repositoryId + "/ctx", repositoryId, repositoryBasedir, indexDir,
+                                                   null, null, true,
+                                                   // if context should be searched in non-targeted mode.
                                                    true, // if indexDirectory is known to contain (or should contain)
-                                                         // valid Maven Indexer lucene index, and no checks needed to be
-                                                         // performed, or, if we want to "stomp" over existing index
-                                                         // (unsafe to do!).
+                                                   // valid Maven Indexer lucene index, and no checks needed to be
+                                                   // performed, or, if we want to "stomp" over existing index
+                                                   // (unsafe to do!).
                                                    indexerConfiguration.getIndexersAsList() );
     }
 
