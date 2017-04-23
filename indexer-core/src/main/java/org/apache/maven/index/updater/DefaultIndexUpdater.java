@@ -41,26 +41,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.IndexOutput;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
@@ -71,7 +61,6 @@ import org.apache.maven.index.fs.Locker;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataReader.IndexDataReadResult;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.io.RawInputStreamFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -200,20 +189,19 @@ public class DefaultIndexUpdater
         indexDir.delete();
         indexDir.mkdirs();
 
-        final Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir );
-
-        BufferedInputStream is = null;
-
-        try
+        try(BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
+            Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ))
         {
-            is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) );
-
             Date timestamp = null;
 
+            Set<String> rootGroups = null;
+            Set<String> allGroups = null;
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
-                timestamp = unpackIndexData( is, directory, //
-                    updateRequest.getIndexingContext() );
+                IndexDataReadResult result = unpackIndexData( is, directory, updateRequest.getIndexingContext() );
+                timestamp = result.getTimestamp();
+                rootGroups = result.getRootGroups();
+                allGroups = result.getAllGroups();
             }
             else
             {
@@ -232,7 +220,7 @@ public class DefaultIndexUpdater
             }
             else
             {
-                updateRequest.getIndexingContext().replace( directory );
+                updateRequest.getIndexingContext().replace( directory, rootGroups, allGroups );
             }
             if ( sideEffects != null && sideEffects.size() > 0 )
             {
@@ -247,13 +235,6 @@ public class DefaultIndexUpdater
         }
         finally
         {
-            IOUtil.close( is );
-
-            if ( directory != null )
-            {
-                directory.close();
-            }
-
             try
             {
                 FileUtils.deleteDirectory( indexDir );
@@ -272,7 +253,7 @@ public class DefaultIndexUpdater
         IndexWriter w = null;
         try
         {
-            r = IndexReader.open( directory );
+            r = DirectoryReader.open( directory );
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
             
             Bits liveDocs = MultiFields.getLiveDocs(r);
@@ -308,7 +289,6 @@ public class DefaultIndexUpdater
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
 
-            w.forceMerge(4);
             w.commit();
         }
         finally
@@ -321,13 +301,9 @@ public class DefaultIndexUpdater
     {
         File indexProperties = new File( indexDirectoryFile, remoteIndexPropertiesName );
 
-        FileInputStream fis = null;
-
-        try
+        try ( FileInputStream fis = new FileInputStream( indexProperties ))
         {
             Properties properties = new Properties();
-
-            fis = new FileInputStream( indexProperties );
 
             properties.load( fis );
 
@@ -337,11 +313,6 @@ public class DefaultIndexUpdater
         {
             getLogger().debug( "Unable to read remote properties stored locally", e );
         }
-        finally
-        {
-            IOUtil.close( fis );
-        }
-
         return null;
     }
 
@@ -352,14 +323,9 @@ public class DefaultIndexUpdater
 
         if ( properties != null )
         {
-            OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) );
-            try
+            try (OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) ))
             {
                 properties.store( os, null );
-            }
-            finally
-            {
-                IOUtil.close( os );
             }
         }
         else
@@ -371,19 +337,13 @@ public class DefaultIndexUpdater
     private Properties downloadIndexProperties( final ResourceFetcher fetcher )
         throws IOException
     {
-        InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
-
-        try
+        try (InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ))
         {
             Properties properties = new Properties();
 
             properties.load( fis );
 
             return properties;
-        }
-        finally
-        {
-            IOUtil.close( fis );
         }
     }
 
@@ -413,7 +373,7 @@ public class DefaultIndexUpdater
      * @param w a writer to save index data
      * @param ics a collection of index creators for updating unpacked documents.
      */
-    public static Date unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
+    public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
         throws IOException
     {
         NexusIndexWriter w = new NexusIndexWriter( d, new NexusAnalyzer(), true );
@@ -421,9 +381,7 @@ public class DefaultIndexUpdater
         {
             IndexDataReader dr = new IndexDataReader( is );
 
-            IndexDataReadResult result = dr.readIndex( w, context );
-
-            return result.getTimestamp();
+            return dr.readIndex( w, context );
         }
         finally
         {
@@ -643,20 +601,14 @@ public class DefaultIndexUpdater
             throws IOException
         {
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) );
-            Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING );
-            try
+            try (BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) ); //
+                 Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING ))
             {
                 for ( String filename : newChunks )
                 {
                     w.write( filename + "\n" );
                 }
                 w.flush();
-            }
-            finally
-            {
-                IOUtil.close( w );
-                IOUtil.close( os );
             }
             super.commit();
         }
@@ -667,19 +619,14 @@ public class DefaultIndexUpdater
             ArrayList<String> chunks = new ArrayList<String>();
 
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            BufferedReader r =
-                new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) );
-            try
+            try (BufferedReader r =
+                     new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) ))
             {
                 String str;
                 while ( ( str = r.readLine() ) != null )
                 {
                     chunks.add( str );
                 }
-            }
-            finally
-            {
-                IOUtil.close( r );
             }
             return chunks;
         }

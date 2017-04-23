@@ -34,7 +34,11 @@ import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -65,7 +69,9 @@ public class OsgiArtifactIndexCreator
     extends AbstractIndexCreator
 {
     public static final String ID = "osgi-metadatas";
-
+    public static final IndexerField FLD_SHA256 =
+            new IndexerField(OSGI.SHA256, IndexerFieldVersion.V4, "sha256", "SHA-256 (not analyzed, stored)",
+                    Field.Store.YES, Field.Index.NOT_ANALYZED);
     private static final String BSN = "Bundle-SymbolicName";
 
     public static final IndexerField FLD_BUNDLE_SYMBOLIC_NAME =
@@ -85,9 +91,9 @@ public class OsgiArtifactIndexCreator
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
         new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, BEP, "Export-Package (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
-
+    @Deprecated
     private static final String BES = "Export-Service";
-
+    @Deprecated
     public static final IndexerField FLD_BUNDLE_EXPORT_SERVIVE =
         new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
@@ -129,15 +135,35 @@ public class OsgiArtifactIndexCreator
     public static final IndexerField FLD_BUNDLE_REQUIRE_BUNDLE =
         new IndexerField( OSGI.REQUIRE_BUNDLE, IndexerFieldVersion.V4, BRB, "Require-Bundle (indexed, stored)",
                           Field.Store.YES, Field.Index.ANALYZED );
+    private static final String PROVIDE_CAPABILITY = "Provide-Capability";
+    public static final IndexerField FLD_BUNDLE_PROVIDE_CAPABILITY =
+            new IndexerField(OSGI.PROVIDE_CAPABILITY, IndexerFieldVersion.V4, PROVIDE_CAPABILITY, "Provide-Capability (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+    private static final String REQUIRE_CAPABILITY = "Require-Capability";
+    public static final IndexerField FLD_BUNDLE_REQUIRE_CAPABILITY =
+            new IndexerField(OSGI.REQUIRE_CAPABILITY, IndexerFieldVersion.V4, REQUIRE_CAPABILITY, "Require-Capability (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+    private static final String FRAGMENT_HOST = "Fragment-Host";
+    public static final IndexerField FLD_BUNDLE_FRAGMENT_HOST =
+            new IndexerField(OSGI.FRAGMENT_HOST, IndexerFieldVersion.V4, FRAGMENT_HOST, "Fragment-Host (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
+
+    private static final String BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = "Bundle-RequiredExecutionEnvironment";
+    public static final IndexerField FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT =
+            new IndexerField(OSGI.BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, IndexerFieldVersion.V4, BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT,
+                    "Bundle-RequiredExecutionEnvironment (indexed, stored)",
+                    Field.Store.YES, Field.Index.ANALYZED);
 
 
 
 
     public Collection<IndexerField> getIndexerFields()
     {
-        return Arrays.asList( FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
-                              FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
-                              FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE );
+        return Arrays.asList(FLD_BUNDLE_SYMBOLIC_NAME, FLD_BUNDLE_VERSION, FLD_BUNDLE_EXPORT_PACKAGE,
+                FLD_BUNDLE_EXPORT_SERVIVE, FLD_BUNDLE_DESCRIPTION, FLD_BUNDLE_NAME, FLD_BUNDLE_LICENSE,
+                FLD_BUNDLE_DOCURL, FLD_BUNDLE_IMPORT_PACKAGE, FLD_BUNDLE_REQUIRE_BUNDLE,
+                FLD_BUNDLE_PROVIDE_CAPABILITY, FLD_BUNDLE_REQUIRE_CAPABILITY, FLD_BUNDLE_FRAGMENT_HOST,
+                FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, FLD_SHA256);
     }
 
     public OsgiArtifactIndexCreator()
@@ -212,6 +238,28 @@ public class OsgiArtifactIndexCreator
         {
             document.add( FLD_BUNDLE_REQUIRE_BUNDLE.toField( artifactInfo.getBundleRequireBundle() ) );
         }
+
+        if (artifactInfo.getBundleProvideCapability() != null) {
+            document.add(FLD_BUNDLE_PROVIDE_CAPABILITY.toField(artifactInfo.getBundleProvideCapability()));
+        }
+
+        if (artifactInfo.getBundleRequireCapability() != null) {
+            document.add(FLD_BUNDLE_REQUIRE_CAPABILITY.toField(artifactInfo.getBundleRequireCapability()));
+        }
+
+        if (artifactInfo.getBundleFragmentHost() != null) {
+            document.add(FLD_BUNDLE_FRAGMENT_HOST.toField(artifactInfo.getBundleFragmentHost()));
+        }
+
+        String bree = artifactInfo.getBundleRequiredExecutionEnvironment();
+        if (bree != null) {
+            document.add(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.toField(bree));
+        }
+
+        if (artifactInfo.getSha256() != null) {
+            document.add(FLD_SHA256.toField(artifactInfo.getSha256()));
+        }
+
     }
 
     public boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo )
@@ -317,6 +365,46 @@ public class OsgiArtifactIndexCreator
             updated = true;
 
         }
+        String bundleProvideCapability = document.get(FLD_BUNDLE_PROVIDE_CAPABILITY.getKey());
+
+        if (bundleProvideCapability != null) {
+            artifactInfo.setBundleProvideCapability(bundleProvideCapability);
+
+            updated = true;
+
+        }
+        String bundleRequireCapability = document.get(FLD_BUNDLE_REQUIRE_CAPABILITY.getKey());
+
+        if (bundleRequireCapability != null) {
+            artifactInfo.setBundleRequireCapability(bundleRequireCapability);
+
+            updated = true;
+
+        }
+        String bundleFragmentHost = document.get(FLD_BUNDLE_FRAGMENT_HOST.getKey());
+
+        if (bundleFragmentHost != null) {
+            artifactInfo.setBundleFragmentHost(bundleFragmentHost);
+
+            updated = true;
+
+        }
+
+        String bundleRequiredExecutionEnvironment = document.get(FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT.getKey());
+
+        if (bundleRequiredExecutionEnvironment != null) {
+            artifactInfo.setBundleRequiredExecutionEnvironment(bundleRequiredExecutionEnvironment);
+
+            updated = true;
+
+        }
+
+        String sha256 = document.get(FLD_SHA256.getKey());
+
+        if (sha256 != null) {
+            artifactInfo.setSha256(sha256);
+            updated = true;
+        }
 
         return updated;
     }
@@ -327,6 +415,7 @@ public class OsgiArtifactIndexCreator
         ZipHandle handle = null;
 
         boolean updated = false;
+
 
         try
         {
@@ -454,6 +543,38 @@ public class OsgiArtifactIndexCreator
                             ai.setBundleRequireBundle( null );
                         }
 
+                        attValue = mainAttributes.getValue(PROVIDE_CAPABILITY);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.setBundleProvideCapability(attValue);
+                            updated = true;
+                        } else {
+                            ai.setBundleProvideCapability(null);
+                        }
+
+                        attValue = mainAttributes.getValue(REQUIRE_CAPABILITY);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.setBundleRequireCapability(attValue);
+                            updated = true;
+                        } else {
+                            ai.setBundleRequireCapability(null);
+                        }
+
+                        attValue = mainAttributes.getValue(FRAGMENT_HOST);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.setBundleFragmentHost(attValue);
+                            updated = true;
+                        } else {
+                            ai.setBundleFragmentHost(null);
+                        }
+
+                        attValue = mainAttributes.getValue(BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT);
+                        if (StringUtils.isNotBlank(attValue)) {
+                            ai.setBundleRequiredExecutionEnvironment(attValue);
+                            updated = true;
+                        } else {
+                            ai.setBundleRequiredExecutionEnvironment(null);
+                        }
+
                     }
                 }
             }
@@ -470,7 +591,44 @@ public class OsgiArtifactIndexCreator
                 getLogger().error( "Could not close jar file properly.", e );
             }
         }
+
+        // only calculate sha256 digest for if we are indexing a bundle.
+        if (ai.getBundleSymbolicName() != null) {
+            String sha256 = computeSha256(f);
+            if (sha256 != null) {
+                ai.setSha256(sha256);
+                updated = true;
+            } else {
+                ai.setSha256(null);
+            }
+        }
+
         return updated;
+    }
+
+    private String computeSha256(File f) throws IOException {
+        String sha256 = null;
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            DigestInputStream in = new DigestInputStream(new FileInputStream(f), digest);
+
+            try {
+                byte buf[] = new byte[8192];
+                while (in.read(buf) >= 0) ;
+                byte digestBytes[] = digest.digest();
+                StringBuilder builder = new StringBuilder(64);
+                for (int b : digestBytes) {
+                    b &= 0xff;
+                    builder.append(String.format("%02x", b));
+                    sha256 = builder.toString();
+                }
+            } finally {
+                in.close();
+            }
+
+        } catch (NoSuchAlgorithmException e) {
+        }
+        return sha256;
     }
 
     @Override

@@ -187,11 +187,9 @@ public class DefaultIndexer
     public Collection<ArtifactInfo> identify( final File artifact, final Collection<IndexingContext> contexts )
         throws IOException
     {
-        FileInputStream is = null;
-        try
+        try (FileInputStream is = new FileInputStream( artifact ))
         {
             final MessageDigest sha1 = MessageDigest.getInstance( "SHA-1" );
-            is = new FileInputStream( artifact );
             final byte[] buff = new byte[4096];
             int n;
             while ( ( n = is.read( buff ) ) > -1 )
@@ -206,10 +204,6 @@ public class DefaultIndexer
             IOException ioe = new IOException( "Unable to calculate digest" );
             ioe.initCause( ex );
             throw ioe;
-        }
-        finally
-        {
-            IOUtil.close( is );
         }
     }
 

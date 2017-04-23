@@ -368,7 +368,6 @@ public class DefaultIteratorResultSet
         
         Analyzer analyzer = context.getAnalyzer();
         TokenStream baseTokenStream = analyzer.tokenStream( field.getKey(), new StringReader( text ) );
-        baseTokenStream.reset();
         
         CachingTokenFilter tokenStream = new CachingTokenFilter(baseTokenStream);
 
@@ -388,9 +387,6 @@ public class DefaultIteratorResultSet
         }
 
         List<String> bestFragments = getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
-        
-        tokenStream.end();
-        tokenStream.close();
         
         return bestFragments;
     }

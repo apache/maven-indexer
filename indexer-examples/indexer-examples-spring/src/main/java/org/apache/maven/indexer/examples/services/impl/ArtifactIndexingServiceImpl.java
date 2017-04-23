@@ -19,10 +19,6 @@ package org.apache.maven.indexer.examples.services.impl;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.indexer.examples.indexing.RepositoryIndexManager;
@@ -35,12 +31,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author mtodorov
  */
 @Component
 public class ArtifactIndexingServiceImpl
-        implements ArtifactIndexingService
+    implements ArtifactIndexingService
 {
 
     private static final Logger logger = LoggerFactory.getLogger( ArtifactIndexingServiceImpl.class );
@@ -50,14 +54,9 @@ public class ArtifactIndexingServiceImpl
 
 
     @Override
-    public void addToIndex( String repositoryId,
-                            File artifactFile,
-                            String groupId,
-                            String artifactId,
-                            String version,
-                            String extension,
-                            String classifier )
-            throws IOException
+    public void addToIndex( String repositoryId, File artifactFile, String groupId, String artifactId, String version,
+                            String extension, String classifier )
+        throws IOException
     {
         final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex( repositoryId );
 
@@ -65,29 +64,21 @@ public class ArtifactIndexingServiceImpl
     }
 
     @Override
-    public void deleteFromIndex( String repositoryId,
-                                 String groupId,
-                                 String artifactId,
-                                 String version,
-                                 String extension,
-                                 String classifier )
-            throws IOException
+    public void deleteFromIndex( String repositoryId, String groupId, String artifactId, String version,
+                                 String extension, String classifier )
+        throws IOException
     {
         final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex( repositoryId );
         if ( indexer != null )
         {
-            indexer.delete( Arrays.asList( new ArtifactInfo( repositoryId,
-                                                             groupId,
-                                                             artifactId,
-                                                             version,
-                                                             classifier,
-                                                             extension ) ) );
+            indexer.delete( Arrays.asList(
+                new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier, extension ) ) );
         }
     }
 
     @Override
     public SearchResults search( SearchRequest searchRequest )
-            throws IOException, ParseException
+        throws IOException, ParseException
     {
         SearchResults searchResults = new SearchResults();
 
@@ -97,8 +88,8 @@ public class ArtifactIndexingServiceImpl
         {
             logger.debug( "Repository: {}", repositoryId );
 
-            final Map<String, Collection<ArtifactInfo>> resultsMap = getResultsMap( repositoryId,
-                                                                                    searchRequest.getQuery() );
+            final Map<String, Collection<ArtifactInfo>> resultsMap =
+                getResultsMap( repositoryId, searchRequest.getQuery() );
 
             if ( !resultsMap.isEmpty() )
             {
@@ -122,8 +113,8 @@ public class ArtifactIndexingServiceImpl
                 final RepositoryIndexer repositoryIndex = repositoryIndexManager.getRepositoryIndex( repoId );
                 if ( repositoryIndex != null )
                 {
-                    final Set<ArtifactInfo> artifactInfoResults = repositoryIndexManager.getRepositoryIndex( repoId )
-                                                                                        .search( searchRequest.getQuery() );
+                    final Set<ArtifactInfo> artifactInfoResults =
+                        repositoryIndexManager.getRepositoryIndex( repoId ).search( searchRequest.getQuery() );
 
                     if ( !artifactInfoResults.isEmpty() )
                     {
@@ -142,18 +133,17 @@ public class ArtifactIndexingServiceImpl
 
     @Override
     public boolean contains( SearchRequest searchRequest )
-            throws IOException, ParseException
+        throws IOException, ParseException
     {
         return !getResultsMap( searchRequest.getRepository(), searchRequest.getQuery() ).isEmpty();
     }
 
-    public Map<String, Collection<ArtifactInfo>> getResultsMap( String repositoryId,
-                                                                String query )
-            throws IOException, ParseException
+    public Map<String, Collection<ArtifactInfo>> getResultsMap( String repositoryId, String query )
+        throws IOException, ParseException
     {
         Map<String, Collection<ArtifactInfo>> resultsMap = new LinkedHashMap<>();
-        final Set<ArtifactInfo> artifactInfoResults = repositoryIndexManager.getRepositoryIndex( repositoryId )
-                                                                            .search( query );
+        final Set<ArtifactInfo> artifactInfoResults =
+            repositoryIndexManager.getRepositoryIndex( repositoryId ).search( query );
 
         if ( !artifactInfoResults.isEmpty() )
         {

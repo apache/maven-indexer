@@ -20,9 +20,11 @@ package org.apache.maven.index.context;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.Date;
 
 import org.apache.lucene.document.Document;
@@ -50,9 +52,9 @@ public class IndexUtils
         //FIXME: check if this copies too much, Lucene 4 has no filter for lucene files
         //Directory.copy( source, target, false );
         
-        for (String file : source.listAll())
+        for ( String file : source.listAll() )
         {
-            source.copy(target, file, file, IOContext.DEFAULT); 
+            target.copyFrom( source, file, file, IOContext.DEFAULT );
         }
 
         copyFile( source, target, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE );
@@ -71,41 +73,16 @@ public class IndexUtils
     public static boolean copyFile( Directory source, Directory target, String srcName, String targetName )
         throws IOException
     {
-        if ( !source.fileExists( srcName ) )
+        try
+        {
+            source.fileLength(  srcName  ); // instead of fileExists
+        }
+        catch (FileNotFoundException | NoSuchFileException e)
         {
             return false;
         }
-
-        byte[] buf = new byte[BUFFER_SIZE];
-
-        IndexInput is = null;
-        IndexOutput os = null;
-
-        try
-        {
-            is = source.openInput( srcName, IOContext.DEFAULT);
-
-            os = target.createOutput( targetName, IOContext.DEFAULT);
-
-            // and copy to dest directory
-            long len = is.length();
-            long readCount = 0;
-            while ( readCount < len )
-            {
-                int toRead = readCount + BUFFER_SIZE > len ? (int) ( len - readCount ) : BUFFER_SIZE;
-                is.readBytes( buf, 0, toRead );
-                os.writeBytes( buf, toRead );
-                readCount += toRead;
-            }
-
-            return true;
-        }
-        finally
-        {
-            close( os );
-
-            close( is );
-        }
+        target.copyFrom( source, srcName, targetName, IOContext.DEFAULT );
+        return true;
     }
 
     // timestamp
@@ -123,8 +100,22 @@ public class IndexUtils
         ArtifactInfo artifactInfo = new ArtifactInfo();
 
         // Add minimal information to the artifact info linking it to the context it belongs to.
-        artifactInfo.setRepository(context.getRepositoryId());
-        artifactInfo.setContext(context.getId());
+        try
+        {
+            artifactInfo.setRepository(context.getRepositoryId());
+        }
+        catch ( UnsupportedOperationException e )
+        {
+            // we ignore that as PartialImplementation can generate this UnsupportedOperationException
+        }
+        try
+        {
+            artifactInfo.setContext(context.getId());
+        }
+        catch ( Exception e )
+        {
+            // we ignore that as PartialImplementation can generate this UnsupportedOperationException
+        }
 
         for ( IndexCreator ic : context.getIndexCreators() )
         {
@@ -141,12 +132,18 @@ public class IndexUtils
 
     public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified )
     {
-        ArtifactInfo ai = constructArtifactInfo( doc, context );
-        if ( ai == null )
-        {
-            return doc;
-        }
+         return updateDocument(doc, context, updateLastModified, null);
+    }
 
+    public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified, ArtifactInfo ai )
+    {
+        if( ai == null ) {
+            ai = constructArtifactInfo( doc, context );
+            if ( ai == null )
+            {
+                return doc;
+            }
+        }
         Document document = new Document();
 
         // unique key
@@ -173,9 +170,13 @@ public class IndexUtils
     public static void deleteTimestamp( Directory directory )
         throws IOException
     {
-        if ( directory.fileExists( TIMESTAMP_FILE ) )
+        try
         {
             directory.deleteFile( TIMESTAMP_FILE );
+        }
+        catch (FileNotFoundException | NoSuchFileException e)
+        {
+            //Does not exist
         }
     }
 
@@ -195,8 +196,6 @@ public class IndexUtils
                 try
                 {
                     io.writeLong( timestamp.getTime() );
-
-                    io.flush();
                 }
                 finally
                 {
@@ -211,26 +210,13 @@ public class IndexUtils
         synchronized ( directory )
         {
             Date result = null;
-            try
+            try (IndexInput ii = directory.openInput( TIMESTAMP_FILE, IOContext.DEFAULT)) {
+                result = new Date( ii.readLong() );
+            } catch (FileNotFoundException | NoSuchFileException e) {
+                //Does not exist
+            } catch ( IOException ex )
             {
-                if ( directory.fileExists( TIMESTAMP_FILE ) )
-                {
-                    IndexInput ii = null;
-
-                    try
-                    {
-                        ii = directory.openInput( TIMESTAMP_FILE, IOContext.DEFAULT);
-
-                        result = new Date( ii.readLong() );
-                    }
-                    finally
-                    {
-                        close( ii );
-                    }
-                }
-            }
-            catch ( IOException ex )
-            {
+                //IO failure
             }
 
             return result;

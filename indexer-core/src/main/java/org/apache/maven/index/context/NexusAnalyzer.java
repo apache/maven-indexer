@@ -21,6 +21,7 @@ package org.apache.maven.index.context;
 
 import java.io.Reader;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.AnalyzerWrapper;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.util.Version;
@@ -35,31 +36,42 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
  * @author cstamas
  */
 public final class NexusAnalyzer
-    extends Analyzer
+    extends AnalyzerWrapper
 {
+    private static final Analyzer CLASS_NAMES_ANALYZER = new Analyzer()
+        {
+        @Override
+        protected TokenStreamComponents createComponents(String fieldName)
+        {
+            return new TokenStreamComponents(new DeprecatedClassnamesTokenizer());
+        }
+    };
+    private static final Analyzer LETTER_OR_DIGIT_ANALYZER = new Analyzer()
+    {
+        @Override
+        protected TokenStreamComponents createComponents(String filedName)
+        {
+            return new TokenStreamComponents(new LetterOrDigitTokenizer());
+        }
+    };
 
     public NexusAnalyzer()
     {
         super(PER_FIELD_REUSE_STRATEGY);
     }
-    
-    protected Tokenizer getTokenizer( String fieldName, Reader reader )
+
+    @Override
+    protected Analyzer getWrappedAnalyzer(String fieldName)
     {
         if ( JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( fieldName ) )
         {
             // To keep "backward" compatibility, we have to use old flawed tokenizer.
-            return new DeprecatedClassnamesTokenizer( reader );
+            return CLASS_NAMES_ANALYZER;
         }
         else
         {
-            return new LetterOrDigitTokenizer( reader );
+            return LETTER_OR_DIGIT_ANALYZER;
         }
-    }
-
-    @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader)
-    {
-        return new TokenStreamComponents(getTokenizer(fieldName, reader));
     }
 
     // ==
@@ -67,9 +79,9 @@ public final class NexusAnalyzer
     public static class NoopTokenizer
         extends CharTokenizer
     {
-        public NoopTokenizer( Reader in )
+        public NoopTokenizer()
         {
-            super( Version.LUCENE_46, in );
+            super();
         }
 
         @Override
@@ -83,9 +95,9 @@ public final class NexusAnalyzer
     public static class DeprecatedClassnamesTokenizer
         extends CharTokenizer
     {
-        public DeprecatedClassnamesTokenizer( Reader in )
+        public DeprecatedClassnamesTokenizer()
         {
-            super( Version.LUCENE_46, in );
+            super();
         }
         
         @Override
@@ -104,9 +116,9 @@ public final class NexusAnalyzer
     public static class LetterOrDigitTokenizer
         extends CharTokenizer
     {
-        public LetterOrDigitTokenizer( Reader in )
+        public LetterOrDigitTokenizer()
         {
-            super( Version.LUCENE_46, in );
+            super();
         }
 
         @Override
