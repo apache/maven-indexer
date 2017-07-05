@@ -55,7 +55,7 @@ public class TestSupport
     this.tempDir = new File("target/tmp-" + getClass().getSimpleName());
     this.tempDir.delete();
     this.tempDir.mkdirs();
-    this.directoryResourceHandlers = new ArrayList<DirectoryResourceHandler>();
+    this.directoryResourceHandlers = new ArrayList<>();
   }
 
   /**

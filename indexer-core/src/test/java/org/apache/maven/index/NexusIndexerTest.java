@@ -409,7 +409,7 @@ public class NexusIndexerTest
 
             ArtifactInfoGroup gi0 = r.values().iterator().next();
             assertEquals( "qdox : qdox", gi0.getGroupKey() );
-            List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( gi0.getArtifactInfos() );
+            List<ArtifactInfo> list = new ArrayList<>( gi0.getArtifactInfos() );
             ArtifactInfo ai0 = list.get( 0 );
             assertEquals( "1.6.1", ai0.getVersion() );
             ArtifactInfo ai1 = list.get( 1 );

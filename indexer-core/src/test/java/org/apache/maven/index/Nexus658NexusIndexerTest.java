@@ -49,7 +49,7 @@ public class Nexus658NexusIndexerTest
         Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 4, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         // g a v p c #1
         ArtifactInfo ai1 = list.get( 0 );

@@ -262,7 +262,7 @@ public abstract class AbstractTreeNode
     {
         if ( children == null && !isLeaf() )
         {
-            children = new ArrayList<TreeNode>();
+            children = new ArrayList<>();
         }
 
         return children;

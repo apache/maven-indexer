@@ -262,7 +262,7 @@ public class FullIndexNexusIndexerTest
 
             {
                 ArtifactInfoGroup ig = r.values().iterator().next();
-                ArrayList<ArtifactInfo> list1 = new ArrayList<ArtifactInfo>( ig.getArtifactInfos() );
+                ArrayList<ArtifactInfo> list1 = new ArrayList<>( ig.getArtifactInfos() );
                 assertEquals( r.toString(), 2, list1.size() );
 
                 ArtifactInfo ai1 = list1.get( 0 );
@@ -379,7 +379,7 @@ public class FullIndexNexusIndexerTest
 
         assertEquals( 2, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         assertEquals( 2, list.size() );
 

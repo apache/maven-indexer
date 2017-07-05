@@ -56,6 +56,6 @@ public class NexusArchetypeDataSource
     @Override
     protected List<IndexingContext> getIndexingContexts()
     {
-        return new ArrayList<IndexingContext>( nexusIndexer.getIndexingContexts().values() );
+        return new ArrayList<>( nexusIndexer.getIndexingContexts().values() );
     }
 }

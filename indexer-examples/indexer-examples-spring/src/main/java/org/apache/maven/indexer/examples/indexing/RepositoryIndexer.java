@@ -100,7 +100,7 @@ public class RepositoryIndexer
     public void delete( final Collection<ArtifactInfo> artifacts )
         throws IOException
     {
-        final List<ArtifactContext> delete = new ArrayList<ArtifactContext>();
+        final List<ArtifactContext> delete = new ArrayList<>();
         for ( final ArtifactInfo artifact : artifacts )
         {
             LOGGER.debug( "Deleting artifact: {}; ctx id: {}; idx dir: {}",

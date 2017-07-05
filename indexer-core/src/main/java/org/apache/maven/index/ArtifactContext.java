@@ -59,7 +59,7 @@ public class ArtifactContext
 
     private final Gav gav;
 
-    private final List<Exception> errors = new ArrayList<Exception>();
+    private final List<Exception> errors = new ArrayList<>();
 
     public ArtifactContext( File pom, File artifact, File metadata, ArtifactInfo artifactInfo, Gav gav )
         throws IllegalArgumentException

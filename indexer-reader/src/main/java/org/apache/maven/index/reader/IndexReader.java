@@ -178,7 +178,7 @@ public class IndexReader
    */
   private List<String> calculateChunkNames() {
     if (incremental) {
-      ArrayList<String> chunkNames = new ArrayList<String>();
+      ArrayList<String> chunkNames = new ArrayList<>();
       int maxCounter = Integer.parseInt(remoteIndexProperties.getProperty("nexus.index.last-incremental"));
       int currentCounter = Integer.parseInt(localIndexProperties.getProperty("nexus.index.last-incremental"));
       currentCounter++;

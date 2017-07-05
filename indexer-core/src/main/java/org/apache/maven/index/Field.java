@@ -48,7 +48,7 @@ public class Field
 
         this.description = description;
 
-        this.indexerFields = new ArrayList<IndexerField>();
+        this.indexerFields = new ArrayList<>();
     }
 
     public Field getParent()
