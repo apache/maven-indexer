@@ -224,6 +224,13 @@ under the License.
         <version>${lucene.version}</version>
       </dependency>
 
+      <!-- including old codecs to read central index -->
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-backward-codecs</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+
       <!-- Aether -->
       <dependency>
         <groupId>org.eclipse.aether</groupId>
