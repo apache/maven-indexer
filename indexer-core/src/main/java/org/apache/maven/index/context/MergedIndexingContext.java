@@ -308,6 +308,7 @@ public class MergedIndexingContext
         {
             // best effort, to have a directory thru the life of a ctx
             File tmpFile = File.createTempFile( "mindexer-ctx" + id, "tmp" );
+            tmpFile.deleteOnExit();
             tmpFile.delete();
             tmpFile.mkdirs();
             this.directoryFile = tmpFile;

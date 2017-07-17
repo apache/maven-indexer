@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -567,9 +568,8 @@ public class NexusIndexerTest
         List<IndexCreator> indexCreators = context.getIndexCreators();
         // Directory directory = context.getIndexDirectory();
 
-        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
-        targetDir.delete();
-        targetDir.mkdirs();
+        final File targetDir = Files.createTempDirectory("testIndexTimestamp" ).toFile();
+        targetDir.deleteOnExit();
 
         final IndexPacker indexPacker = lookup( IndexPacker.class );
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();

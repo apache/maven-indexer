@@ -22,6 +22,7 @@ package org.apache.maven.index;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -111,9 +112,8 @@ public class Nexus13NexusIndexerTest
     public void testIndexTimestamp()
         throws Exception
     {
-        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
-        targetDir.delete();
-        targetDir.mkdirs();
+        final File targetDir = Files.createTempDirectory( "testIndexTimestamp" ).toFile();
+        targetDir.deleteOnExit();
 
         final IndexPacker indexPacker = lookup( IndexPacker.class );
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();

@@ -22,6 +22,7 @@ package org.apache.maven.index.updater;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testBasicIndexRetrieval()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
         basedir.delete();
         basedir.mkdirs();
 
@@ -121,9 +122,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testBasicAuthenticatedIndexRetrieval()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
@@ -160,9 +159,8 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testAuthenticatedIndexRetrieval_LongAuthorizationHeader()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
+
 
         try
         {
@@ -199,9 +197,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testBasicHighLatencyIndexRetrieval()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
@@ -239,9 +235,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void OFFtestHighLatencyIndexRetrieval_LowConnectionTimeout()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
@@ -296,9 +290,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void OFFtestHighLatencyIndexRetrieval_LowTransactionTimeout()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
@@ -352,9 +344,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testIndexRetrieval_InfiniteRedirection()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
@@ -396,9 +386,7 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void testIndexRetrieval_BadHostname()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
-        File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
-        basedir.delete();
-        basedir.mkdirs();
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
         try
         {
