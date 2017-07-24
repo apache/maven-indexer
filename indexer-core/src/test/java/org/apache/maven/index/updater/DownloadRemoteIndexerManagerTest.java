@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -175,16 +176,18 @@ public class DownloadRemoteIndexerManagerTest
         assertTrue( lastMod < lastMod2 );
 
         Properties p = new Properties();
-        InputStream input = new FileInputStream( indexProperties );
-        p.load( input );
-        input.close();
+        try (InputStream input = Files.newInputStream( indexProperties.toPath() ))
+        {
+            p.load( input );
+        }
 
         p.setProperty( "nexus.index.time", format( new Date() ) );
         p.setProperty( "nexus.index.timestamp", format( new Date() ) );
 
-        OutputStream output = new FileOutputStream( indexProperties );
-        p.store( output, null );
-        output.close();
+        try (OutputStream output = Files.newOutputStream( indexProperties.toPath() ))
+        {
+            p.store( output, null );
+        }
     }
 
     private String format( Date d )

@@ -34,25 +34,27 @@ import java.io.OutputStream;
 public interface WritableResourceHandler
     extends ResourceHandler
 {
-  interface WritableResource
-      extends Resource, Closeable
-  {
-    /**
-     * Returns the {@link OutputStream} stream of the resource, if exists, it will replace the existing content, or if
-     * not exists, the resource will be created. The stream should be closed by caller, otherwise resource leaks might
-     * be introduced. How and when content is written is left to implementation, but it is guaranteed that this method
-     * is called only once, and will be followed by {@link #close()} on the resource itself. Implementation does not
-     * have to be "read consistent", in a way to worry what subsequent {@link #read()} method will return, as mixed
-     * calls will not happen on same instance of resource.
-     */
-    OutputStream write() throws IOException;
-  }
+    interface WritableResource
+        extends Resource, Closeable
+    {
+        /**
+         * Returns the {@link OutputStream} stream of the resource, if exists, it will replace the existing content, or if
+         * not exists, the resource will be created. The stream should be closed by caller, otherwise resource leaks might
+         * be introduced. How and when content is written is left to implementation, but it is guaranteed that this method
+         * is called only once, and will be followed by {@link #close()} on the resource itself. Implementation does not
+         * have to be "read consistent", in a way to worry what subsequent {@link #read()} method will return, as mixed
+         * calls will not happen on same instance of resource.
+         */
+        OutputStream write()
+            throws IOException;
+    }
 
-  /**
-   * Returns the {@link WritableResource} with {@code name}. Returned locator should be handled as
-   * resource, is {@link Closeable}.
-   *
-   * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
-   */
-  WritableResource locate(String name) throws IOException;
+    /**
+     * Returns the {@link WritableResource} with {@code name}. Returned locator should be handled as
+     * resource, is {@link Closeable}.
+     *
+     * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
+     */
+    WritableResource locate( String name )
+        throws IOException;
 }
