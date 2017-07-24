@@ -92,10 +92,11 @@ public class CachingResourceHandler
     private boolean cacheLocally(final String name) throws IOException {
       final Resource remoteResource = remote.locate(name);
       final WritableResource localResource = local.locate(name);
-      try {
-        final InputStream inputStream = remoteResource.read();
+      try (final InputStream inputStream = remoteResource.read();
+          final OutputStream outputStream = localResource.write())
+      {
         if (inputStream != null) {
-          final OutputStream outputStream = localResource.write();
+          ;
           try {
             int read;
             byte[] bytes = new byte[8192];
@@ -104,10 +105,6 @@ public class CachingResourceHandler
             }
             outputStream.flush();
             return true;
-          }
-          finally {
-            outputStream.close();
-            inputStream.close();
           }
         }
         return false;
