@@ -23,8 +23,6 @@ import org.apache.maven.index.Indexer;
 import org.apache.maven.index.Scanner;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
