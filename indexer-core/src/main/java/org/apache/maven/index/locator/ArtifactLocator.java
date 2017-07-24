@@ -31,6 +31,8 @@ import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Artifact locator.
@@ -40,6 +42,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 public class ArtifactLocator
     implements GavHelpedLocator
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactLocator.class );
+
     private final ArtifactPackagingMapper mapper;
 
     public ArtifactLocator( ArtifactPackagingMapper mapper )
@@ -83,14 +88,9 @@ public class ArtifactLocator
 
             return artifact;
         }
-        catch ( IOException e )
+        catch ( XmlPullParserException | IOException e )
         {
-            e.printStackTrace();
-            return null;
-        }
-        catch ( XmlPullParserException e )
-        {
-            e.printStackTrace();
+            LOGGER.warn( "skip error reading pom from file:" + source, e );
             return null;
         }
     }
