@@ -22,6 +22,8 @@ package org.apache.maven.index.locator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
@@ -48,16 +50,19 @@ public class ArtifactLocator
     public File locate( File source, GavCalculator gavCalculator, Gav gav )
     {
         // if we don't have this data, nothing we can do
-        if ( source == null || !source.exists() || gav == null || gav.getArtifactId() == null
+        if ( source == null //
+            || !source.exists() //
+            || gav == null //
+            || gav.getArtifactId() == null //
             || gav.getVersion() == null )
         {
             return null;
         }
 
-        try
+        try (InputStream inputStream = Files.newInputStream( source.toPath() ))
         {
             // need to read the pom model to get packaging
-            final Model model = new MavenXpp3Reader().read( new FileInputStream( source ), false );
+            final Model model = new MavenXpp3Reader().read( inputStream, false );
 
             if ( model == null )
             {
