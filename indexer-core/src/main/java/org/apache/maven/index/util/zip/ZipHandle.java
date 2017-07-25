@@ -19,6 +19,7 @@ package org.apache.maven.index.util.zip;
  * under the License.
  */
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.List;
  * @author cstamas
  */
 public interface ZipHandle
+    extends Closeable
 {
     /**
      * Returns true if Zip file this handle is pointing to contains an entry at given path.

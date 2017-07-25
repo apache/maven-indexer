@@ -22,6 +22,8 @@ package org.apache.maven.index.locator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
@@ -29,6 +31,8 @@ import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Artifact locator.
@@ -38,6 +42,9 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 public class ArtifactLocator
     implements GavHelpedLocator
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactLocator.class );
+
     private final ArtifactPackagingMapper mapper;
 
     public ArtifactLocator( ArtifactPackagingMapper mapper )
@@ -48,16 +55,19 @@ public class ArtifactLocator
     public File locate( File source, GavCalculator gavCalculator, Gav gav )
     {
         // if we don't have this data, nothing we can do
-        if ( source == null || !source.exists() || gav == null || gav.getArtifactId() == null
+        if ( source == null //
+            || !source.exists() //
+            || gav == null //
+            || gav.getArtifactId() == null //
             || gav.getVersion() == null )
         {
             return null;
         }
 
-        try
+        try (InputStream inputStream = Files.newInputStream( source.toPath() ))
         {
             // need to read the pom model to get packaging
-            final Model model = new MavenXpp3Reader().read( new FileInputStream( source ), false );
+            final Model model = new MavenXpp3Reader().read( inputStream, false );
 
             if ( model == null )
             {
@@ -78,14 +88,9 @@ public class ArtifactLocator
 
             return artifact;
         }
-        catch ( IOException e )
+        catch ( XmlPullParserException | IOException e )
         {
-            e.printStackTrace();
-            return null;
-        }
-        catch ( XmlPullParserException e )
-        {
-            e.printStackTrace();
+            LOGGER.warn( "skip error reading pom from file:" + source, e );
             return null;
         }
     }

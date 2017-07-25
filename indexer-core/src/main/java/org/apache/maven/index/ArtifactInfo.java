@@ -332,7 +332,7 @@ public class ArtifactInfo
 
     private final Map<String, String> attributes = new HashMap<String, String>();
 
-    private final List<MatchHighlight> matchHighlights = new ArrayList<MatchHighlight>();
+    private final List<MatchHighlight> matchHighlights = new ArrayList<>();
 
     private final transient VersionScheme versionScheme;
 
@@ -437,7 +437,7 @@ public class ArtifactInfo
         return result.toString();
     }
 
-    private static final List<Field> DEFAULT_FIELDS = new ArrayList<Field>();
+    private static final List<Field> DEFAULT_FIELDS = new ArrayList<>();
     static
     {
         DEFAULT_FIELDS.add( MAVEN.GROUP_ID );
@@ -458,7 +458,7 @@ public class ArtifactInfo
     {
         if ( fields == null )
         {
-            fields = new ArrayList<Field>( DEFAULT_FIELDS.size() );
+            fields = new ArrayList<>( DEFAULT_FIELDS.size() );
 
             fields.addAll( DEFAULT_FIELDS );
         }

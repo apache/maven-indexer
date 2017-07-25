@@ -58,13 +58,9 @@ public class IndexerConfiguration
 
     public List<IndexCreator> getIndexersAsList()
     {
-        List<IndexCreator> indexersAsList = new ArrayList<>();
-        for ( Map.Entry entry : indexers.entrySet() )
-        {
-            indexersAsList.add( (IndexCreator) entry.getValue() );
-        }
-
-        return indexersAsList;
+        return indexers == null ? //
+            new ArrayList<IndexCreator>( 0 ) //
+            : new ArrayList<>( indexers.values() );
     }
 
     public Indexer getIndexer()

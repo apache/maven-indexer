@@ -270,6 +270,7 @@ public class DefaultNexusIndexer
 
         // always use temporary context when reindexing
         final File tmpFile = File.createTempFile( context.getId() + "-tmp", "" );
+        tmpFile.deleteOnExit();
         final File tmpDir = new File( tmpFile.getParentFile(), tmpFile.getName() + ".dir" );
         if ( !tmpDir.mkdirs() )
         {

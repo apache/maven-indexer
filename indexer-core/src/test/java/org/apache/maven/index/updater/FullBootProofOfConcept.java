@@ -49,6 +49,7 @@ public class FullBootProofOfConcept
         for ( int i = 0; i < 1; i++ )
         {
             File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
+            basedir.deleteOnExit();
 
             try
             {

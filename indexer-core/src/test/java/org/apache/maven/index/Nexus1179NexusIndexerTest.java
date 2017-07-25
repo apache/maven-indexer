@@ -58,7 +58,7 @@ public class Nexus1179NexusIndexerTest
 
         assertEquals( 4, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         ArtifactInfo ai = null;
 

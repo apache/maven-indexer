@@ -29,7 +29,7 @@ under the License.
       <answer>
         <p>
           The <code>.gz</code> index has to be unpacked, with <code>java -jar indexer-cli.jar -u -t full</code>. Then
-          you can open the resulting directory with <a href="http://code.google.com/p/luke/">Luke</a>.
+          you can open the resulting directory with <a href="https://github.com/DmitryKey/luke">Luke</a>.
         </p>
       </answer>
     </faq>

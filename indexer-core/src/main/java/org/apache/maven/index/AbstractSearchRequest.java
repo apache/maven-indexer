@@ -96,7 +96,7 @@ public class AbstractSearchRequest
     {
         if ( contexts == null )
         {
-            contexts = new ArrayList<IndexingContext>();
+            contexts = new ArrayList<>();
         }
 
         return contexts;
@@ -192,7 +192,7 @@ public class AbstractSearchRequest
     {
         if ( matchHighlightRequests == null )
         {
-            matchHighlightRequests = new ArrayList<MatchHighlightRequest>();
+            matchHighlightRequests = new ArrayList<>();
         }
 
         return matchHighlightRequests;

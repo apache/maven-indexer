@@ -38,7 +38,7 @@ under the License.
     of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
   </description>
 
-  <url>http://maven.apache.org/maven-indexer/</url>
+  <url>https://maven.apache.org/maven-indexer/</url>
 
   <contributors>
     <contributor>
@@ -83,9 +83,7 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <javaVersion>7</javaVersion>
 
     <eclipse-sisu.version>0.2.1</eclipse-sisu.version>
     <sisu-guice.version>3.2.2</sisu-guice.version>
@@ -223,6 +221,13 @@ under the License.
       <dependency>
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-highlighter</artifactId>
+        <version>${lucene.version}</version>
+      </dependency>
+
+      <!-- including old codecs to read central index -->
+      <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-backward-codecs</artifactId>
         <version>${lucene.version}</version>
       </dependency>
 
@@ -402,37 +407,17 @@ under the License.
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java17</artifactId>
+            <artifactId>java1${javaVersion}</artifactId>
             <version>1.0</version>
           </signature>
         </configuration>
         <executions>
           <execution>
-            <id>check-java-1.7-compat</id>
+            <id>check-java-compat</id>
             <phase>process-classes</phase>
             <goals>
               <goal>check</goal>
             </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin><!-- TODO remove when upgrading to maven-parent 25 -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>enforce-bytecode-version</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <enforceBytecodeVersion>
-                  <maxJdkVersion>${maven.compiler.target}</maxJdkVersion>
-                </enforceBytecodeVersion>
-              </rules>
-              <fail>true</fail>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -447,7 +432,7 @@ under the License.
               <goal>check</goal>
             </goals>
             <configuration>
-              <excludes>
+              <excludes combine.children="append">
                 <exclude>README.md</exclude>
                 <exclude>.gitignore</exclude>
                 <exclude>NOTICE</exclude>
@@ -474,7 +459,6 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.15</version>
         <configuration>
           <!--
             olamy do not fail the build because of some white spaces somewhere
@@ -489,39 +473,9 @@ under the License.
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.5.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.19.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.19.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.3</version>
           <configuration>
             <topSiteURL>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}</topSiteURL>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-scm-publish-plugin</artifactId>
-          <version>1.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <configuration>
-            <excludes combine.children="append">
-              <exclude>**/README.md</exclude>
-            </excludes>
           </configuration>
         </plugin>
         <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
@@ -540,7 +494,6 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.3</version>
         <configuration>
           <groups>
             <group>

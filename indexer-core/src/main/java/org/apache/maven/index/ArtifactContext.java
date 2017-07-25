@@ -22,6 +22,8 @@ package org.apache.maven.index;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,18 +39,22 @@ import org.apache.maven.index.util.zip.ZipHandle;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An artifact context used to provide information about artifact during scanning. It is passed to the
  * {@link IndexCreator}, which can populate {@link ArtifactInfo} for the given artifact.
  * 
  * @see IndexCreator#populateArtifactInfo(ArtifactContext)
- * @see Indexer#scan(IndexingContext)
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
 public class ArtifactContext
 {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactContext.class );
+
     private final File pom;
 
     private final File artifact;
@@ -59,7 +65,7 @@ public class ArtifactContext
 
     private final Gav gav;
 
-    private final List<Exception> errors = new ArrayList<Exception>();
+    private final List<Exception> errors = new ArrayList<>();
 
     public ArtifactContext( File pom, File artifact, File metadata, ArtifactInfo artifactInfo, Gav gav )
         throws IllegalArgumentException
@@ -84,55 +90,39 @@ public class ArtifactContext
     public Model getPomModel()
     {
         // First check for local pom file
-        if ( getPom() != null && getPom().isFile() )
+        File pom = getPom();
+        if ( pom != null && pom.isFile() )
         {
-            try
+            try (InputStream inputStream = Files.newInputStream( pom.toPath() ))
             {
-                return new MavenXpp3Reader().read( new FileInputStream( getPom() ), false );
+                return new MavenXpp3Reader().read( inputStream, false );
             }
-            catch ( IOException e )
+            catch ( IOException | XmlPullParserException e )
             {
-                e.printStackTrace();
-            }
-            catch ( XmlPullParserException e )
-            {
-                e.printStackTrace();
+                LOGGER.warn( "skip error reading pom: " + pom, e );
             }
         }
         // Otherwise, check for pom contained in maven generated artifact
         else if ( getArtifact() != null && getArtifact().isFile() )
         {
-            ZipHandle handle = null;
-
-            try
+            File artifact = getArtifact();
+            try(ZipHandle handle = ZipFacade.getZipHandle( artifact ))
             {
-                handle = ZipFacade.getZipHandle( getArtifact() );
 
                 final String embeddedPomPath =
                     "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
 
                 if ( handle.hasEntry( embeddedPomPath ) )
                 {
-                    return new MavenXpp3Reader().read( handle.getEntryContent( embeddedPomPath ), false );
+                    try(InputStream inputStream = handle.getEntryContent( embeddedPomPath ))
+                    {
+                        return new MavenXpp3Reader().read( inputStream, false );
+                    }
                 }
             }
-            catch ( IOException e )
+            catch ( IOException | XmlPullParserException e )
             {
-                e.printStackTrace();
-            }
-            catch ( XmlPullParserException e )
-            {
-                e.printStackTrace();
-            }
-            finally
-            {
-                try
-                {
-                    ZipFacade.close( handle );
-                }
-                catch ( Exception e )
-                {
-                }
+                LOGGER.warn( "skip error reading pom withing artifact:" + artifact, e );
             }
         }
 

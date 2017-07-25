@@ -33,19 +33,21 @@ import java.io.InputStream;
 public interface ResourceHandler
     extends Closeable
 {
-  interface Resource
-  {
-    /**
-     * Returns the {@link InputStream} stream of the resource, if exists, {@code null} otherwise. The stream should
-     * be closed by caller, otherwise resource leaks might be introduced.
-     */
-    InputStream read() throws IOException;
-  }
+    interface Resource
+    {
+        /**
+         * Returns the {@link InputStream} stream of the resource, if exists, {@code null} otherwise. The stream should
+         * be closed by caller, otherwise resource leaks might be introduced.
+         */
+        InputStream read()
+            throws IOException;
+    }
 
-  /**
-   * Returns the {@link Resource} with {@code name}, non {@code null}.
-   *
-   * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
-   */
-  Resource locate(String name) throws IOException;
+    /**
+     * Returns the {@link Resource} with {@code name}, non {@code null}.
+     *
+     * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
+     */
+    Resource locate( String name )
+        throws IOException;
 }

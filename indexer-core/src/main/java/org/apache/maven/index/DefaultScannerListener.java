@@ -60,7 +60,7 @@ public class DefaultScannerListener
 
     private final Set<String> groups = new HashSet<String>();
 
-    private final List<Exception> exceptions = new ArrayList<Exception>();
+    private final List<Exception> exceptions = new ArrayList<>();
 
     private int count = 0;
 

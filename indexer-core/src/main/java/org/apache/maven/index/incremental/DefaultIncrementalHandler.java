@@ -100,7 +100,7 @@ public class DefaultIncrementalHandler
         // If we have local properties, will parse and see what we need to download
         if ( canRetrieveAllChunks( localProperties, remoteProperties ) )
         {
-            filenames = new ArrayList<String>();
+            filenames = new ArrayList<>();
 
             int maxCounter = Integer.parseInt( remoteProperties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) );
             int currentCounter = Integer.parseInt( localProperties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) );
@@ -156,7 +156,7 @@ public class DefaultIncrementalHandler
     private List<Integer> getIndexChunk( IndexPackingRequest request, Date timestamp )
         throws IOException
     {
-        final List<Integer> chunk = new ArrayList<Integer>();
+        final List<Integer> chunk = new ArrayList<>();
         final IndexReader r = request.getIndexReader();
         Bits liveDocs = MultiFields.getLiveDocs( r );
         for ( int i = 0; i < r.maxDoc(); i++ )
@@ -186,8 +186,8 @@ public class DefaultIncrementalHandler
     private void updateProperties( Properties properties, IndexPackingRequest request )
         throws IOException
     {
-        Set<Object> keys = new HashSet<Object>( properties.keySet() );
-        Map<Integer, String> dataMap = new TreeMap<Integer, String>();
+        Set<Object> keys = new HashSet<>( properties.keySet() );
+        Map<Integer, String> dataMap = new TreeMap<>();
 
         // First go through and retrieve all keys and their values
         for ( Object key : keys )
@@ -204,7 +204,7 @@ public class DefaultIncrementalHandler
             }
         }
 
-        String val = (String) properties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER );
+        String val = properties.getProperty( IndexingContext.INDEX_CHUNK_COUNTER );
 
         int i = 0;
         // Next put the items back in w/ proper keys

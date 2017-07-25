@@ -38,7 +38,7 @@ public class IndexCreatorSorterTest
         final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( creators );
 
         // we are interested in IDs only
-        final List<String> sortedCreatorIds = new ArrayList<String>();
+        final List<String> sortedCreatorIds = new ArrayList<>();
         for ( IndexCreator creator : sortedCreators )
         {
             sortedCreatorIds.add( creator.getId() );
@@ -60,11 +60,11 @@ public class IndexCreatorSorterTest
         throws Exception
     {
         final List<IndexCreator> creators =
-            new ArrayList<IndexCreator>( getContainer().lookupList( IndexCreator.class ) );
+            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on ALL creators. Note: we add it as 1st intentionally
         creators.add( 0,
-            new SpoofIndexCreator( "depend-on-all", new ArrayList<String>(
+            new SpoofIndexCreator( "depend-on-all", new ArrayList<>(
                 getContainer().lookupMap( IndexCreator.class ).keySet() ) ) );
 
         // now we add spoofs to it, this one depends on only one, the "depend-on-all" creator Note: we add it as 1st
@@ -74,7 +74,7 @@ public class IndexCreatorSorterTest
         final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( creators );
 
         // we are interested in IDs only
-        final List<String> sortedCreatorIds = new ArrayList<String>();
+        final List<String> sortedCreatorIds = new ArrayList<>();
         for ( IndexCreator creator : sortedCreators )
         {
             sortedCreatorIds.add( creator.getId() );
@@ -98,7 +98,7 @@ public class IndexCreatorSorterTest
         throws Exception
     {
         final List<IndexCreator> creators =
-            new ArrayList<IndexCreator>( getContainer().lookupList( IndexCreator.class ) );
+            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on non existent creator. Note: we add it as 1st intentionally
         creators.add( 0,

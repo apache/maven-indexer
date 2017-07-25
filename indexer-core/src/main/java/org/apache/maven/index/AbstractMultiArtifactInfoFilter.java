@@ -44,7 +44,7 @@ public abstract class AbstractMultiArtifactInfoFilter
         }
         else
         {
-            this.filters = new ArrayList<ArtifactInfoFilter>( filters );
+            this.filters = new ArrayList<>( filters );
         }
     }
 

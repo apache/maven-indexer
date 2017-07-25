@@ -53,7 +53,7 @@ public class IndexCreatorSorter
 
             List<String> sortedIds = TopologicalSorter.sort( dag );
 
-            final ArrayList<IndexCreator> sortedCreators = new ArrayList<IndexCreator>( creators.size() );
+            final ArrayList<IndexCreator> sortedCreators = new ArrayList<>( creators.size() );
 
             for ( String id : sortedIds )
             {

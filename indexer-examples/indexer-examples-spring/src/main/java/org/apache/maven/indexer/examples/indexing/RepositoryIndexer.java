@@ -24,7 +24,6 @@ import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.ArtifactScanningListener;
@@ -100,7 +99,7 @@ public class RepositoryIndexer
     public void delete( final Collection<ArtifactInfo> artifacts )
         throws IOException
     {
-        final List<ArtifactContext> delete = new ArrayList<ArtifactContext>();
+        final List<ArtifactContext> delete = new ArrayList<>();
         for ( final ArtifactInfo artifact : artifacts )
         {
             LOGGER.debug( "Deleting artifact: {}; ctx id: {}; idx dir: {}",

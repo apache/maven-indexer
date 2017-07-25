@@ -105,7 +105,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
         assertEquals( 2, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         assertEquals( 2, list.size() );
 
@@ -140,7 +140,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
         assertEquals( 2, ig.getArtifactInfos().size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( ig.getArtifactInfos() );
+        List<ArtifactInfo> list = new ArrayList<>( ig.getArtifactInfos() );
 
         assertEquals( 2, list.size() );
 

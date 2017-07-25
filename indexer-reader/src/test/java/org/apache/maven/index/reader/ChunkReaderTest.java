@@ -19,6 +19,10 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
+import org.apache.maven.index.reader.Record.Type;
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,10 +30,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.maven.index.reader.Record.Type;
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -41,55 +41,49 @@ import static org.junit.Assert.assertThat;
 public class ChunkReaderTest
     extends TestSupport
 {
-  @Test
-  public void simple() throws IOException {
-    final ChunkReader chunkReader = new ChunkReader(
-        "full",
-        testResourceHandler("simple").locate("nexus-maven-repository-index.gz").read()
-    );
-    final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
-    assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
-    assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
-  }
-
-  @Test
-  public void roundtrip() throws IOException {
-    final Date published;
-    File tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
+    @Test
+    public void simple()
+        throws IOException
     {
-      final Resource resource = testResourceHandler("simple").locate("nexus-maven-repository-index.gz");
-      final ChunkReader chunkReader = new ChunkReader(
-          "full",
-          resource.read()
-      );
-      final ChunkWriter chunkWriter = new ChunkWriter(
-          chunkReader.getName(),
-          new FileOutputStream(tempChunkFile), 1, new Date()
-      );
-      try {
-        chunkWriter.writeChunk(chunkReader.iterator());
-      }
-      finally {
-        chunkWriter.close();
-        chunkReader.close();
-      }
-      published = chunkWriter.getTimestamp();
+        final ChunkReader chunkReader = new ChunkReader( "full", testResourceHandler( "simple" ) //
+            .locate( "nexus-maven-repository-index.gz" ).read() );
+        final Map<Type, List<Record>> recordTypes = loadRecordsByType( chunkReader );
+        assertThat( recordTypes.get( Type.DESCRIPTOR ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ROOT_GROUPS ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ALL_GROUPS ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ARTIFACT_ADD ).size(), equalTo( 2 ) );
+        assertThat( recordTypes.get( Type.ARTIFACT_REMOVE ), nullValue() );
     }
 
-    final ChunkReader chunkReader = new ChunkReader(
-        "full",
-        new FileInputStream(tempChunkFile)
-    );
-    assertThat(chunkReader.getVersion(), equalTo(1));
-    assertThat(chunkReader.getTimestamp().getTime(), equalTo(published.getTime()));
-    final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
-    assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
-    assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
-    assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
-  }
+    @Test
+    public void roundtrip()
+        throws IOException
+    {
+        final Date published;
+        File tempChunkFile = createTempFile( "nexus-maven-repository-index.gz" );
+        {
+            final Resource resource = testResourceHandler( "simple" ) //
+                .locate( "nexus-maven-repository-index.gz" );
+
+            try (ChunkReader chunkReader = new ChunkReader( "full",
+                                                            resource.read() ); ChunkWriter chunkWriter = new ChunkWriter(
+                chunkReader.getName(), //
+                new FileOutputStream( tempChunkFile ), 1, new Date() ))
+            {
+                chunkWriter.writeChunk( chunkReader.iterator() );
+                published = chunkWriter.getTimestamp();
+            }
+
+        }
+
+        final ChunkReader chunkReader = new ChunkReader( "full", new FileInputStream( tempChunkFile ) );
+        assertThat( chunkReader.getVersion(), equalTo( 1 ) );
+        assertThat( chunkReader.getTimestamp().getTime(), equalTo( published.getTime() ) );
+        final Map<Type, List<Record>> recordTypes = loadRecordsByType( chunkReader );
+        assertThat( recordTypes.get( Type.DESCRIPTOR ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ROOT_GROUPS ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ALL_GROUPS ).size(), equalTo( 1 ) );
+        assertThat( recordTypes.get( Type.ARTIFACT_ADD ).size(), equalTo( 2 ) );
+        assertThat( recordTypes.get( Type.ARTIFACT_REMOVE ), nullValue() );
+    }
 }

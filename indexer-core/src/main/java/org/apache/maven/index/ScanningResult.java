@@ -33,7 +33,7 @@ public class ScanningResult
 
     private int deletedFiles = 0;
 
-    private List<Exception> exceptions = new ArrayList<Exception>();
+    private List<Exception> exceptions = new ArrayList<>();
 
     private final ScanningRequest request;
 

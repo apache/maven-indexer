@@ -98,6 +98,11 @@ under the License.
 
     <dependency>
       <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-backward-codecs</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-highlighter</artifactId>
     </dependency>
 
@@ -194,6 +199,79 @@ under the License.
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</indexerJar>
               </systemPropertyVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedClassifierName>shaded-lucene</shadedClassifierName>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <!--finalName>${project.build.finalName}</finalName-->
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
+              <relocations>
+                <relocation>
+                  <pattern>org.apache.lucene</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.lucene.search</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.lucene.search</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.tartarus</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.bouncycastle</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons.compress</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.maven.model</pattern>
+                  <shadedPattern>org.apache.maven.index.shaded.maven</shadedPattern>
+                </relocation>
+              </relocations>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.slf4j:*</exclude>
+                  <exclude>com.google.*:*</exclude>
+                  <exclude>javax.*:*</exclude>
+                  <exclude>javax.*:*</exclude>
+                  <exclude>org.eclipse.*:*</exclude>
+                  <exclude>org.sonatype.*:*</exclude>
+                  <exclude>org.apache.maven.archetype:*</exclude>
+                  <exclude>org.apache.maven.wagon:*</exclude>
+                  <exclude>org.codehaus.*:*</exclude>
+                  <exclude>de.schlichtherle.truezip:*</exclude>
+                </excludes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+              </transformers>
             </configuration>
           </execution>
         </executions>

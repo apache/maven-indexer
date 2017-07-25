@@ -111,7 +111,7 @@ public class DefaultIteratorResultSet
 
         this.matchHighlightRequests = request.getMatchHighlightRequests();
 
-        List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<MatchHighlightRequest>();
+        List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<>();
         for ( MatchHighlightRequest hr : request.getMatchHighlightRequests() )
         {
             Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
@@ -403,7 +403,7 @@ public class DefaultIteratorResultSet
 
         TextFragment[] frag;
         // Get text
-        ArrayList<String> fragTexts = new ArrayList<String>( maxNumFragments );
+        ArrayList<String> fragTexts = new ArrayList<>( maxNumFragments );
 
         try
         {

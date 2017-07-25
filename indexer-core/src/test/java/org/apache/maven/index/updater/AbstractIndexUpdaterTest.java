@@ -155,7 +155,7 @@ public abstract class AbstractIndexUpdaterTest
 
         IteratorSearchResponse response = indexer.searchIterator( req );
 
-        ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( response.getTotalHits() );
+        ArrayList<ArtifactInfo> ais = new ArrayList<>( response.getTotalHits() );
 
         for ( ArtifactInfo ai : response )
         {

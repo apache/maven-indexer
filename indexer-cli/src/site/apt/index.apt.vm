@@ -29,6 +29,6 @@ ${project.name}
 
 * CLI Options Reference
 
-%{snippet|file=${project.basedir}/target/test-classes/options.html|verbatim=false}
+  Use either <<unpack>> (<<<-u,--unpack>>>) or <<index>> (<<<-i,--index>>> and <<<-r,--repository>>>) options.
 
-  Either unpack (<<<-u,--unpack>>>) or index (<<<-i,--index>>> and <<<-r,--repository>>>) must be used.
+%{snippet|file=${project.basedir}/target/test-classes/options.html|verbatim=false}

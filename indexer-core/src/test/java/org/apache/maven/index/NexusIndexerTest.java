@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -409,7 +410,7 @@ public class NexusIndexerTest
 
             ArtifactInfoGroup gi0 = r.values().iterator().next();
             assertEquals( "qdox : qdox", gi0.getGroupKey() );
-            List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( gi0.getArtifactInfos() );
+            List<ArtifactInfo> list = new ArrayList<>( gi0.getArtifactInfos() );
             ArtifactInfo ai0 = list.get( 0 );
             assertEquals( "1.6.1", ai0.getVersion() );
             ArtifactInfo ai1 = list.get( 1 );
@@ -567,9 +568,8 @@ public class NexusIndexerTest
         List<IndexCreator> indexCreators = context.getIndexCreators();
         // Directory directory = context.getIndexDirectory();
 
-        final File targetDir = File.createTempFile( "testIndexTimestamp", "ut-tmp" );
-        targetDir.delete();
-        targetDir.mkdirs();
+        final File targetDir = Files.createTempDirectory("testIndexTimestamp" ).toFile();
+        targetDir.deleteOnExit();
 
         final IndexPacker indexPacker = lookup( IndexPacker.class );
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
