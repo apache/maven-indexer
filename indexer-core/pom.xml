@@ -222,27 +222,27 @@ under the License.
               <relocations>
                 <relocation>
                   <pattern>org.apache.lucene</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.lucene.search</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.lucene.search</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.lucene.search</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.tartarus</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.bouncycastle</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.compress</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.lucene</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.maven.model</pattern>
-                  <shadedPattern>org.apache.maven.index.shaded.maven</shadedPattern>
+                  <shadedPattern>org.apache.maven.index_shaded.maven</shadedPattern>
                 </relocation>
               </relocations>
               <artifactSet>
