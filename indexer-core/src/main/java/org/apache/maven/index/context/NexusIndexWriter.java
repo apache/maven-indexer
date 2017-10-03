@@ -63,7 +63,8 @@ public class NexusIndexWriter
         // default open mode is CreateOrAppend which suits us
         config.setRAMBufferSizeMB( 2.0 ); // old default
         config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
-        config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
+        //config.setWriteLockTimeout(IndexWriterConfig.WRITE_LOCK_TIMEOUT);
+        //not a good idea -  see https://lucene.apache.org/core/5_5_0/core/org/apache/lucene/store/SleepingLockWrapper.html
         return config;
     }
 }

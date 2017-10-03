@@ -100,9 +100,9 @@ public class DefaultIndexerEngine
             // add artifact deletion marker
             final Document doc = new Document();
 
-            doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
+            doc.add( new Field( ArtifactInfo.DELETED, uinfo, FieldTypeFactory.getStoredNotIndexedFieldType()) );
             doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+                Long.toString( System.currentTimeMillis() ),FieldTypeFactory.getStoredNotIndexedFieldType()));
 
             IndexWriter w = context.getIndexWriter();
             w.addDocument( doc );

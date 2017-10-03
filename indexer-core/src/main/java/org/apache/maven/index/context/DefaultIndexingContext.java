@@ -55,6 +55,7 @@ import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.FieldTypeFactory;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
 import org.codehaus.plexus.util.StringUtils;
@@ -237,7 +238,9 @@ public class DefaultIndexingContext
             try
             {
                 // unlock the dir forcibly
-                if ( IndexWriter.isLocked( indexDirectory ) )
+                try {
+                	indexDirectory.obtainLock(IndexWriter.WRITE_LOCK_NAME);
+                } catch (LockObtainFailedException lofe)
                 {
                     unlockForcibly( lockFactory, indexDirectory );
                 }
@@ -274,7 +277,9 @@ public class DefaultIndexingContext
             closeReaders();
 
             // unlock the dir forcibly
-            if ( IndexWriter.isLocked( indexDirectory ) )
+            try {
+            	indexDirectory.obtainLock(IndexWriter.WRITE_LOCK_NAME);
+            } catch (LockObtainFailedException lofe)
             {
                 unlockForcibly( lockFactory, indexDirectory );
             }
@@ -361,9 +366,9 @@ public class DefaultIndexingContext
     {
         Document hdr = new Document();
 
-        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, FieldTypeFactory.getStoredNotAnalyzedFieldType()) );
 
-        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES, Field.Index.NO ) );
+        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), FieldTypeFactory.getStoredNotIndexedFieldType()) );
 
         IndexWriter w = getIndexWriter();
 
@@ -526,7 +531,7 @@ public class DefaultIndexingContext
 
         this.indexWriter = new NexusIndexWriter( getIndexDirectory(), getWriterConfig() );
         this.indexWriter.commit(); // LUCENE-2386
-        this.searcherManager = new SearcherManager( indexWriter, false, new NexusIndexSearcherFactory( this ) );
+        this.searcherManager = new SearcherManager( indexWriter, false, false, new NexusIndexSearcherFactory( this ) );
     }
 
     /**
@@ -841,7 +846,7 @@ public class DefaultIndexingContext
         {
             indexSearcher.search( new TermQuery( new Term( field, filedValue ) ), collector );
             TopDocs topDocs = collector.topDocs();
-            Set<String> groups = new LinkedHashSet<String>( Math.max( 10, topDocs.totalHits ) );
+            Set<String> groups = new LinkedHashSet<String>((int) Math.max( 10, topDocs.totalHits ) );
             if ( topDocs.totalHits > 0 )
             {
                 Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );
@@ -873,9 +878,9 @@ public class DefaultIndexingContext
     {
         final Document groupDoc = new Document();
         groupDoc.add( new Field( field, //
-            fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            fieldValue, FieldTypeFactory.getStoredNotAnalyzedFieldType() ));
         groupDoc.add( new Field( listField, //
-            ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
+            ArtifactInfo.lst2str( groups ), FieldTypeFactory.getStoredNotIndexedFieldType()) );
         return groupDoc;
     }
 

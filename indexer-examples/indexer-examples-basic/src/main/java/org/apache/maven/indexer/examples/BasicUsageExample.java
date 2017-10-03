@@ -22,8 +22,10 @@ package org.apache.maven.indexer.examples;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Bits;
@@ -230,15 +232,15 @@ public class BasicUsageExample
             indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.sonatype.nexus" ) );
         final Query artifactIdQ =
             indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "nexus-api" ) );
-        final BooleanQuery query = new BooleanQuery();
-        query.add( groupIdQ, Occur.MUST );
-        query.add( artifactIdQ, Occur.MUST );
+        final Builder queryBuilder = new BooleanQuery.Builder();
+        queryBuilder.add( groupIdQ, Occur.MUST );
+        queryBuilder.add( artifactIdQ, Occur.MUST );
 
         // we want "jar" artifacts only
-        query.add( indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "jar" ) ), Occur.MUST );
+        queryBuilder.add( indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "jar" ) ), Occur.MUST );
         // we want main artifacts only (no classifier)
         // Note: this below is unfinished API, needs fixing
-        query.add( indexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( Field.NOT_PRESENT ) ),
+        queryBuilder.add( indexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( Field.NOT_PRESENT ) ),
                    Occur.MUST_NOT );
 
         // construct the filter to express "V greater than"
@@ -263,7 +265,7 @@ public class BasicUsageExample
         System.out.println(
             "Searching for all GAVs with G=org.sonatype.nexus and nexus-api and having V greater than 1.5.0" );
         final IteratorSearchRequest request =
-            new IteratorSearchRequest( query, Collections.singletonList( centralContext ), versionFilter );
+            new IteratorSearchRequest( queryBuilder.build(), Collections.singletonList( centralContext ), versionFilter );
         final IteratorSearchResponse response = indexer.searchIterator( request );
         for ( ArtifactInfo ai : response )
         {
@@ -277,20 +279,20 @@ public class BasicUsageExample
             indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.maven.indexer" ) );
         Query aidQ = indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "indexer-artifact" ) );
 
-        BooleanQuery bq = new BooleanQuery();
-        bq.add( gidQ, Occur.MUST );
-        bq.add( aidQ, Occur.MUST );
+        Builder bqb = new BooleanQuery.Builder();
+        bqb.add( gidQ, Occur.MUST );
+        bqb.add( aidQ, Occur.MUST );
 
-        searchAndDump( indexer, "all artifacts under GA org.apache.maven.indexer:indexer-artifact", bq );
+        searchAndDump( indexer, "all artifacts under GA org.apache.maven.indexer:indexer-artifact", bqb.build() );
 
         // Searching for some main artifact
-        bq = new BooleanQuery();
-        bq.add( gidQ, Occur.MUST );
-        bq.add( aidQ, Occur.MUST );
+        bqb = new BooleanQuery.Builder();
+        bqb.add( gidQ, Occur.MUST );
+        bqb.add( aidQ, Occur.MUST );
         // bq.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( "*" ) ), Occur.MUST_NOT
         // );
 
-        searchAndDump( indexer, "main artifacts under GA org.apache.maven.indexer:indexer-artifact", bq );
+        searchAndDump( indexer, "main artifacts under GA org.apache.maven.indexer:indexer-artifact", bqb.build() );
 
         // doing sha1 search
         searchAndDump( indexer, "SHA1 7ab67e6b20e5332a7fb4fdf2f019aec4275846c2", indexer.constructQuery( MAVEN.SHA1,
@@ -306,11 +308,11 @@ public class BasicUsageExample
                                                new UserInputSearchExpression( "DefaultNexusIndexer" ) ) );
 
         // doing search for all "canonical" maven plugins latest versions
-        bq = new BooleanQuery();
-        bq.add( indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-plugin" ) ), Occur.MUST );
-        bq.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.maven.plugins" ) ),
+        bqb = new BooleanQuery.Builder();
+        bqb.add( indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-plugin" ) ), Occur.MUST );
+        bqb.add( indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.maven.plugins" ) ),
                 Occur.MUST );
-        searchGroupedAndDump( indexer, "all \"canonical\" maven plugins", bq, new GAGrouping() );
+        searchGroupedAndDump( indexer, "all \"canonical\" maven plugins", bqb.build(), new GAGrouping() );
 
         // doing search for all archetypes latest versions
         searchGroupedAndDump( indexer, "all maven archetypes (latest versions)",

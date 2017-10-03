@@ -1,5 +1,8 @@
 package org.apache.maven.index;
 
+import java.io.IOException;
+import java.io.StringReader;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,8 +24,7 @@ package org.apache.maven.index;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.StringReader;
+
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -30,11 +32,12 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
+import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -286,18 +289,18 @@ public class DefaultQueryCreator
                 }
                 else
                 {
-                    BooleanQuery bq = new BooleanQuery();
+                    Builder bqb = new BooleanQuery.Builder();
 
                     Term t = new Term( indexerField.getKey(), query );
 
-                    bq.add( new TermQuery( t ), Occur.SHOULD );
+                    bqb.add( new TermQuery( t ), Occur.SHOULD );
 
                     PrefixQuery pq = new PrefixQuery( t );
-                    pq.setBoost( 0.8f );
+                    BoostQuery boostedQuery = new BoostQuery(pq, 0.8f);
 
-                    bq.add( pq, Occur.SHOULD );
+                    bqb.add( boostedQuery, Occur.SHOULD );
 
-                    return bq;
+                    return bqb.build();
                 }
             }
             else
@@ -332,13 +335,13 @@ public class DefaultQueryCreator
                 {
                     // qpQuery = "\"" + qpQuery + "\"";
 
-                    BooleanQuery q1 = new BooleanQuery();
+                    Builder q1b = new BooleanQuery.Builder();
 
-                    q1.add( qp.parse( qpQuery ), Occur.SHOULD );
+                    q1b.add( qp.parse( qpQuery ), Occur.SHOULD );
 
                     if ( qpQuery.contains( " " ) )
                     {
-                        q1.add( qp.parse( "\"" + qpQuery + "\"" ), Occur.SHOULD );
+                        q1b.add( qp.parse( "\"" + qpQuery + "\"" ), Occur.SHOULD );
                     }
 
                     Query q2 = null;
@@ -359,17 +362,17 @@ public class DefaultQueryCreator
 
                     if ( q2 == null )
                     {
-                        return q1;
+                        return q1b.build();
                     }
                     else
                     {
-                        BooleanQuery bq = new BooleanQuery();
+                        Builder bqb = new BooleanQuery.Builder();
 
                         // trick with order
-                        bq.add( q2, Occur.SHOULD );
-                        bq.add( q1, Occur.SHOULD );
+                        bqb.add( q2, Occur.SHOULD );
+                        bqb.add( q1b.build(), Occur.SHOULD );
 
-                        return bq;
+                        return bqb.build();
                     }
                 }
                 catch ( ParseException e )

@@ -20,9 +20,8 @@ package org.apache.maven.index;
  */
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexOptions;
 
 /**
  * Holds basic information about Indexer field, how it is stored. To keep this centralized, and not spread across code.
@@ -38,34 +37,20 @@ public class IndexerField
 
     private final String key;
 
-    private final Store storeMethod;
-
-    private final Index indexMethod;
-
-    private final TermVector termVector;
+	private final FieldType fieldType;
 
     public IndexerField( final org.apache.maven.index.Field ontology, final IndexerFieldVersion version,
-                         final String key, final String description, final Store storeMethod, final Index indexMethod )
+                         final String key, final String description, FieldType fieldType)
     {
-        this( ontology, version, key, description, storeMethod, indexMethod, null );
-    }
 
-    public IndexerField( final org.apache.maven.index.Field ontology, final IndexerFieldVersion version,
-                         final String key, final String description, final Store storeMethod, final Index indexMethod,
-                         final TermVector termVector )
-    {
-        this.ontology = ontology;
+    	this.ontology = ontology;
 
         this.version = version;
 
         this.key = key;
 
-        this.storeMethod = storeMethod;
-
-        this.indexMethod = indexMethod;
-
-        this.termVector = termVector;
-
+        this.fieldType = fieldType;
+        
         ontology.addIndexerField( this );
     }
 
@@ -84,55 +69,23 @@ public class IndexerField
         return key;
     }
 
-    public Field.Store getStoreMethod()
-    {
-        return storeMethod;
-    }
-
-    public Field.Index getIndexMethod()
-    {
-        return indexMethod;
-    }
-
-    public Field.TermVector getTermVector()
-    {
-        return termVector;
-    }
-
     public boolean isIndexed()
     {
-        return !Index.NO.equals( indexMethod );
+        return fieldType.indexOptions().equals(IndexOptions.NONE);
     }
 
     public boolean isKeyword()
     {
-        return isIndexed() && !Index.ANALYZED.equals( indexMethod );
+        return isIndexed() && !fieldType.omitNorms();
     }
 
     public boolean isStored()
     {
-        return !( Store.NO.equals( storeMethod ) );
+        return fieldType.stored();
     }
 
     public Field toField( String value )
     {
-        Field result;
-
-        if ( getTermVector() != null )
-        {
-            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod(), getTermVector() );
-        }
-        else
-        {
-            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod() );
-        }
-
-        // if ( isKeyword() )
-        // {
-        // result.setOmitNorms( true );
-        // result.setOmitTf( true );
-        // }
-
-        return result;
+        return new Field( getKey(), value, fieldType);
     }
 }

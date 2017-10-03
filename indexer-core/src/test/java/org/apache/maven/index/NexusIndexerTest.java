@@ -38,6 +38,7 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BooleanQuery.Builder;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -227,7 +228,7 @@ public class NexusIndexerTest
         // and comes the "trick", i will perform single _selection_!
         // I want to ensure there is an artifact present!
         // explanation: see for yourself ;)
-        BooleanQuery bq = new BooleanQuery();
+        Builder bqb = new BooleanQuery.Builder();
 
         Query g = indexer.constructQuery( MAVEN.GROUP_ID, "commons-logging", SearchType.EXACT );
         Query a = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.EXACT );
@@ -236,14 +237,14 @@ public class NexusIndexerTest
         Query c = indexer.constructQuery( MAVEN.CLASSIFIER, Field.NOT_PRESENT, SearchType.EXACT );
 
         // so, I am looking up GAVP (for content of those look above) that _has no_ classifier
-        bq.add( g, Occur.MUST );
-        bq.add( a, Occur.MUST );
-        bq.add( v, Occur.MUST );
-        bq.add( p, Occur.MUST );
-        bq.add( c, Occur.MUST_NOT );
+        bqb.add( g, Occur.MUST );
+        bqb.add( a, Occur.MUST );
+        bqb.add( v, Occur.MUST );
+        bqb.add( p, Occur.MUST );
+        bqb.add( c, Occur.MUST_NOT );
 
         // invoking the old method (was present since day 1), that will return the match only and if only there is 1 hit
-        Collection<ArtifactInfo> ais = indexer.identify( bq, Collections.singletonList( context ) );
+        Collection<ArtifactInfo> ais = indexer.identify( bqb.build(), Collections.singletonList( context ) );
 
         assertEquals( 1, ais.size() );
 
@@ -443,12 +444,14 @@ public class NexusIndexerTest
         }
 
         {
-            BooleanQuery bq = new BooleanQuery( true );
-            bq.add( new WildcardQuery( new Term( ArtifactInfo.GROUP_ID, "testng*" ) ), Occur.SHOULD );
-            bq.add( new WildcardQuery( new Term( ArtifactInfo.ARTIFACT_ID, "testng*" ) ), Occur.SHOULD );
-            bq.setMinimumNumberShouldMatch( 1 );
+            Builder bqb = new BooleanQuery.Builder();
+            // see https://lucene.apache.org/core/7_0_0/MIGRATE.html
+            // Similarity.coord and BooleanQuery.disableCoord removed            
+            bqb.add( new WildcardQuery( new Term( ArtifactInfo.GROUP_ID, "testng*" ) ), Occur.SHOULD );
+            bqb.add( new WildcardQuery( new Term( ArtifactInfo.ARTIFACT_ID, "testng*" ) ), Occur.SHOULD );
+            bqb.setMinimumNumberShouldMatch( 1 );
 
-            FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( bq ) );
+            FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( bqb.build() ) );
             Set<ArtifactInfo> r = response.getResults();
 
             assertEquals( r.toString(), 4, r.size() );

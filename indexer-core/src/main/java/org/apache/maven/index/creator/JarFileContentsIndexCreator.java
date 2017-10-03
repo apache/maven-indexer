@@ -1,5 +1,11 @@
 package org.apache.maven.index.creator;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,15 +27,9 @@ package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.TextField;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
@@ -52,7 +52,7 @@ public class JarFileContentsIndexCreator
     public static final String ID = "jarContent";
 
     public static final IndexerField FLD_CLASSNAMES = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V3,
-        "classnames", "Artifact Classes (tokenized)", Store.NO, Index.ANALYZED );
+        "classnames", "Artifact Classes (tokenized)", TextField.TYPE_NOT_STORED );
 
     /**
      * NexusAnalyzer makes exception with this field only, to keep backward compatibility with old consumers of
@@ -60,7 +60,7 @@ public class JarFileContentsIndexCreator
      * registered BEFORE FLD_CLASSNAMES_KW!
      */
     public static final IndexerField FLD_CLASSNAMES_KW = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V1,
-        "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
+        "c", "Artifact Classes (tokenized on newlines only)", TextField.TYPE_STORED );
 
     public JarFileContentsIndexCreator()
     {

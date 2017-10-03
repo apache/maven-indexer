@@ -19,8 +19,9 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -33,16 +34,15 @@ import java.util.Set;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -50,9 +50,6 @@ import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 
 public class FullIndexNexusIndexerTest
     extends DefaultIndexNexusIndexerTest
@@ -418,7 +415,11 @@ public class FullIndexNexusIndexerTest
 
         Query bq = new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, term ) );
         TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
+      //see https://lucene.apache.org/core/5_4_0/core/org/apache/lucene/search/FilteredQuery.html
+        org.apache.lucene.search.BooleanQuery.Builder bqb = new BooleanQuery.Builder();      
+        bqb.add(tq, Occur.MUST);
+        bqb.add(bq, Occur.FILTER);
+        Query query = bqb.build();
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
 

@@ -83,12 +83,12 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>7</javaVersion>
+    <javaVersion>8</javaVersion>
 
     <eclipse-sisu.version>0.2.1</eclipse-sisu.version>
     <sisu-guice.version>3.2.2</sisu-guice.version>
 
-    <lucene.version>5.5.4</lucene.version>
+    <lucene.version>7.0.0</lucene.version>
     <maven.version>3.0.5</maven.version>
     <aether.version>1.0.0.v20140518</aether.version>
 

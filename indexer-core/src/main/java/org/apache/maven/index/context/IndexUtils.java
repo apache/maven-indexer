@@ -36,6 +36,7 @@ import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.FieldTypeFactory;
 import org.codehaus.plexus.util.FileUtils;
 
 public class IndexUtils
@@ -147,12 +148,12 @@ public class IndexUtils
         Document document = new Document();
 
         // unique key
-        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), FieldTypeFactory.getStoredNotAnalyzedFieldType()) );
 
         if ( updateLastModified || doc.getField( ArtifactInfo.LAST_MODIFIED ) == null )
         {
             document.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+                Long.toString( System.currentTimeMillis() ), FieldTypeFactory.getStoredNotIndexedFieldType()) );
         }
         else
         {

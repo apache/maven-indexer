@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -75,7 +75,12 @@ public class DefaultIndexNexusIndexerTest
         // bq.add(new PrefixQuery(new Term(ArtifactInfo.GROUP_ID, term + "*")), Occur.SHOULD);
         // bq.add(new PrefixQuery(new Term(ArtifactInfo.ARTIFACT_ID, term + "*")), Occur.SHOULD);
         TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-plugin" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
+      //see https://lucene.apache.org/core/5_4_0/core/org/apache/lucene/search/FilteredQuery.html
+        org.apache.lucene.search.BooleanQuery.Builder bqb = new BooleanQuery.Builder();
+        
+        bqb.add(tq, Occur.MUST);
+        bqb.add(bq, Occur.FILTER);
+        Query query = bqb.build();
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
 
@@ -244,7 +249,12 @@ public class DefaultIndexNexusIndexerTest
 
         Query bq = new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, term ) );
         TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
+      //see https://lucene.apache.org/core/5_4_0/core/org/apache/lucene/search/FilteredQuery.html
+        org.apache.lucene.search.BooleanQuery.Builder bqb = new BooleanQuery.Builder();
+        
+        bqb.add(tq, Occur.MUST);
+        bqb.add(bq, Occur.FILTER);
+        Query query = bqb.build();
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
 

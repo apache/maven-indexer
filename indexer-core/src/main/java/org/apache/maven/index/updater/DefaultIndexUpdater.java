@@ -271,7 +271,7 @@ public class DefaultIndexUpdater
 
                 if ( !filter.accept( d ) )
                 {
-                    boolean success = w.tryDeleteDocument(r, i);
+                    long success = w.tryDeleteDocument(r, i);
                     //FIXME handle deletion failure
                 }
             }

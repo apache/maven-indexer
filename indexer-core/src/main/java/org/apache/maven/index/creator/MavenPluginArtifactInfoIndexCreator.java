@@ -1,5 +1,14 @@
 package org.apache.maven.index.creator;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,20 +30,12 @@ package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.TextField;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.FieldTypeFactory;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
@@ -61,10 +62,10 @@ public class MavenPluginArtifactInfoIndexCreator
     private static final String MAVEN_PLUGIN_PACKAGING = "maven-plugin";
 
     public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField( MAVEN.PLUGIN_PREFIX, IndexerFieldVersion.V1,
-        "px", "MavenPlugin prefix (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
+        "px", "MavenPlugin prefix (as keyword, stored)", FieldTypeFactory.getStoredNotAnalyzedFieldType() );
 
     public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
-        "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.ANALYZED );
+        "gx", "MavenPlugin goals (as keyword, stored)", TextField.TYPE_STORED);
 
     public MavenPluginArtifactInfoIndexCreator()
     {

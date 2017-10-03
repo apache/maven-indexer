@@ -24,8 +24,10 @@ import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.FieldTypeFactory;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.OSGI;
@@ -71,88 +73,84 @@ public class OsgiArtifactIndexCreator
     public static final String ID = "osgi-metadatas";
     public static final IndexerField FLD_SHA256 =
             new IndexerField(OSGI.SHA256, IndexerFieldVersion.V4, "sha256", "SHA-256 (not analyzed, stored)",
-                    Field.Store.YES, Field.Index.NOT_ANALYZED);
+                    FieldTypeFactory.getStoredNotAnalyzedFieldType());
     private static final String BSN = "Bundle-SymbolicName";
 
     public static final IndexerField FLD_BUNDLE_SYMBOLIC_NAME =
         new IndexerField( OSGI.SYMBOLIC_NAME, IndexerFieldVersion.V4, BSN, "Bundle-SymbolicName (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+                          TextField.TYPE_STORED);
 
 
     private static final String BV = "Bundle-Version";
 
     public static final IndexerField FLD_BUNDLE_VERSION =
-        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, BV, "Bundle-Version (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.VERSION, IndexerFieldVersion.V4, BV, "Bundle-Version (indexed, stored)", TextField.TYPE_STORED);
 
 
     private static final String BEP = "Export-Package";
 
     public static final IndexerField FLD_BUNDLE_EXPORT_PACKAGE =
         new IndexerField( OSGI.EXPORT_PACKAGE, IndexerFieldVersion.V4, BEP, "Export-Package (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        		TextField.TYPE_STORED );
     @Deprecated
     private static final String BES = "Export-Service";
     @Deprecated
     public static final IndexerField FLD_BUNDLE_EXPORT_SERVIVE =
         new IndexerField( OSGI.EXPORT_SERVICE, IndexerFieldVersion.V4, BES, "Export-Service (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        		TextField.TYPE_STORED );
 
 
     private static final String BD = "Bundle-Description";
 
     public static final IndexerField FLD_BUNDLE_DESCRIPTION =
         new IndexerField( OSGI.DESCRIPTION, IndexerFieldVersion.V4, BD, "Bundle-Description (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        		TextField.TYPE_STORED );
 
     private static final String BN = "Bundle-Name";
 
     public static final IndexerField FLD_BUNDLE_NAME =
-        new IndexerField( OSGI.NAME, IndexerFieldVersion.V4, BN, "Bundle-Name (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.NAME, IndexerFieldVersion.V4, BN, "Bundle-Name (indexed, stored)", TextField.TYPE_STORED );
 
     private static final String BL = "Bundle-License";
 
     public static final IndexerField FLD_BUNDLE_LICENSE =
-        new IndexerField( OSGI.LICENSE, IndexerFieldVersion.V4, BL, "Bundle-License (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.LICENSE, IndexerFieldVersion.V4, BL, "Bundle-License (indexed, stored)", TextField.TYPE_STORED );
 
     private static final String BDU = "Bundle-DocURL";
 
     public static final IndexerField FLD_BUNDLE_DOCURL =
-        new IndexerField( OSGI.DOCURL, IndexerFieldVersion.V4, BDU, "Bundle-DocURL (indexed, stored)", Field.Store.YES,
-                          Field.Index.ANALYZED );
+        new IndexerField( OSGI.DOCURL, IndexerFieldVersion.V4, BDU, "Bundle-DocURL (indexed, stored)", TextField.TYPE_STORED );
 
     private static final String BIP = "Import-Package";
 
     public static final IndexerField FLD_BUNDLE_IMPORT_PACKAGE =
         new IndexerField( OSGI.IMPORT_PACKAGE, IndexerFieldVersion.V4, BIP, "Import-Package (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        		TextField.TYPE_STORED );
 
 
     private static final String BRB = "Require-Bundle";
 
     public static final IndexerField FLD_BUNDLE_REQUIRE_BUNDLE =
         new IndexerField( OSGI.REQUIRE_BUNDLE, IndexerFieldVersion.V4, BRB, "Require-Bundle (indexed, stored)",
-                          Field.Store.YES, Field.Index.ANALYZED );
+        		TextField.TYPE_STORED );
     private static final String PROVIDE_CAPABILITY = "Provide-Capability";
     public static final IndexerField FLD_BUNDLE_PROVIDE_CAPABILITY =
             new IndexerField(OSGI.PROVIDE_CAPABILITY, IndexerFieldVersion.V4, PROVIDE_CAPABILITY, "Provide-Capability (indexed, stored)",
-                    Field.Store.YES, Field.Index.ANALYZED);
+            		TextField.TYPE_STORED);
     private static final String REQUIRE_CAPABILITY = "Require-Capability";
     public static final IndexerField FLD_BUNDLE_REQUIRE_CAPABILITY =
             new IndexerField(OSGI.REQUIRE_CAPABILITY, IndexerFieldVersion.V4, REQUIRE_CAPABILITY, "Require-Capability (indexed, stored)",
-                    Field.Store.YES, Field.Index.ANALYZED);
+            		TextField.TYPE_STORED);
     private static final String FRAGMENT_HOST = "Fragment-Host";
     public static final IndexerField FLD_BUNDLE_FRAGMENT_HOST =
             new IndexerField(OSGI.FRAGMENT_HOST, IndexerFieldVersion.V4, FRAGMENT_HOST, "Fragment-Host (indexed, stored)",
-                    Field.Store.YES, Field.Index.ANALYZED);
+            		TextField.TYPE_STORED);
 
     private static final String BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = "Bundle-RequiredExecutionEnvironment";
     public static final IndexerField FLD_BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT =
             new IndexerField(OSGI.BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT, IndexerFieldVersion.V4, BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT,
                     "Bundle-RequiredExecutionEnvironment (indexed, stored)",
-                    Field.Store.YES, Field.Index.ANALYZED);
+                    TextField.TYPE_STORED);
 
 
 
