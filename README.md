@@ -9,7 +9,7 @@ GIT (the canonical repository):
 https://git-wip-us.apache.org/repos/asf/maven-indexer.git
 
 JIRA:
-http://jira.codehaus.org/browse/MINDEXER
+https://issues.apache.org/jira/projects/MINDEXER
 
 Mailing lists:
 Developers: dev@maven.apache.org
