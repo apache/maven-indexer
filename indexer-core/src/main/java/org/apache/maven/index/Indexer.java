@@ -110,6 +110,16 @@ public interface Indexer
 
     /**
      * Adds the passed in artifact contexts to passed in indexing context.
+     *
+     * @param ac
+     * @param context
+     * @throws IOException
+     */
+    void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
+        throws IOException;
+
+    /**
+     * Adds the passed in artifact contexts to passed in indexing context.
      * 
      * @param acs
      * @param context
@@ -210,4 +220,16 @@ public interface Indexer
      */
     Query constructQuery( Field field, SearchExpression expression )
         throws IllegalArgumentException;
+
+    /**
+     * Helper method to construct Lucene query for given field without need for knowledge (on caller side) HOW is a
+     * field indexed, and WHAT query is needed to achieve that search.
+     *
+     * @param field
+     * @param expression
+     * @param searchType
+     * @return
+     * @throws IllegalArgumentException
+     */
+    Query constructQuery( Field field, String expression, SearchType searchType) throws IllegalArgumentException;
 }

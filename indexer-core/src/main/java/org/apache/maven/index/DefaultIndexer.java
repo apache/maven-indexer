@@ -40,6 +40,7 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
+import org.apache.maven.index.expr.SearchTypedStringSearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.util.IOUtil;
@@ -107,6 +108,17 @@ public class DefaultIndexer
     // ----------------------------------------------------------------------------
     // Modifying
     // ----------------------------------------------------------------------------
+
+    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context)
+        throws IOException
+    {
+        if ( ac != null )
+        {
+            indexerEngine.update( context, ac );
+
+            context.commit();
+        }
+    }
 
     public void addArtifactsToIndex( Collection<ArtifactContext> ac, IndexingContext context )
         throws IOException
@@ -244,6 +256,11 @@ public class DefaultIndexer
         }
     }
 
+    public Query constructQuery( Field field, String expression, SearchType searchType )
+        throws IllegalArgumentException
+    {
+        return constructQuery( field, new SearchTypedStringSearchExpression( expression, searchType ));
+    }
     // ==
 
     private static final char[] DIGITS = "0123456789abcdef".toCharArray();
