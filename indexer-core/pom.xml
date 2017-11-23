@@ -132,7 +132,7 @@ under the License.
     <!-- Using org.apache.maven.archetype.source.ArchetypeDataSource from it only -->
     <dependency>
       <groupId>org.apache.maven.archetype</groupId>
-      <artifactId>archetype-common</artifactId>
+      <artifactId>archetype-catalog</artifactId>
       <optional>true</optional>
     </dependency>
 

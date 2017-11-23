@@ -257,69 +257,11 @@ under the License.
         <version>${wagon.version}</version>
       </dependency>
 
-      <!-- Using org.apache.maven.archetype.source.ArchetypeDataSource from it only -->
+      <!-- For org.apache.maven.archetype.source.ArchetypeDataSource helper -->
       <dependency>
         <groupId>org.apache.maven.archetype</groupId>
-        <artifactId>archetype-common</artifactId>
+        <artifactId>archetype-catalog</artifactId>
         <version>${archetype.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.apache.maven.archetype</groupId>
-            <artifactId>archetype-registry</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>jdom</groupId>
-            <artifactId>jdom</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-container-default</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-velocity</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>net.sourceforge.jchardet</groupId>
-            <artifactId>jchardet</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-model</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-utils</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven.archetype</groupId>
-            <artifactId>archetype-descriptor</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.velocity</groupId>
-            <artifactId>velocity</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-invoker</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.plexus</groupId>
-            <artifactId>plexus-component-annotations</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-project</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- ZipFacade -->
