@@ -86,7 +86,7 @@ under the License.
       <dependency>
           <groupId>org.apache.maven</groupId>
           <artifactId>maven-model-builder</artifactId>
-          <version>3.2.3</version>
+          <version>${maven.version}</version>
           <scope>test</scope>
       </dependency>
 
@@ -94,7 +94,7 @@ under the License.
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-http-lightweight</artifactId>
-        <version>2.10</version>
+        <version>${wagon.version}</version>
         <scope>compile</scope>
       </dependency>
 
@@ -104,8 +104,8 @@ under the License.
         <artifactId>org.eclipse.sisu.plexus</artifactId>
       </dependency>
       <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-guice</artifactId>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
       </dependency>
 
       <!-- Spring dependencies start: -->

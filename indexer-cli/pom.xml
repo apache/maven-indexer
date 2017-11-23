@@ -50,8 +50,8 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>org.sonatype.sisu</groupId>
-      <artifactId>sisu-guice</artifactId>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
     </dependency>
 
     <dependency>
@@ -115,7 +115,6 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>1.7.1</version>
         <executions>
           <execution>
             <id>jdk15</id>
@@ -156,7 +155,7 @@ under the License.
               <goal>verify</goal>
             </goals>
             <configuration>
-              <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+              <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
                 <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</indexerJar>
@@ -165,22 +164,18 @@ under the License.
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <!-- Combine the excludes from the parent with the ones defined in this project -->
+          <excludes combine.children="append">
+            <!-- This directory is a repository -->
+            <exclude>src/test/repo/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <configuration>
-            <!-- Combine the excludes from the parent with the ones defined in this project -->
-            <excludes combine.children="append">
-              <!-- This directory is a repository -->
-              <exclude>src/test/repo/**</exclude>
-            </excludes>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 
 </project>

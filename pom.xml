@@ -24,7 +24,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>27</version>
+    <version>30</version>
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
@@ -84,17 +84,16 @@ under the License.
 
   <properties>
     <javaVersion>7</javaVersion>
+    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
+    <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
 
-    <eclipse-sisu.version>0.2.1</eclipse-sisu.version>
-    <sisu-guice.version>3.2.2</sisu-guice.version>
-
+    <eclipse-sisu.version>0.3.3</eclipse-sisu.version>
     <lucene.version>5.5.4</lucene.version>
-    <maven.version>3.0.5</maven.version>
-    <aether.version>1.0.0.v20140518</aether.version>
-
-    <truezip.version>7.6.6</truezip.version>
-    <archetype.version>2.2</archetype.version>
-    <wagon.version>2.3</wagon.version>
+    <maven.version>3.5.2</maven.version>
+    <resolver.version>1.1.0</resolver.version>
+    <truezip.version>7.7.10</truezip.version>
+    <archetype.version>2.4</archetype.version>
+    <wagon.version>2.12</wagon.version>
 
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
   </properties>
@@ -109,18 +108,18 @@ under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.25</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.1.2</version>
+        <version>1.2.3</version>
         <scope>optional</scope>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>1.1.2</version>
+        <version>1.2.3</version>
         <scope>optional</scope>
       </dependency>
       <dependency>
@@ -128,26 +127,20 @@ under the License.
              as it would otherwise use commons-logging and do it's own other thing. -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.7</version>
+        <version>1.7.25</version>
         <scope>optional</scope>
       </dependency>
 
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>16.0.1</version>
-      </dependency>
-
-      <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.3</version>
+        <version>20.0</version>
       </dependency>
 
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>jsr305</artifactId>
-        <version>2.0.3</version>
+        <version>3.0.2</version>
       </dependency>
 
       <!-- DI -->
@@ -170,21 +163,21 @@ under the License.
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.sisu</groupId>
-        <artifactId>sisu-guice</artifactId>
-        <version>${sisu-guice.version}</version>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>4.1.0</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.sisu.inject</groupId>
+        <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-multibindings</artifactId>
-        <version>${sisu-guice.version}</version>
+        <version>4.1.0</version>
       </dependency>
 
       <dependency>
-        <groupId>org.sonatype.sisu.inject</groupId>
+        <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-assistedinject</artifactId>
-        <version>${sisu-guice.version}</version>
+        <version>4.1.0</version>
       </dependency>
 
       <dependency>
@@ -197,6 +190,12 @@ under the License.
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
         <version>${eclipse-sisu.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Lucene -->
@@ -231,17 +230,17 @@ under the License.
         <version>${lucene.version}</version>
       </dependency>
 
-      <!-- Aether -->
+      <!-- Maven Resolver -->
       <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-api</artifactId>
-        <version>${aether.version}</version>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-api</artifactId>
+        <version>${resolver.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.eclipse.aether</groupId>
-        <artifactId>aether-util</artifactId>
-        <version>${aether.version}</version>
+        <groupId>org.apache.maven.resolver</groupId>
+        <artifactId>maven-resolver-util</artifactId>
+        <version>${resolver.version}</version>
       </dependency>
 
       <!-- Maven -->
@@ -326,6 +325,18 @@ under the License.
       <!-- ZipFacade -->
       <dependency>
         <groupId>de.schlichtherle.truezip</groupId>
+        <artifactId>truezip-kernel</artifactId>
+        <version>${truezip.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>de.schlichtherle.truezip</groupId>
         <artifactId>truezip-file</artifactId>
         <version>${truezip.version}</version>
       </dependency>
@@ -403,7 +414,6 @@ under the License.
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <version>1.15</version>
         <configuration>
           <signature>
             <groupId>org.codehaus.mojo.signature</groupId>
@@ -473,7 +483,45 @@ under the License.
       <plugins>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.20.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.20.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>animal-sniffer-maven-plugin</artifactId>
+          <version>1.16</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <version>0.12</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.17</version>
+          <dependencies>
+            <dependency>
+              <groupId>org.apache.maven.shared</groupId>
+              <artifactId>maven-shared-resources</artifactId>
+              <version>2</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
+          <version>3.6</version>
           <configuration>
             <topSiteURL>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}</topSiteURL>
           </configuration>
@@ -494,6 +542,7 @@ under the License.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
         <configuration>
           <groups>
             <group>
