@@ -213,19 +213,10 @@ public abstract class AbstractRepoNexusIndexerTest
             // "-" in the name
             // New in 4.0! constructquery do throw error on wrong input! I left in old call and checking it fails,
             // and then added "new" call with proper query syntax!
-            Query q;
-            try
-            {
-                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*-logging", SearchType.SCORED );
 
-                fail( "Input is invalid, query cannot start with *!" );
-            }
-            catch ( IllegalArgumentException e )
-            {
-                // good, now let's do it again with good input:
-                // Note: since queries are really parsed now, the leading "-" is wrong too
-                q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "logging", SearchType.SCORED );
-            }
+            // Since Lucene 5.x can cope with wildcard prefixes, this case is not valid anymore
+            // see https://issues.apache.org/jira/browse/MINDEXER-108
+            Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "*-logging", SearchType.SCORED );
 
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
 
@@ -562,6 +553,34 @@ public abstract class AbstractRepoNexusIndexerTest
             ArtifactInfo ai = response.getResults().iterator().next();
             assertEquals( "zip", ai.getPackaging() );
             assertEquals( "zip", ai.getFileExtension() );
+        }
+    }
+
+    public void testPrefixWildcard()
+        throws Exception
+    {
+        // see https://issues.apache.org/jira/browse/MINDEXER-108
+        IteratorSearchRequest request =
+            new IteratorSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*.forge", SearchType.EXACT ) );
+
+        // two candidates (see src/test/repo):
+        // org.terracotta.forge:forge-parent:1.0.5
+        // org.terracotta.forge:archetype-parent:1.0.1
+
+        IteratorSearchResponse response = nexusIndexer.searchIterator( request );
+
+        try
+        {
+            assertEquals( response.getResults().toString(), 2, response.getTotalHitsCount() );
+
+            for ( ArtifactInfo ai : response )
+            {
+                assertEquals( ai.getGroupId(), "org.terracotta.forge" );
+            }
+        }
+        finally
+        {
+            response.close();
         }
     }
 
