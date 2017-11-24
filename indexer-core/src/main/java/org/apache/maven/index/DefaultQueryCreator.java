@@ -200,11 +200,6 @@ public class DefaultQueryCreator
             return null;
         }
 
-        if ( query.startsWith( "*" ) || query.startsWith( "?" ) )
-        {
-            throw new ParseException( "Query cannot start with '*' or '?'!" );
-        }
-
         if ( Field.NOT_PRESENT.equals( query ) )
         {
             return new WildcardQuery( new Term( indexerField.getKey(), "*" ) );
