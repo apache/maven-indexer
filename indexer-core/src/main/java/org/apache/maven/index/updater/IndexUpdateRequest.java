@@ -19,15 +19,15 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.fs.Locker;
 
+import java.io.File;
+
 /**
  * Request to update indexes.
- * 
+ *
  * @author Eugene Kuleshov
  * @author cstamas
  */
@@ -40,7 +40,7 @@ public class IndexUpdateRequest
     private DocumentFilter documentFilter;
 
     private boolean forceFullUpdate;
-    
+
     private boolean incrementalOnly;
 
     private File localIndexCacheDir;
@@ -93,13 +93,13 @@ public class IndexUpdateRequest
     {
         return forceFullUpdate;
     }
-    
+
     public boolean isIncrementalOnly()
     {
         return incrementalOnly;
     }
 
-    public void setIncrementalOnly(boolean incrementalOnly)
+    public void setIncrementalOnly( boolean incrementalOnly )
     {
         this.incrementalOnly = incrementalOnly;
     }

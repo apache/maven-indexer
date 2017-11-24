@@ -26,7 +26,7 @@ import org.apache.maven.index.expr.SearchExpression;
 /**
  * A component the creates Lucene Queries from "human written" queries, but also helps client applications to assemble
  * proper queries for fields they want to search.
- * 
+ *
  * @author Tamas Cservenak
  */
 public interface QueryCreator
@@ -35,7 +35,7 @@ public interface QueryCreator
 
     /**
      * Performs a selection of the appropriate IndexerField belonging to proper Field.
-     * 
+     *
      * @param field
      * @param type
      * @return
@@ -45,20 +45,19 @@ public interface QueryCreator
     /**
      * Constructs query by parsing the query string, using field as default field. This method should be use to
      * construct queries (single term or phrase queries) against <b>single field</b>.
-     * 
+     *
      * @param field
      * @param query
      * @param type
      * @return
      * @throws ParseException if query parsing is unsuccessful.
      */
-    Query constructQuery( Field field, SearchExpression expression )
-        throws ParseException;
+    Query constructQuery( Field field, SearchExpression expression ) throws ParseException;
 
     /**
      * Constructs query by parsing the query string, using field as default field. This method should be use to
      * construct queries (single term or phrase queries) against <b>single field</b>.
-     * 
+     *
      * @param field
      * @param query
      * @param type
@@ -66,13 +65,12 @@ public interface QueryCreator
      * @throws ParseException if query parsing is unsuccessful.
      * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
-    Query constructQuery( Field field, String query, SearchType type )
-        throws ParseException;
+    Query constructQuery( Field field, String query, SearchType type ) throws ParseException;
 
     /**
      * Deprecated. Avoid it's use! Constructs query against <b>single</b> field, using it's "best effort" approach to
      * perform parsing, but letting caller to apply it's (usually wrong) knowledge about how field is indexed.
-     * 
+     *
      * @param field
      * @param query
      * @return query if successfully parsed, or null.

@@ -19,39 +19,39 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+import org.apache.maven.index.expr.UserInputSearchExpression;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.apache.lucene.search.Query;
-import org.apache.maven.index.expr.UserInputSearchExpression;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class Mindexer35NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/mindexer-35" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "mindexer-35", "mindexer-35", repo, indexDir, null, null, FULL_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "mindexer-35", "mindexer-35", repo, indexDir, null, null, FULL_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testSearchWar()
-        throws Exception
+    public void testSearchWar() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, new UserInputSearchExpression( "WebappClass" ) );
-        
+
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-        
+
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertThat(r.size(), is(1));
+        assertThat( r.size(), is( 1 ) );
 
         List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
 

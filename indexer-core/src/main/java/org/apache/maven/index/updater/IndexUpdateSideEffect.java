@@ -25,7 +25,7 @@ import org.apache.maven.index.context.IndexingContext;
 /**
  * Ability to spread index updates to (possible) plugin receivers. (NEXUS-2644) Implement this as Plexus component to
  * add new behaviour.
- * 
+ *
  * @author Toni Menzel
  */
 public interface IndexUpdateSideEffect
@@ -36,10 +36,10 @@ public interface IndexUpdateSideEffect
      * into), this can let other participants (implementations of this type) know about the update. Any activity should
      * not influence the callers further process (not fail via unchecked exception) if possible. Implementations are
      * most likely optional plugins.
-     * 
+     *
      * @param directory - the directory to merge
-     * @param context - original context
-     * @param partial - this update is partial (true) or a full update (false).
+     * @param context   - original context
+     * @param partial   - this update is partial (true) or a full update (false).
      */
     void updateIndex( Directory directory, IndexingContext context, boolean partial );
 

@@ -19,20 +19,20 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A Search Request that will perform the new "iterator-like" type of search. It is pageable as plus, but on downside,
  * it's corresponding result does not result size in advance.
- * 
+ *
  * @author cstamas
  */
 public class IteratorSearchRequest
-    extends AbstractSearchPageableRequest
+        extends AbstractSearchPageableRequest
 {
     public IteratorSearchRequest( Query query )
     {
@@ -46,7 +46,7 @@ public class IteratorSearchRequest
 
     public IteratorSearchRequest( Query query, IndexingContext context )
     {
-        this( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null, null );
+        this( query, context != null ? Arrays.asList( new IndexingContext[] {context} ) : null, null );
     }
 
     public IteratorSearchRequest( Query query, List<IndexingContext> contexts )

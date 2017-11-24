@@ -19,18 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.FilteredQuery;
@@ -42,7 +30,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -51,15 +38,24 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class FullIndexNexusIndexerTest
-    extends DefaultIndexNexusIndexerTest
+        extends DefaultIndexNexusIndexerTest
 {
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, FULL_CREATORS );
 
@@ -70,8 +66,7 @@ public class FullIndexNexusIndexerTest
         assertNotNull( context.getTimestamp() );
     }
 
-    public void testSearchGroupedClasses()
-        throws Exception
+    public void testSearchGroupedClasses() throws Exception
     {
         {
             Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "com/thoughtworks/qdox", SearchType.SCORED );
@@ -119,7 +114,7 @@ public class FullIndexNexusIndexerTest
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertThat(r.toString(), r.size(), is(2));
+            assertThat( r.toString(), r.size(), is( 2 ) );
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -206,9 +201,9 @@ public class FullIndexNexusIndexerTest
 
         {
             // exact class name
-            Query q =
-                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org/apache/commons/logging/LogConfigurationException",
-                    SearchType.SCORED );
+            Query q = nexusIndexer
+                    .constructQuery( MAVEN.CLASSNAMES, "org/apache/commons/logging/LogConfigurationException",
+                            SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -218,9 +213,8 @@ public class FullIndexNexusIndexerTest
 
         {
             // implicit class name pattern
-            Query q =
-                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org.apache.commons.logging.LogConfigurationException",
-                    SearchType.SCORED );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES,
+                    "org.apache.commons.logging" + "" + "" + ".LogConfigurationException", SearchType.SCORED );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -230,9 +224,8 @@ public class FullIndexNexusIndexerTest
 
         {
             // exact class name
-            Query q =
-                nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "org.apache.commons.logging.LogConfigurationException",
-                    SearchType.EXACT );
+            Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES,
+                    "org.apache.commons.logging" + "" + "" + ".LogConfigurationException", SearchType.EXACT );
             GroupedSearchRequest request = new GroupedSearchRequest( q, new GAGrouping() );
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
@@ -291,8 +284,7 @@ public class FullIndexNexusIndexerTest
         }
     }
 
-    public void testSearchArchetypes()
-        throws Exception
+    public void testSearchArchetypes() throws Exception
     {
         // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         // BooleanQuery bq = new BooleanQuery();
@@ -333,18 +325,17 @@ public class FullIndexNexusIndexerTest
         }
     }
 
-    public void testIndexTimestamp()
-        throws Exception
+    public void testIndexTimestamp() throws Exception
     {
-        final File targetDir = Files.createTempDirectory("testIndexTimestamp" ).toFile();
+        final File targetDir = Files.createTempDirectory( "testIndexTimestamp" ).toFile();
         targetDir.deleteOnExit();
 
         final IndexPacker indexPacker = lookup( IndexPacker.class );
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            final IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    targetDir );
             indexPacker.packIndex( request );
         }
         finally
@@ -358,11 +349,12 @@ public class FullIndexNexusIndexerTest
 
         Directory newIndexDir = FSDirectory.open( newIndex.toPath() );
 
-        IndexingContext newContext =
-            nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+        IndexingContext newContext = nexusIndexer
+                .addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
 
         final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
-        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
+        indexUpdater.fetchAndUpdateIndex(
+                new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
 
         assertEquals( context.getTimestamp().getTime(), newContext.getTimestamp().getTime() );
@@ -399,10 +391,11 @@ public class FullIndexNexusIndexerTest
 
         newIndexDir = FSDirectory.open( newIndex.toPath() );
 
-        newContext =
-            nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+        newContext = nexusIndexer
+                .addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
 
-        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
+        indexUpdater.fetchAndUpdateIndex(
+                new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( timestamp, newContext.getTimestamp() );
 
@@ -411,8 +404,7 @@ public class FullIndexNexusIndexerTest
         assertFalse( new File( newIndex, "timestamp" ).exists() );
     }
 
-    public void testArchetype()
-        throws Exception
+    public void testArchetype() throws Exception
     {
         String term = "proptest";
 
@@ -427,16 +419,14 @@ public class FullIndexNexusIndexerTest
         assertEquals( r.toString(), 1, r.size() );
     }
 
-    public void testArchetypePackaging()
-        throws Exception
+    public void testArchetypePackaging() throws Exception
     {
         Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
         assertEquals( response.getResults().toString(), 4, response.getTotalHits() );
     }
 
-    public void testBrokenJar()
-        throws Exception
+    public void testBrokenJar() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED );
 
@@ -456,8 +446,7 @@ public class FullIndexNexusIndexerTest
         assertEquals( null, ai.getClassNames() );
     }
 
-    public void testMissingPom()
-        throws Exception
+    public void testMissingPom() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED );
 
@@ -481,7 +470,7 @@ public class FullIndexNexusIndexerTest
     // ==
 
     protected IteratorSearchRequest createHighlightedRequest( Field field, String text, SearchType type )
-        throws ParseException
+            throws ParseException
     {
         Query q = nexusIndexer.constructQuery( field, text, type );
 
@@ -492,8 +481,7 @@ public class FullIndexNexusIndexerTest
         return request;
     }
 
-    public void testClassnameSearchNgWithHighlighting()
-        throws Exception
+    public void testClassnameSearchNgWithHighlighting() throws Exception
     {
         IteratorSearchRequest request = createHighlightedRequest( MAVEN.CLASSNAMES, "Logger", SearchType.SCORED );
 
@@ -508,20 +496,19 @@ public class FullIndexNexusIndexerTest
                     // Logger and LoggerFactory
                     assertTrue( "Class name should be highlighted", highlighted.contains( "<B>Logger" ) );
                     assertFalse( "Class name should not contain \"/\" alone (but okay within HTML, see above!)",
-                        highlighted.matches( "\\p{Lower}/\\p{Upper}" ) );
-                    assertFalse( "Class name should not begin with \".\" or \"/\"", highlighted.startsWith( "." )
-                        || highlighted.startsWith( "/" ) );
+                            highlighted.matches( "\\p{Lower}/\\p{Upper}" ) );
+                    assertFalse( "Class name should not begin with \".\" or \"/\"",
+                            highlighted.startsWith( "." ) || highlighted.startsWith( "/" ) );
                 }
             }
         }
-        
-        assertThat(response.getTotalHitsCount(), is(5));
+
+        assertThat( response.getTotalHitsCount(), is( 5 ) );
 
         assertEquals( "found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits() );
     }
 
-    public void testGAVSearchNgWithHighlighting()
-        throws Exception
+    public void testGAVSearchNgWithHighlighting() throws Exception
     {
         IteratorSearchRequest request = createHighlightedRequest( MAVEN.GROUP_ID, "commons", SearchType.SCORED );
 
@@ -531,10 +518,9 @@ public class FullIndexNexusIndexerTest
         {
             for ( MatchHighlight mh : ai.getMatchHighlights() )
             {
-                assertTrue(
-                    "Group ID should be highlighted",
-                    mh.getHighlightedMatch().contains( "<B>commons</B>-logging" )
-                        || mh.getHighlightedMatch().contains( "<B>commons</B>-cli" ) );
+                assertTrue( "Group ID should be highlighted",
+                        mh.getHighlightedMatch().contains( "<B>commons</B>-logging" ) || mh.getHighlightedMatch()
+                                .contains( "<B>commons</B>-cli" ) );
             }
         }
 

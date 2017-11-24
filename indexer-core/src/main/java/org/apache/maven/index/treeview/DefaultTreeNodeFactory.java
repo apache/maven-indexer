@@ -24,11 +24,11 @@ import org.apache.maven.index.treeview.TreeNode.Type;
 
 /**
  * A default implementation of TreeNodeFactory, that is fairly simple to extend.
- * 
+ *
  * @author Tamas Cservenak
  */
 public class DefaultTreeNodeFactory
-    implements TreeNodeFactory
+        implements TreeNodeFactory
 {
     private final String repositoryId;
 
@@ -119,8 +119,8 @@ public class DefaultTreeNodeFactory
         return node;
     }
 
-    protected TreeNode createNode( IndexTreeView tview, TreeViewRequest req, String path, boolean leaf,
-                                   String nodeName, Type type )
+    protected TreeNode createNode( IndexTreeView tview, TreeViewRequest req, String path, boolean leaf, String nodeName,
+                                   Type type )
     {
         TreeNode result = instantiateNode( tview, req, path, leaf, nodeName );
 

@@ -19,8 +19,20 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.RAMDirectory;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.packer.IndexPacker;
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.search.grouping.GAGrouping;
+import org.apache.maven.index.updater.DefaultIndexUpdater;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.apache.maven.index.updater.IndexUpdater;
+
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -29,37 +41,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.DefaultIndexPacker;
-import org.apache.maven.index.packer.IndexPacker;
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.search.grouping.GAGrouping;
-import org.apache.maven.index.updater.DefaultIndexUpdater;
-import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.apache.maven.index.updater.IndexUpdater;
-
-/** http://issues.sonatype.org/browse/NEXUS-13 */
+/**
+ * http://issues.sonatype.org/browse/NEXUS-13
+ */
 public class Nexus13NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-13" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "nexus-13", "nexus-13", repo, indexDir, null, null, FULL_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testSearchGroupedClasses()
-        throws Exception
+    public void testSearchGroupedClasses() throws Exception
     {
         {
             Query q = nexusIndexer.constructQuery( MAVEN.CLASSNAMES, "cisco", SearchType.SCORED );
@@ -84,12 +81,11 @@ public class Nexus13NexusIndexerTest
 
             assertTrue( r.containsKey( "cisco.infra.dft : dma.plugin.utils" ) );
             assertEquals( "cisco.infra.dft : dma.plugin.utils",
-                r.get( "cisco.infra.dft : dma.plugin.utils" ).getGroupKey() );
+                    r.get( "cisco.infra.dft : dma.plugin.utils" ).getGroupKey() );
         }
     }
 
-    public void testSearchArchetypes()
-        throws Exception
+    public void testSearchArchetypes() throws Exception
     {
         // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         // BooleanQuery bq = new BooleanQuery();
@@ -109,8 +105,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
-    public void testIndexTimestamp()
-        throws Exception
+    public void testIndexTimestamp() throws Exception
     {
         final File targetDir = Files.createTempDirectory( "testIndexTimestamp" ).toFile();
         targetDir.deleteOnExit();
@@ -119,8 +114,8 @@ public class Nexus13NexusIndexerTest
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            final IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    targetDir );
             indexPacker.packIndex( request );
         }
         finally
@@ -132,11 +127,12 @@ public class Nexus13NexusIndexerTest
 
         Directory indexDir = new RAMDirectory();
 
-        IndexingContext newContext =
-            nexusIndexer.addIndexingContext( "test-new", "nexus-13", null, indexDir, null, null, DEFAULT_CREATORS );
+        IndexingContext newContext = nexusIndexer
+                .addIndexingContext( "test-new", "nexus-13", null, indexDir, null, null, DEFAULT_CREATORS );
 
         final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
-        final IndexUpdateRequest updateRequest = new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) );
+        final IndexUpdateRequest updateRequest = new IndexUpdateRequest( newContext,
+                new DefaultIndexUpdater.FileFetcher( targetDir ) );
         indexUpdater.fetchAndUpdateIndex( updateRequest );
 
         assertEquals( 0, newContext.getTimestamp().getTime() - context.getTimestamp().getTime() );
@@ -169,8 +165,7 @@ public class Nexus13NexusIndexerTest
         newContext.close( true );
     }
 
-    public void testRootGroups()
-        throws Exception
+    public void testRootGroups() throws Exception
     {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals( rootGroups.toString(), 1, rootGroups.size() );
@@ -178,8 +173,7 @@ public class Nexus13NexusIndexerTest
         assertGroup( 10, "cisco", context );
     }
 
-    public void testSearchFlat()
-        throws Exception
+    public void testSearchFlat() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "cisco.infra", SearchType.SCORED );
 
@@ -201,8 +195,7 @@ public class Nexus13NexusIndexerTest
 
     }
 
-    public void testSearchGrouped()
-        throws Exception
+    public void testSearchGrouped() throws Exception
     {
         // ----------------------------------------------------------------------------
         //
@@ -229,8 +222,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
-    public void testSearchGroupedProblematicNames()
-        throws Exception
+    public void testSearchGroupedProblematicNames() throws Exception
     {
 
         // ----------------------------------------------------------------------------
@@ -252,8 +244,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( 1, ig.getArtifactInfos().size() );
     }
 
-    public void testIdentify()
-        throws Exception
+    public void testIdentify() throws Exception
     {
         Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8" );
 
@@ -271,12 +262,12 @@ public class Nexus13NexusIndexerTest
 
         // Using a file
 
-        File artifact =
-            new File( repo,
-                "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar" );
+        File artifact = new File( repo,
+                "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0" + "" + ""
+                        + "-20080409.022326-2.jar" );
 
         ais = nexusIndexer.identify( artifact );
-        
+
         assertEquals( 1, ais.size() );
 
         ai = ais.iterator().next();

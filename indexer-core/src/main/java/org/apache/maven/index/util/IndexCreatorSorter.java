@@ -19,19 +19,18 @@ package org.apache.maven.index.util;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
 import org.apache.maven.index.context.IndexCreator;
 import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class IndexCreatorSorter
 {
-    public static List<IndexCreator> sort( List<? extends IndexCreator> creators )
-        throws IllegalArgumentException
+    public static List<IndexCreator> sort( List<? extends IndexCreator> creators ) throws IllegalArgumentException
     {
         try
         {
@@ -66,8 +65,8 @@ public class IndexCreatorSorter
                 else
                 {
                     throw new IllegalArgumentException( String.format(
-                        "IndexCreator with ID=\"%s\" does not exists, the present creator ID=\"%s\" depends on it!",
-                        id, dag.getParentLabels( id ) ) );
+                            "IndexCreator with ID=\"%s\" does not exists, " + "" + ""
+                                    + "the present creator ID=\"%s\" depends on it!", id, dag.getParentLabels( id ) ) );
                 }
             }
 

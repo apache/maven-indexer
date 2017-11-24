@@ -162,9 +162,9 @@ public class RecordCompactor
     {
         final String classifier = record.get( Record.CLASSIFIER );
         StringBuilder sb = new StringBuilder();
-        sb.append( record.get( Record.GROUP_ID ) ).append( FIELD_SEPARATOR ).append(
-            record.get( Record.ARTIFACT_ID ) ).append( FIELD_SEPARATOR ).append( record.get( Record.VERSION ) ).append(
-            FIELD_SEPARATOR ).append( nvl( classifier ) );
+        sb.append( record.get( Record.GROUP_ID ) ).append( FIELD_SEPARATOR ).append( record.get( Record.ARTIFACT_ID ) )
+                .append( FIELD_SEPARATOR ).append( record.get( Record.VERSION ) ).append( FIELD_SEPARATOR )
+                .append( nvl( classifier ) );
         if ( classifier != null )
         {
             sb.append( FIELD_SEPARATOR ).append( record.get( Record.FILE_EXTENSION ) );
@@ -204,10 +204,10 @@ public class RecordCompactor
         if ( source != null && source.length > 0 )
         {
             StringBuilder sb = new StringBuilder();
-            sb.append( source[0] );
+            sb.append( source[ 0 ] );
             for ( int i = 1; i < source.length; i++ )
             {
-                sb.append( FIELD_SEPARATOR ).append( source[i] );
+                sb.append( FIELD_SEPARATOR ).append( source[ i ] );
             }
             target.put( targetName, sb.toString() );
         }

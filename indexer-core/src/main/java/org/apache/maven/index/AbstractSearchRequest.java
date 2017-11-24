@@ -19,11 +19,11 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AbstractSearchRequest
 {
@@ -109,7 +109,7 @@ public class AbstractSearchRequest
 
     /**
      * Returns the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
-     * 
+     *
      * @return
      */
     public int getCount()
@@ -119,7 +119,7 @@ public class AbstractSearchRequest
 
     /**
      * Sets the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
-     * 
+     *
      * @param count
      */
     public void setCount( int count )
@@ -134,10 +134,10 @@ public class AbstractSearchRequest
 
     /**
      * Returns true if hits are limited.
-     * 
+     *
      * @return
-     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
+     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      */
     public boolean isHitLimited()
     {
@@ -146,10 +146,10 @@ public class AbstractSearchRequest
 
     /**
      * Gets the hit limit. Since 4.1.0 does nothing, always returns -1 (was "no hit limit").
-     * 
+     *
      * @return
-     * @deprecated always returns -1 (no hit limit), since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
+     * @deprecated always returns -1 (no hit limit), since 4.1.0 there is no notion of hit limit
      */
     public int getResultHitLimit()
     {
@@ -158,10 +158,10 @@ public class AbstractSearchRequest
 
     /**
      * Sets the hit limit. Since 4.1.0 does nothing.
-     * 
+     *
      * @param resultHitLimit
-     * @deprecated does nothing, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
+     * @deprecated does nothing, since 4.1.0 there is no notion of hit limit
      */
     public void setResultHitLimit( int resultHitLimit )
     {

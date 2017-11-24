@@ -19,19 +19,18 @@ package org.apache.maven.index.util;
  * under the License.
  */
 
+import org.apache.maven.index.AbstractTestSupport;
+import org.apache.maven.index.context.IndexCreator;
+import org.junit.Assert;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.AbstractTestSupport;
-import org.junit.Assert;
-
 public class IndexCreatorSorterTest
-    extends AbstractTestSupport
+        extends AbstractTestSupport
 {
-    public void testLookupList()
-        throws Exception
+    public void testLookupList() throws Exception
     {
         final List<IndexCreator> creators = getContainer().lookupList( IndexCreator.class );
 
@@ -51,21 +50,18 @@ public class IndexCreatorSorterTest
 
         // currently, both "maven-plugin" and "maven-archetype" creator depend on "min" creator
         Assert.assertTrue( "maven-archetype depends on min",
-            sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-archetype" ) );
+                sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-archetype" ) );
         Assert.assertTrue( "maven-plugin depends on min",
-            sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-plugin" ) );
+                sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-plugin" ) );
     }
 
-    public void testLookupListWithSpoofedCreator()
-        throws Exception
+    public void testLookupListWithSpoofedCreator() throws Exception
     {
-        final List<IndexCreator> creators =
-            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
+        final List<IndexCreator> creators = new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on ALL creators. Note: we add it as 1st intentionally
-        creators.add( 0,
-            new SpoofIndexCreator( "depend-on-all", new ArrayList<>(
-                getContainer().lookupMap( IndexCreator.class ).keySet() ) ) );
+        creators.add( 0, new SpoofIndexCreator( "depend-on-all",
+                new ArrayList<>( getContainer().lookupMap( IndexCreator.class ).keySet() ) ) );
 
         // now we add spoofs to it, this one depends on only one, the "depend-on-all" creator Note: we add it as 1st
         // intentionally
@@ -89,20 +85,18 @@ public class IndexCreatorSorterTest
 
         // "last" has to be last
         Assert.assertTrue( "last creator should be last",
-            sortedCreatorIds.indexOf( "last" ) == sortedCreatorIds.size() - 1 );
+                sortedCreatorIds.indexOf( "last" ) == sortedCreatorIds.size() - 1 );
         Assert.assertTrue( "depend-on-all should be next to last",
-            sortedCreatorIds.indexOf( "depend-on-all" ) == sortedCreatorIds.size() - 2 );
+                sortedCreatorIds.indexOf( "depend-on-all" ) == sortedCreatorIds.size() - 2 );
     }
 
-    public void testLookupListWithNonExistentCreatorDependency()
-        throws Exception
+    public void testLookupListWithNonExistentCreatorDependency() throws Exception
     {
-        final List<IndexCreator> creators =
-            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
+        final List<IndexCreator> creators = new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on non existent creator. Note: we add it as 1st intentionally
-        creators.add( 0,
-            new SpoofIndexCreator( "non-satisfyable", Arrays.asList( "this-creator-i-depend-on-does-not-exists" ) ) );
+        creators.add( 0, new SpoofIndexCreator( "non-satisfyable",
+                Arrays.asList( "this-creator-i-depend-on-does-not-exists" ) ) );
 
         try
         {
@@ -116,9 +110,9 @@ public class IndexCreatorSorterTest
             final String message = e.getMessage();
 
             Assert.assertTrue( "Exception message should mention the problematic creator's ID",
-                message.contains( "non-satisfyable" ) );
+                    message.contains( "non-satisfyable" ) );
             Assert.assertTrue( "Exception message should mention the missing creator's ID",
-                message.contains( "this-creator-i-depend-on-does-not-exists" ) );
+                    message.contains( "this-creator-i-depend-on-does-not-exists" ) );
         }
     }
 }

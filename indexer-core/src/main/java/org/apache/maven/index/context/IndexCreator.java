@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * An index creator is responsible for storing and reading data to and from Lucene index.
- * 
+ *
  * @author Jason van Zyl
  * @see org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator
  * @see org.apache.maven.index.creator.JarFileContentsIndexCreator
@@ -39,7 +39,7 @@ public interface IndexCreator
 {
     /**
      * Returns IndexCreator ID, that has to be unique across all existing creators.
-     * 
+     *
      * @return
      */
     String getId();
@@ -48,14 +48,14 @@ public interface IndexCreator
      * Returns list of IndexCreator IDs that this creator depends on. Needed to perform a topological sort on
      * IndexCreators to guarantee proper ordering of them, as some IndexCreators might rely on informations already
      * extracted by some other IndexCreator.
-     * 
+     *
      * @return
      */
     List<String> getCreatorDependencies();
 
     /**
      * Returns the indexer fields that this IndexCreator introduces to index.
-     * 
+     *
      * @return
      */
     Collection<IndexerField> getIndexerFields();
@@ -63,8 +63,7 @@ public interface IndexCreator
     /**
      * Populate an <code>ArtifactContext</code> with information about corresponding artifact.
      */
-    void populateArtifactInfo( ArtifactContext artifactContext )
-        throws IOException;
+    void populateArtifactInfo( ArtifactContext artifactContext ) throws IOException;
 
     /**
      * Update Lucene <code>Document</code> from a given <code>ArtifactInfo</code>.
@@ -73,7 +72,7 @@ public interface IndexCreator
 
     /**
      * Update an <code>ArtifactInfo</code> from given Lucene <code>Document</code>.
-     * 
+     *
      * @return true is artifact info has been updated
      */
     boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo );

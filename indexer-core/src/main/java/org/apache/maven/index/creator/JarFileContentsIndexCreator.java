@@ -19,14 +19,6 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
@@ -39,20 +31,28 @@ import org.apache.maven.index.util.zip.ZipFacade;
 import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.util.StringUtils;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
 /**
  * An index creator used to index Java class names from a Maven artifact (JAR or WAR for now). Will open up the file and
  * collect all the class names from it.
  */
 @Singleton
-@Named (JarFileContentsIndexCreator.ID)
+@Named( JarFileContentsIndexCreator.ID )
 public class JarFileContentsIndexCreator
-    extends AbstractIndexCreator
-    implements LegacyDocumentUpdater
+        extends AbstractIndexCreator
+        implements LegacyDocumentUpdater
 {
     public static final String ID = "jarContent";
 
     public static final IndexerField FLD_CLASSNAMES = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V3,
-        "classnames", "Artifact Classes (tokenized)", Store.NO, Index.ANALYZED );
+            "classnames", "Artifact Classes (tokenized)", Store.NO, Index.ANALYZED );
 
     /**
      * NexusAnalyzer makes exception with this field only, to keep backward compatibility with old consumers of
@@ -60,22 +60,21 @@ public class JarFileContentsIndexCreator
      * registered BEFORE FLD_CLASSNAMES_KW!
      */
     public static final IndexerField FLD_CLASSNAMES_KW = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V1,
-        "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
+            "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
 
     public JarFileContentsIndexCreator()
     {
         super( ID );
     }
 
-    public void populateArtifactInfo( final ArtifactContext artifactContext )
-        throws IOException
+    public void populateArtifactInfo( final ArtifactContext artifactContext ) throws IOException
     {
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
         File artifactFile = artifactContext.getArtifact();
 
-        if ( artifactFile != null && artifactFile.isFile()
-            && ( artifactFile.getName().endsWith( ".jar" ) || artifactFile.getName().endsWith( ".war" ) ) )
+        if ( artifactFile != null && artifactFile.isFile() && ( artifactFile.getName().endsWith( ".jar" )
+                || artifactFile.getName().endsWith( ".war" ) ) )
         {
             updateArtifactInfo( ai, artifactFile );
         }
@@ -142,8 +141,7 @@ public class JarFileContentsIndexCreator
         return false;
     }
 
-    private void updateArtifactInfo( final ArtifactInfo ai, final File f )
-        throws IOException
+    private void updateArtifactInfo( final ArtifactInfo ai, final File f ) throws IOException
     {
         if ( f.getName().endsWith( ".jar" ) )
         {
@@ -156,7 +154,7 @@ public class JarFileContentsIndexCreator
     }
 
     private void updateArtifactInfo( final ArtifactInfo ai, final File f, final String strippedPrefix )
-        throws IOException
+            throws IOException
     {
         ZipHandle handle = null;
 
@@ -189,7 +187,8 @@ public class JarFileContentsIndexCreator
                             // class name without ".class"
                             sb.append( name.substring( 0, name.length() - 6 ) ).append( '\n' );
                         }
-                        else if ( name.startsWith( strippedPrefix ) && (name.length() > ( strippedPrefix.length() + 6 )) )
+                        else if ( name.startsWith( strippedPrefix ) && ( name.length() > ( strippedPrefix.length()
+                                + 6 ) ) )
                         {
                             // class name without ".class" and stripped prefix
                             sb.append( name.substring( strippedPrefix.length(), name.length() - 6 ) ).append( '\n' );

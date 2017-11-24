@@ -19,33 +19,27 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
-
 public class Nexus1179NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-1179" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-1179", "nexus-1179", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-1179", "nexus-1179", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testSearchFlat()
-        throws Exception
+    public void testSearchFlat() throws Exception
     {
         // Since 4.0 this query become illegal
         // This test only performs search and expects to have all the "problematic" ones found too, to prove

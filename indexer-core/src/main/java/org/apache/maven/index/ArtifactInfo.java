@@ -19,14 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.base.Strings;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
@@ -37,17 +30,23 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
 
-import com.google.common.base.Strings;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
  * Phasing out.
- * 
+ *
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
 public class ArtifactInfo
-    extends ArtifactInfoRecord
+        extends ArtifactInfoRecord
 {
     private static final long serialVersionUID = 6028843453477511105L;
 
@@ -162,15 +161,15 @@ public class ArtifactInfo
      *
      * @since 5.1.2
      */
-    public static final String BUNDLE_PROVIDE_CAPABILITY =
-            OsgiArtifactIndexCreator.FLD_BUNDLE_PROVIDE_CAPABILITY.getKey();
+    public static final String BUNDLE_PROVIDE_CAPABILITY = OsgiArtifactIndexCreator.FLD_BUNDLE_PROVIDE_CAPABILITY
+            .getKey();
     /**
      * OSGI Provide-Capability header
      *
      * @since 5.1.2
      */
-    public static final String BUNDLE_REQUIRE_CAPABILITY =
-            OsgiArtifactIndexCreator.FLD_BUNDLE_REQUIRE_CAPABILITY.getKey();
+    public static final String BUNDLE_REQUIRE_CAPABILITY = OsgiArtifactIndexCreator.FLD_BUNDLE_REQUIRE_CAPABILITY
+            .getKey();
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
 
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
@@ -238,60 +237,70 @@ public class ArtifactInfo
 
     /**
      * contains osgi metadata Bundle-Version if available
+     *
      * @since 4.1.2
      */
     private String bundleVersion;
 
     /**
      * contains osgi metadata Bundle-SymbolicName if available
+     *
      * @since 4.1.2
      */
     private String bundleSymbolicName;
 
     /**
      * contains osgi metadata Export-Package if available
+     *
      * @since 4.1.2
      */
     private String bundleExportPackage;
 
     /**
      * contains osgi metadata Export-Service if available
+     *
      * @since 4.1.2
      */
     private String bundleExportService;
 
     /**
      * contains osgi metadata Bundle-Description if available
+     *
      * @since 4.1.2
      */
     private String bundleDescription;
 
     /**
      * contains osgi metadata Bundle-Name if available
+     *
      * @since 4.1.2
      */
     private String bundleName;
 
     /**
      * contains osgi metadata Bundle-License if available
+     *
      * @since 4.1.2
      */
     private String bundleLicense;
 
     /**
      * contains osgi metadata Bundle-DocURL if available
+     *
      * @since 4.1.2
      */
     private String bundleDocUrl;
 
     /**
      * contains osgi metadata Import-Package if available
+     *
      * @since 4.1.2
      */
     private String bundleImportPackage;
 
     /**
      * contains osgi metadata Require-Bundle if available
+     *
      * @since 4.1.2
      */
     private String bundleRequireBundle;
@@ -344,7 +353,8 @@ public class ArtifactInfo
         versionScheme = new GenericVersionScheme();
     }
 
-    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier, String extension )
+    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier,
+                         String extension )
     {
         this();
         this.repository = repository;
@@ -386,13 +396,14 @@ public class ArtifactInfo
     public String getUinfo()
     {
         return new StringBuilder() //
-        .append( groupId ).append( FS ) //
-        .append( artifactId ).append( FS ) //
-        .append( version ).append( FS ) //
-        .append( nvl( classifier ) ).append( FS ) //
-        .append( fileExtension )
-        // .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS + packaging ) //
-        .toString(); // extension is stored in the packaging field when classifier is not used
+                .append( groupId ).append( FS ) //
+                .append( artifactId ).append( FS ) //
+                .append( version ).append( FS ) //
+                .append( nvl( classifier ) ).append( FS ) //
+                .append( fileExtension )
+                // .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS +
+                // packaging ) //
+                .toString(); // extension is stored in the packaging field when classifier is not used
     }
 
     public String getRootGroup()
@@ -408,12 +419,12 @@ public class ArtifactInfo
     public Gav calculateGav()
     {
         return new Gav( groupId, artifactId, version, classifier, fileExtension, null, // snapshotBuildNumber
-            null, // snapshotTimeStamp
-            fileName, // name
-            false, // hash
-            null, // hashType
-            false, // signature
-            null ); // signatureType
+                null, // snapshotTimeStamp
+                fileName, // name
+                false, // hash
+                null, // hashType
+                false, // signature
+                null ); // signatureType
     }
 
     public Map<String, String> getAttributes()
@@ -438,6 +449,7 @@ public class ArtifactInfo
     }
 
     private static final List<Field> DEFAULT_FIELDS = new ArrayList<>();
+
     static
     {
         DEFAULT_FIELDS.add( MAVEN.GROUP_ID );
@@ -468,7 +480,7 @@ public class ArtifactInfo
 
     /**
      * This method will disappear, once we drop ArtifactInfo.
-     * 
+     *
      * @param field
      * @return
      */
@@ -599,7 +611,7 @@ public class ArtifactInfo
      * A version comparator
      */
     static class VersionComparator
-        implements Comparator<ArtifactInfo>
+            implements Comparator<ArtifactInfo>
     {
         public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
         {
@@ -665,7 +677,7 @@ public class ArtifactInfo
      * A repository and version comparator
      */
     static class RepositoryVersionComparator
-        extends VersionComparator
+            extends VersionComparator
     {
         @Override
         public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
@@ -688,12 +700,12 @@ public class ArtifactInfo
             }
         }
     }
-    
+
     /**
      * A context and version comparator
      */
     static class ContextVersionComparator
-        extends VersionComparator
+            extends VersionComparator
     {
         @Override
         public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
@@ -717,7 +729,7 @@ public class ArtifactInfo
         }
     }
 
-    public String getFileName( )
+    public String getFileName()
     {
         return fileName;
     }
@@ -727,7 +739,7 @@ public class ArtifactInfo
         this.fileName = fileName;
     }
 
-    public String getFileExtension( )
+    public String getFileExtension()
     {
         return fileExtension;
     }
@@ -737,7 +749,7 @@ public class ArtifactInfo
         this.fileExtension = fileExtension;
     }
 
-    public String getGroupId( )
+    public String getGroupId()
     {
         return groupId;
     }
@@ -747,7 +759,7 @@ public class ArtifactInfo
         this.groupId = groupId;
     }
 
-    public String getArtifactId( )
+    public String getArtifactId()
     {
         return artifactId;
     }
@@ -757,7 +769,7 @@ public class ArtifactInfo
         this.artifactId = artifactId;
     }
 
-    public String getVersion( )
+    public String getVersion()
     {
         return version;
     }
@@ -772,7 +784,7 @@ public class ArtifactInfo
         this.artifactVersion = artifactVersion;
     }
 
-    public String getClassifier( )
+    public String getClassifier()
     {
         return classifier;
     }
@@ -782,7 +794,7 @@ public class ArtifactInfo
         this.classifier = classifier;
     }
 
-    public String getPackaging( )
+    public String getPackaging()
     {
         return packaging;
     }
@@ -792,7 +804,7 @@ public class ArtifactInfo
         this.packaging = packaging;
     }
 
-    public String getName( )
+    public String getName()
     {
         return name;
     }
@@ -802,7 +814,7 @@ public class ArtifactInfo
         this.name = name;
     }
 
-    public String getDescription( )
+    public String getDescription()
     {
         return description;
     }
@@ -812,7 +824,7 @@ public class ArtifactInfo
         this.description = description;
     }
 
-    public long getLastModified( )
+    public long getLastModified()
     {
         return lastModified;
     }
@@ -822,7 +834,7 @@ public class ArtifactInfo
         this.lastModified = lastModified;
     }
 
-    public long getSize( )
+    public long getSize()
     {
         return size;
     }
@@ -832,7 +844,7 @@ public class ArtifactInfo
         this.size = size;
     }
 
-    public String getMd5( )
+    public String getMd5()
     {
         return md5;
     }
@@ -842,7 +854,7 @@ public class ArtifactInfo
         this.md5 = md5;
     }
 
-    public String getSha1( )
+    public String getSha1()
     {
         return sha1;
     }
@@ -852,7 +864,7 @@ public class ArtifactInfo
         this.sha1 = sha1;
     }
 
-    public ArtifactAvailability getSourcesExists( )
+    public ArtifactAvailability getSourcesExists()
     {
         return sourcesExists;
     }
@@ -862,7 +874,7 @@ public class ArtifactInfo
         this.sourcesExists = sourcesExists;
     }
 
-    public ArtifactAvailability getJavadocExists( )
+    public ArtifactAvailability getJavadocExists()
     {
         return javadocExists;
     }
@@ -872,7 +884,7 @@ public class ArtifactInfo
         this.javadocExists = javadocExists;
     }
 
-    public ArtifactAvailability getSignatureExists( )
+    public ArtifactAvailability getSignatureExists()
     {
         return signatureExists;
     }
@@ -882,7 +894,7 @@ public class ArtifactInfo
         this.signatureExists = signatureExists;
     }
 
-    public String getClassNames( )
+    public String getClassNames()
     {
         return classNames;
     }
@@ -892,7 +904,7 @@ public class ArtifactInfo
         this.classNames = classNames;
     }
 
-    public String getRepository( )
+    public String getRepository()
     {
         return repository;
     }
@@ -902,7 +914,7 @@ public class ArtifactInfo
         this.repository = repository;
     }
 
-    public String getPath( )
+    public String getPath()
     {
         return path;
     }
@@ -912,7 +924,7 @@ public class ArtifactInfo
         this.path = path;
     }
 
-    public String getRemoteUrl( )
+    public String getRemoteUrl()
     {
         return remoteUrl;
     }
@@ -922,7 +934,7 @@ public class ArtifactInfo
         this.remoteUrl = remoteUrl;
     }
 
-    public String getContext( )
+    public String getContext()
     {
         return context;
     }
@@ -932,7 +944,7 @@ public class ArtifactInfo
         this.context = context;
     }
 
-    public String getPrefix( )
+    public String getPrefix()
     {
         return prefix;
     }
@@ -942,7 +954,7 @@ public class ArtifactInfo
         this.prefix = prefix;
     }
 
-    public List<String> getGoals( )
+    public List<String> getGoals()
     {
         return goals;
     }
@@ -952,7 +964,7 @@ public class ArtifactInfo
         this.goals = goals;
     }
 
-    public String getBundleVersion( )
+    public String getBundleVersion()
     {
         return bundleVersion;
     }
@@ -962,7 +974,7 @@ public class ArtifactInfo
         this.bundleVersion = bundleVersion;
     }
 
-    public String getBundleSymbolicName( )
+    public String getBundleSymbolicName()
     {
         return bundleSymbolicName;
     }
@@ -972,7 +984,7 @@ public class ArtifactInfo
         this.bundleSymbolicName = bundleSymbolicName;
     }
 
-    public String getBundleExportPackage( )
+    public String getBundleExportPackage()
     {
         return bundleExportPackage;
     }
@@ -982,7 +994,7 @@ public class ArtifactInfo
         this.bundleExportPackage = bundleExportPackage;
     }
 
-    public String getBundleExportService( )
+    public String getBundleExportService()
     {
         return bundleExportService;
     }
@@ -992,7 +1004,7 @@ public class ArtifactInfo
         this.bundleExportService = bundleExportService;
     }
 
-    public String getBundleDescription( )
+    public String getBundleDescription()
     {
         return bundleDescription;
     }
@@ -1002,7 +1014,7 @@ public class ArtifactInfo
         this.bundleDescription = bundleDescription;
     }
 
-    public String getBundleName( )
+    public String getBundleName()
     {
         return bundleName;
     }
@@ -1012,7 +1024,7 @@ public class ArtifactInfo
         this.bundleName = bundleName;
     }
 
-    public String getBundleLicense( )
+    public String getBundleLicense()
     {
         return bundleLicense;
     }
@@ -1022,7 +1034,7 @@ public class ArtifactInfo
         this.bundleLicense = bundleLicense;
     }
 
-    public String getBundleDocUrl( )
+    public String getBundleDocUrl()
     {
         return bundleDocUrl;
     }
@@ -1032,7 +1044,7 @@ public class ArtifactInfo
         this.bundleDocUrl = bundleDocUrl;
     }
 
-    public String getBundleImportPackage( )
+    public String getBundleImportPackage()
     {
         return bundleImportPackage;
     }
@@ -1042,7 +1054,7 @@ public class ArtifactInfo
         this.bundleImportPackage = bundleImportPackage;
     }
 
-    public String getBundleRequireBundle( )
+    public String getBundleRequireBundle()
     {
         return bundleRequireBundle;
     }
@@ -1052,7 +1064,7 @@ public class ArtifactInfo
         this.bundleRequireBundle = bundleRequireBundle;
     }
 
-    public VersionScheme getVersionScheme( )
+    public VersionScheme getVersionScheme()
     {
         return versionScheme;
     }
@@ -1062,43 +1074,53 @@ public class ArtifactInfo
         this.fields = fields;
     }
 
-    public String getBundleProvideCapability() {
+    public String getBundleProvideCapability()
+    {
         return bundleProvideCapability;
     }
 
-    public void setBundleProvideCapability(String bundleProvideCapability) {
+    public void setBundleProvideCapability( String bundleProvideCapability )
+    {
         this.bundleProvideCapability = bundleProvideCapability;
     }
 
-    public String getBundleRequireCapability() {
+    public String getBundleRequireCapability()
+    {
         return bundleRequireCapability;
     }
 
-    public void setBundleRequireCapability(String bundleRequireCapability) {
+    public void setBundleRequireCapability( String bundleRequireCapability )
+    {
         this.bundleRequireCapability = bundleRequireCapability;
     }
 
-    public String getSha256() {
+    public String getSha256()
+    {
         return sha256;
     }
 
-    public void setSha256(String sha256) {
+    public void setSha256( String sha256 )
+    {
         this.sha256 = sha256;
     }
 
-    public String getBundleFragmentHost() {
+    public String getBundleFragmentHost()
+    {
         return bundleFragmentHost;
     }
 
-    public void setBundleFragmentHost(String bundleFragmentHost) {
+    public void setBundleFragmentHost( String bundleFragmentHost )
+    {
         this.bundleFragmentHost = bundleFragmentHost;
     }
 
-    public String getBundleRequiredExecutionEnvironment() {
+    public String getBundleRequiredExecutionEnvironment()
+    {
         return bundleRequiredExecutionEnvironment;
     }
 
-    public void setBundleRequiredExecutionEnvironment(String bundleRequiredExecutionEnvironment) {
+    public void setBundleRequiredExecutionEnvironment( String bundleRequiredExecutionEnvironment )
+    {
         this.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
     }
 

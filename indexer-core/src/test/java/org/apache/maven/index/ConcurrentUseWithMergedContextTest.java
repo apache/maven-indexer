@@ -19,21 +19,20 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Arrays;
-
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.Arrays;
 
 /**
  * The point in this test is: we use Merged context, and we modify some of the "members" in the merged context, while we
  * try to search over merged one simultaneously.
- * 
+ *
  * @author cstamas
  */
 public class ConcurrentUseWithMergedContextTest
-    extends ConcurrentUseTest
+        extends ConcurrentUseTest
 {
     protected Directory indexDir1 = new RAMDirectory();
 
@@ -44,23 +43,19 @@ public class ConcurrentUseWithMergedContextTest
     protected IndexingContext context2;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context1 =
-            nexusIndexer.addIndexingContext( "test-default-member1", "test1", repo, indexDir1, null, null,
-                DEFAULT_CREATORS );
+        context1 = nexusIndexer
+                .addIndexingContext( "test-default-member1", "test1", repo, indexDir1, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( context1 );
 
-        context2 =
-            nexusIndexer.addIndexingContext( "test-default-member2", "test2", repo, indexDir2, null, null,
-                DEFAULT_CREATORS );
+        context2 = nexusIndexer
+                .addIndexingContext( "test-default-member2", "test2", repo, indexDir2, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( context2 );
 
-        context =
-            nexusIndexer.addMergedIndexingContext( "test-default", "test", repo, indexDir, true,
+        context = nexusIndexer.addMergedIndexingContext( "test-default", "test", repo, indexDir, true,
                 Arrays.asList( context1, context2 ) );
 
         // Group contexts are known, they inherit member timestamp and they are scanned already

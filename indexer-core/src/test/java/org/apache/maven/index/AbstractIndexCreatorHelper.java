@@ -19,12 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
@@ -32,8 +26,14 @@ import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.codehaus.plexus.util.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class AbstractIndexCreatorHelper
-    extends AbstractTestSupport
+        extends AbstractTestSupport
 {
     public List<IndexCreator> DEFAULT_CREATORS;
 
@@ -44,8 +44,7 @@ public class AbstractIndexCreatorHelper
     Random rand = new Random();
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -70,8 +69,7 @@ public class AbstractIndexCreatorHelper
         FULL_CREATORS.add( jar );
     }
 
-    protected void deleteDirectory( File dir )
-        throws IOException
+    protected void deleteDirectory( File dir ) throws IOException
     {
         FileUtils.deleteDirectory( dir );
     }
@@ -86,8 +84,7 @@ public class AbstractIndexCreatorHelper
         return outputFolder;
     }
 
-    public void testDirectory()
-        throws IOException
+    public void testDirectory() throws IOException
     {
         File dir = this.getDirectory( "foo" );
         assert ( dir.getAbsolutePath().contains( "foo" ) );

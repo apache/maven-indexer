@@ -27,7 +27,7 @@ import java.util.List;
  * Base set of functionality for the TreeNode that all implementations will need.
  */
 public abstract class AbstractTreeNode
-    implements TreeNode
+        implements TreeNode
 {
     /**
      * The type of node.
@@ -74,13 +74,13 @@ public abstract class AbstractTreeNode
      */
     private String repositoryId;
 
-    final private transient IndexTreeView treeView;
+    private final transient IndexTreeView treeView;
 
-    final private transient TreeViewRequest request;
+    private final transient TreeViewRequest request;
 
     /**
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation;
-     * 
+     *
      * @param tview
      * @param factory
      */
@@ -93,7 +93,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the type of node.
-     * 
+     *
      * @return Type
      */
     public Type getType()
@@ -103,7 +103,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the type of node.
-     * 
+     *
      * @param Type
      */
     public void setType( Type type )
@@ -113,7 +113,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get flag that determines if the node is a leaf.
-     * 
+     *
      * @return boolean
      */
     public boolean isLeaf()
@@ -123,7 +123,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set flag that determines if the node is a leaf.
-     * 
+     *
      * @param boolean
      */
     public void setLeaf( boolean leaf )
@@ -133,7 +133,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the name of the node.
-     * 
+     *
      * @return String
      */
     public String getNodeName()
@@ -143,7 +143,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the name of the node.
-     * 
+     *
      * @param String
      */
     public void setNodeName( String nodeName )
@@ -153,7 +153,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the path of the node.
-     * 
+     *
      * @return String
      */
     public String getPath()
@@ -163,7 +163,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the path of the node.
-     * 
+     *
      * @param String
      */
     public void setPath( String path )
@@ -173,7 +173,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the group id of this node.
-     * 
+     *
      * @return String
      */
     public String getGroupId()
@@ -183,7 +183,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the group id of this node.
-     * 
+     *
      * @param String
      */
     public void setGroupId( String groupId )
@@ -193,7 +193,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the artifact id of this node.
-     * 
+     *
      * @return String
      */
     public String getArtifactId()
@@ -203,7 +203,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the artifact id of this node.
-     * 
+     *
      * @param String
      */
     public void setArtifactId( String artifactId )
@@ -213,7 +213,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the version of this node.
-     * 
+     *
      * @return String
      */
     public String getVersion()
@@ -223,7 +223,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the version of this node.
-     * 
+     *
      * @param String
      */
     public void setVersion( String version )
@@ -233,7 +233,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the repository id that this node is stored in.
-     * 
+     *
      * @return String
      */
     public String getRepositoryId()
@@ -243,7 +243,7 @@ public abstract class AbstractTreeNode
 
     /**
      * Set the repository id that this node is stored in.
-     * 
+     *
      * @param String
      */
     public void setRepositoryId( String repositoryId )
@@ -255,7 +255,7 @@ public abstract class AbstractTreeNode
      * Get the children of this node. If this is a leaf node, null will be returned. This will NOT perform any actions
      * on the index to retrieve the children, will only return children that have already been loaded via the
      * listChildren method.
-     * 
+     *
      * @return List<TreeNode>
      */
     public List<TreeNode> getChildren()
@@ -271,18 +271,16 @@ public abstract class AbstractTreeNode
     /**
      * Get the children of this node. If this is a leaf node, null will be returned. This will use the index to retrieve
      * the list of child nodes.
-     * 
+     *
      * @return List<TreeNode>
      */
-    public List<TreeNode> listChildren()
-        throws IOException
+    public List<TreeNode> listChildren() throws IOException
     {
         if ( !isLeaf() && getChildren().isEmpty() && !isLeaf() )
         {
-            children =
-                treeView.listNodes(
+            children = treeView.listNodes(
                     new TreeViewRequest( request.getFactory(), getPath(), request.getFieldHints(),
-                        request.getArtifactInfoFilter(), request.getIndexingContext() ) ).getChildren();
+                            request.getArtifactInfoFilter(), request.getIndexingContext() ) ).getChildren();
         }
 
         return children;
@@ -290,11 +288,10 @@ public abstract class AbstractTreeNode
 
     /**
      * Find a TreeNode based upon a path and Type check.
-     * 
+     *
      * @return TreeNode
      */
-    public TreeNode findChildByPath( String path, Type type )
-        throws IOException
+    public TreeNode findChildByPath( String path, Type type ) throws IOException
     {
         for ( TreeNode child : getChildren() )
         {

@@ -19,13 +19,13 @@ package org.apache.maven.index.treeview;
  * under the License.
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.maven.index.ArtifactInfoFilter;
 import org.apache.maven.index.Field;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TreeViewRequest
 {

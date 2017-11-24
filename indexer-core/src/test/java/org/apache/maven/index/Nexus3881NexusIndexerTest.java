@@ -19,30 +19,27 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-
 import junit.framework.Assert;
-
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 
+import java.io.File;
+
 public class Nexus3881NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-3881" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-3881", "nexus-3881", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-3881", "nexus-3881", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testRelevances()
-        throws Exception
+    public void testRelevances() throws Exception
     {
         Query q1 = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "solution", SearchType.SCORED );
         Query q2 = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "solution", SearchType.SCORED );
@@ -53,11 +50,11 @@ public class Nexus3881NexusIndexerTest
 
         IteratorSearchRequest request = new IteratorSearchRequest( bq );
         request.setLuceneExplain( true );
-        
+
         IteratorSearchResponse response = nexusIndexer.searchIterator( request );
 
         Assert.assertEquals( "All artifacts has 'solution' in their GA!", 4, response.getTotalHits() );
-        
+
 
         // for (ArtifactInfo ai : response) {
         // System.out.println(ai.toString());
@@ -73,8 +70,7 @@ public class Nexus3881NexusIndexerTest
             lastRel = ai.getLuceneScore();
         }
 
-        Assert.assertTrue(
-            String.format( "The relevance span should be small! (%s)",
-                new Object[] { Float.valueOf( firstRel - lastRel ) } ), firstRel - lastRel < 0.35 );
+        Assert.assertTrue( String.format( "The relevance span should be small! (%s)",
+                new Object[] {Float.valueOf( firstRel - lastRel )} ), firstRel - lastRel < 0.35 );
     }
 }

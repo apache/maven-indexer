@@ -19,9 +19,9 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.IOException;
-
 import org.apache.maven.index.context.IndexingContext;
+
+import java.io.IOException;
 
 /**
  * An indexer engine used to index, update and remote artifacts to the indexing context.
@@ -31,19 +31,16 @@ public interface IndexerEngine
     /**
      * Add new artifact to the index
      */
-    void index( IndexingContext context, ArtifactContext ac )
-        throws IOException;
+    void index( IndexingContext context, ArtifactContext ac ) throws IOException;
 
     /**
      * Replace data for a previously indexed artifact
      */
-    void update( IndexingContext context, ArtifactContext ac )
-        throws IOException;
+    void update( IndexingContext context, ArtifactContext ac ) throws IOException;
 
     /**
      * Remove artifact to the index
      */
-    void remove( IndexingContext context, ArtifactContext ac )
-        throws IOException;
+    void remove( IndexingContext context, ArtifactContext ac ) throws IOException;
 
 }

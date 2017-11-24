@@ -60,9 +60,9 @@ public class RepositoryIndexer
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryIndexer.class );
 
-    private static final String[] luceneFields = new String[]{ "g", "a", "v", "p", "c" };
+    private static final String[] LUCENE_FIELDS = new String[] {"g", "a", "v", "p", "c"};
 
-    private static final WhitespaceAnalyzer luceneAnalyzer = new WhitespaceAnalyzer( );
+    private static final WhitespaceAnalyzer WHITESPACE_ANALYZER = new WhitespaceAnalyzer();
 
     private Indexer indexer;
 
@@ -84,27 +84,24 @@ public class RepositoryIndexer
         // no op
     }
 
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         indexer.closeIndexingContext( indexingContext, false );
     }
 
-    public void close( boolean deleteFiles )
-        throws IOException
+    public void close( boolean deleteFiles ) throws IOException
     {
         indexingContext.close( deleteFiles );
     }
 
-    public void delete( final Collection<ArtifactInfo> artifacts )
-        throws IOException
+    public void delete( final Collection<ArtifactInfo> artifacts ) throws IOException
     {
         final List<ArtifactContext> delete = new ArrayList<>();
         for ( final ArtifactInfo artifact : artifacts )
         {
             LOGGER.debug( "Deleting artifact: {}; ctx id: {}; idx dir: {}",
-                          new String[]{ artifact.toString(), indexingContext.getId(),
-                              indexingContext.getIndexDirectory().toString() } );
+                    new String[] {artifact.toString(), indexingContext.getId(), indexingContext
+                            .getIndexDirectory().toString()} );
 
             delete.add( new ArtifactContext( null, null, null, artifact, null ) );
         }
@@ -113,8 +110,7 @@ public class RepositoryIndexer
     }
 
     public Set<ArtifactInfo> search( final String groupId, final String artifactId, final String version,
-                                     final String packaging, final String classifier )
-        throws IOException
+                                     final String packaging, final String classifier ) throws IOException
     {
         final BooleanQuery query = new BooleanQuery();
 
@@ -126,7 +122,7 @@ public class RepositoryIndexer
         if ( artifactId != null )
         {
             query.add( getIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( artifactId ) ),
-                       MUST );
+                    MUST );
         }
 
         if ( version != null )
@@ -147,12 +143,12 @@ public class RepositoryIndexer
         if ( classifier != null )
         {
             query.add( getIndexer().constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( classifier ) ),
-                       MUST );
+                    MUST );
         }
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                new String[] {query.toString(), indexingContext.getId(), indexingContext
+                        .getIndexDirectory().toString()} );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -170,14 +166,13 @@ public class RepositoryIndexer
         return results;
     }
 
-    public Set<ArtifactInfo> search( final String queryText )
-        throws ParseException, IOException
+    public Set<ArtifactInfo> search( final String queryText ) throws ParseException, IOException
     {
-        final Query query = new MultiFieldQueryParser( luceneFields, luceneAnalyzer ).parse( queryText );
+        final Query query = new MultiFieldQueryParser( LUCENE_FIELDS, WHITESPACE_ANALYZER ).parse( queryText );
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                new String[] {query.toString(), indexingContext.getId(), indexingContext
+                        .getIndexDirectory().toString()} );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -195,15 +190,14 @@ public class RepositoryIndexer
         return results;
     }
 
-    public Set<ArtifactInfo> searchBySHA1( final String checksum )
-        throws IOException
+    public Set<ArtifactInfo> searchBySHA1( final String checksum ) throws IOException
     {
         final BooleanQuery query = new BooleanQuery();
         query.add( getIndexer().constructQuery( MAVEN.SHA1, new SourcedSearchExpression( checksum ) ), MUST );
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                new String[] {query.toString(), indexingContext.getId(), indexingContext
+                        .getIndexDirectory().toString()} );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -223,22 +217,20 @@ public class RepositoryIndexer
 
     public int index( final File startingPath )
     {
-        final ScanningResult scan = getScanner().scan(
-            new ScanningRequest( indexingContext, new ReindexArtifactScanningListener(),
-                                 startingPath == null ? "." : startingPath.getPath() ) );
+        final ScanningResult scan = getScanner()
+                .scan( new ScanningRequest( indexingContext, new ReindexArtifactScanningListener(),
+                        startingPath == null ? "." : startingPath.getPath() ) );
         return scan.getTotalFiles();
     }
 
-    public void addArtifactToIndex( final File artifactFile, final ArtifactInfo artifactInfo )
-        throws IOException
+    public void addArtifactToIndex( final File artifactFile, final ArtifactInfo artifactInfo ) throws IOException
     {
         getIndexer().addArtifactsToIndex( asList( new ArtifactContext( null, artifactFile, null, artifactInfo, null ) ),
-                                          indexingContext );
+                indexingContext );
     }
 
     public void addArtifactToIndex( String repository, File artifactFile, String groupId, String artifactId,
-                                    String version, String extension, String classifier )
-        throws IOException
+                                    String version, String extension, String classifier ) throws IOException
     {
         ArtifactInfo artifactInfo = new ArtifactInfo( repository, groupId, artifactId, version, classifier, extension );
         if ( extension != null )
@@ -247,15 +239,15 @@ public class RepositoryIndexer
         }
 
         LOGGER.debug( "Adding artifact: {}; repo: {}; type: {}",
-                      new String[]{ artifactInfo.getUinfo(), repository, extension } );
+                new String[] {artifactInfo.getUinfo(), repository, extension} );
 
         getIndexer().addArtifactsToIndex(
-            asList( new ArtifactContext( null, artifactFile, null, artifactInfo, artifactInfo.calculateGav() ) ),
-            indexingContext );
+                asList( new ArtifactContext( null, artifactFile, null, artifactInfo, artifactInfo.calculateGav() ) ),
+                indexingContext );
     }
 
     private class ReindexArtifactScanningListener
-        implements ArtifactScanningListener
+            implements ArtifactScanningListener
     {
 
         int totalFiles = 0;
@@ -273,7 +265,7 @@ public class RepositoryIndexer
         {
             result.setTotalFiles( totalFiles );
             LOGGER.debug( "Scanning finished; total files: {}; has exception: {}", result.getTotalFiles(),
-                          result.hasExceptions() );
+                    result.hasExceptions() );
         }
 
         @Override
@@ -288,8 +280,8 @@ public class RepositoryIndexer
             try
             {
                 LOGGER.debug( "Adding artifact gav: {}; ctx id: {}; idx dir: {}",
-                              new String[]{ ac.getGav().toString(), context.getId(),
-                                  context.getIndexDirectory().toString() } );
+                        new String[] {ac.getGav().toString(), context.getId(), context
+                                .getIndexDirectory().toString()} );
 
                 getIndexer().addArtifactsToIndex( asList( ac ), context );
                 totalFiles++;

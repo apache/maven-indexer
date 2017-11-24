@@ -23,11 +23,11 @@ import java.io.File;
 
 /**
  * An md5 locator to locate the md5 file relative to POM.
- * 
+ *
  * @author Jason van Zyl
  */
 public class Md5Locator
-    implements Locator
+        implements Locator
 {
     public File locate( File source )
     {

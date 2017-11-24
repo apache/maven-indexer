@@ -25,7 +25,7 @@ import java.io.InputStream;
 
 /**
  * An interface defining resource downloading contract
- * 
+ *
  * @author Eugene Kuleshov
  */
 public interface ResourceFetcher
@@ -33,20 +33,17 @@ public interface ResourceFetcher
     /**
      * Connect and start transfer session
      */
-    void connect( String id, String url )
-        throws IOException;
+    void connect( String id, String url ) throws IOException;
 
     /**
      * Disconnect and complete transfer session
      */
-    void disconnect()
-        throws IOException;
+    void disconnect() throws IOException;
 
     /**
      * Retrieves resource as InputStream
-     * 
+     *
      * @param name a name of resource to retrieve
      */
-    InputStream retrieve( String name )
-        throws IOException, FileNotFoundException;
+    InputStream retrieve( String name ) throws IOException, FileNotFoundException;
 }

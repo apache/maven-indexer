@@ -24,21 +24,19 @@ import java.util.Collection;
 import java.util.Set;
 
 public class SubPathReindexTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS );
 
         nexusIndexer.scan( context, "/org/slf4j/slf4j-api", null, false );
     }
 
-    public void testRootGroups()
-        throws Exception
+    public void testRootGroups() throws Exception
     {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals( rootGroups.toString(), 1, rootGroups.size() );
@@ -74,8 +72,7 @@ public class SubPathReindexTest
         assertGroup( 0, "org.apache.maven.plugins.maven-core-it-plugin", context );
     }
 
-    public void testIdentify()
-        throws Exception
+    public void testIdentify() throws Exception
     {
         Collection<ArtifactInfo> ais;
         File artifact;

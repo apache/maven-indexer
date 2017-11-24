@@ -19,23 +19,23 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
 import junit.framework.Assert;
-
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
+
 //FIXME - hardcoded assumptions in test that break with lucene 4, or bugs?
 //@Ignore("Segment merge may work differently in Lucene 4")
 public class Nexus1911IncrementalTest
-    extends AbstractIndexCreatorHelper
+        extends AbstractIndexCreatorHelper
 {
     NexusIndexer indexer;
 
@@ -52,8 +52,7 @@ public class Nexus1911IncrementalTest
     File reposTargetDir;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -70,14 +69,13 @@ public class Nexus1911IncrementalTest
 
         File repo = new File( reposTargetDir, "repo" );
         repo.mkdirs();
-        reindexedContext =
-            context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        reindexedContext = context = indexer
+                .addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
         indexer.scan( context );
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         indexer.removeIndexingContext( context, true );
         super.deleteDirectory( this.reposTargetDir );
@@ -86,14 +84,13 @@ public class Nexus1911IncrementalTest
         super.tearDown();
     }
 
-    public void testNoIncremental()
-        throws Exception
+    public void testNoIncremental() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             packer.packIndex( request );
         }
@@ -121,14 +118,13 @@ public class Nexus1911IncrementalTest
         Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
-    public void test1Incremental()
-        throws Exception
+    public void test1Incremental() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             packer.packIndex( request );
         }
@@ -137,7 +133,8 @@ public class Nexus1911IncrementalTest
             context.releaseIndexSearcher( indexSearcher );
         }
 
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ), IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ),
+                IndexPackingRequest.MAX_CHUNKS );
 
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
@@ -158,14 +155,13 @@ public class Nexus1911IncrementalTest
         Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
-    public void test2Incremental()
-        throws Exception
+    public void test2Incremental() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             packer.packIndex( request );
         }
@@ -174,8 +170,10 @@ public class Nexus1911IncrementalTest
             context.releaseIndexSearcher( indexSearcher );
         }
 
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ), IndexPackingRequest.MAX_CHUNKS );
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-2" ), IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ),
+                IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-2" ),
+                IndexPackingRequest.MAX_CHUNKS );
 
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
@@ -183,7 +181,7 @@ public class Nexus1911IncrementalTest
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
         //1 is missing with updated Lucene 4 implementation
-//        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
         Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
@@ -198,14 +196,13 @@ public class Nexus1911IncrementalTest
         Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
-    public void test3Incremental()
-        throws Exception
+    public void test3Incremental() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             packer.packIndex( request );
         }
@@ -214,9 +211,12 @@ public class Nexus1911IncrementalTest
             context.releaseIndexSearcher( indexSearcher );
         }
 
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ), IndexPackingRequest.MAX_CHUNKS );
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-2" ), IndexPackingRequest.MAX_CHUNKS );
-        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-3" ), IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-1" ),
+                IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-2" ),
+                IndexPackingRequest.MAX_CHUNKS );
+        copyRepoContentsAndReindex( new File( getBasedir(), "src/test/nexus-1911/repo-inc-3" ),
+                IndexPackingRequest.MAX_CHUNKS );
 
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
@@ -224,8 +224,8 @@ public class Nexus1911IncrementalTest
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
         //1,2 are missing with updated Lucene 4 implementation
-//        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
-//        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
         Assert.assertNotNull( props );
@@ -239,14 +239,13 @@ public class Nexus1911IncrementalTest
         Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
-    public void testMaxChunks()
-        throws Exception
+    public void testMaxChunks() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             request.setMaxIndexChunks( 3 );
             packer.packIndex( request );
@@ -263,16 +262,16 @@ public class Nexus1911IncrementalTest
 
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
-        
+
         System.out.println( filenames );
-        
+
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
         Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
-        
-    //2,3 are missing with updated Lucene 4 implementation
-//        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
-//        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
+
+        //2,3 are missing with updated Lucene 4 implementation
+        //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
         Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".4.gz" ) );
 
         Assert.assertNotNull( props );
@@ -286,8 +285,7 @@ public class Nexus1911IncrementalTest
         Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
-    private void copyRepoContentsAndReindex( File src, int maxIndexChunks )
-        throws Exception
+    private void copyRepoContentsAndReindex( File src, int maxIndexChunks ) throws Exception
     {
         File reposTargetDir = new File( getBasedir(), "target/repos/nexus-1911/repo" );
 
@@ -300,8 +298,8 @@ public class Nexus1911IncrementalTest
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), indexPackDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    indexPackDir );
             request.setCreateIncrementalChunks( true );
             request.setMaxIndexChunks( maxIndexChunks );
             packer.packIndex( request );
@@ -318,23 +316,22 @@ public class Nexus1911IncrementalTest
 
         for ( int i = 0; i < files.length; i++ )
         {
-            filenames.add( files[i].getName() );
+            filenames.add( files[ i ].getName() );
         }
 
         return filenames;
     }
 
-    private Properties getPropertiesFromFiles( File[] files )
-        throws Exception
+    private Properties getPropertiesFromFiles( File[] files ) throws Exception
     {
         Properties props = new Properties();
         File propertyFile = null;
 
         for ( int i = 0; i < files.length; i++ )
         {
-            if ( ( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ).equalsIgnoreCase( files[i].getName() ) )
+            if ( ( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ).equalsIgnoreCase( files[ i ].getName() ) )
             {
-                propertyFile = files[i];
+                propertyFile = files[ i ];
                 break;
             }
         }

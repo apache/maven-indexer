@@ -19,22 +19,22 @@ package org.apache.maven.index.cli;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
 
+import java.io.File;
+import java.io.IOException;
+
 public class NexusIndexerCliIT
-    extends AbstractNexusIndexerCliTest
+        extends AbstractNexusIndexerCliTest
 {
 
     private StreamConsumer sout;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 

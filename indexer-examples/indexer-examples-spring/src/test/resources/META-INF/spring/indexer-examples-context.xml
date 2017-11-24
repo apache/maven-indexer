@@ -36,7 +36,8 @@
 
     <bean id="repositoryIndexManager" class="org.apache.maven.indexer.examples.indexing.RepositoryIndexManager"/>
 
-    <bean id="artifactIndexingService" class="org.apache.maven.indexer.examples.services.impl.ArtifactIndexingServiceImpl"/>
+    <bean id="artifactIndexingService"
+          class="org.apache.maven.indexer.examples.services.impl.ArtifactIndexingServiceImpl"/>
 
     <bean id="repositoryBooter" class="org.apache.maven.indexer.examples.boot.RepositoryBooter"/>
 

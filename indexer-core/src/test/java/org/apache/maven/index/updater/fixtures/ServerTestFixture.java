@@ -33,6 +33,10 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.SessionHandler;
 import org.mortbay.jetty.webapp.WebAppContext;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,11 +44,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 public class ServerTestFixture
 {
@@ -57,20 +56,19 @@ public class ServerTestFixture
 
     private final Server server;
 
-    public ServerTestFixture( final int port )
-        throws Exception
+    public ServerTestFixture( final int port ) throws Exception
     {
         server = new Server();
 
         Connector connector = new SelectChannelConnector();
         connector.setPort( port );
 
-        server.setConnectors( new Connector[]{ connector } );
+        server.setConnectors( new Connector[] {connector} );
 
         Constraint constraint = new Constraint();
         constraint.setName( Constraint.__BASIC_AUTH );
 
-        constraint.setRoles( new String[]{ "allowed" } );
+        constraint.setRoles( new String[] {"allowed"} );
         constraint.setAuthenticate( true );
 
         ConstraintMapping cm = new ConstraintMapping();
@@ -86,7 +84,7 @@ public class ServerTestFixture
         realm.addUserToRole( "longuser", "allowed" );
 
         sh.setUserRealm( realm );
-        sh.setConstraintMappings( new ConstraintMapping[]{ cm } );
+        sh.setConstraintMappings( new ConstraintMapping[] {cm} );
 
         WebAppContext ctx = new WebAppContext();
         ctx.setContextPath( "/" );
@@ -99,17 +97,16 @@ public class ServerTestFixture
         ctx.getServletHandler().addServletWithMapping( InfiniteRedirectionServlet.class, "/redirect-trap/*" );
 
         SessionHandler sessionHandler = ctx.getSessionHandler();
-        ( (AbstractSessionManager) sessionHandler.getSessionManager() ).setUsingCookies( false );
+        ( ( AbstractSessionManager ) sessionHandler.getSessionManager() ).setUsingCookies( false );
 
         HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers( new Handler[]{ ctx, new DefaultHandler() } );
+        handlers.setHandlers( new Handler[] {ctx, new DefaultHandler()} );
 
         server.setHandler( handlers );
         server.start();
     }
 
-    private static File getBase()
-        throws URISyntaxException
+    private static File getBase() throws URISyntaxException
     {
         URL resource = Thread.currentThread().getContextClassLoader().getResource( SERVER_ROOT_RESOURCE_PATH );
         if ( resource == null )
@@ -120,21 +117,20 @@ public class ServerTestFixture
         return new File( resource.toURI().normalize() );
     }
 
-    public void stop()
-        throws Exception
+    public void stop() throws Exception
     {
         server.stop();
         server.join();
     }
 
     public static final class TimingServlet
-        extends HttpServlet
+            extends HttpServlet
     {
         private static final long serialVersionUID = 1L;
 
         @Override
         protected void doGet( final HttpServletRequest req, final HttpServletResponse resp )
-            throws ServletException, IOException
+                throws ServletException, IOException
         {
             String basePath = req.getServletPath();
             String subPath = req.getRequestURI().substring( basePath.length() );
@@ -147,7 +143,7 @@ public class ServerTestFixture
             catch ( URISyntaxException e )
             {
                 resp.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                                "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH );
+                        "Cannot find server document root in " + "classpath: " + SERVER_ROOT_RESOURCE_PATH );
                 return;
             }
 
@@ -159,7 +155,7 @@ public class ServerTestFixture
                 OutputStream out = resp.getOutputStream();
 
                 int read = -1;
-                byte[] buf = new byte[64];
+                byte[] buf = new byte[ 64 ];
                 while ( ( read = in.read( buf ) ) > -1 )
                 {
                     System.out.println( "Sending " + read + " bytes (after pausing 1 seconds)..." );
@@ -194,11 +190,11 @@ public class ServerTestFixture
 
     public int getPort()
     {
-        return server.getConnectors()[0].getLocalPort();
+        return server.getConnectors()[ 0 ].getLocalPort();
     }
 
     public static final class InfiniteRedirectionServlet
-        extends HttpServlet
+            extends HttpServlet
     {
         private static final long serialVersionUID = 1L;
 
@@ -206,7 +202,7 @@ public class ServerTestFixture
 
         @Override
         protected void doGet( final HttpServletRequest req, final HttpServletResponse resp )
-            throws ServletException, IOException
+                throws ServletException, IOException
         {
             String path = req.getServletPath();
             String subPath = req.getRequestURI().substring( path.length() );

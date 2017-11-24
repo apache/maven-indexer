@@ -24,14 +24,14 @@ import java.io.File;
 /**
  * A utility component that resolves POM packaging to artifact extension. Different implementations may provide
  * different means to do it.
- * 
+ *
  * @author cstamas
  */
 public interface ArtifactPackagingMapper
 {
     /**
      * Returns the extension belonging to given packaging, like "jar" for "jar", "jar" for "ear", etc.
-     * 
+     *
      * @param packaging
      * @return
      */
@@ -39,7 +39,7 @@ public interface ArtifactPackagingMapper
 
     /**
      * Sets the file to source the user provided mappings from, and resets the mappings, forcing it to reload the file.
-     * 
+     *
      * @param file
      */
     void setPropertiesFile( File file );

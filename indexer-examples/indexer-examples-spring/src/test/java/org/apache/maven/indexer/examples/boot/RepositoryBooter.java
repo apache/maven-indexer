@@ -55,8 +55,7 @@ public class RepositoryBooter
     }
 
     @PostConstruct
-    public void initialize()
-        throws IOException
+    public void initialize() throws IOException
     {
         File repositoriesBaseDir = new File( "target/repositories" );
 
@@ -73,8 +72,7 @@ public class RepositoryBooter
         logger.debug( "Initialized repositories." );
     }
 
-    private void createLockFile( File repositoriesRootDir )
-        throws IOException
+    private void createLockFile( File repositoriesRootDir ) throws IOException
     {
         final File lockFile = new File( repositoriesRootDir, "repositories.lock" );
         //noinspection ResultOfMethodCallIgnored
@@ -83,31 +81,27 @@ public class RepositoryBooter
         lockFile.createNewFile();
     }
 
-    private boolean lockExists( File repositoriesRootDir )
-        throws IOException
+    private boolean lockExists( File repositoriesRootDir ) throws IOException
     {
         File lockFile = new File( repositoriesRootDir, "repositories.lock" );
 
         return lockFile.exists();
     }
 
-    private void initializeRepositories( File repositoriesBaseDir )
-        throws IOException
+    private void initializeRepositories( File repositoriesBaseDir ) throws IOException
     {
         initializeRepository( repositoriesBaseDir, "releases" );
         initializeRepository( repositoriesBaseDir, "snapshots" );
     }
 
-    private void initializeRepository( File repositoriesBaseDir, String repositoryName )
-        throws IOException
+    private void initializeRepository( File repositoriesBaseDir, String repositoryName ) throws IOException
     {
         createRepositoryStructure( repositoriesBaseDir.getAbsolutePath(), repositoryName );
 
         initializeRepositoryIndex( new File( repositoriesBaseDir.getAbsoluteFile(), repositoryName ), repositoryName );
     }
 
-    public void createRepositoryStructure( String repositoriesBaseDir, String repositoryName )
-        throws IOException
+    public void createRepositoryStructure( String repositoriesBaseDir, String repositoryName ) throws IOException
     {
         final File repositoriesBasedir = new File( repositoriesBaseDir );
         //noinspection ResultOfMethodCallIgnored
@@ -115,17 +109,16 @@ public class RepositoryBooter
         //noinspection ResultOfMethodCallIgnored
         new File( repositoriesBasedir, repositoryName + File.separatorChar + ".index" ).mkdirs();
 
-        logger.debug( "Created directory structure for repository '" +
-                          repositoriesBasedir.getAbsolutePath() + File.separatorChar + repositoryName + "'." );
+        logger.debug( "Created directory structure for repository '" + repositoriesBasedir.getAbsolutePath()
+                + File.separatorChar + repositoryName + "'." );
     }
 
-    private void initializeRepositoryIndex( File repositoryBasedir, String repositoryId )
-        throws IOException
+    private void initializeRepositoryIndex( File repositoryBasedir, String repositoryId ) throws IOException
     {
         final File indexDir = new File( repositoryBasedir, ".index" );
 
-        RepositoryIndexer repositoryIndexer =
-            repositoryIndexerFactory.createRepositoryIndexer( repositoryId, repositoryBasedir, indexDir );
+        RepositoryIndexer repositoryIndexer = repositoryIndexerFactory
+                .createRepositoryIndexer( repositoryId, repositoryBasedir, indexDir );
 
         repositoryIndexManager.addRepositoryIndex( repositoryId, repositoryIndexer );
     }

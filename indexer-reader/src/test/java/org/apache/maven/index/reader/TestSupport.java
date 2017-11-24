@@ -51,8 +51,7 @@ public class TestSupport
      * Creates the temp directory and list for resource handlers.
      */
     @Before
-    public void setup()
-        throws IOException
+    public void setup() throws IOException
     {
         this.tempDir = new File( "target/tmp-" + getClass().getSimpleName() );
         this.tempDir.delete();
@@ -64,8 +63,7 @@ public class TestSupport
      * Closes all the registered resources handlers and deletes the temp directory.
      */
     @After
-    public void cleanup()
-        throws IOException
+    public void cleanup() throws IOException
     {
         for ( DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers )
         {
@@ -77,8 +75,7 @@ public class TestSupport
     /**
      * Creates a temp file within {@link #tempDir} with given name.
      */
-    protected File createTempFile( final String name )
-        throws IOException
+    protected File createTempFile( final String name ) throws IOException
     {
         File file = new File( tempDir, name );
         file.deleteOnExit();
@@ -88,8 +85,7 @@ public class TestSupport
     /**
      * Creates a temp directory within {@link #tempDir}.
      */
-    protected File createTempDirectory()
-        throws IOException
+    protected File createTempDirectory() throws IOException
     {
         File result = File.createTempFile( testName.getMethodName() + "-dir", "", tempDir );
         result.delete();
@@ -100,8 +96,7 @@ public class TestSupport
     /**
      * Creates an empty {@link DirectoryResourceHandler}.
      */
-    protected WritableResourceHandler createWritableResourceHandler()
-        throws IOException
+    protected WritableResourceHandler createWritableResourceHandler() throws IOException
     {
         DirectoryResourceHandler result = new DirectoryResourceHandler( createTempDirectory() );
         directoryResourceHandlers.add( result );
@@ -112,8 +107,7 @@ public class TestSupport
      * Creates a "test" {@link ResourceHandler} that contains predefined files, is mapped to test resources under given
      * name.
      */
-    protected ResourceHandler testResourceHandler( final String name )
-        throws IOException
+    protected ResourceHandler testResourceHandler( final String name ) throws IOException
     {
         DirectoryResourceHandler result = new DirectoryResourceHandler( new File( "src/test/resources/" + name ) );
         directoryResourceHandlers.add( result );
@@ -123,8 +117,7 @@ public class TestSupport
     /**
      * Consumes {@link ChunkReader} and creates a map "by type" with records.
      */
-    protected Map<Type, List<Record>> loadRecordsByType( final ChunkReader chunkReader )
-        throws IOException
+    protected Map<Type, List<Record>> loadRecordsByType( final ChunkReader chunkReader ) throws IOException
     {
         HashMap<Type, List<Record>> stat = new HashMap<Type, List<Record>>();
         try
@@ -152,8 +145,7 @@ public class TestSupport
     /**
      * Consumes {@link ChunkReader} and creates a map "by type" with record type counts.
      */
-    protected Map<Type, Integer> countRecordsByType( final ChunkReader chunkReader )
-        throws IOException
+    protected Map<Type, Integer> countRecordsByType( final ChunkReader chunkReader ) throws IOException
     {
         HashMap<Type, Integer> stat = new HashMap<Type, Integer>();
         try
@@ -197,7 +189,7 @@ public class TestSupport
             {
                 for ( int i = 0; i < list.length; i++ )
                 {
-                    File entry = new File( file, list[i] );
+                    File entry = new File( file, list[ i ] );
                     if ( !delete( entry ) )
                     {
                         return false;

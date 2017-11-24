@@ -22,10 +22,9 @@ package org.apache.maven.indexer.examples;
 import junit.framework.TestCase;
 
 public class BasicUsageExampleTest
-    extends TestCase
+        extends TestCase
 {
-    public void testApp()
-        throws Exception
+    public void testApp() throws Exception
     {
         BasicUsageExample.main( null );
     }

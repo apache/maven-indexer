@@ -26,15 +26,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.index.updater.DefaultIndexUpdater;
-
 /**
  * ResourceFetcher that keeps track of all requested remote resources.
- * 
+ *
  * @author igor
  */
 public class TrackingFetcher
-    extends DefaultIndexUpdater.FileFetcher
+        extends DefaultIndexUpdater.FileFetcher
 {
 
     private final ArrayList<String> resources = new ArrayList<String>();
@@ -45,16 +43,14 @@ public class TrackingFetcher
     }
 
     @Override
-    public InputStream retrieve( String name )
-        throws IOException, FileNotFoundException
+    public InputStream retrieve( String name ) throws IOException, FileNotFoundException
     {
         resources.add( name );
         return super.retrieve( name );
     }
 
     @Override
-    public void retrieve( String name, File targetFile )
-        throws IOException, FileNotFoundException
+    public void retrieve( String name, File targetFile ) throws IOException, FileNotFoundException
     {
         resources.add( name );
         super.retrieve( name, targetFile );

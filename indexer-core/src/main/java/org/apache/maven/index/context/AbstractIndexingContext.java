@@ -22,7 +22,7 @@ package org.apache.maven.index.context;
 import java.io.IOException;
 
 public abstract class AbstractIndexingContext
-    implements IndexingContext
+        implements IndexingContext
 {
     public boolean isReceivingUpdates()
     {

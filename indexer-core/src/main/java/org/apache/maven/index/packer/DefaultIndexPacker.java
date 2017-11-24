@@ -19,6 +19,16 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.incremental.IncrementalHandler;
+import org.apache.maven.index.updater.IndexDataWriter;
+import org.codehaus.plexus.util.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,18 +40,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.incremental.IncrementalHandler;
-import org.apache.maven.index.updater.IndexDataWriter;
-import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A default {@link IndexPacker} implementation. Creates the properties, legacy index zip and new gz files.
  *
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 @Named
 public class DefaultIndexPacker
-    implements IndexPacker
+        implements IndexPacker
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -70,8 +68,7 @@ public class DefaultIndexPacker
         this.incrementalHandler = incrementalHandler;
     }
 
-    public void packIndex( IndexPackingRequest request )
-        throws IOException, IllegalArgumentException
+    public void packIndex( IndexPackingRequest request ) throws IOException, IllegalArgumentException
     {
         if ( request.getTargetDir() == null )
         {
@@ -83,13 +80,13 @@ public class DefaultIndexPacker
             if ( !request.getTargetDir().isDirectory() )
             {
                 throw new IllegalArgumentException( //
-                                                    String.format( "Specified target path %s is not a directory",
-                                                                   request.getTargetDir().getAbsolutePath() ) );
+                        String.format( "Specified target path %s is not a directory",
+                                request.getTargetDir().getAbsolutePath() ) );
             }
             if ( !request.getTargetDir().canWrite() )
             {
                 throw new IllegalArgumentException( String.format( "Specified target path %s is not writtable",
-                                                                   request.getTargetDir().getAbsolutePath() ) );
+                        request.getTargetDir().getAbsolutePath() ) );
             }
         }
         else
@@ -127,20 +124,20 @@ public class DefaultIndexPacker
                 else
                 {
                     File file = new File( request.getTargetDir(), //
-                                          IndexingContext.INDEX_FILE_PREFIX + "." + info.getProperty(
-                                              IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
+                            IndexingContext.INDEX_FILE_PREFIX + "." + info
+                                    .getProperty( IndexingContext.INDEX_CHUNK_COUNTER ) + ".gz" );
 
                     writeIndexData( request, chunk, file );
 
                     if ( request.isCreateChecksumFiles() )
                     {
                         FileUtils.fileWrite(
-                            new File( file.getParentFile(), file.getName() + ".sha1" ).getAbsolutePath(),
-                            DigesterUtils.getSha1Digest( file ) );
+                                new File( file.getParentFile(), file.getName() + ".sha1" ).getAbsolutePath(),
+                                DigesterUtils.getSha1Digest( file ) );
 
-                        FileUtils.fileWrite(
-                            new File( file.getParentFile(), file.getName() + ".md5" ).getAbsolutePath(),
-                            DigesterUtils.getMd5Digest( file ) );
+                        FileUtils
+                                .fileWrite( new File( file.getParentFile(), file.getName() + ".md5" ).getAbsolutePath(),
+                                        DigesterUtils.getMd5Digest( file ) );
                     }
                 }
             }
@@ -168,18 +165,17 @@ public class DefaultIndexPacker
             if ( request.isCreateChecksumFiles() )
             {
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".sha1" ).getAbsolutePath(),
-                                     DigesterUtils.getSha1Digest( v1File ) );
+                        DigesterUtils.getSha1Digest( v1File ) );
 
                 FileUtils.fileWrite( new File( v1File.getParentFile(), v1File.getName() + ".md5" ).getAbsolutePath(),
-                                     DigesterUtils.getMd5Digest( v1File ) );
+                        DigesterUtils.getMd5Digest( v1File ) );
             }
         }
 
         writeIndexProperties( request, info );
     }
 
-    private Properties readIndexProperties( IndexPackingRequest request )
-        throws IOException
+    private Properties readIndexProperties( IndexPackingRequest request ) throws IOException
     {
         File file = null;
 
@@ -189,8 +185,8 @@ public class DefaultIndexPacker
         }
         else
         {
-            file =
-                new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
+            file = new File( request.getContext().getIndexDirectoryFile(),
+                    IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
         }
 
         Properties properties = new Properties();
@@ -213,15 +209,14 @@ public class DefaultIndexPacker
         return properties;
     }
 
-    void writeIndexData( IndexPackingRequest request, List<Integer> docIndexes, File targetArchive )
-        throws IOException
+    void writeIndexData( IndexPackingRequest request, List<Integer> docIndexes, File targetArchive ) throws IOException
     {
         if ( targetArchive.exists() )
         {
             targetArchive.delete();
         }
 
-        try( OutputStream os = new FileOutputStream( targetArchive ) )
+        try ( OutputStream os = new FileOutputStream( targetArchive ) )
         {
             IndexDataWriter dw = new IndexDataWriter( os );
             dw.write( request.getContext(), request.getIndexReader(), docIndexes );
@@ -230,34 +225,31 @@ public class DefaultIndexPacker
         }
     }
 
-    void writeIndexProperties( IndexPackingRequest request, Properties info )
-        throws IOException
+    void writeIndexProperties( IndexPackingRequest request, Properties info ) throws IOException
     {
-        File propertyFile =
-            new File( request.getContext().getIndexDirectoryFile(), IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
+        File propertyFile = new File( request.getContext().getIndexDirectoryFile(),
+                IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
         File targetPropertyFile = new File( request.getTargetDir(), IndexingContext.INDEX_REMOTE_PROPERTIES_FILE );
 
         info.setProperty( IndexingContext.INDEX_ID, request.getContext().getId() );
 
-        try (OutputStream os = new FileOutputStream( propertyFile ))
+        try ( OutputStream os = new FileOutputStream( propertyFile ) )
         {
             info.store( os, null );
         }
 
-        try (OutputStream os = new FileOutputStream( targetPropertyFile ))
+        try ( OutputStream os = new FileOutputStream( targetPropertyFile ) )
         {
             info.store( os, null );
         }
 
         if ( request.isCreateChecksumFiles() )
         {
-            FileUtils.fileWrite( new File( targetPropertyFile.getParentFile(),
-                                           targetPropertyFile.getName() + ".sha1" ).getAbsolutePath(),
-                                 DigesterUtils.getSha1Digest( targetPropertyFile ) );
+            FileUtils.fileWrite( new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".sha1" )
+                    .getAbsolutePath(), DigesterUtils.getSha1Digest( targetPropertyFile ) );
 
-            FileUtils.fileWrite(
-                new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".md5" ).getAbsolutePath(),
-                DigesterUtils.getMd5Digest( targetPropertyFile ) );
+            FileUtils.fileWrite( new File( targetPropertyFile.getParentFile(), targetPropertyFile.getName() + ".md5" )
+                    .getAbsolutePath(), DigesterUtils.getMd5Digest( targetPropertyFile ) );
         }
     }
 

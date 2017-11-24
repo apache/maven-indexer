@@ -19,10 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.io.StringReader;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -34,7 +30,6 @@ import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -42,6 +37,11 @@ import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTyped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * A default {@link QueryCreator} constructs Lucene query for provided query text.
@@ -60,13 +60,13 @@ import org.slf4j.LoggerFactory;
  * <li>*junit - matches junit, junit-foo and foo-junit</li>
  * <li>^junit$ - matches junit, but not junit-foo, nor foo-junit</li>
  * </ul>
- * 
+ *
  * @author Eugene Kuleshov
  */
 @Singleton
 @Named
 public class DefaultQueryCreator
-    implements QueryCreator
+        implements QueryCreator
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -95,21 +95,19 @@ public class DefaultQueryCreator
         return lastField;
     }
 
-    public Query constructQuery( final Field field, final SearchExpression expression )
-        throws ParseException
+    public Query constructQuery( final Field field, final SearchExpression expression ) throws ParseException
     {
         SearchType searchType = SearchType.SCORED;
 
         if ( expression instanceof SearchTyped )
         {
-            searchType = ( (SearchTyped) expression ).getSearchType();
+            searchType = ( ( SearchTyped ) expression ).getSearchType();
         }
 
         return constructQuery( field, expression.getStringValue(), searchType );
     }
 
-    public Query constructQuery( final Field field, final String query, final SearchType type )
-        throws ParseException
+    public Query constructQuery( final Field field, final String query, final SearchType type ) throws ParseException
     {
         if ( type == null )
         {
@@ -132,9 +130,9 @@ public class DefaultQueryCreator
         Query result = null;
 
         if ( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW.getKey().equals( field )
-            || MinimalArtifactInfoIndexCreator.FLD_ARTIFACT_ID_KW.getKey().equals( field )
-            || MinimalArtifactInfoIndexCreator.FLD_VERSION_KW.getKey().equals( field )
-            || JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( field ) )
+                || MinimalArtifactInfoIndexCreator.FLD_ARTIFACT_ID_KW.getKey().equals( field )
+                || MinimalArtifactInfoIndexCreator.FLD_VERSION_KW.getKey().equals( field )
+                || JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( field ) )
         {
             // these are special untokenized fields, kept for use cases like TreeView is (exact matching).
             result = legacyConstructQuery( field, query );
@@ -150,8 +148,8 @@ public class DefaultQueryCreator
             {
                 if ( query.contains( "*" ) && query.matches( ".*(\\.|-|_).*" ) )
                 {
-                    query =
-                        query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X", "*" );
+                    query = query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " )
+                            .replaceAll( "X", "*" );
                 }
             }
 
@@ -161,8 +159,8 @@ public class DefaultQueryCreator
             }
             catch ( ParseException e )
             {
-                getLogger().debug(
-                    "Query parsing with \"legacy\" method, we got ParseException from QueryParser: " + e.getMessage() );
+                getLogger().debug( "Query parsing with \"legacy\" method, we got ParseException from QueryParser: " + e
+                        .getMessage() );
 
                 result = legacyConstructQuery( field, query );
             }
@@ -179,23 +177,20 @@ public class DefaultQueryCreator
     // ==
 
     public Query constructQuery( final Field field, final IndexerField indexerField, final String query,
-                                 final SearchType type )
-        throws ParseException
+                                 final SearchType type ) throws ParseException
     {
         if ( indexerField == null )
         {
-            getLogger().warn(
-                "Querying for field \""
-                    + field.toString()
-                    + "\" without any indexer field was tried. Please review your code, and consider adding this field to index!" );
+            getLogger().warn( "Querying for field \"" + field.toString() + "\" without any indexer field was tried. "
+                    + "Please review your code, and consider adding this field to index!" );
 
             return null;
         }
         if ( !indexerField.isIndexed() )
         {
-            getLogger().warn(
-                "Querying for non-indexed field " + field.toString()
-                    + " was tried. Please review your code or consider adding this field to index!" );
+            getLogger()
+                    .warn( "Querying for non-indexed field " + field.toString() + " was tried. Please review your " + ""
+                            + "" + "code or consider adding this field to index!" );
 
             return null;
         }
@@ -228,22 +223,21 @@ public class DefaultQueryCreator
                 {
                     if ( query.startsWith( "/" ) )
                     {
-                        return new TermQuery( new Term( indexerField.getKey(), query.toLowerCase().replaceAll( "\\.",
-                            "/" ) ) );
+                        return new TermQuery(
+                                new Term( indexerField.getKey(), query.toLowerCase().replaceAll( "\\.", "/" ) ) );
                     }
                     else
                     {
-                        return new TermQuery( new Term( indexerField.getKey(), "/"
-                            + query.toLowerCase().replaceAll( "\\.", "/" ) ) );
+                        return new TermQuery(
+                                new Term( indexerField.getKey(), "/" + query.toLowerCase().replaceAll( "\\.", "/" ) ) );
                     }
                 }
                 else
                 {
-                    getLogger().warn(
-                        type.toString()
-                            + " type of querying for non-keyword (but stored) field "
-                            + indexerField.getOntology().toString()
-                            + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is currently unsupported." );
+                    getLogger().warn( type.toString() + " type of querying for non-keyword (but stored) field "
+                            + indexerField.getOntology().toString() + " was tried. Please review your code, or "
+                            + "indexCreator involved, since this type of querying of this field is currently "
+                            + "unsupported." );
 
                     // will never succeed (unless we supply him "filter" too, but that would kill performance)
                     // and is possible with stored fields only
@@ -252,11 +246,9 @@ public class DefaultQueryCreator
             }
             else
             {
-                getLogger().warn(
-                    type.toString()
-                        + " type of querying for non-keyword (and not stored) field "
-                        + indexerField.getOntology().toString()
-                        + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is impossible." );
+                getLogger().warn( type.toString() + " type of querying for non-keyword (and not stored) field "
+                        + indexerField.getOntology().toString() + " was tried. Please review your code, or "
+                        + "indexCreator" + " involved, since this type of querying of this field is impossible." );
 
                 // not a keyword indexerField, nor stored. No hope at all. Impossible even with "filtering"
                 return null;
@@ -312,9 +304,9 @@ public class DefaultQueryCreator
                 // but do this with PRESERVING original query!
                 if ( qpQuery.matches( ".*(\\.|-|_|/).*" ) )
                 {
-                    qpQuery =
-                        qpQuery.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_|/", " " ).replaceAll( "X",
-                            "*" ).replaceAll( " \\* ", "" ).replaceAll( "^\\* ", "" ).replaceAll( " \\*$", "" );
+                    qpQuery = qpQuery.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_|/", " " )
+                            .replaceAll( "X", "*" ).replaceAll( " \\* ", "" ).replaceAll( "^\\* ", "" )
+                            .replaceAll( "" + " \\*$", "" );
                 }
 
                 // "fix" it with trailing "*" if not there, but only if it not ends with a space
@@ -401,7 +393,7 @@ public class DefaultQueryCreator
         char h = query.charAt( 0 );
 
         if ( JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( field )
-            || JarFileContentsIndexCreator.FLD_CLASSNAMES.getKey().equals( field ) )
+                || JarFileContentsIndexCreator.FLD_CLASSNAMES.getKey().equals( field ) )
         {
             q = q.replaceAll( "\\.", "/" );
 
@@ -463,7 +455,7 @@ public class DefaultQueryCreator
     {
         try
         {
-            TokenStream ts = nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader(query));
+            TokenStream ts = nexusAnalyzer.tokenStream( indexerField.getKey(), new StringReader( query ) );
             ts.reset();
 
             int result = 0;
@@ -472,7 +464,7 @@ public class DefaultQueryCreator
             {
                 result++;
             }
-            
+
             ts.end();
             ts.close();
 

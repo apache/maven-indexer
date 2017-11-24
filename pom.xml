@@ -18,494 +18,497 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache.maven</groupId>
-    <artifactId>maven-parent</artifactId>
-    <version>30</version>
-  </parent>
-
-  <groupId>org.apache.maven.indexer</groupId>
-  <artifactId>maven-indexer</artifactId>
-  <version>6.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-
-  <name>Maven-Indexer</name>
-  <description>
-    Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
-    of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
-  </description>
-
-  <url>https://maven.apache.org/maven-indexer/</url>
-
-  <contributors>
-    <contributor>
-      <name>Thomas Kruse</name>
-      <email>tk@trion.de</email>
-      <organization>trion development GmbH</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>+1</timezone>
-    </contributor>
-    <contributor>
-      <name>Eugene Kuleshov</name>
-      <email>eugene@sonatype.com</email>
-      <organization>Sonatype</organization>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-    </contributor>
-  </contributors>
-
-  <scm>
-    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</developerConnection>
-    <url>https://github.com/apache/maven-indexer</url>
-  </scm>
-
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/projects/MINDEXER</url>
-  </issueManagement>
-  <ciManagement>
-    <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-indexer/</url>
-  </ciManagement>
-  <distributionManagement>
-    <site>
-      <id>apache.website</id>
-      <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}</url>
-    </site>
-  </distributionManagement>
-
-  <properties>
-    <javaVersion>7</javaVersion>
-    <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
-    <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
-
-    <eclipse-sisu.version>0.3.3</eclipse-sisu.version>
-    <lucene.version>5.5.5</lucene.version>
-    <maven.version>3.5.2</maven.version>
-    <resolver.version>1.1.0</resolver.version>
-    <truezip.version>7.7.10</truezip.version>
-    <archetype.version>2.4</archetype.version>
-    <wagon.version>2.12</wagon.version>
-
-    <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-  </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.maven.indexer</groupId>
-        <artifactId>indexer-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.25</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.2.3</version>
-        <scope>optional</scope>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>1.2.3</version>
-        <scope>optional</scope>
-      </dependency>
-      <dependency>
-        <!-- This dependency is required in order to intercept Spring logging and handle it through Logback + SLF4J,
-             as it would otherwise use commons-logging and do it's own other thing. -->
-        <groupId>org.slf4j</groupId>
-        <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.25</version>
-        <scope>optional</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>20.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>3.0.2</version>
-      </dependency>
-
-      <!-- DI -->
-      <dependency>
-        <groupId>javax.inject</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>1</version>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.2</version>
-      </dependency>
-
-      <dependency>
-        <groupId>aopalliance</groupId>
-        <artifactId>aopalliance</artifactId>
-        <version>1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject</groupId>
-        <artifactId>guice</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject.extensions</groupId>
-        <artifactId>guice-multibindings</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject.extensions</groupId>
-        <artifactId>guice-assistedinject</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.inject</artifactId>
-        <version>${eclipse-sisu.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>${eclipse-sisu.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <!-- Lucene -->
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-core</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-queryparser</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-highlighter</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <!-- including old codecs to read central index -->
-      <dependency>
-        <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-backward-codecs</artifactId>
-        <version>${lucene.version}</version>
-      </dependency>
-
-      <!-- Maven Resolver -->
-      <dependency>
-        <groupId>org.apache.maven.resolver</groupId>
-        <artifactId>maven-resolver-api</artifactId>
-        <version>${resolver.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.resolver</groupId>
-        <artifactId>maven-resolver-util</artifactId>
-        <version>${resolver.version}</version>
-      </dependency>
-
-      <!-- Maven -->
-      <dependency>
+    <parent>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-model</artifactId>
-        <version>${maven.version}</version>
-      </dependency>
+        <artifactId>maven-parent</artifactId>
+        <version>30</version>
+    </parent>
 
-      <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-provider-api</artifactId>
-        <version>${wagon.version}</version>
-      </dependency>
+    <groupId>org.apache.maven.indexer</groupId>
+    <artifactId>maven-indexer</artifactId>
+    <version>6.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-      <!-- For org.apache.maven.archetype.source.ArchetypeDataSource helper -->
-      <dependency>
-        <groupId>org.apache.maven.archetype</groupId>
-        <artifactId>archetype-catalog</artifactId>
-        <version>${archetype.version}</version>
-      </dependency>
+    <name>Maven-Indexer</name>
+    <description>
+        Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
+        of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
+    </description>
 
-      <!-- ZipFacade -->
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-kernel</artifactId>
-        <version>${truezip.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+    <url>https://maven.apache.org/maven-indexer/</url>
 
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-file</artifactId>
-        <version>${truezip.version}</version>
-      </dependency>
+    <contributors>
+        <contributor>
+            <name>Thomas Kruse</name>
+            <email>tk@trion.de</email>
+            <organization>trion development GmbH</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </contributor>
+        <contributor>
+            <name>Eugene Kuleshov</name>
+            <email>eugene@sonatype.com</email>
+            <organization>Sonatype</organization>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </contributor>
+    </contributors>
 
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-driver-zip</artifactId>
-        <version>${truezip.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>de.schlichtherle.truezip</groupId>
-            <artifactId>truezip-swing</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
+    <scm>
+        <connection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</connection>
+        <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</developerConnection>
+        <url>https://github.com/apache/maven-indexer</url>
+    </scm>
 
-      <!-- Test -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.12</version>
-        <scope>test</scope>
-      </dependency>
+    <issueManagement>
+        <system>jira</system>
+        <url>https://issues.apache.org/jira/projects/MINDEXER</url>
+    </issueManagement>
+    <ciManagement>
+        <system>Jenkins</system>
+        <url>https://builds.apache.org/job/maven-indexer/</url>
+    </ciManagement>
+    <distributionManagement>
+        <site>
+            <id>apache.website</id>
+            <url>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}
+            </url>
+        </site>
+    </distributionManagement>
 
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-simple</artifactId>
-        <version>1.7.5</version>
-        <scope>test</scope>
-      </dependency>
+    <properties>
+        <javaVersion>7</javaVersion>
+        <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
+        <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
 
-      <dependency>
-        <groupId>org.jmock</groupId>
-        <artifactId>jmock</artifactId>
-        <version>2.5.1</version>
-        <scope>test</scope>
-      </dependency>
+        <eclipse-sisu.version>0.3.3</eclipse-sisu.version>
+        <lucene.version>5.5.5</lucene.version>
+        <maven.version>3.5.2</maven.version>
+        <resolver.version>1.1.0</resolver.version>
+        <truezip.version>7.7.10</truezip.version>
+        <archetype.version>2.4</archetype.version>
+        <wagon.version>2.12</wagon.version>
 
-      <dependency>
-        <groupId>org.mortbay.jetty</groupId>
-        <artifactId>jetty</artifactId>
-        <version>6.1.19</version>
-        <scope>test</scope>
-      </dependency>
+        <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
+    </properties>
 
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>${wagon.version}</version>
-        <scope>test</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
-  <modules>
-    <module>indexer-core</module>
-    <module>indexer-cli</module>
-    <module>indexer-reader</module>
-    <module>indexer-examples</module>
-  </modules>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
-          <systemPropertyVariables>
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <signature>
-            <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java1${javaVersion}</artifactId>
-            <version>1.0</version>
-          </signature>
-        </configuration>
-        <executions>
-          <execution>
-            <id>check-java-compat</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>rat-check</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <excludes combine.children="append">
-                <exclude>README.md</exclude>
-                <exclude>.gitignore</exclude>
-                <exclude>NOTICE</exclude>
-                <exclude>**/packageinfo</exclude>
-                <exclude>.git/**</exclude>
-                <exclude>.idea/**</exclude>
-                <exclude>**/*.iml</exclude>
-                <!-- exlude some test resources from rat analysis -->
-                <exclude>src/test/**/*.sha1</exclude>
-                <exclude>src/test/**/*.md5</exclude>
-                <exclude>src/test/**/*.xml</exclude>
-                <exclude>src/test/**/*.pom</exclude>
-                <exclude>src/test/**/*.asc</exclude>
-                <exclude>src/test/**/*.properties</exclude>
-                <exclude>src/test/**/*.swc</exclude>
-                <exclude>src/test/**/*.txt</exclude>
-                <exclude>src/test/**/*.filename</exclude>
-                <exclude>src/test/**/.placeholder</exclude>
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <!--
-            olamy do not fail the build because of some white spaces somewhere
-            yup I have a lot of other smart/interesting stuff to do in my life!!
-           -->
-          <failOnViolation>false</failOnViolation>
-          <failsOnError>false</failsOnError>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.20.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.16</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.rat</groupId>
-          <artifactId>apache-rat-plugin</artifactId>
-          <version>0.12</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.17</version>
-          <dependencies>
+    <dependencyManagement>
+        <dependencies>
             <dependency>
-              <groupId>org.apache.maven.shared</groupId>
-              <artifactId>maven-shared-resources</artifactId>
-              <version>2</version>
+                <groupId>org.apache.maven.indexer</groupId>
+                <artifactId>indexer-core</artifactId>
+                <version>${project.version}</version>
             </dependency>
-          </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.6</version>
-          <configuration>
-            <topSiteURL>scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}</topSiteURL>
-          </configuration>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
-          itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+                <scope>optional</scope>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>1.2.3</version>
+                <scope>optional</scope>
+            </dependency>
+            <dependency>
+                <!-- This dependency is required in order to intercept Spring logging and handle it through Logback + SLF4J,
+                     as it would otherwise use commons-logging and do it's own other thing. -->
+                <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>1.7.25</version>
+                <scope>optional</scope>
+            </dependency>
 
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.10.4</version>
-        <configuration>
-          <groups>
-            <group>
-              <title>Indexer core</title>
-              <packages>org.apache.maven.index*</packages>
-            </group>
-            <group>
-              <title>Indexer CLI</title>
-              <packages>org.apache.maven.index.cli*</packages>
-            </group>
-          </groups>
-        </configuration>
-        <reportSets>
-          <reportSet>
-            <inherited>false</inherited>
-            <reports>
-              <report>aggregate</report>
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-    </plugins>
-  </reporting>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>20.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>jsr305</artifactId>
+                <version>3.0.2</version>
+            </dependency>
+
+            <!-- DI -->
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-assistedinject</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>org.eclipse.sisu.inject</artifactId>
+                <version>${eclipse-sisu.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.eclipse.sisu</groupId>
+                <artifactId>org.eclipse.sisu.plexus</artifactId>
+                <version>${eclipse-sisu.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.annotation</groupId>
+                        <artifactId>jsr250-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Lucene -->
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-core</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-queryparser</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-analyzers-common</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-highlighter</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+
+            <!-- including old codecs to read central index -->
+            <dependency>
+                <groupId>org.apache.lucene</groupId>
+                <artifactId>lucene-backward-codecs</artifactId>
+                <version>${lucene.version}</version>
+            </dependency>
+
+            <!-- Maven Resolver -->
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-api</artifactId>
+                <version>${resolver.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven.resolver</groupId>
+                <artifactId>maven-resolver-util</artifactId>
+                <version>${resolver.version}</version>
+            </dependency>
+
+            <!-- Maven -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+
+            <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
+            <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-provider-api</artifactId>
+                <version>${wagon.version}</version>
+            </dependency>
+
+            <!-- For org.apache.maven.archetype.source.ArchetypeDataSource helper -->
+            <dependency>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-catalog</artifactId>
+                <version>${archetype.version}</version>
+            </dependency>
+
+            <!-- ZipFacade -->
+            <dependency>
+                <groupId>de.schlichtherle.truezip</groupId>
+                <artifactId>truezip-kernel</artifactId>
+                <version>${truezip.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>annotations</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>de.schlichtherle.truezip</groupId>
+                <artifactId>truezip-file</artifactId>
+                <version>${truezip.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.schlichtherle.truezip</groupId>
+                <artifactId>truezip-driver-zip</artifactId>
+                <version>${truezip.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>de.schlichtherle.truezip</groupId>
+                        <artifactId>truezip-swing</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Test -->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-simple</artifactId>
+                <version>1.7.5</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jmock</groupId>
+                <artifactId>jmock</artifactId>
+                <version>2.5.1</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty</artifactId>
+                <version>6.1.19</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-http</artifactId>
+                <version>${wagon.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <modules>
+        <module>indexer-core</module>
+        <module>indexer-cli</module>
+        <module>indexer-reader</module>
+        <module>indexer-examples</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+                    <systemPropertyVariables>
+                        <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>animal-sniffer-maven-plugin</artifactId>
+                <configuration>
+                    <signature>
+                        <groupId>org.codehaus.mojo.signature</groupId>
+                        <artifactId>java1${javaVersion}</artifactId>
+                        <version>1.0</version>
+                    </signature>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-java-compat</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>rat-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <excludes combine.children="append">
+                                <exclude>README.md</exclude>
+                                <exclude>.gitignore</exclude>
+                                <exclude>NOTICE</exclude>
+                                <exclude>**/packageinfo</exclude>
+                                <exclude>.git/**</exclude>
+                                <exclude>.idea/**</exclude>
+                                <exclude>**/*.iml</exclude>
+                                <!-- exlude some test resources from rat analysis -->
+                                <exclude>src/test/**/*.sha1</exclude>
+                                <exclude>src/test/**/*.md5</exclude>
+                                <exclude>src/test/**/*.xml</exclude>
+                                <exclude>src/test/**/*.pom</exclude>
+                                <exclude>src/test/**/*.asc</exclude>
+                                <exclude>src/test/**/*.properties</exclude>
+                                <exclude>src/test/**/*.swc</exclude>
+                                <exclude>src/test/**/*.txt</exclude>
+                                <exclude>src/test/**/*.filename</exclude>
+                                <exclude>src/test/**/.placeholder</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <configuration>
+                    <!--
+                      olamy do not fail the build because of some white spaces somewhere
+                      yup I have a lot of other smart/interesting stuff to do in my life!!
+                     -->
+                    <failOnViolation>false</failOnViolation>
+                    <failsOnError>false</failsOnError>
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.20.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.20.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>animal-sniffer-maven-plugin</artifactId>
+                    <version>1.16</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>0.12</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.17</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.shared</groupId>
+                            <artifactId>maven-shared-resources</artifactId>
+                            <version>2</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.6</version>
+                    <configuration>
+                        <topSiteURL>
+                            scm:svn:https://svn.apache.org/repos/infra/websites/production/maven/components/${maven.site.path}
+                        </topSiteURL>
+                    </configuration>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
+                  itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <groups>
+                        <group>
+                            <title>Indexer core</title>
+                            <packages>org.apache.maven.index*</packages>
+                        </group>
+                        <group>
+                            <title>Indexer CLI</title>
+                            <packages>org.apache.maven.index.cli*</packages>
+                        </group>
+                    </groups>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <inherited>false</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

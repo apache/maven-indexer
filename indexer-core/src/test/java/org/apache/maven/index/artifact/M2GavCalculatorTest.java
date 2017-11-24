@@ -19,32 +19,27 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import junit.framework.TestCase;
-
-import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.M2GavCalculator;
-
 public class M2GavCalculatorTest
-    extends TestCase
+        extends TestCase
 {
     private M2GavCalculator gavCalculator;
 
     private SimpleDateFormat formatter = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
 
     @Override
-    public void setUp()
-        throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
 
         gavCalculator = new M2GavCalculator();
     }
 
-    protected Long parseTimestamp( String timeStamp )
-        throws ParseException
+    protected Long parseTimestamp( String timeStamp ) throws ParseException
     {
         if ( timeStamp == null )
         {
@@ -56,8 +51,7 @@ public class M2GavCalculatorTest
         }
     }
 
-    public void testGav()
-        throws Exception
+    public void testGav() throws Exception
     {
         Gav gav;
         String path;
@@ -80,8 +74,8 @@ public class M2GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-25-javadoc.jar", path );
 
-        gav =
-            gavCalculator.pathToGav( "/com/sun/xml/ws/jaxws-local-transport/2.1.3/jaxws-local-transport-2.1.3.pom.md5" );
+        gav = gavCalculator
+                .pathToGav( "/com/sun/xml/ws/jaxws-local-transport/2.1.3/jaxws-local-transport-2.1.3.pom" + ".md5" );
 
         assertEquals( "com.sun.xml.ws", gav.getGroupId() );
         assertEquals( "jaxws-local-transport", gav.getArtifactId() );
@@ -171,8 +165,8 @@ public class M2GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-2-sources.jar", path );
 
-        gav =
-            gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar.sha1" );
+        gav = gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64"
+                + "-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar.sha1" );
 
         assertEquals( "com.stchome.products.dsms.services", gav.getGroupId() );
         assertEquals( "dsms-intervention-service", gav.getArtifactId() );
@@ -188,12 +182,11 @@ public class M2GavCalculatorTest
         assertEquals( Gav.HashType.sha1, gav.getHashType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar.sha1",
-            path );
+        assertEquals( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms"
+                + "-intervention-service-2.4.2-64-SNAPSHOT.jar.sha1", path );
 
-        gav =
-            gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT-javadoc.jar.sha1" );
+        gav = gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64"
+                + "-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT-javadoc.jar.sha1" );
 
         assertEquals( "com.stchome.products.dsms.services", gav.getGroupId() );
         assertEquals( "dsms-intervention-service", gav.getArtifactId() );
@@ -209,12 +202,11 @@ public class M2GavCalculatorTest
         assertEquals( Gav.HashType.sha1, gav.getHashType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT-javadoc.jar.sha1",
-            path );
+        assertEquals( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms"
+                + "-intervention-service-2.4.2-64-SNAPSHOT-javadoc.jar.sha1", path );
 
-        gav =
-            gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar" );
+        gav = gavCalculator.pathToGav( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64"
+                + "-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar" );
 
         assertEquals( "com.stchome.products.dsms.services", gav.getGroupId() );
         assertEquals( "dsms-intervention-service", gav.getArtifactId() );
@@ -230,9 +222,8 @@ public class M2GavCalculatorTest
         assertEquals( null, gav.getHashType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms-intervention-service-2.4.2-64-SNAPSHOT.jar",
-            path );
+        assertEquals( "/com/stchome/products/dsms/services/dsms-intervention-service/2.4.2-64-SNAPSHOT/dsms"
+                + "-intervention-service-2.4.2-64-SNAPSHOT.jar", path );
 
         gav = gavCalculator.pathToGav( "/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar" );
 
@@ -414,8 +405,8 @@ public class M2GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/foo1/foo1/1.0.0-beta-4-SNAPSHOT/foo1-1.0.0-beta-4-20080623.175436-1.jar", path );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4-SNAPSHOT/nexus-webapp-1.0.0-beta-4-20080623.203653-349.pom" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4-SNAPSHOT/nexus-webapp-1.0.0"
+                + "-beta-4-20080623.203653-349.pom" );
         assertEquals( "org.sonatype.nexus", gav.getGroupId() );
         assertEquals( "nexus-webapp", gav.getArtifactId() );
         assertEquals( "1.0.0-beta-4-20080623.203653-349", gav.getVersion() );
@@ -430,12 +421,11 @@ public class M2GavCalculatorTest
         assertEquals( null, gav.getHashType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4-SNAPSHOT/nexus-webapp-1.0.0-beta-4-20080623.203653-349.pom",
-            path );
+        assertEquals( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4-SNAPSHOT/nexus-webapp-1.0.0-beta-4"
+                + "-20080623.203653-349.pom", path );
 
-        gav =
-            gavCalculator.pathToGav( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221-75.pom.asc" );
+        gav = gavCalculator.pathToGav( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0"
+                + "-20080411.005221-75.pom.asc" );
         assertEquals( "org.apache.maven.artifact", gav.getGroupId() );
         assertEquals( "maven-artifact", gav.getArtifactId() );
         assertEquals( "3.0-20080411.005221-75", gav.getVersion() );
@@ -452,12 +442,11 @@ public class M2GavCalculatorTest
         assertEquals( Gav.SignatureType.gpg, gav.getSignatureType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221-75.pom.asc",
-            path );
+        assertEquals( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221"
+                + "-75.pom.asc", path );
 
-        gav =
-            gavCalculator.pathToGav( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221-75.pom.asc.sha1" );
+        gav = gavCalculator.pathToGav( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0"
+                + "-20080411.005221-75.pom.asc.sha1" );
         assertEquals( "org.apache.maven.artifact", gav.getGroupId() );
         assertEquals( "maven-artifact", gav.getArtifactId() );
         assertEquals( "3.0-20080411.005221-75", gav.getVersion() );
@@ -474,12 +463,11 @@ public class M2GavCalculatorTest
         assertEquals( Gav.SignatureType.gpg, gav.getSignatureType() );
 
         path = gavCalculator.gavToPath( gav );
-        assertEquals(
-            "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221-75.pom.asc.sha1",
-            path );
+        assertEquals( "/org/apache/maven/artifact/maven-artifact/3.0-SNAPSHOT/maven-artifact-3.0-20080411.005221"
+                + "-75.pom.asc.sha1", path );
 
-        gav =
-            gavCalculator.pathToGav( "/org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20080302.032223-6-bin.zip.sha1" );
+        gav = gavCalculator.pathToGav(
+                "/org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20080302.032223" + "-6-bin.zip.sha1" );
         assertEquals( "org.apache.maven", gav.getGroupId() );
         assertEquals( "maven-core", gav.getArtifactId() );
         assertEquals( "2.0.9-20080302.032223-6", gav.getVersion() );
@@ -496,10 +484,10 @@ public class M2GavCalculatorTest
 
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20080302.032223-6-bin.zip.sha1",
-            path );
+                path );
 
-        gav =
-            gavCalculator.pathToGav( "/org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20080302.032223-6-bin.tar.gz" );
+        gav = gavCalculator.pathToGav(
+                "/org/apache/maven/maven-core/2.0.9-SNAPSHOT/maven-core-2.0.9-20080302.032223" + "-6-bin.tar.gz" );
         assertEquals( "org.apache.maven", gav.getGroupId() );
         assertEquals( "maven-core", gav.getArtifactId() );
         assertEquals( "2.0.9-20080302.032223-6", gav.getVersion() );
@@ -567,20 +555,18 @@ public class M2GavCalculatorTest
         assertEquals( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path );
     }
 
-    public void testNegGav()
-        throws Exception
+    public void testNegGav() throws Exception
     {
         Gav gav;
 
         // NEXUS-4132
-        gav =
-            gavCalculator.pathToGav( "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear" );
+        gav = gavCalculator.pathToGav( "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear"
+                + "-1.2-20101214.143755.ear" );
         assertNull( "Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot", gav );
         // NEXUS-4132 END
     }
 
-    public void testGavExtreme()
-        throws Exception
+    public void testGavExtreme() throws Exception
     {
         Gav gav;
 
@@ -621,109 +607,106 @@ public class M2GavCalculatorTest
         assertEquals( null, gav );
     }
 
-    public void testIssueNexus57()
-        throws Exception
+    public void testIssueNexus57() throws Exception
     {
         // broken path, baseVersion and version mismatch (2.0-SNAPSHOT vs 2.0-alpha-1...)
-        Gav gav =
-            gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
+        Gav gav = gavCalculator.pathToGav( "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven"
+                + "-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar" );
 
         assertNull( "We expect null since baseVersion and version mismatch in path!", gav );
     }
 
-    public void testGavExtensionAndClassifier()
-        throws Exception
+    public void testGavExtensionAndClassifier() throws Exception
     {
         Gav gav;
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5/nexus-webapp-1.0.0-beta-5.tar.gz" );
+        gav = gavCalculator
+                .pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5/nexus-webapp-1.0.0-beta-5.tar" + ".gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( null, gav.getClassifier() );
         assertEquals( "1.0.0-beta-5", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5/nexus-webapp-1.0.0-beta-5-bundle.tar.gz" );
+        gav = gavCalculator.pathToGav(
+                "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5/nexus-webapp-1.0.0-beta-5" + "-bundle.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bundle", gav.getClassifier() );
         assertEquals( "1.0.0-beta-5", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution-0.3.0-SNAPSHOT-bin.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution"
+                + "-0.3.0-SNAPSHOT-bin.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bin", gav.getClassifier() );
         assertEquals( "0.3.0-SNAPSHOT", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/SNAPSHOT/tycho-distribution-SNAPSHOT-bin.tar.gz" );
+        gav = gavCalculator.pathToGav(
+                "/org/codehaus/tycho/tycho-distribution/SNAPSHOT/tycho-distribution-SNAPSHOT" + "-bin.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bin", gav.getClassifier() );
         assertEquals( "SNAPSHOT", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution-0.3.0-20080818.153246-33-bin.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution"
+                + "-0.3.0-20080818.153246-33-bin.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bin", gav.getClassifier() );
         assertEquals( "0.3.0-20080818.153246-33", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4.2/nexus-webapp-1.0.0-beta-4.2-javadoc.jar" );
+        gav = gavCalculator.pathToGav(
+                "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-4.2/nexus-webapp-1.0.0-beta-4.2" + "-javadoc.jar" );
         assertNotNull( gav );
         assertEquals( "jar", gav.getExtension() );
         assertEquals( "javadoc", gav.getClassifier() );
         assertEquals( "1.0.0-beta-4.2", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution-0.3.0-20080818.153246-33-bin.zip" );
+        gav = gavCalculator.pathToGav( "/org/codehaus/tycho/tycho-distribution/0.3.0-SNAPSHOT/tycho-distribution"
+                + "-0.3.0-20080818.153246-33-bin.zip" );
         assertNotNull( gav );
         assertEquals( "zip", gav.getExtension() );
         assertEquals( "bin", gav.getClassifier() );
         assertEquals( "0.3.0-20080818.153246-33", gav.getVersion() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/tools/nexus-migration-app/1.0.0-beta-6-SNAPSHOT/nexus-migration-app-1.0.0-beta-6-20080809.181715-2-cli.jar" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/tools/nexus-migration-app/1.0.0-beta-6-SNAPSHOT/nexus"
+                + "-migration-app-1.0.0-beta-6-20080809.181715-2-cli.jar" );
         assertNotNull( gav );
         assertEquals( "jar", gav.getExtension() );
         assertEquals( "cli", gav.getClassifier() );
         assertEquals( "1.0.0-beta-6-20080809.181715-2", gav.getVersion() );
     }
 
-    public void testGavSnapshotVersion()
-        throws Exception
+    public void testGavSnapshotVersion() throws Exception
     {
         Gav gav;
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT/nexus-webapp-1.0.0-beta-5-SNAPSHOT.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT/nexus-webapp-1.0.0"
+                + "-beta-5-SNAPSHOT.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( null, gav.getClassifier() );
         assertEquals( "1.0.0-beta-5-SNAPSHOT", gav.getVersion() );
         assertTrue( gav.isSnapshot() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT-1234/nexus-webapp-1.0.0-beta-5-SNAPSHOT-1234.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT-1234/nexus-webapp"
+                + "-1.0.0-beta-5-SNAPSHOT-1234.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( null, gav.getClassifier() );
         assertEquals( "1.0.0-beta-5-SNAPSHOT-1234", gav.getVersion() );
         assertFalse( gav.isSnapshot() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT/nexus-webapp-1.0.0-beta-5-SNAPSHOT-bundle.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT/nexus-webapp-1.0.0"
+                + "-beta-5-SNAPSHOT-bundle.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bundle", gav.getClassifier() );
         assertEquals( "1.0.0-beta-5-SNAPSHOT", gav.getVersion() );
         assertTrue( gav.isSnapshot() );
 
-        gav =
-            gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT-1234/nexus-webapp-1.0.0-beta-5-SNAPSHOT-1234-bundle.tar.gz" );
+        gav = gavCalculator.pathToGav( "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT-1234/nexus-webapp"
+                + "-1.0.0-beta-5-SNAPSHOT-1234-bundle.tar.gz" );
         assertNotNull( gav );
         assertEquals( "tar.gz", gav.getExtension() );
         assertEquals( "bundle", gav.getClassifier() );
@@ -731,8 +714,7 @@ public class M2GavCalculatorTest
         assertFalse( gav.isSnapshot() );
     }
 
-    public void testGavLooseStrictedSnapshot()
-        throws Exception
+    public void testGavLooseStrictedSnapshot() throws Exception
     {
         Gav gav;
 

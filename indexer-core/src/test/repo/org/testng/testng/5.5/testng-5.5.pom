@@ -82,7 +82,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-			<configuration>
+                        <configuration>
                             <source>1.4</source>
                             <target>1.4</target>
                         </configuration>
@@ -122,7 +122,7 @@
                                 <phase>process-sources</phase>
                                 <configuration>
                                     <tasks>
-                                        <unzip dest="target/classes" src="3rdparty/backport-util-concurrent-2.2.jar" />
+                                        <unzip dest="target/classes" src="3rdparty/backport-util-concurrent-2.2.jar"/>
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -229,14 +229,14 @@
     </dependencies>
     <build>
         <sourceDirectory>src/main</sourceDirectory>
-	<resources>
-	   <resource>
-		<directory>src/main</directory>
-		<includes>
-		   <include>**/*.dtd</include>
-		</includes>
-	   </resource>
-	</resources>
+        <resources>
+            <resource>
+                <directory>src/main</directory>
+                <includes>
+                    <include>**/*.dtd</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -274,15 +274,15 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
-			<index>true</index>
-			<compress>true</compress>
+                        <index>true</index>
+                        <compress>true</compress>
                         <manifest>
                             <mainClass>org.testng.TestNG</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
-	    <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
@@ -295,12 +295,12 @@
             </plugin>
         </plugins>
     </build>
-<!--
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>scp://beaver.codehaus.org/home/projects/maven/repository-staging/snapshots/maven2</url>
-        </snapshotRepository>
-    </distributionManagement>
--->
+    <!--
+        <distributionManagement>
+            <snapshotRepository>
+                <id>snapshots</id>
+                <url>scp://beaver.codehaus.org/home/projects/maven/repository-staging/snapshots/maven2</url>
+            </snapshotRepository>
+        </distributionManagement>
+    -->
 </project>

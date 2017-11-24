@@ -26,11 +26,11 @@ import java.util.List;
 
 /**
  * A simple "static" context member provider, when the members are known in advance.
- * 
+ *
  * @author cstamas
  */
 public class StaticContextMemberProvider
-    implements ContextMemberProvider
+        implements ContextMemberProvider
 {
     private final List<IndexingContext> members;
 

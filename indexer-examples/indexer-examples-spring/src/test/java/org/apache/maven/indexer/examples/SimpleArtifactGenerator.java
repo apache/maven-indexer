@@ -19,6 +19,11 @@ package org.apache.maven.indexer.examples;
  * under the License.
  */
 
+import org.apache.maven.model.Model;
+import org.apache.maven.model.io.DefaultModelWriter;
+import org.apache.maven.model.io.ModelWriter;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,11 +31,6 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.DefaultModelWriter;
-import org.apache.maven.model.io.ModelWriter;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
  * @author mtodorov
@@ -44,21 +44,15 @@ public class SimpleArtifactGenerator
         // no op
     }
 
-    public File generateArtifact( String repositoryBasedir,
-                                  String groupId,
-                                  String artifactId,
-                                  String version,
-                                  String classifier,
-                                  String extension )
+    public File generateArtifact( String repositoryBasedir, String groupId, String artifactId, String version,
+                                  String classifier, String extension )
             throws IOException, NoSuchAlgorithmException, XmlPullParserException
     {
         File repositoryDir = new File( repositoryBasedir );
         File artifactFile = new File( repositoryDir,
-                                      groupId.replaceAll( "\\.", File.separator ) + File.separatorChar +
-                                      artifactId + File.separatorChar + version + File.separatorChar +
-                                      artifactId + "-" + version +
-                                      ( classifier != null ? "-" + classifier + File.separatorChar : "" ) + "." +
-                                      extension );
+                groupId.replaceAll( "\\.", File.separator ) + File.separatorChar + artifactId + File.separatorChar
+                        + version + File.separatorChar + artifactId + "-" + version + ( classifier != null ? "-"
+                        + classifier + File.separatorChar : "" ) + "." + extension );
 
         if ( !artifactFile.getParentFile().exists() )
         {
@@ -71,13 +65,8 @@ public class SimpleArtifactGenerator
         return artifactFile;
     }
 
-    private void createArchive( File artifactFile,
-                                String groupId,
-                                String artifactId,
-                                String version,
-                                String extension )
-            throws NoSuchAlgorithmException,
-                   IOException, XmlPullParserException
+    private void createArchive( File artifactFile, String groupId, String artifactId, String version, String extension )
+            throws NoSuchAlgorithmException, IOException, XmlPullParserException
     {
         ZipOutputStream zos = null;
 
@@ -88,8 +77,7 @@ public class SimpleArtifactGenerator
             artifactFile.getParentFile().mkdirs();
 
             File pomFile = new File( artifactFile.getParent(),
-                                     artifactFile.getName().substring( 0, artifactFile.getName().lastIndexOf( "." ) ) +
-                                     ".pom" );
+                    artifactFile.getName().substring( 0, artifactFile.getName().lastIndexOf( "." ) ) + ".pom" );
 
             zos = new ZipOutputStream( new FileOutputStream( artifactFile ) );
 
@@ -106,14 +94,8 @@ public class SimpleArtifactGenerator
         }
     }
 
-    protected void generatePom( File pomFile,
-                                String groupId,
-                                String artifactId,
-                                String version,
-                                String type )
-            throws IOException,
-                   XmlPullParserException,
-                   NoSuchAlgorithmException
+    protected void generatePom( File pomFile, String groupId, String artifactId, String version, String type )
+            throws IOException, XmlPullParserException, NoSuchAlgorithmException
     {
 
         // Make sure the artifact's parent directory exists before writing the model.
@@ -132,10 +114,7 @@ public class SimpleArtifactGenerator
     }
 
 
-    private void addMavenPomFile( ZipOutputStream zos,
-                                  File pomFile,
-                                  String groupId,
-                                  String artifactId )
+    private void addMavenPomFile( ZipOutputStream zos, File pomFile, String groupId, String artifactId )
             throws IOException
     {
         ZipEntry ze = new ZipEntry( "META-INF/maven/" + groupId + "/" + artifactId + "/" + "pom.xml" );
@@ -154,10 +133,7 @@ public class SimpleArtifactGenerator
         zos.closeEntry();
     }
 
-    public static String convertGAVToPath( String groupId,
-                                           String artifactId,
-                                           String version,
-                                           String classifier,
+    public static String convertGAVToPath( String groupId, String artifactId, String version, String classifier,
                                            String extension )
     {
         String path = "";

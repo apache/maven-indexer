@@ -21,11 +21,11 @@ package org.apache.maven.index.expr;
 
 /**
  * A simple string based implementation of SearchExpression that is immutable.
- * 
+ *
  * @author cstamas
  */
 public class StringSearchExpression
-    implements SearchExpression
+        implements SearchExpression
 {
     private final String expression;
 

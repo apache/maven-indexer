@@ -23,11 +23,11 @@ import java.io.File;
 
 /**
  * A sources locator to locate the sources bundle relative to POM.
- * 
+ *
  * @author Jason van Zyl
  */
 public class SourcesLocator
-    implements Locator
+        implements Locator
 {
     /**
      * Locates the sources bundle relative to POM.

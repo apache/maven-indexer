@@ -19,21 +19,20 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-
 import junit.framework.Assert;
-
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
+
 public class DuplicateSearchTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
@@ -46,15 +45,16 @@ public class DuplicateSearchTest
     protected Directory contextDir2 = new RAMDirectory();
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         // we have a context with ID "repo1-ctx" that contains index of repository with ID "repo1"
         context = nexusIndexer.addIndexingContext( "repo1-ctx", "repo1", repo, indexDir, null, null, FULL_CREATORS );
         // we have a context with ID "repo2-ctx" that contains index of repository with ID "repo2"
-        context1 = nexusIndexer.addIndexingContext( "repo2-ctx", "repo2", repo, contextDir1, null, null, FULL_CREATORS );
+        context1 = nexusIndexer
+                .addIndexingContext( "repo2-ctx", "repo2", repo, contextDir1, null, null, FULL_CREATORS );
         // we have a context with ID "repo3-ctx" that contains index of repository with ID "repo2"
-        context2 = nexusIndexer.addIndexingContext( "repo3-ctx", "repo2", repo, contextDir2, null, null, FULL_CREATORS );
+        context2 = nexusIndexer
+                .addIndexingContext( "repo3-ctx", "repo2", repo, contextDir2, null, null, FULL_CREATORS );
 
         // note: those three contexts, while representing different entities are actually indexing the same repository
         // directory, hence, will have exactly same content! Also, context1 and context2 do say, they both index
@@ -123,8 +123,7 @@ public class DuplicateSearchTest
     //
     // ArtifactInfo, along with GAV carries contextId and repositoryId too!
 
-    public void testProveSvnRev1158917IsWrong()
-        throws IOException
+    public void testProveSvnRev1158917IsWrong() throws IOException
     {
         // change is SVN Rev1158917 (http://svn.apache.org/viewvc?view=revision&revision=1158917) is wrong (and is
         // undone)
@@ -145,8 +144,7 @@ public class DuplicateSearchTest
         // is actually a Set<ArtifactInfo with proper comparator set.
     }
 
-    public void testHowUniqueSearchShouldBeDone()
-        throws IOException
+    public void testHowUniqueSearchShouldBeDone() throws IOException
     {
         // my use case: I am searching for duplicates in given two contexts belonging to given groupId "org.slf4j"
         // I expect to find intersection of two reposes, since both of those indexes/reposes contains that
@@ -167,8 +165,7 @@ public class DuplicateSearchTest
         // will return all hits from all participating contexts.
     }
 
-    public void testHowtoPerformAggregatedSearch()
-        throws IOException
+    public void testHowtoPerformAggregatedSearch() throws IOException
     {
         // Note: currently this is implemented for IteratorSearches only! TBD for Flat and Grouped searches
 
@@ -180,8 +177,8 @@ public class DuplicateSearchTest
         IteratorSearchRequest isReq = new IteratorSearchRequest( query );
 
         // so, how many different GA combinations exists, this is almost equal to SQLs group by "groupId, artifactId"
-        isReq.setArtifactInfoFilter( new UniqueArtifactFilterPostprocessor( new HashSet<Field>( Arrays.asList(
-            MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) ) ) );
+        isReq.setArtifactInfoFilter( new UniqueArtifactFilterPostprocessor(
+                new HashSet<Field>( Arrays.asList( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) ) ) );
         isReq.getContexts().add( context );
         isReq.getContexts().add( context1 );
         isReq.getContexts().add( context2 );
@@ -214,12 +211,13 @@ public class DuplicateSearchTest
         }
 
         Assert.assertEquals( "Iterator delivered to us 3 results, since we have 3 GA combinations", 3,
-            actualResultCount );
+                actualResultCount );
         Assert.assertEquals(
-            "IteratorSearch is strange beast, due to it's nature, it cannot say how many elements it (will) return in advance, due to filtering, postprocessing, etc",
-            -1, isResp.getReturnedHitsCount() );
-        Assert.assertEquals(
-            "The processing/search tackled 10 GAVs coming from three contextes, it is 30. This is the record count that were hit by processing of this search, but IS NOT the count results (it depends on filtering, comparators, etc)!",
-            30, isResp.getTotalHitsCount() );
+                "IteratorSearch is strange beast, due to it's nature, it cannot say how many elements " + "it"
+                        + " (will) return in advance, due to filtering, postprocessing, etc", -1,
+                isResp.getReturnedHitsCount() );
+        Assert.assertEquals( "The processing/search tackled 10 GAVs coming from three contextes, it is 30. This is "
+                + "the record count that were hit by processing of this search, but IS NOT the count results (it "
+                + "depends on filtering, comparators, etc)!", 30, isResp.getTotalHitsCount() );
     }
 }

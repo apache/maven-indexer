@@ -18,277 +18,281 @@ specific language governing permissions and limitations
 under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache.maven.indexer</groupId>
-    <artifactId>maven-indexer</artifactId>
-    <version>6.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>maven-indexer</artifactId>
+        <version>6.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>indexer-core</artifactId>
+    <artifactId>indexer-core</artifactId>
 
-  <name>Maven :: Indexer Core</name>
-  <description>
-    Indexer Core contains the core support for indexing Maven repositories, searching them, publishing and consuming remotely
-    published indexes.
-  </description>
+    <name>Maven :: Indexer Core</name>
+    <description>
+        Indexer Core contains the core support for indexing Maven repositories, searching them, publishing and consuming
+        remotely
+        published indexes.
+    </description>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
-    <!-- DI -->
-    <dependency>
-      <groupId>javax.inject</groupId>
-      <artifactId>javax.inject</artifactId>
-    </dependency>
+        <!-- DI -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>javax.annotation</groupId>
-      <artifactId>javax.annotation-api</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>com.google.code.findbugs</groupId>
-      <artifactId>jsr305</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.inject</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.eclipse.sisu</groupId>
+            <artifactId>org.eclipse.sisu.inject</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>com.google.inject</groupId>
-      <artifactId>guice</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.eclipse.sisu</groupId>
+            <artifactId>org.eclipse.sisu.plexus</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
-    <!-- Lucene -->
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-core</artifactId>
-    </dependency>
+        <!-- Lucene -->
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-queryparser</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-analyzers-common</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-backward-codecs</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-backward-codecs</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.lucene</groupId>
-      <artifactId>lucene-highlighter</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-highlighter</artifactId>
+        </dependency>
 
-    <!-- Resolver -->
-    <dependency>
-      <groupId>org.apache.maven.resolver</groupId>
-      <artifactId>maven-resolver-api</artifactId>
-    </dependency>
+        <!-- Resolver -->
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-api</artifactId>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.maven.resolver</groupId>
-      <artifactId>maven-resolver-util</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>org.apache.maven.resolver</groupId>
+            <artifactId>maven-resolver-util</artifactId>
+        </dependency>
 
-    <!-- Maven -->
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-    </dependency>
+        <!-- Maven -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+        </dependency>
 
-    <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-provider-api</artifactId>
-      <optional>true</optional>
-    </dependency>
+        <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
+        <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-provider-api</artifactId>
+            <optional>true</optional>
+        </dependency>
 
-    <!-- Using org.apache.maven.archetype.source.ArchetypeDataSource from it only -->
-    <dependency>
-      <groupId>org.apache.maven.archetype</groupId>
-      <artifactId>archetype-catalog</artifactId>
-      <optional>true</optional>
-    </dependency>
+        <!-- Using org.apache.maven.archetype.source.ArchetypeDataSource from it only -->
+        <dependency>
+            <groupId>org.apache.maven.archetype</groupId>
+            <artifactId>archetype-catalog</artifactId>
+            <optional>true</optional>
+        </dependency>
 
-    <!-- ZipFacade (as optional, who wants to use it should include TrueZip) -->
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-file</artifactId>
-      <optional>true</optional>
-    </dependency>
+        <!-- ZipFacade (as optional, who wants to use it should include TrueZip) -->
+        <dependency>
+            <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-file</artifactId>
+            <optional>true</optional>
+        </dependency>
 
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-driver-zip</artifactId>
-      <optional>true</optional>
-    </dependency>
+        <dependency>
+            <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-driver-zip</artifactId>
+            <optional>true</optional>
+        </dependency>
 
-    <!-- Test -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
-      <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.jmock</groupId>
-      <artifactId>jmock</artifactId>
-      <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <scope>test</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>jetty</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-http</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>integration-test</goal>
-              <goal>verify</goal>
-            </goals>
-            <configuration>
-              <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
-              <systemPropertyVariables>
-                <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-cli.jar</indexerJar>
-              </systemPropertyVariables>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <shadedClassifierName>shaded-lucene</shadedClassifierName>
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <!--finalName>${project.build.finalName}</finalName-->
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
-              <relocations>
-                <relocation>
-                  <pattern>org.apache.lucene</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.lucene.search</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene.search</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.tartarus</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.bouncycastle</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.commons.compress</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.maven.model</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.maven</shadedPattern>
-                </relocation>
-              </relocations>
-              <artifactSet>
-                <excludes>
-                  <exclude>org.slf4j:*</exclude>
-                  <exclude>com.google.*:*</exclude>
-                  <exclude>javax.*:*</exclude>
-                  <exclude>javax.*:*</exclude>
-                  <exclude>org.eclipse.*:*</exclude>
-                  <exclude>org.sonatype.*:*</exclude>
-                  <exclude>org.apache.maven.archetype:*</exclude>
-                  <exclude>org.apache.maven.wagon:*</exclude>
-                  <exclude>org.codehaus.*:*</exclude>
-                  <exclude>de.schlichtherle.truezip:*</exclude>
-                </excludes>
-              </artifactSet>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <!-- Combine the excludes from the parent with the ones defined in this project -->
-          <excludes combine.children="append">
-            <!-- The following directories are repositories -->
-            <exclude>src/test/repo*/**</exclude>
-            <exclude>src/test/mindexer-35/**</exclude>
-            <exclude>src/test/nexus-*/**</exclude>
-            <exclude>src/test/resources/**</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
+                            <systemPropertyVariables>
+                                <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+                                <indexerJar>
+                                    ${project.build.directory}/${project.artifactId}-${project.version}-cli.jar
+                                </indexerJar>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedClassifierName>shaded-lucene</shadedClassifierName>
+                            <shadedArtifactAttached>true</shadedArtifactAttached>
+                            <!--finalName>${project.build.finalName}</finalName-->
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <keepDependenciesWithProvidedScope>false</keepDependenciesWithProvidedScope>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.apache.lucene</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.lucene.search</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.lucene.search</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.tartarus</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.bouncycastle</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.commons.compress</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache.maven.model</pattern>
+                                    <shadedPattern>org.apache.maven.index_shaded.maven</shadedPattern>
+                                </relocation>
+                            </relocations>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>org.slf4j:*</exclude>
+                                    <exclude>com.google.*:*</exclude>
+                                    <exclude>javax.*:*</exclude>
+                                    <exclude>javax.*:*</exclude>
+                                    <exclude>org.eclipse.*:*</exclude>
+                                    <exclude>org.sonatype.*:*</exclude>
+                                    <exclude>org.apache.maven.archetype:*</exclude>
+                                    <exclude>org.apache.maven.wagon:*</exclude>
+                                    <exclude>org.codehaus.*:*</exclude>
+                                    <exclude>de.schlichtherle.truezip:*</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <!-- Combine the excludes from the parent with the ones defined in this project -->
+                    <excludes combine.children="append">
+                        <!-- The following directories are repositories -->
+                        <exclude>src/test/repo*/**</exclude>
+                        <exclude>src/test/mindexer-35/**</exclude>
+                        <exclude>src/test/nexus-*/**</exclude>
+                        <exclude>src/test/resources/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

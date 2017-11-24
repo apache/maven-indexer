@@ -19,16 +19,16 @@ package org.apache.maven.index.locator;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
+
+import java.io.File;
 
 /**
  * A POM locator to locate POM artifact.
  */
 public class PomLocator
-    implements GavHelpedLocator
+        implements GavHelpedLocator
 {
     public File locate( File source, GavCalculator gavCalculator, Gav gav )
     {

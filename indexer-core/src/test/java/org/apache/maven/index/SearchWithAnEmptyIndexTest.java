@@ -38,7 +38,7 @@ import java.util.List;
  * @author Olivier Lamy
  */
 public class SearchWithAnEmptyIndexTest
-    extends AbstractTestSupport
+        extends AbstractTestSupport
 {
     static final String INDEX_ID1 = "osgi-test1";
     static final String INDEX_ID2 = "empty-repo";
@@ -47,8 +47,7 @@ public class SearchWithAnEmptyIndexTest
     private IndexPacker indexPacker;
 
     @Override
-    public void setUp()
-        throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
 
@@ -67,8 +66,7 @@ public class SearchWithAnEmptyIndexTest
         }
     }
 
-    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat()
-        throws Exception
+    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat() throws Exception
     {
 
         String repoPath = "target/test/empty-repo-for-searchtest";
@@ -92,13 +90,13 @@ public class SearchWithAnEmptyIndexTest
             BooleanQuery q = new BooleanQuery();
 
             q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.command" ) ),
-                   BooleanClause.Occur.MUST );
+                    new StringSearchExpression( "org.apache.karaf" + ".features.command" ) ),
+                    BooleanClause.Occur.MUST );
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
             request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
-                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+                    nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
 
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
 
@@ -107,30 +105,29 @@ public class SearchWithAnEmptyIndexTest
             q = new BooleanQuery();
 
             q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.core" ) ),
-                   BooleanClause.Occur.MUST );
+                    new StringSearchExpression( "org.apache.karaf" + ".features.core" ) ), BooleanClause.Occur.MUST );
 
             request = new FlatSearchRequest( q );
             request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
 
             response = nexusIndexer.searchFlat( request );
 
-            assertEquals(3, response.getResults().size());
+            assertEquals( 3, response.getResults().size() );
 
             String term = "org.apache.karaf.features";
 
             q = new BooleanQuery();
 
             q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+                    BooleanClause.Occur.SHOULD );
             q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+                    BooleanClause.Occur.SHOULD );
             q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+                    BooleanClause.Occur.SHOULD );
             q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+                    BooleanClause.Occur.SHOULD );
             q.add( nexusIndexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+                    BooleanClause.Occur.SHOULD );
 
             request = new FlatSearchRequest( q );
             request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
@@ -139,7 +136,7 @@ public class SearchWithAnEmptyIndexTest
 
             System.out.println( " result size with term usage " + response.getResults().size() );
 
-            assertEquals(4, response.getResults().size());
+            assertEquals( 4, response.getResults().size() );
 
         }
         finally
@@ -151,8 +148,7 @@ public class SearchWithAnEmptyIndexTest
     /**
      * both repos contains commons-cli so ensure we don't return duplicates
      */
-    public void testSearchNoDuplicateArtifactInfo()
-        throws Exception
+    public void testSearchNoDuplicateArtifactInfo() throws Exception
     {
 
         String repoPathIndex = "target/test/repo-for-searchdupe";
@@ -176,18 +172,18 @@ public class SearchWithAnEmptyIndexTest
             BooleanQuery q = new BooleanQuery();
 
             q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-cli" ) ),
-                   BooleanClause.Occur.MUST );
+                    BooleanClause.Occur.MUST );
 
             q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( "jar" ) ),
-                   BooleanClause.Occur.MUST );
+                    BooleanClause.Occur.MUST );
 
             q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( "sources" ) ),
-                   BooleanClause.Occur.MUST );
+                    BooleanClause.Occur.MUST );
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
             request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
-                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+                    nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
 
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
 
@@ -200,8 +196,7 @@ public class SearchWithAnEmptyIndexTest
         }
     }
 
-    private void closeAllIndexs()
-        throws Exception
+    private void closeAllIndexs() throws Exception
     {
         for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
         {
@@ -209,8 +204,7 @@ public class SearchWithAnEmptyIndexTest
         }
     }
 
-    private void createIndex( String filePath, String repoIndex, String contextId )
-        throws Exception
+    private void createIndex( String filePath, String repoIndex, String contextId ) throws Exception
     {
 
         File repo = new File( getBasedir(), filePath );
@@ -224,12 +218,12 @@ public class SearchWithAnEmptyIndexTest
 
         repoIndexDir.mkdirs();
 
-        System.out.println(
-            "creating Index with id " + contextId + " path : " + filePath + " , indexPath " + repoIndex );
+        System.out
+                .println( "creating Index with id " + contextId + " path : " + filePath + " , indexPath " + repoIndex );
 
-        IndexingContext indexingContext =
-            nexusIndexer.addIndexingContext( contextId, contextId, repo, repoIndexDir, "http://www.apache.org",
-                                             "http://www.apache.org/.index", indexCreators );
+        IndexingContext indexingContext = nexusIndexer
+                .addIndexingContext( contextId, contextId, repo, repoIndexDir, "http://www.apache.org",
+                        "http://www.apache.org/.index", indexCreators );
         indexingContext.setSearchable( true );
         nexusIndexer.scan( indexingContext, false );
 
@@ -240,9 +234,12 @@ public class SearchWithAnEmptyIndexTest
         try
         {
             final File indexLocation = new File( managedRepository, ".index" );
-            IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexSearcher.getIndexReader(), indexLocation );
+            IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexSearcher.getIndexReader(),
+                    indexLocation );
             indexPacker.packIndex( request );
-        } finally {
+        }
+        finally
+        {
             indexingContext.releaseIndexSearcher( indexSearcher );
         }
 

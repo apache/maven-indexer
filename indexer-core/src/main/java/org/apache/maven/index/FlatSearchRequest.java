@@ -19,19 +19,19 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 
+import java.util.Arrays;
+import java.util.Comparator;
+
 /**
  * A flat search request.
- * 
+ *
  * @see Indexer#searchFlat(FlatSearchRequest)
  */
 public class FlatSearchRequest
-    extends AbstractSearchRequest
+        extends AbstractSearchRequest
 {
     private Comparator<ArtifactInfo> artifactInfoComparator;
 
@@ -52,7 +52,7 @@ public class FlatSearchRequest
 
     public FlatSearchRequest( Query query, Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext context )
     {
-        super( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null );
+        super( query, context != null ? Arrays.asList( new IndexingContext[] {context} ) : null );
 
         this.artifactInfoComparator = artifactInfoComparator;
     }

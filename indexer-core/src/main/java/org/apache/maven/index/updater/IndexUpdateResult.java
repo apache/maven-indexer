@@ -26,9 +26,9 @@ public class IndexUpdateResult
     private Date timestamp;
 
     private boolean fullUpdate;
-    
+
     private boolean successful;
-    
+
     public IndexUpdateResult()
     {
         this.timestamp = null;
@@ -61,7 +61,7 @@ public class IndexUpdateResult
         return successful;
     }
 
-    public void setSuccessful(boolean successful)
+    public void setSuccessful( boolean successful )
     {
         this.successful = successful;
     }

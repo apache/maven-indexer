@@ -42,7 +42,7 @@ public class M2ArtifactRecognizer
 
     /**
      * Is this item M2 Snapshot?
-     * 
+     *
      * @param path
      * @return
      */
@@ -56,8 +56,8 @@ public class M2ArtifactRecognizer
      */
     public static boolean isMetadata( String path )
     {
-        return path.endsWith( "maven-metadata.xml" ) || path.endsWith( "maven-metadata.xml.sha1" )
-            || path.endsWith( "maven-metadata.xml.md5" );
+        return path.endsWith( "maven-metadata.xml" ) || path.endsWith( "maven-metadata.xml.sha1" ) || path
+                .endsWith( "maven-metadata.xml.md5" );
     }
 
     public static boolean isSignature( String path )

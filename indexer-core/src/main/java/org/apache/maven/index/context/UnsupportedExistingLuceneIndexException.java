@@ -1,8 +1,5 @@
 package org.apache.maven.index.context;
 
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.NexusIndexer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,12 +23,13 @@ import org.apache.maven.index.NexusIndexer;
  * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index. The reason for
  * throwing this exception may be multiple: non-NexusIndexer Lucene index, index version is wrong, repositoryId does not
  * matches the context repositoryId, etc.
- * 
+ *
  * @author Tamas Cservenak
- * @deprecated The deprecated {@link NexusIndexer} uses this exception. Use {@link Indexer} instead.
+ * @deprecated The deprecated {@link org.apache.maven.index.NexusIndexer} uses this exception. Use
+ * {@link org.apache.maven.index.Indexer} instead.
  */
 public class UnsupportedExistingLuceneIndexException
-    extends Exception
+        extends Exception
 {
     private static final long serialVersionUID = -3206758653346308322L;
 

@@ -24,10 +24,10 @@ import java.util.List;
 
 public interface TreeNode
 {
-    public enum Type
+    enum Type
     {
         G, A, V, artifact
-    };
+    }
 
     Type getType();
 
@@ -63,9 +63,7 @@ public interface TreeNode
 
     List<TreeNode> getChildren();
 
-    List<TreeNode> listChildren()
-        throws IOException;
+    List<TreeNode> listChildren() throws IOException;
 
-    TreeNode findChildByPath( String path, Type type )
-        throws IOException;
+    TreeNode findChildByPath( String path, Type type ) throws IOException;
 }

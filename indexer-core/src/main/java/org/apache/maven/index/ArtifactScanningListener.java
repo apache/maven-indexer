@@ -23,11 +23,11 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * A listener notified during repository scan process to track progress, collect results, etc.
- * 
+ *
  * @author Jason van Zyl
  */
 public interface ArtifactScanningListener
-    extends ArtifactDiscoveryListener
+        extends ArtifactDiscoveryListener
 {
     void scanningStarted( IndexingContext ctx );
 

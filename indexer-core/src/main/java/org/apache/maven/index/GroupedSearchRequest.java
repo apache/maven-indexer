@@ -19,20 +19,20 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Arrays;
-import java.util.Comparator;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * A grouped search request. This kinds of request is not pageable, since order of incoming hits are not defined, hence
  * paging between Document hits makes no sense, would produce unpredictable (and probably not meaningful) results.
- * 
+ *
  * @see Indexer#searchGrouped(GroupedSearchRequest)
  */
 public class GroupedSearchRequest
-    extends AbstractSearchRequest
+        extends AbstractSearchRequest
 {
     private Grouping grouping;
 
@@ -56,7 +56,7 @@ public class GroupedSearchRequest
     public GroupedSearchRequest( Query query, Grouping grouping, Comparator<String> groupKeyComparator,
                                  IndexingContext context )
     {
-        super( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null );
+        super( query, context != null ? Arrays.asList( new IndexingContext[] {context} ) : null );
 
         this.grouping = grouping;
 

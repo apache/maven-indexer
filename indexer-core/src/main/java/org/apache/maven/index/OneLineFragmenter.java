@@ -24,7 +24,7 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.highlight.Fragmenter;
 
 public class OneLineFragmenter
-    implements Fragmenter
+        implements Fragmenter
 {
     private String text;
 
@@ -37,8 +37,8 @@ public class OneLineFragmenter
     {
         // text: /org/sonatype/...
         // tokens: org sonatype
-        boolean result =
-            isNewline( getChar( nextToken.startOffset() - 1 ) ) || isNewline( getChar( nextToken.startOffset() - 2 ) );
+        boolean result = isNewline( getChar( nextToken.startOffset() - 1 ) ) || isNewline(
+                getChar( nextToken.startOffset() - 2 ) );
 
         return result;
     }
@@ -80,6 +80,6 @@ public class OneLineFragmenter
     public void start( String arg0, TokenStream arg1 )
     {
         // TODO Auto-generated method stub
-        
+
     }
 }

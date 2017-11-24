@@ -19,43 +19,42 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.search.grouping.GAGrouping;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.LoggerManager;
 
+import java.io.File;
+import java.io.IOException;
+
 public class Mindexer14HitLimitTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "target/repo/mindexer14" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         // Put Plexus into DEBUG mode
         lookup( LoggerManager.class ).setThresholds( Logger.LEVEL_DEBUG );
 
         repo.mkdirs();
 
-        context =
-            nexusIndexer.addIndexingContext( "mindexer14", "mindexer14", repo, indexDir, null, null, MIN_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "mindexer14", "mindexer14", repo, indexDir, null, null, MIN_CREATORS );
 
         nexusIndexer.scan( context, false );
     }
 
-    protected void createDummyAis( final String gid, final String aid, final int count )
-        throws IOException
+    protected void createDummyAis( final String gid, final String aid, final int count ) throws IOException
     {
         int version = 0;
 
         for ( int i = 0; i < count; i++ )
         {
-            final ArtifactInfo ai = new ArtifactInfo( "mindexer14", gid, aid, String.valueOf( version++ ), null, "jar" );
+            final ArtifactInfo ai = new ArtifactInfo( "mindexer14", gid, aid, String.valueOf( version++ ), null,
+                    "jar" );
 
             final ArtifactContext ac = new ArtifactContext( null, null, null, ai, ai.calculateGav() );
 
@@ -64,8 +63,7 @@ public class Mindexer14HitLimitTest
 
     }
 
-    public void testFlatSearchTotalHitsLie1k()
-        throws Exception
+    public void testFlatSearchTotalHitsLie1k() throws Exception
     {
         createDummyAis( "org.test", "mindexer14", 1010 );
 
@@ -80,8 +78,7 @@ public class Mindexer14HitLimitTest
         response.close();
     }
 
-    public void testFlatSearchUnlimited()
-        throws Exception
+    public void testFlatSearchUnlimited() throws Exception
     {
         createDummyAis( "org.test", "mindexer14", 1010 );
 
@@ -98,8 +95,7 @@ public class Mindexer14HitLimitTest
         response.close();
     }
 
-    public void testFlatSearchLimited()
-        throws Exception
+    public void testFlatSearchLimited() throws Exception
     {
         createDummyAis( "org.test", "mindexer14", 1010 );
 
@@ -117,8 +113,7 @@ public class Mindexer14HitLimitTest
         response.close();
     }
 
-    public void testGroupedSearchTotalHitsLie1k()
-        throws Exception
+    public void testGroupedSearchTotalHitsLie1k() throws Exception
     {
         createDummyAis( "org.test", "mindexer14", 1010 );
 
@@ -137,8 +132,7 @@ public class Mindexer14HitLimitTest
         response.close();
     }
 
-    public void testIteratorSearchTotalHitsLie1k()
-        throws Exception
+    public void testIteratorSearchTotalHitsLie1k() throws Exception
     {
         createDummyAis( "org.test", "mindexer14", 1010 );
 

@@ -19,13 +19,7 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
-
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -44,13 +38,19 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiSearcher;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * Default implementation of IteratorResultSet. TODO: there is too much of logic, refactor this!
- * 
+ *
  * @author cstamas
  */
 public class DefaultIteratorResultSet
-    implements IteratorResultSet
+        implements IteratorResultSet
 {
     private final IteratorSearchRequest searchRequest;
 
@@ -82,8 +82,7 @@ public class DefaultIteratorResultSet
 
     protected DefaultIteratorResultSet( final IteratorSearchRequest request,
                                         final NexusIndexMultiSearcher indexSearcher,
-                                        final List<IndexingContext> contexts, final TopDocs hits )
-        throws IOException
+                                        final List<IndexingContext> contexts, final TopDocs hits ) throws IOException
     {
         this.searchRequest = request;
 
@@ -93,16 +92,17 @@ public class DefaultIteratorResultSet
 
         {
             int maxDoc = 0;
-            this.starts = new int[contexts.size() + 1]; // build starts array
+            this.starts = new int[ contexts.size() + 1 ]; // build starts array
             // this is good to do as we have NexusIndexMultiSearcher passed in contructor, so it is already open, hence
             // #acquire() already invoked on underlying NexusIndexMultiReader
-            final List<IndexSearcher> acquiredSearchers = indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
+            final List<IndexSearcher> acquiredSearchers = indexSearcher.getNexusIndexMultiReader()
+                    .getAcquiredSearchers();
             for ( int i = 0; i < contexts.size(); i++ )
             {
-                starts[i] = maxDoc;
+                starts[ i ] = maxDoc;
                 maxDoc += acquiredSearchers.get( i ).getIndexReader().maxDoc(); // compute maxDocs
             }
-            starts[contexts.size()] = maxDoc;
+            starts[ contexts.size() ] = maxDoc;
         }
 
         this.filter = request.getArtifactInfoFilter();
@@ -115,16 +115,16 @@ public class DefaultIteratorResultSet
         for ( MatchHighlightRequest hr : request.getMatchHighlightRequests() )
         {
             Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
-            matchHighlightRequests.add( new MatchHighlightRequest( hr.getField(), rewrittenQuery, hr.getHighlightMode() ) );
+            matchHighlightRequests
+                    .add( new MatchHighlightRequest( hr.getField(), rewrittenQuery, hr.getHighlightMode() ) );
         }
 
         this.hits = hits;
 
         this.from = request.getStart();
 
-        this.count =
-            ( request.getCount() == AbstractSearchRequest.UNDEFINED ? hits.scoreDocs.length : Math.min(
-                request.getCount(), hits.scoreDocs.length ) );
+        this.count = ( request.getCount() == AbstractSearchRequest.UNDEFINED ? hits.scoreDocs.length
+                : Math.min( request.getCount(), hits.scoreDocs.length ) );
 
         this.pointer = from;
 
@@ -191,15 +191,15 @@ public class DefaultIteratorResultSet
     }
 
     @Override
-    public void finalize()
-        throws Throwable
+    public void finalize() throws Throwable
     {
         super.finalize();
 
         if ( !cleanedUp )
         {
-            System.err.println( "#WARNING: Lock leaking from " + getClass().getName() + " for query "
-                + searchRequest.getQuery().toString() );
+            System.err.println(
+                    "#WARNING: Lock leaking from " + getClass().getName() + " for query " + searchRequest.getQuery()
+                            .toString() );
 
             cleanUp();
         }
@@ -207,8 +207,7 @@ public class DefaultIteratorResultSet
 
     // ==
 
-    protected ArtifactInfo createNextAi()
-        throws IOException
+    protected ArtifactInfo createNextAi() throws IOException
     {
         ArtifactInfo result = null;
 
@@ -219,9 +218,9 @@ public class DefaultIteratorResultSet
         // or we found what we need
         while ( ( result == null ) && ( pointer < maxRecPointer ) && ( pointer < hits.scoreDocs.length ) )
         {
-            Document doc = indexSearcher.doc( hits.scoreDocs[pointer].doc );
+            Document doc = indexSearcher.doc( hits.scoreDocs[ pointer ].doc );
 
-            IndexingContext context = getIndexingContextForPointer( doc, hits.scoreDocs[pointer].doc );
+            IndexingContext context = getIndexingContextForPointer( doc, hits.scoreDocs[ pointer ].doc );
 
             result = IndexUtils.constructArtifactInfo( doc, context );
 
@@ -232,10 +231,11 @@ public class DefaultIteratorResultSet
                 if ( searchRequest.isLuceneExplain() )
                 {
                     result.getAttributes().put( Explanation.class.getName(),
-                        indexSearcher.explain( searchRequest.getQuery(), hits.scoreDocs[pointer].doc ).toString() );
+                            indexSearcher.explain( searchRequest.getQuery(), hits.scoreDocs[ pointer ].doc )
+                                    .toString() );
                 }
 
-                result.setLuceneScore( hits.scoreDocs[pointer].score );
+                result.setLuceneScore( hits.scoreDocs[ pointer ].score );
 
                 result.setRepository( context.getRepositoryId() );
 
@@ -290,13 +290,12 @@ public class DefaultIteratorResultSet
 
     /**
      * Creates the MatchHighlights and adds them to ArtifactInfo if found/can.
-     * 
+     *
      * @param context
      * @param d
      * @param ai
      */
-    protected void calculateHighlights( IndexingContext context, Document d, ArtifactInfo ai )
-        throws IOException
+    protected void calculateHighlights( IndexingContext context, Document d, ArtifactInfo ai ) throws IOException
     {
         IndexerField field = null;
 
@@ -329,7 +328,7 @@ public class DefaultIteratorResultSet
 
     /**
      * Select a STORED IndexerField assigned to passed in Field.
-     * 
+     *
      * @param field
      * @return
      */
@@ -348,7 +347,7 @@ public class DefaultIteratorResultSet
 
     /**
      * Returns a string that contains match fragment highlighted in style as user requested.
-     * 
+     *
      * @param context
      * @param hr
      * @param field
@@ -357,19 +356,18 @@ public class DefaultIteratorResultSet
      * @throws IOException
      */
     protected List<String> highlightField( IndexingContext context, MatchHighlightRequest hr, IndexerField field,
-                                           String text )
-        throws IOException
+                                           String text ) throws IOException
     {
         // exception with classnames
         if ( MAVEN.CLASSNAMES.equals( field.getOntology() ) )
         {
             text = text.replace( '/', '.' ).replaceAll( "^\\.", "" ).replaceAll( "\n\\.", "\n" );
         }
-        
+
         Analyzer analyzer = context.getAnalyzer();
         TokenStream baseTokenStream = analyzer.tokenStream( field.getKey(), new StringReader( text ) );
-        
-        CachingTokenFilter tokenStream = new CachingTokenFilter(baseTokenStream);
+
+        CachingTokenFilter tokenStream = new CachingTokenFilter( baseTokenStream );
 
         Formatter formatter = null;
 
@@ -382,18 +380,17 @@ public class DefaultIteratorResultSet
             tokenStream.reset();
             tokenStream.end();
             tokenStream.close();
-            throw new UnsupportedOperationException( "Hightlight more \"" + hr.getHighlightMode().toString()
-                + "\" is not supported!" );
+            throw new UnsupportedOperationException(
+                    "Hightlight more \"" + hr.getHighlightMode().toString() + "\" " + "is" + " not supported!" );
         }
 
         List<String> bestFragments = getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
-        
+
         return bestFragments;
     }
 
     protected final List<String> getBestFragments( Query query, Formatter formatter, TokenStream tokenStream,
-                                                   String text, int maxNumFragments )
-        throws IOException
+                                                   String text, int maxNumFragments ) throws IOException
     {
         Highlighter highlighter = new Highlighter( formatter, new CleaningEncoder(), new QueryScorer( query ) );
 
@@ -411,9 +408,9 @@ public class DefaultIteratorResultSet
 
             for ( int i = 0; i < frag.length; i++ )
             {
-                if ( ( frag[i] != null ) && ( frag[i].getScore() > 0 ) )
+                if ( ( frag[ i ] != null ) && ( frag[ i ].getScore() > 0 ) )
                 {
-                    fragTexts.add( frag[i].toString() );
+                    fragTexts.add( frag[ i ].toString() );
                 }
             }
         }
@@ -438,7 +435,7 @@ public class DefaultIteratorResultSet
         while ( hi >= lo )
         {
             int mid = ( lo + hi ) >>> 1;
-            int midValue = starts[mid];
+            int midValue = starts[ mid ];
             if ( n < midValue )
             {
                 hi = mid - 1;
@@ -449,7 +446,7 @@ public class DefaultIteratorResultSet
             }
             else
             { // found a match
-                while ( mid + 1 < numSubReaders && starts[mid + 1] == midValue )
+                while ( mid + 1 < numSubReaders && starts[ mid + 1 ] == midValue )
                 {
                     mid++; // scan to last match
                 }

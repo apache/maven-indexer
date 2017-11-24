@@ -23,17 +23,17 @@ import org.apache.maven.index.SearchType;
 
 /**
  * A search typed implementation of string backed search expression.
- * 
+ *
  * @author cstamas
  */
 public class SearchTypedStringSearchExpression
-    extends StringSearchExpression
-    implements SearchTyped
+        extends StringSearchExpression
+        implements SearchTyped
 {
     private final SearchType searchType;
 
     public SearchTypedStringSearchExpression( final String expression, final SearchType searchType )
-        throws IllegalArgumentException
+            throws IllegalArgumentException
     {
         super( expression );
 

@@ -19,14 +19,14 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherFactory;
 
+import java.io.IOException;
+
 public class NexusIndexSearcherFactory
-    extends SearcherFactory
+        extends SearcherFactory
 {
     private final IndexingContext context;
 
@@ -35,8 +35,7 @@ public class NexusIndexSearcherFactory
         this.context = context;
     }
 
-    public IndexSearcher newSearcher( final IndexReader reader )
-        throws IOException
+    public IndexSearcher newSearcher( final IndexReader reader ) throws IOException
     {
         return new NexusIndexSearcher( context, reader );
     }

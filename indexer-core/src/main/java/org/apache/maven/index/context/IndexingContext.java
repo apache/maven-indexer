@@ -19,6 +19,12 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.maven.index.artifact.GavCalculator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -26,16 +32,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
-import org.apache.maven.index.artifact.GavCalculator;
-
 /**
  * An indexing context is representing artifact repository for indexing and searching. Indexing context is a statefull
  * component, it keeps state of index readers and writers.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
@@ -128,14 +128,14 @@ public interface IndexingContext
     /**
      * Is the context searchable when doing "non-targeted" searches? Ie. Should it take a part when searching without
      * specifying context?
-     * 
+     *
      * @return
      */
     boolean isSearchable();
 
     /**
      * Sets is the context searchable when doing "non-targeted" searches.
-     * 
+     *
      * @param searchable
      */
     void setSearchable( boolean searchable );
@@ -145,55 +145,48 @@ public interface IndexingContext
      */
     Date getTimestamp();
 
-    void updateTimestamp()
-        throws IOException;
+    void updateTimestamp() throws IOException;
 
-    void updateTimestamp( boolean save )
-        throws IOException;
+    void updateTimestamp( boolean save ) throws IOException;
 
-    void updateTimestamp( boolean save, Date date )
-        throws IOException;
+    void updateTimestamp( boolean save, Date date ) throws IOException;
 
     /**
      * Returns a number that represents the "size" useful for doing comparisons between contexts (which one has more
      * data indexed?). The number return does not represent the count of ArtifactInfos, neither other "meaningful" info,
      * it is purely to be used for inter-context comparisons only!
-     * 
+     *
      * @return
      * @throws IOException
      */
-    int getSize()
-        throws IOException;
+    int getSize() throws IOException;
 
     /**
      * Acquires a fresh instance of {@link IndexSearcher}. You have to release the received instance with
      * {@link #releaseIndexSearcher(IndexSearcher)} otherwise you are about to introduce leak.
-     * 
+     *
      * @return
      */
-    IndexSearcher acquireIndexSearcher()
-        throws IOException;
+    IndexSearcher acquireIndexSearcher() throws IOException;
 
     /**
      * Releases the {@link IndexSearcher} instance.
-     * 
+     *
      * @param s
      */
-    void releaseIndexSearcher( IndexSearcher s )
-        throws IOException;
+    void releaseIndexSearcher( IndexSearcher s ) throws IOException;
 
     /**
      * Returns the Lucene IndexWriter (thread safe, shared instance) of this context.
-     * 
+     *
      * @return indexWriter
      * @throws IOException
      */
-    IndexWriter getIndexWriter()
-        throws IOException;
+    IndexWriter getIndexWriter() throws IOException;
 
     /**
      * List of IndexCreators used in this context.
-     * 
+     *
      * @return list of index creators.
      */
     List<IndexCreator> getIndexCreators();
@@ -201,75 +194,66 @@ public interface IndexingContext
     /**
      * Returns the Lucene Analyzer of this context used for by IndexWriter and IndexSearcher. Note: this method always
      * creates a new instance of analyzer!
-     * 
+     *
      * @return
      */
     Analyzer getAnalyzer();
 
     /**
      * Commits changes to context, eventually refreshing readers/searchers too.
-     * 
+     *
      * @throws IOException
      */
-    void commit()
-        throws IOException;
+    void commit() throws IOException;
 
     /**
      * Rolls back changes to context, eventually refreshing readers/searchers too.
-     * 
+     *
      * @throws IOException
      */
-    void rollback()
-        throws IOException;
+    void rollback() throws IOException;
 
     /**
      * Optimizes index. According to Lucene 3.6+ Javadoc, there is no more sense to optimize, so this method might
      * become "noop".
      */
-    void optimize()
-        throws IOException;
+    void optimize() throws IOException;
 
     /**
      * Shuts down this context.
      */
-    void close( boolean deleteFiles )
-        throws IOException;
+    void close( boolean deleteFiles ) throws IOException;
 
     /**
      * Purge (cleans) the context, deletes/empties the index and restores the context to new/empty state.
-     * 
+     *
      * @throws IOException
      */
-    void purge()
-        throws IOException;
+    void purge() throws IOException;
 
     /**
      * Merges content of given Lucene directory with this context.
-     * 
+     *
      * @param directory - the directory to merge
      */
-    void merge( Directory directory )
-        throws IOException;
+    void merge( Directory directory ) throws IOException;
 
     /**
      * Merges content of given Lucene directory with this context, but filters out the unwanted ones.
-     * 
+     *
      * @param directory - the directory to merge
      */
-    void merge( Directory directory, DocumentFilter filter )
-        throws IOException;
+    void merge( Directory directory, DocumentFilter filter ) throws IOException;
 
     /**
      * Replaces the Lucene index with the one from supplied directory.
-     * 
+     *
      * @param directory
      * @throws IOException
      */
-    void replace( Directory directory )
-        throws IOException;
+    void replace( Directory directory ) throws IOException;
 
-    void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
-        throws IOException;
+    void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups ) throws IOException;
 
     Directory getIndexDirectory();
 
@@ -283,36 +267,31 @@ public interface IndexingContext
     /**
      * Sets all group names stored in the current indexing context
      */
-    void setAllGroups( Collection<String> groups )
-        throws IOException;
+    void setAllGroups( Collection<String> groups ) throws IOException;
 
     /**
      * Gets all group names stored in the current indexing context
      */
-    Set<String> getAllGroups()
-        throws IOException;
+    Set<String> getAllGroups() throws IOException;
 
     /**
      * Sets root group names stored in the current indexing context
      */
-    void setRootGroups( Collection<String> groups )
-        throws IOException;
+    void setRootGroups( Collection<String> groups ) throws IOException;
 
     /**
      * Gets root group names stored in the current indexing context
      */
-    Set<String> getRootGroups()
-        throws IOException;
+    Set<String> getRootGroups() throws IOException;
 
     /**
      * Rebuilds stored group names from the index
      */
-    void rebuildGroups()
-        throws IOException;
+    void rebuildGroups() throws IOException;
 
     /**
      * Returns true if this context is receiving updates from remote via IndexUpdater.
-     * 
+     *
      * @return
      */
     boolean isReceivingUpdates();

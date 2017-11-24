@@ -19,17 +19,17 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 
+import java.io.File;
+import java.util.Set;
+
 public class Nexus3177HitLimitChecks
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
@@ -38,23 +38,20 @@ public class Nexus3177HitLimitChecks
     protected IndexingContext secondContext;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-3177", "nexus-3177", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-3177", "nexus-3177", repo, indexDir, null, null, DEFAULT_CREATORS );
 
-        secondContext =
-            nexusIndexer.addIndexingContext( "nexus-3177b", "nexus-3177b", repo, secondIndexDir, null, null,
-                DEFAULT_CREATORS );
+        secondContext = nexusIndexer
+                .addIndexingContext( "nexus-3177b", "nexus-3177b", repo, secondIndexDir, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( context );
         nexusIndexer.scan( secondContext );
     }
 
     @Override
-    protected void unprepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void unprepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         super.unprepareNexusIndexer( nexusIndexer );
 
@@ -69,8 +66,7 @@ public class Nexus3177HitLimitChecks
     // Hence, some of the tests, that can keep still original semantics were updated and left in place
     // but the two test explicitly testing LIMIT_EXCEEDED were just removed/commented out.
 
-    public void testHitLimitNotReachedSingleContext()
-        throws Exception
+    public void testHitLimitNotReachedSingleContext() throws Exception
     {
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
@@ -85,8 +81,7 @@ public class Nexus3177HitLimitChecks
         assertEquals( r.toString(), 4, response.getTotalHitsCount() );
     }
 
-    public void testHitLimitEqualSingleContext()
-        throws Exception
+    public void testHitLimitEqualSingleContext() throws Exception
     {
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
@@ -117,8 +112,7 @@ public class Nexus3177HitLimitChecks
     // assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
     // }
 
-    public void testHitLimitNotReachedMultipleContexts()
-        throws Exception
+    public void testHitLimitNotReachedMultipleContexts() throws Exception
     {
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 
@@ -135,8 +129,7 @@ public class Nexus3177HitLimitChecks
         assertEquals( r.toString(), 8, response.getTotalHitsCount() );
     }
 
-    public void testHitLimitEqualMultipleContexts()
-        throws Exception
+    public void testHitLimitEqualMultipleContexts() throws Exception
     {
         WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
 

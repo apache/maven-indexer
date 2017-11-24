@@ -19,47 +19,47 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.util.Bits;
 
-/** http://issues.sonatype.org/browse/NEXUS-737 */
+import java.io.File;
+
+/**
+ * http://issues.sonatype.org/browse/NEXUS-737
+ */
 public class Nexus737NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-658" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testValidateUINFOs()
-        throws Exception
+    public void testValidateUINFOs() throws Exception
     {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
-        Bits liveDocs = MultiFields.getLiveDocs(reader);
+        Bits liveDocs = MultiFields.getLiveDocs( reader );
 
         int foundCount = 0;
 
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {
-            if (liveDocs == null || liveDocs.get(i) )
+            if ( liveDocs == null || liveDocs.get( i ) )
             {
                 Document document = reader.document( i );
 
                 String uinfo = document.get( ArtifactInfo.UINFO );
 
-                if ( "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA|jar".equals( uinfo )
-                    || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|zip".equals( uinfo )
-                    || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|tar.gz".equals( uinfo ) )
+                if ( "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA|jar".equals( uinfo ) || ( "org.sonatype" + ""
+                        + ".nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|zip" ).equals( uinfo ) || ( "org.sonatype" + ""
+                        + ".nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|tar.gz" ).equals( uinfo ) )
                 {
                     foundCount++;
                 }

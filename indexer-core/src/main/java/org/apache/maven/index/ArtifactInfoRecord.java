@@ -19,28 +19,32 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.Serializable;
-import java.util.regex.Pattern;
-
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 
+import java.io.Serializable;
+import java.util.regex.Pattern;
+
 /**
  * Pulling out ArtifactInfo, clearing up. TBD. This gonna be extensible "map-like" class with fields.
- * 
+ *
  * @author cstamas
  */
 public class ArtifactInfoRecord
-    implements Serializable
+        implements Serializable
 {
     private static final long serialVersionUID = -4577081994768263824L;
 
-    /** Field separator */
+    /**
+     * Field separator
+     */
     public static final String FS = "|";
 
     public static final Pattern FS_PATTERN = Pattern.compile( Pattern.quote( FS ) );
 
-    /** Non available value */
+    /**
+     * Non available value
+     */
     public static final String NA = "NA";
 
     // ----------
@@ -53,14 +57,14 @@ public class ArtifactInfoRecord
      * Unique groupId, artifactId, version, classifier, extension (or packaging). Stored, indexed untokenized
      */
     public static final IndexerField FLD_UINFO = new IndexerField( NEXUS.UINFO, IndexerFieldVersion.V1, "u",
-        "Artifact UINFO (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
+            "Artifact UINFO (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
 
     /**
      * Del: contains UINFO to mark record as deleted (needed for incremental updates!). The original document IS
      * removed, but this marker stays on index to note that fact.
      */
     public static final IndexerField FLD_DELETED = new IndexerField( NEXUS.DELETED, IndexerFieldVersion.V1, "del",
-        "Deleted field, will contain UINFO if document is deleted from index (not indexed, stored)", Store.YES,
-        Index.NO );
+            "Deleted field, will contain UINFO if document is deleted from index (not indexed, stored)", Store.YES,
+            Index.NO );
 
 }

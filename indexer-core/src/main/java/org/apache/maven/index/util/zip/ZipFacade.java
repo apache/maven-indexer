@@ -26,8 +26,8 @@ public class ZipFacade
 {
     public static final long MEGABYTE = 1048576L;
 
-    public static final long JAVA_ZIPFILE_SIZE_THRESHOLD = Long.getLong(
-        "org.apache.maven.index.util.zip.ZipFacade.javaZipFileSizeThreshold", 100L * MEGABYTE );
+    public static final long JAVA_ZIPFILE_SIZE_THRESHOLD = Long
+            .getLong( "org.apache.maven.index.util.zip.ZipFacade" + ".javaZipFileSizeThreshold", 100L * MEGABYTE );
 
     private static final boolean TRUEZIP_AVAILABLE;
 
@@ -47,8 +47,7 @@ public class ZipFacade
         TRUEZIP_AVAILABLE = clazz != null;
     }
 
-    public static ZipHandle getZipHandle( File targetFile )
-        throws IOException
+    public static ZipHandle getZipHandle( File targetFile ) throws IOException
     {
         if ( targetFile.isFile() )
         {
@@ -65,8 +64,7 @@ public class ZipFacade
         throw new IOException( "The targetFile should point to an existing ZIP file:" + targetFile );
     }
 
-    public static void close( ZipHandle handle )
-        throws IOException
+    public static void close( ZipHandle handle ) throws IOException
     {
         if ( handle != null )
         {

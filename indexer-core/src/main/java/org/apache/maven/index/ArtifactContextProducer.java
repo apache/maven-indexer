@@ -19,13 +19,13 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.context.IndexingContext;
+
+import java.io.File;
 
 /**
  * A producer that creates {@link ArtifactContext} from POM and from other available files.
- * 
+ *
  * @author Tamas Cservenak
  */
 public interface ArtifactContextProducer

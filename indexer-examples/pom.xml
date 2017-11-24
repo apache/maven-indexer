@@ -17,26 +17,27 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache.maven.indexer</groupId>
-    <artifactId>maven-indexer</artifactId>
-    <version>6.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>maven-indexer</artifactId>
+        <version>6.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>maven-indexer-examples</artifactId>
-  <packaging>pom</packaging>
+    <artifactId>maven-indexer-examples</artifactId>
+    <packaging>pom</packaging>
 
-  <name>Maven :: Indexer Examples</name>
-  <description>
-    This module contains Maven Indexer examples.
-  </description>
+    <name>Maven :: Indexer Examples</name>
+    <description>
+        This module contains Maven Indexer examples.
+    </description>
 
-  <modules>
-    <module>indexer-examples-basic</module>
-    <module>indexer-examples-spring</module>
-  </modules>
-  
+    <modules>
+        <module>indexer-examples-basic</module>
+        <module>indexer-examples-spring</module>
+    </modules>
+
 </project>

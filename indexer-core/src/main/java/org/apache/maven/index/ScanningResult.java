@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * A scanning result holds result of repository scan
- * 
+ *
  * @author Jason van Zyl
  */
 public class ScanningResult

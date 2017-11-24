@@ -23,7 +23,7 @@ import org.apache.maven.index.SearchType;
 
 /**
  * SearchTyped is a interface that describes the wanted search type to be used.
- * 
+ *
  * @author cstamas
  */
 public interface SearchTyped

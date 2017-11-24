@@ -32,44 +32,51 @@ import java.net.URL;
  * handle any advanced cases, like redirects, authentication, etc.
  */
 public class HttpResourceHandler
-    implements ResourceHandler
+        implements ResourceHandler
 {
-  private final URI root;
+    private final URI root;
 
-  public HttpResourceHandler(final URL root) throws URISyntaxException {
-    if (root == null) {
-      throw new NullPointerException("root URL null");
-    }
-    this.root = root.toURI();
-  }
-
-  public Resource locate(final String name) throws IOException {
-    return new HttpResource(name);
-  }
-
-  private class HttpResource
-      implements Resource
-  {
-    private final String name;
-
-    private HttpResource(final String name) {
-      this.name = name;
+    public HttpResourceHandler( final URL root ) throws URISyntaxException
+    {
+        if ( root == null )
+        {
+            throw new NullPointerException( "root URL null" );
+        }
+        this.root = root.toURI();
     }
 
-    public InputStream read() throws IOException {
-      URL target = root.resolve(name).toURL();
-      HttpURLConnection conn = (HttpURLConnection) target.openConnection();
-      conn.setRequestMethod("GET");
-      conn.setRequestProperty("User-Agent", "ASF Maven-Indexer-Reader/1.0");
-      return new BufferedInputStream(conn.getInputStream());
+    public Resource locate( final String name ) throws IOException
+    {
+        return new HttpResource( name );
     }
 
-    public void close() throws IOException {
-      // nop
-    }
-  }
+    private class HttpResource
+            implements Resource
+    {
+        private final String name;
 
-  public void close() throws IOException {
-    // nop
-  }
+        private HttpResource( final String name )
+        {
+            this.name = name;
+        }
+
+        public InputStream read() throws IOException
+        {
+            URL target = root.resolve( name ).toURL();
+            HttpURLConnection conn = ( HttpURLConnection ) target.openConnection();
+            conn.setRequestMethod( "GET" );
+            conn.setRequestProperty( "User-Agent", "ASF Maven-Indexer-Reader/1.0" );
+            return new BufferedInputStream( conn.getInputStream() );
+        }
+
+        public void close() throws IOException
+        {
+            // nop
+        }
+    }
+
+    public void close() throws IOException
+    {
+        // nop
+    }
 }

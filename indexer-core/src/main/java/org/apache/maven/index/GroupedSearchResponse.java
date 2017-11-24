@@ -19,17 +19,17 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Map;
-
 import org.apache.lucene.search.Query;
+
+import java.util.Map;
 
 /**
  * A grouped search response. For hitsCount, it reports the number of groups found.
- * 
+ *
  * @see Indexer#searchGrouped(GroupedSearchRequest)
  */
 public class GroupedSearchResponse
-    extends AbstractSearchResponse
+        extends AbstractSearchResponse
 {
     private final Map<String, ArtifactInfoGroup> results;
 

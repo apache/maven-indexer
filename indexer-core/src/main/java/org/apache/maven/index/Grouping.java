@@ -23,16 +23,16 @@ import java.util.Map;
 
 /**
  * A grouping criteria for grouped searches.
- * 
- * @see Indexer#searchGrouped(GroupedSearchRequest)
+ *
  * @author Tamas Cservenak
+ * @see Indexer#searchGrouped(GroupedSearchRequest)
  */
 public interface Grouping
 {
 
     /**
      * Adds a single ArticatInfo to the result map.
-     * 
+     *
      * @param result
      * @param artifactInfo
      * @return true, if the Grouping changed by addition of new artifactInfo

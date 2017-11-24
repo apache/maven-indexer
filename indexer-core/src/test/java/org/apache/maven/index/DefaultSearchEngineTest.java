@@ -19,11 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
@@ -33,26 +28,30 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.util.IndexCreatorSorter;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+
 public class DefaultSearchEngineTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
 
     private static class CountingIndexingContext
-        extends DefaultIndexingContext
+            extends DefaultIndexingContext
     {
         public int count;
 
         public CountingIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
                                         String repositoryUrl, String indexUpdateUrl,
                                         List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-            throws IOException, ExistingLuceneIndexMismatchException
+                throws IOException, ExistingLuceneIndexMismatchException
         {
             super( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl, indexCreators,
-                   reclaimIndex );
+                    reclaimIndex );
         }
 
-        public IndexSearcher acquireIndexSearcher()
-            throws IOException
+        public IndexSearcher acquireIndexSearcher() throws IOException
         {
             try
             {
@@ -62,11 +61,12 @@ public class DefaultSearchEngineTest
             {
                 count++;
             }
-        };
+        }
+
+        ;
 
         @Override
-        public void releaseIndexSearcher( IndexSearcher is )
-            throws IOException
+        public void releaseIndexSearcher( IndexSearcher is ) throws IOException
         {
             try
             {
@@ -80,13 +80,11 @@ public class DefaultSearchEngineTest
     }
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         File repo = new File( getBasedir(), "src/test/repo" );
-        context =
-            new CountingIndexingContext( "test-minimal", "test", repo, indexDir, null, null,
-                                         IndexCreatorSorter.sort( MIN_CREATORS ), false );
+        context = new CountingIndexingContext( "test-minimal", "test", repo, indexDir, null, null,
+                IndexCreatorSorter.sort( MIN_CREATORS ), false );
 
         nexusIndexer.scan( context );
     }
@@ -94,8 +92,7 @@ public class DefaultSearchEngineTest
     private SearchEngine searchEngine;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -103,15 +100,13 @@ public class DefaultSearchEngineTest
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         searchEngine = null;
         super.tearDown();
     }
 
-    public void testExceptionInArtifactFilter()
-        throws Exception
+    public void testExceptionInArtifactFilter() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT );
         IteratorSearchRequest request = new IteratorSearchRequest( q );
@@ -139,6 +134,6 @@ public class DefaultSearchEngineTest
             // this is the point of this test
         }
 
-        assertEquals( 0, ( (CountingIndexingContext) context ).count );
+        assertEquals( 0, ( ( CountingIndexingContext ) context ).count );
     }
 }

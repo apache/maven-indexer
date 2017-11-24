@@ -70,8 +70,7 @@ public final class Utils
     /**
      * Creates and loads {@link Properties} from provided {@link InputStream} and closes the stream.
      */
-    public static Properties loadProperties( final InputStream inputStream )
-        throws IOException
+    public static Properties loadProperties( final InputStream inputStream ) throws IOException
     {
         try
         {
@@ -89,8 +88,7 @@ public final class Utils
      * Creates and loads {@link Properties} from provided {@link Resource} if exists, and closes the resource. If not
      * exists, returns {@code null}.
      */
-    public static Properties loadProperties( final Resource resource )
-        throws IOException
+    public static Properties loadProperties( final Resource resource ) throws IOException
     {
         final InputStream inputStream = resource.read();
         if ( inputStream == null )
@@ -104,7 +102,7 @@ public final class Utils
      * Saves {@link Properties} to provided {@link OutputStream} and closes the stream.
      */
     public static void storeProperties( final OutputStream outputStream, final Properties properties )
-        throws IOException
+            throws IOException
     {
         try
         {
@@ -121,7 +119,7 @@ public final class Utils
      * Saves {@link Properties} to provided {@link WritableResource} and closes the resource.
      */
     public static void storeProperties( final WritableResource writableResource, final Properties properties )
-        throws IOException
+            throws IOException
     {
         try
         {
@@ -149,7 +147,7 @@ public final class Utils
     public static Record allGroups( final Collection<String> allGroups )
     {
         HashMap<EntryKey, Object> entries = new HashMap<EntryKey, Object>();
-        entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[allGroups.size()] ) );
+        entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[ allGroups.size() ] ) );
         return new Record( Type.ALL_GROUPS, entries );
     }
 
@@ -159,7 +157,7 @@ public final class Utils
     public static Record rootGroups( final Collection<String> rootGroups )
     {
         HashMap<EntryKey, Object> entries = new HashMap<EntryKey, Object>();
-        entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[rootGroups.size()] ) );
+        entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[ rootGroups.size() ] ) );
         return new Record( Type.ROOT_GROUPS, entries );
     }
 

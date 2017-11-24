@@ -19,18 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.ContextMemberProvider;
@@ -43,17 +31,29 @@ import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTypedStringSearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.util.IOUtil;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A default {@link Indexer} implementation.
- * 
+ *
  * @author Tamas Cservenak
  */
 @Singleton
 @Named
 public class DefaultIndexer
-    implements Indexer
+        implements Indexer
 {
 
     private final SearchEngine searcher;
@@ -64,9 +64,7 @@ public class DefaultIndexer
 
 
     @Inject
-    public DefaultIndexer( SearchEngine searcher,
-                           IndexerEngine indexerEngine,
-                           QueryCreator queryCreator )
+    public DefaultIndexer( SearchEngine searcher, IndexerEngine indexerEngine, QueryCreator queryCreator )
     {
         this.searcher = searcher;
         this.indexerEngine = indexerEngine;
@@ -80,27 +78,24 @@ public class DefaultIndexer
     public IndexingContext createIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
                                                   String repositoryUrl, String indexUpdateUrl, boolean searchable,
                                                   boolean reclaim, List<? extends IndexCreator> indexers )
-        throws IOException, ExistingLuceneIndexMismatchException, IllegalArgumentException
+            throws IOException, ExistingLuceneIndexMismatchException, IllegalArgumentException
     {
-        final IndexingContext context =
-            new DefaultIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
-                IndexCreatorSorter.sort( indexers ), reclaim );
+        final IndexingContext context = new DefaultIndexingContext( id, repositoryId, repository, indexDirectory,
+                repositoryUrl, indexUpdateUrl, IndexCreatorSorter.sort( indexers ), reclaim );
         context.setSearchable( searchable );
         return context;
     }
 
     public IndexingContext createMergedIndexingContext( String id, String repositoryId, File repository,
                                                         File indexDirectory, boolean searchable,
-                                                        ContextMemberProvider membersProvider )
-        throws IOException
+                                                        ContextMemberProvider membersProvider ) throws IOException
     {
-        IndexingContext context =
-            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable, membersProvider );
+        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                membersProvider );
         return context;
     }
 
-    public void closeIndexingContext( IndexingContext context, boolean deleteFiles )
-        throws IOException
+    public void closeIndexingContext( IndexingContext context, boolean deleteFiles ) throws IOException
     {
         context.close( deleteFiles );
     }
@@ -109,8 +104,7 @@ public class DefaultIndexer
     // Modifying
     // ----------------------------------------------------------------------------
 
-    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context)
-        throws IOException
+    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context ) throws IOException
     {
         if ( ac != null )
         {
@@ -120,8 +114,7 @@ public class DefaultIndexer
         }
     }
 
-    public void addArtifactsToIndex( Collection<ArtifactContext> ac, IndexingContext context )
-        throws IOException
+    public void addArtifactsToIndex( Collection<ArtifactContext> ac, IndexingContext context ) throws IOException
     {
         if ( ac != null && !ac.isEmpty() )
         {
@@ -134,8 +127,7 @@ public class DefaultIndexer
         }
     }
 
-    public void deleteArtifactsFromIndex( Collection<ArtifactContext> ac, IndexingContext context )
-        throws IOException
+    public void deleteArtifactsFromIndex( Collection<ArtifactContext> ac, IndexingContext context ) throws IOException
     {
         if ( ac != null && !ac.isEmpty() )
         {
@@ -152,12 +144,11 @@ public class DefaultIndexer
     // Searching
     // ----------------------------------------------------------------------------
 
-    public FlatSearchResponse searchFlat( FlatSearchRequest request )
-        throws IOException
+    public FlatSearchResponse searchFlat( FlatSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo> emptySet() );
+            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo>emptySet() );
         }
         else
         {
@@ -165,8 +156,7 @@ public class DefaultIndexer
         }
     }
 
-    public IteratorSearchResponse searchIterator( IteratorSearchRequest request )
-        throws IOException
+    public IteratorSearchResponse searchIterator( IteratorSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
@@ -178,12 +168,12 @@ public class DefaultIndexer
         }
     }
 
-    public GroupedSearchResponse searchGrouped( GroupedSearchRequest request )
-        throws IOException
+    public GroupedSearchResponse searchGrouped( GroupedSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new GroupedSearchResponse( request.getQuery(), 0, Collections.<String, ArtifactInfoGroup> emptyMap() );
+            return new GroupedSearchResponse( request.getQuery(), 0,
+                    Collections.<String, ArtifactInfoGroup>emptyMap() );
         }
         else
         {
@@ -197,12 +187,12 @@ public class DefaultIndexer
     // ----------------------------------------------------------------------------
 
     public Collection<ArtifactInfo> identify( final File artifact, final Collection<IndexingContext> contexts )
-        throws IOException
+            throws IOException
     {
-        try (FileInputStream is = new FileInputStream( artifact ))
+        try ( FileInputStream is = new FileInputStream( artifact ) )
         {
             final MessageDigest sha1 = MessageDigest.getInstance( "SHA-1" );
-            final byte[] buff = new byte[4096];
+            final byte[] buff = new byte[ 4096 ];
             int n;
             while ( ( n = is.read( buff ) ) > -1 )
             {
@@ -219,11 +209,10 @@ public class DefaultIndexer
         }
     }
 
-    public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
-        throws IOException
+    public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts ) throws IOException
     {
-        final IteratorSearchResponse result =
-            searcher.searchIteratorPaged( new IteratorSearchRequest( query ), contexts );
+        final IteratorSearchResponse result = searcher
+                .searchIteratorPaged( new IteratorSearchRequest( query ), contexts );
         try
         {
             final ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( result.getTotalHitsCount() );
@@ -243,8 +232,7 @@ public class DefaultIndexer
     // Query construction
     // ----------------------------------------------------------------------------
 
-    public Query constructQuery( Field field, SearchExpression expression )
-        throws IllegalArgumentException
+    public Query constructQuery( Field field, SearchExpression expression ) throws IllegalArgumentException
     {
         try
         {
@@ -256,10 +244,9 @@ public class DefaultIndexer
         }
     }
 
-    public Query constructQuery( Field field, String expression, SearchType searchType )
-        throws IllegalArgumentException
+    public Query constructQuery( Field field, String expression, SearchType searchType ) throws IllegalArgumentException
     {
-        return constructQuery( field, new SearchTypedStringSearchExpression( expression, searchType ));
+        return constructQuery( field, new SearchTypedStringSearchExpression( expression, searchType ) );
     }
     // ==
 
@@ -267,14 +254,14 @@ public class DefaultIndexer
 
     private static String encode( byte[] digest )
     {
-        char[] buff = new char[digest.length * 2];
+        char[] buff = new char[ digest.length * 2 ];
 
         int n = 0;
 
         for ( byte b : digest )
         {
-            buff[n++] = DIGITS[( 0xF0 & b ) >> 4];
-            buff[n++] = DIGITS[0x0F & b];
+            buff[ n++ ] = DIGITS[ ( 0xF0 & b ) >> 4 ];
+            buff[ n++ ] = DIGITS[ 0x0F & b ];
         }
 
         return new String( buff );

@@ -42,7 +42,7 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  * @since 5.1.2
  */
 public class IndexWriter
-    implements Closeable
+        implements Closeable
 {
     private static final int INDEX_V1 = 1;
 
@@ -57,7 +57,7 @@ public class IndexWriter
     private final String nextChunkName;
 
     public IndexWriter( final WritableResourceHandler local, final String indexId, final boolean incrementalSupported )
-        throws IOException
+            throws IOException
     {
         if ( local == null )
         {
@@ -77,7 +77,7 @@ public class IndexWriter
             if ( localIndexId == null || !localIndexId.equals( indexId ) )
             {
                 throw new IllegalArgumentException(
-                    "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
+                        "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
             }
             this.incremental = true;
             this.nextChunkCounter = calculateNextChunkCounter();
@@ -134,7 +134,8 @@ public class IndexWriter
     }
 
     /**
-     * Returns the chain id of published index. If {@link #isIncremental()} is {@code false}, this is the newly generated
+     * Returns the chain id of published index. If {@link #isIncremental()} is {@code false}, this is the newly
+     * generated
      * chain ID.
      */
     public String getChainId()
@@ -153,15 +154,14 @@ public class IndexWriter
     /**
      * Writes out the record iterator and returns the written record count.
      */
-    public int writeChunk( final Iterator<Map<String, String>> iterator )
-        throws IOException
+    public int writeChunk( final Iterator<Map<String, String>> iterator ) throws IOException
     {
         int written;
 
-        try (WritableResource writableResource = local.locate( nextChunkName ))
+        try ( WritableResource writableResource = local.locate( nextChunkName ) )
         {
-            final ChunkWriter chunkWriter =
-                new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1, new Date() );
+            final ChunkWriter chunkWriter = new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1,
+                    new Date() );
             try
             {
                 written = chunkWriter.writeChunk( iterator );
@@ -184,8 +184,7 @@ public class IndexWriter
      * method should NOT be invoked, but rather the {@link ResourceHandler} that caller provided in constructor of
      * this class should be closed manually.
      */
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         try
         {

@@ -19,6 +19,9 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -28,21 +31,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.codehaus.plexus.util.IOUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A very simple artifact packaging mapper, that has everything for quick-start wired in this class. Also, it takes into
  * account the "${nexus-work}/conf/packaging2extension-mapping.properties" file into account if found. To override the
- * "defaults" in this class, simply add lines to properties file with same keys.
+ * "DEFAULTS" in this class, simply add lines to properties file with same keys.
  *
  * @author cstamas
  */
 @Singleton
 @Named
 public class DefaultArtifactPackagingMapper
-    implements ArtifactPackagingMapper
+        implements ArtifactPackagingMapper
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -58,25 +57,25 @@ public class DefaultArtifactPackagingMapper
 
     private volatile Map<String, String> packaging2extensionMapping;
 
-    private final static Map<String, String> defaults;
+    private static final Map<String, String> DEFAULTS;
 
     static
     {
-        defaults = new HashMap<String, String>();
-        defaults.put( "ejb-client", "jar" );
-        defaults.put( "ejb", "jar" );
-        defaults.put( "rar", "jar" );
-        defaults.put( "par", "jar" );
-        defaults.put( "maven-plugin", "jar" );
-        defaults.put( "maven-archetype", "jar" );
-        defaults.put( "plexus-application", "jar" );
-        defaults.put( "eclipse-plugin", "jar" );
-        defaults.put( "eclipse-feature", "jar" );
-        defaults.put( "eclipse-application", "zip" );
-        defaults.put( "nexus-plugin", "jar" );
-        defaults.put( "java-source", "jar" );
-        defaults.put( "javadoc", "jar" );
-        defaults.put( "test-jar", "jar" );
+        DEFAULTS = new HashMap<String, String>();
+        DEFAULTS.put( "ejb-client", "jar" );
+        DEFAULTS.put( "ejb", "jar" );
+        DEFAULTS.put( "rar", "jar" );
+        DEFAULTS.put( "par", "jar" );
+        DEFAULTS.put( "maven-plugin", "jar" );
+        DEFAULTS.put( "maven-archetype", "jar" );
+        DEFAULTS.put( "plexus-application", "jar" );
+        DEFAULTS.put( "eclipse-plugin", "jar" );
+        DEFAULTS.put( "eclipse-feature", "jar" );
+        DEFAULTS.put( "eclipse-application", "zip" );
+        DEFAULTS.put( "nexus-plugin", "jar" );
+        DEFAULTS.put( "java-source", "jar" );
+        DEFAULTS.put( "javadoc", "jar" );
+        DEFAULTS.put( "test-jar", "jar" );
     }
 
     public void setPropertiesFile( File propertiesFile )
@@ -95,8 +94,8 @@ public class DefaultArtifactPackagingMapper
                 {
                     packaging2extensionMapping = new HashMap<String, String>();
 
-                    // merge defaults
-                    packaging2extensionMapping.putAll( defaults );
+                    // merge DEFAULTS
+                    packaging2extensionMapping.putAll( DEFAULTS );
 
                     if ( propertiesFile != null && propertiesFile.exists() )
                     {
@@ -104,7 +103,7 @@ public class DefaultArtifactPackagingMapper
 
                         Properties userMappings = new Properties();
 
-                        try (FileInputStream fis= new FileInputStream( propertiesFile ))
+                        try ( FileInputStream fis = new FileInputStream( propertiesFile ) )
                         {
                             userMappings.load( fis );
 
@@ -112,28 +111,27 @@ public class DefaultArtifactPackagingMapper
                             {
                                 for ( Object key : userMappings.keySet() )
                                 {
-                                    packaging2extensionMapping.put( key.toString(),
-                                                                    userMappings.getProperty( key.toString() ) );
+                                    packaging2extensionMapping
+                                            .put( key.toString(), userMappings.getProperty( key.toString() ) );
                                 }
 
-                                getLogger().info(
-                                    propertiesFile.getAbsolutePath()
-                                        + " user artifact packaging mapping file contained "
-                                        + userMappings.keySet().size() + " mappings, applied them all succesfully." );
+                                getLogger().info( propertiesFile.getAbsolutePath() + " user artifact packaging "
+                                        + "mapping file contained " + userMappings.keySet().size() + " mappings, "
+                                        + "applied them all succesfully." );
                             }
                         }
                         catch ( IOException e )
                         {
-                            getLogger().warn(
-                                "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
+                            getLogger().warn( "Got IO exception during read of file: " + propertiesFile
+                                    .getAbsolutePath() );
                         }
 
                     }
                     else
                     {
-                        // make it silent if using defaults
-                        getLogger().debug(
-                            "User artifact packaging mappings file not found, will work with defaults..." );
+                        // make it silent if using DEFAULTS
+                        getLogger().debug( "User artifact packaging mappings file not found, will work with "
+                                + "DEFAULTS..." );
                     }
                 }
             }
@@ -149,7 +147,7 @@ public class DefaultArtifactPackagingMapper
 
     public Map<String, String> getDefaults()
     {
-        return defaults;
+        return DEFAULTS;
     }
 
     public String getExtensionForPackaging( String packaging )

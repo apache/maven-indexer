@@ -19,19 +19,19 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.List;
-
 import org.apache.maven.index.context.IndexingContext;
+
+import java.util.List;
 
 /**
  * This is a aggregated artifact info filter that performs AND operation (all filter has to accept the artifact info, if
  * one rejects, results is reject). It is implemented in "fail fast" way, as soon as some member ArtifactFilter rejects,
  * it will be rejected.
- * 
+ *
  * @author cstamas
  */
 public class AndMultiArtifactInfoFilter
-    extends AbstractMultiArtifactInfoFilter
+        extends AbstractMultiArtifactInfoFilter
 {
     public AndMultiArtifactInfoFilter( List<ArtifactInfoFilter> filters )
     {

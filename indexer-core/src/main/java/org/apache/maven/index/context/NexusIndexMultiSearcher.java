@@ -22,19 +22,17 @@ package org.apache.maven.index.context;
 import java.io.IOException;
 
 public class NexusIndexMultiSearcher
-    extends NexusIndexSearcher
+        extends NexusIndexSearcher
 {
     private final NexusIndexMultiReader nexusIndexMultiReader;
 
-    public NexusIndexMultiSearcher( final NexusIndexMultiReader reader )
-        throws IOException
+    public NexusIndexMultiSearcher( final NexusIndexMultiReader reader ) throws IOException
     {
         super( reader.acquire() );
         this.nexusIndexMultiReader = reader;
     }
 
-    public void release()
-        throws IOException
+    public void release() throws IOException
     {
         nexusIndexMultiReader.release();
     }

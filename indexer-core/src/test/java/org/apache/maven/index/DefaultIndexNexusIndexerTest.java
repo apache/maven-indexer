@@ -19,15 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -44,15 +35,23 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 public class DefaultIndexNexusIndexerTest
-    extends MinimalIndexNexusIndexerTest
+        extends MinimalIndexNexusIndexerTest
 {
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -61,8 +60,7 @@ public class DefaultIndexNexusIndexerTest
         assertNotNull( context.getTimestamp() );
     }
 
-    public void testPlugin()
-        throws Exception
+    public void testPlugin() throws Exception
     {
         // String term = "plugin";
         // String term = "maven-core-it-plugin";
@@ -107,8 +105,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( "tricky-params", goals.get( 13 ) );
     }
 
-    public void testPluginPackaging()
-        throws Exception
+    public void testPluginPackaging() throws Exception
     {
         Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-plugin" ) );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
@@ -116,8 +113,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( response.getResults().toString(), 2, response.getTotalHits() );
     }
 
-    public void testSearchArchetypes()
-        throws Exception
+    public void testSearchArchetypes() throws Exception
     {
         // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         // BooleanQuery bq = new BooleanQuery();
@@ -158,18 +154,17 @@ public class DefaultIndexNexusIndexerTest
         }
     }
 
-    public void testIndexTimestamp()
-        throws Exception
+    public void testIndexTimestamp() throws Exception
     {
-        final File targetDir = Files.createTempDirectory( "testIndexTimestamp").toFile();
+        final File targetDir = Files.createTempDirectory( "testIndexTimestamp" ).toFile();
         targetDir.deleteOnExit();
 
         final IndexPacker indexPacker = lookup( IndexPacker.class );
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            final IndexPackingRequest request =
-                new IndexPackingRequest( context, indexSearcher.getIndexReader(), targetDir );
+            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    targetDir );
             indexPacker.packIndex( request );
         }
         finally
@@ -183,11 +178,12 @@ public class DefaultIndexNexusIndexerTest
 
         Directory newIndexDir = FSDirectory.open( newIndex.toPath() );
 
-        IndexingContext newContext =
-            nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+        IndexingContext newContext = nexusIndexer
+                .addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
 
         final IndexUpdater indexUpdater = lookup( IndexUpdater.class );
-        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
+        indexUpdater.fetchAndUpdateIndex(
+                new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( context.getTimestamp().getTime(), newContext.getTimestamp().getTime() );
 
@@ -201,7 +197,7 @@ public class DefaultIndexNexusIndexerTest
         FlatSearchResponse response = nexusIndexer.searchFlat( request );
         Collection<ArtifactInfo> r = response.getResults();
 
-        System.out.println(r);
+        System.out.println( r );
 
         assertEquals( 2, r.size() );
 
@@ -223,12 +219,13 @@ public class DefaultIndexNexusIndexerTest
 
         newContext.close( false );
 
-        newIndexDir = FSDirectory.open( newIndex.toPath());
+        newIndexDir = FSDirectory.open( newIndex.toPath() );
 
-        newContext =
-            nexusIndexer.addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
+        newContext = nexusIndexer
+                .addIndexingContext( "test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS );
 
-        indexUpdater.fetchAndUpdateIndex( new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
+        indexUpdater.fetchAndUpdateIndex(
+                new IndexUpdateRequest( newContext, new DefaultIndexUpdater.FileFetcher( targetDir ) ) );
 
         assertEquals( timestamp, newContext.getTimestamp() );
 
@@ -237,8 +234,7 @@ public class DefaultIndexNexusIndexerTest
         assertFalse( new File( newIndex, "timestamp" ).exists() );
     }
 
-    public void testArchetype()
-        throws Exception
+    public void testArchetype() throws Exception
     {
         String term = "proptest";
 
@@ -253,16 +249,14 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( r.toString(), 1, r.size() );
     }
 
-    public void testArchetypePackaging()
-        throws Exception
+    public void testArchetypePackaging() throws Exception
     {
         Query query = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
         assertEquals( response.getResults().toString(), 4, response.getTotalHits() );
     }
 
-    public void testBrokenJar()
-        throws Exception
+    public void testBrokenJar() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED );
 
@@ -282,8 +276,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( null, ai.getClassNames() );
     }
 
-    public void testMissingPom()
-        throws Exception
+    public void testMissingPom() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED );
 

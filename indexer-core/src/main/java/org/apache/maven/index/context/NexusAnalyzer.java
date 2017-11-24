@@ -19,49 +19,46 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.Reader;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.AnalyzerWrapper;
-import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.CharTokenizer;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
 /**
  * A Nexus specific analyzer. Only difference from Lucene's SimpleAnalyzer is that we use LetterOrDigitTokenizer instead
  * of LowerCaseTokenizer. LetterOrDigitTokenizer does pretty much the same as LowerCaseTokenizer, it normalizes to lower
  * case letter, but it takes letters and numbers too (as opposed to LowerCaseTokenizer) as token chars.
- * 
+ *
  * @author Eugene Kuleshov
  * @author cstamas
  */
 public final class NexusAnalyzer
-    extends AnalyzerWrapper
+        extends AnalyzerWrapper
 {
     private static final Analyzer CLASS_NAMES_ANALYZER = new Analyzer()
-        {
+    {
         @Override
-        protected TokenStreamComponents createComponents(String fieldName)
+        protected TokenStreamComponents createComponents( String fieldName )
         {
-            return new TokenStreamComponents(new DeprecatedClassnamesTokenizer());
+            return new TokenStreamComponents( new DeprecatedClassnamesTokenizer() );
         }
     };
     private static final Analyzer LETTER_OR_DIGIT_ANALYZER = new Analyzer()
     {
         @Override
-        protected TokenStreamComponents createComponents(String filedName)
+        protected TokenStreamComponents createComponents( String filedName )
         {
-            return new TokenStreamComponents(new LetterOrDigitTokenizer());
+            return new TokenStreamComponents( new LetterOrDigitTokenizer() );
         }
     };
 
     public NexusAnalyzer()
     {
-        super(PER_FIELD_REUSE_STRATEGY);
+        super( PER_FIELD_REUSE_STRATEGY );
     }
 
     @Override
-    protected Analyzer getWrappedAnalyzer(String fieldName)
+    protected Analyzer getWrappedAnalyzer( String fieldName )
     {
         if ( JarFileContentsIndexCreator.FLD_CLASSNAMES_KW.getKey().equals( fieldName ) )
         {
@@ -77,7 +74,7 @@ public final class NexusAnalyzer
     // ==
 
     public static class NoopTokenizer
-        extends CharTokenizer
+            extends CharTokenizer
     {
         public NoopTokenizer()
         {
@@ -85,7 +82,7 @@ public final class NexusAnalyzer
         }
 
         @Override
-        protected boolean isTokenChar(int i)
+        protected boolean isTokenChar( int i )
         {
             return true;
         }
@@ -93,28 +90,28 @@ public final class NexusAnalyzer
 
     @Deprecated
     public static class DeprecatedClassnamesTokenizer
-        extends CharTokenizer
+            extends CharTokenizer
     {
         public DeprecatedClassnamesTokenizer()
         {
             super();
         }
-        
+
         @Override
-        protected boolean isTokenChar(int i)
+        protected boolean isTokenChar( int i )
         {
             return i != '\n';
         }
-        
+
         @Override
-        protected int normalize(int c)
+        protected int normalize( int c )
         {
-            return Character.toLowerCase(c);
+            return Character.toLowerCase( c );
         }
     }
 
     public static class LetterOrDigitTokenizer
-        extends CharTokenizer
+            extends CharTokenizer
     {
         public LetterOrDigitTokenizer()
         {
@@ -122,15 +119,15 @@ public final class NexusAnalyzer
         }
 
         @Override
-        protected boolean isTokenChar(int c)
+        protected boolean isTokenChar( int c )
         {
             return Character.isLetterOrDigit( c );
         }
 
         @Override
-        protected int normalize(int c)
+        protected int normalize( int c )
         {
-            return Character.toLowerCase(c);
+            return Character.toLowerCase( c );
         }
     }
 

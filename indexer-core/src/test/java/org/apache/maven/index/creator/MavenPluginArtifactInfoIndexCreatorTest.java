@@ -19,45 +19,42 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.AbstractTestSupport;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author juven
  */
 public class MavenPluginArtifactInfoIndexCreatorTest
-    extends AbstractTestSupport
+        extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 
     @Override
-    public void setUp()
-        throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
 
         indexCreator = this.lookup( IndexCreator.class, MavenPluginArtifactInfoIndexCreator.ID );
     }
 
-    public void testMavenPluginInfo()
-        throws Exception
+    public void testMavenPluginInfo() throws Exception
     {
-        File artifact =
-            new File( getBasedir(),
-                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar" );
+        File artifact = new File( getBasedir(),
+                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin"
+                        + "-2.0.jar" );
 
-        File pom =
-            new File( getBasedir(),
-                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom" );
+        File pom = new File( getBasedir(), "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin"
+                + "/2.0/maven-dependency-plugin-2.0.pom" );
 
-        ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null, "jar" );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "org.apache.maven.plugins", "maven-dependency-plugin",
+                "2.0", null, "jar" );
 
         artifactInfo.setPackaging( "maven-plugin" );
         artifactInfo.setFileExtension( "jar" );

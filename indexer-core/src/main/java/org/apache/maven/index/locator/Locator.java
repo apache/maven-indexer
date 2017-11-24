@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * An artifact locator used to locate repository "elements" relative to some file.
- * 
+ *
  * @author Jason van Zyl
  */
 public interface Locator

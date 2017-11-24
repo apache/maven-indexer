@@ -19,9 +19,20 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.maven.index.context.DocumentFilter;
+import org.apache.maven.index.context.IndexingContext;
+import org.codehaus.plexus.util.FileUtils;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.DefaultHandler;
+import org.mortbay.jetty.handler.HandlerList;
+import org.mortbay.jetty.handler.ResourceHandler;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,23 +43,8 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.lucene.document.Document;
-import org.apache.maven.index.context.DocumentFilter;
-import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.util.FileUtils;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Response;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
-
 public class DownloadRemoteIndexerManagerTest
-    extends AbstractIndexUpdaterTest
+        extends AbstractIndexUpdaterTest
 {
     private Server server;
 
@@ -57,8 +53,7 @@ public class DownloadRemoteIndexerManagerTest
     private IndexingContext centralContext;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -76,30 +71,28 @@ public class DownloadRemoteIndexerManagerTest
         {
             @Override
             public void handle( String target, HttpServletRequest request, HttpServletResponse response, int dispatch )
-                throws IOException, ServletException
+                    throws IOException, ServletException
             {
-//                System.out.print( "JETTY: " + target );
+                //                System.out.print( "JETTY: " + target );
                 super.handle( target, request, response, dispatch );
-//                System.out.println( "  ::  " + ( (Response) response ).getStatus() );
+                //                System.out.println( "  ::  " + ( (Response) response ).getStatus() );
             }
         };
         resource_handler.setResourceBase( fakeCentral.getAbsolutePath() );
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers( new Handler[] { resource_handler, new DefaultHandler() } );
+        handlers.setHandlers( new Handler[] {resource_handler, new DefaultHandler()} );
         server.setHandler( handlers );
 
-//        System.out.print( "JETTY Started on port: " + port );
+        //        System.out.print( "JETTY Started on port: " + port );
         server.start();
 
         // make context "fake central"
-        centralContext =
-            indexer.addIndexingContext( "central", "central", fakeCentral, getDirectory( "central" ),
+        centralContext = indexer.addIndexingContext( "central", "central", fakeCentral, getDirectory( "central" ),
                 "http://localhost:" + port, null, MIN_CREATORS );
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         server.stop();
 
@@ -108,8 +101,7 @@ public class DownloadRemoteIndexerManagerTest
         super.tearDown();
     }
 
-    public void testRepoReindex()
-        throws Exception
+    public void testRepoReindex() throws Exception
     {
         IndexUpdateRequest iur;
 
@@ -120,8 +112,8 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext,
+                new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
@@ -131,8 +123,8 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 01
         overwriteIndex( index1, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext,
+                new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
         // just a dummy filter to invoke filtering! -- this is what I broke unnoticing it
         iur.setDocumentFilter( new DocumentFilter()
@@ -141,7 +133,7 @@ public class DownloadRemoteIndexerManagerTest
             {
                 return true;
             }
-        });
+        } );
 
         updater.fetchAndUpdateIndex( iur );
 
@@ -150,8 +142,8 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext,
+                new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
@@ -159,8 +151,7 @@ public class DownloadRemoteIndexerManagerTest
         searchFor( "org.sonatype.nexus", 8, centralContext );
     }
 
-    private void overwriteIndex( File source, File destination )
-        throws Exception
+    private void overwriteIndex( File source, File destination ) throws Exception
     {
         File indexFile = new File( destination, "nexus-maven-repository-index.gz" );
         File indexProperties = new File( destination, "nexus-maven-repository-index.properties" );
@@ -176,7 +167,7 @@ public class DownloadRemoteIndexerManagerTest
         assertTrue( lastMod < lastMod2 );
 
         Properties p = new Properties();
-        try (InputStream input = Files.newInputStream( indexProperties.toPath() ))
+        try ( InputStream input = Files.newInputStream( indexProperties.toPath() ) )
         {
             p.load( input );
         }
@@ -184,7 +175,7 @@ public class DownloadRemoteIndexerManagerTest
         p.setProperty( "nexus.index.time", format( new Date() ) );
         p.setProperty( "nexus.index.timestamp", format( new Date() ) );
 
-        try (OutputStream output = Files.newOutputStream( indexProperties.toPath() ))
+        try ( OutputStream output = Files.newOutputStream( indexProperties.toPath() ) )
         {
             p.store( output, null );
         }

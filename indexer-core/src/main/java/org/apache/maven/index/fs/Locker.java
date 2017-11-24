@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * Filesystem locker. Can be used to synchronize access to filesystem directories from different operating system
  * processes.
- * 
+ *
  * @author igor
  */
 public interface Locker
@@ -36,6 +36,5 @@ public interface Locker
      * Acquires exclusive lock on specified directory. Most implementation will use marker file and will only work if
      * all processes that require access to the directory use the same filename.
      */
-    Lock lock( File directory )
-        throws IOException;
+    Lock lock( File directory ) throws IOException;
 }

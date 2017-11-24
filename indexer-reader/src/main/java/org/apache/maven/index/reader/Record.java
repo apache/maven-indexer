@@ -50,7 +50,7 @@ public final class Record
 
         public T coerce( final Object object )
         {
-            return (T) proto.cast( object );
+            return ( T ) proto.cast( object );
         }
 
         @Override
@@ -64,7 +64,7 @@ public final class Record
             {
                 return false;
             }
-            EntryKey entryKey = (EntryKey) o;
+            EntryKey entryKey = ( EntryKey ) o;
             return name.equals( entryKey.name );
         }
 
@@ -194,8 +194,8 @@ public final class Record
      * Key of OSGi "Bundle-SymbolicName" manifest entry, that contains {@link String}. Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_BUNDLE_SYMBOLIC_NAME =
-        new EntryKey<String>( "Bundle-SymbolicName", String.class );
+    public static final EntryKey<String> OSGI_BUNDLE_SYMBOLIC_NAME = new EntryKey<String>( "Bundle-SymbolicName",
+            String.class );
 
     /**
      * Key of OSGi "Bundle-Version" manifest entry, that contains {@link String}. Extracted by {@code
@@ -219,8 +219,8 @@ public final class Record
      * Key of OSGi "Bundle-Description" manifest entry, that contains {@link String}. Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_BUNDLE_DESCRIPTION =
-        new EntryKey<String>( "Bundle-Description", String.class );
+    public static final EntryKey<String> OSGI_BUNDLE_DESCRIPTION = new EntryKey<String>( "Bundle-Description",
+            String.class );
 
     /**
      * Key of OSGi "Bundle-Name" manifest entry, that contains {@link String}. Extracted by {@code
@@ -256,15 +256,15 @@ public final class Record
      * Key of OSGi "Provide-Capability" manifest entry, that contains {@link String}. Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_PROVIDE_CAPABILITY =
-        new EntryKey<String>( "Provide-Capability", String.class );
+    public static final EntryKey<String> OSGI_PROVIDE_CAPABILITY = new EntryKey<String>( "Provide-Capability",
+            String.class );
 
     /**
      * Key of OSGi "Require-Capability" manifest entry, that contains {@link String}. Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_REQUIRE_CAPABILITY =
-        new EntryKey<String>( "Require-Capability", String.class );
+    public static final EntryKey<String> OSGI_REQUIRE_CAPABILITY = new EntryKey<String>( "Require-Capability",
+            String.class );
 
     /**
      * Key of OSGi "Fragment-Host" manifest entry, that contains {@link String}. Extracted by {@code
@@ -273,11 +273,12 @@ public final class Record
     public static final EntryKey<String> OSGI_FRAGMENT_HOST = new EntryKey<String>( "Fragment-Host", String.class );
 
     /**
-     * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}. Extracted by {@code
+     * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}.
+     * Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_BREE =
-        new EntryKey<String>( "Bundle-RequiredExecutionEnvironment", String.class );
+    public static final EntryKey<String> OSGI_BREE = new EntryKey<String>( "Bundle-RequiredExecutionEnvironment",
+            String.class );
 
     /**
      * Key for SHA-256 checksum  needed for OSGI content capability that contains {@link String}. Extracted by {@code
@@ -327,7 +328,8 @@ public final class Record
         ARTIFACT_ADD,
 
         /**
-         * Artifact REMOVE record. In case of incremental updates, signals that this artifact was removed. Records of this
+         * Artifact REMOVE record. In case of incremental updates, signals that this artifact was removed. Records of
+         * this
          * type should be removed from your indexing system.
          * Contains following entries:
          * <ul>
@@ -352,7 +354,8 @@ public final class Record
         ALL_GROUPS,
 
         /**
-         * Special record, containing all the root groups of Maven "groupId"s that are enlisted on the index. Can be safely
+         * Special record, containing all the root groups of Maven "groupId"s that are enlisted on the index. Can be
+         * safely
          * ignored.
          * Contains following entries:
          * <ul>
@@ -373,7 +376,8 @@ public final class Record
     }
 
     /**
-     * Returns the {@link Type} of this record. Usually users would be interested in {@link Type#ARTIFACT_ADD} and {@link
+     * Returns the {@link Type} of this record. Usually users would be interested in {@link Type#ARTIFACT_ADD} and
+     * {@link
      * Type#ARTIFACT_REMOVE} types only to maintain their own index. Still, indexer offers extra records too, see {@link
      * Type} for all existing types.
      */

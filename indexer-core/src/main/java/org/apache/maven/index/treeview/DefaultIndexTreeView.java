@@ -19,15 +19,6 @@ package org.apache.maven.index.treeview;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -41,10 +32,19 @@ import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.treeview.TreeNode.Type;
 import org.codehaus.plexus.util.StringUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 @Singleton
 @Named
 public class DefaultIndexTreeView
-    implements IndexTreeView
+        implements IndexTreeView
 {
 
     private final Indexer indexer;
@@ -61,8 +61,7 @@ public class DefaultIndexTreeView
         return indexer;
     }
 
-    public TreeNode listNodes( TreeViewRequest request )
-        throws IOException
+    public TreeNode listNodes( TreeViewRequest request ) throws IOException
     {
         // get the last path elem
         String name = null;
@@ -112,8 +111,8 @@ public class DefaultIndexTreeView
                 {
                     if ( group.length() > 0 )
                     {
-                        result.getChildren().add(
-                            request.getFactory().createGNode( this, request, request.getPath() + group + "/", group ) );
+                        result.getChildren().add( request.getFactory()
+                                .createGNode( this, request, request.getPath() + group + "/", group ) );
                     }
                 }
             }
@@ -134,8 +133,7 @@ public class DefaultIndexTreeView
      * @param allGroups
      * @throws IOException
      */
-    protected void listChildren( TreeNode root, TreeViewRequest request, Set<String> allGroups )
-        throws IOException
+    protected void listChildren( TreeNode root, TreeViewRequest request, Set<String> allGroups ) throws IOException
     {
         String path = root.getPath();
 
@@ -188,16 +186,14 @@ public class DefaultIndexTreeView
                             groupResource = folders.get( groupKey );
 
                             // it needs to be created only if not found (is null) and is _below_ groupParentResource
-                            if ( groupResource == null
-                                && groupParentResource.getPath().length() < getPathForAi( ai, MAVEN.GROUP_ID ).length() )
+                            if ( groupResource == null && groupParentResource.getPath().length() < getPathForAi( ai,
+                                    MAVEN.GROUP_ID ).length() )
                             {
-                                String gNodeName =
-                                    partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
-                                        partialGroupId.lastIndexOf( '.' ) + 1, partialGroupId.length() )
+                                String gNodeName = partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId
+                                        .substring( partialGroupId.lastIndexOf( '.' ) + 1, partialGroupId.length() )
                                         : partialGroupId;
 
-                                groupResource =
-                                    request.getFactory().createGNode( this, request,
+                                groupResource = request.getFactory().createGNode( this, request,
                                         "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
 
                                 groupParentResource.getChildren().add( groupResource );
@@ -218,16 +214,16 @@ public class DefaultIndexTreeView
                             }
                         }
 
-                        artifactResource =
-                            request.getFactory().createANode( this, request, ai, getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+                        artifactResource = request.getFactory()
+                                .createANode( this, request, ai, getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
 
                         groupParentResource.getChildren().add( artifactResource );
 
                         folders.put( artifactKey, artifactResource );
                     }
 
-                    versionResource =
-                        request.getFactory().createVNode( this, request, ai, getPathForAi( ai, MAVEN.VERSION ) );
+                    versionResource = request.getFactory()
+                            .createVNode( this, request, ai, getPathForAi( ai, MAVEN.VERSION ) );
 
                     artifactResource.getChildren().add( versionResource );
 
@@ -236,8 +232,8 @@ public class DefaultIndexTreeView
 
                 String nodePath = getPathForAi( ai, null );
 
-                versionResource.getChildren().add(
-                    request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
+                versionResource.getChildren()
+                        .add( request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
             }
         }
         finally
@@ -273,7 +269,7 @@ public class DefaultIndexTreeView
      * Builds a path out from ArtifactInfo. The field parameter controls "how deep" the path goes. Possible values are
      * MAVEN.GROUP_ID (builds a path from groupId only), MAVEN.ARTIFACT_ID (builds a path from groupId + artifactId),
      * MAVEN.VERSION (builds a path up to version) or anything else (including null) will build "full" artifact path.
-     * 
+     *
      * @param ai
      * @param field
      * @return path
@@ -349,8 +345,7 @@ public class DefaultIndexTreeView
         return result;
     }
 
-    protected IteratorSearchResponse getArtifacts( TreeNode root, TreeViewRequest request )
-        throws IOException
+    protected IteratorSearchResponse getArtifacts( TreeNode root, TreeViewRequest request ) throws IOException
     {
         if ( request.hasFieldHints() )
         {
@@ -452,19 +447,18 @@ public class DefaultIndexTreeView
         return IteratorSearchResponse.empty( result.getQuery() );
     }
 
-    protected IteratorSearchResponse getHintedArtifacts( TreeNode root, TreeViewRequest request )
-        throws IOException
+    protected IteratorSearchResponse getHintedArtifacts( TreeNode root, TreeViewRequest request ) throws IOException
     {
         // we know that hints are there: G hint, GA hint or GAV hint
         if ( request.hasFieldHint( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID, MAVEN.VERSION ) )
         {
-            return getArtifactsByGAV( request.getFieldHint( MAVEN.GROUP_ID ),
-                request.getFieldHint( MAVEN.ARTIFACT_ID ), request.getFieldHint( MAVEN.VERSION ), request );
+            return getArtifactsByGAV( request.getFieldHint( MAVEN.GROUP_ID ), request.getFieldHint( MAVEN.ARTIFACT_ID ),
+                    request.getFieldHint( MAVEN.VERSION ), request );
         }
         else if ( request.hasFieldHint( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) )
         {
             return getArtifactsByGA( request.getFieldHint( MAVEN.GROUP_ID ), request.getFieldHint( MAVEN.ARTIFACT_ID ),
-                request );
+                    request );
         }
         else if ( request.hasFieldHint( MAVEN.GROUP_ID ) )
         {
@@ -477,26 +471,24 @@ public class DefaultIndexTreeView
         }
     }
 
-    protected IteratorSearchResponse getArtifactsByG( String g, TreeViewRequest request )
-        throws IOException
+    protected IteratorSearchResponse getArtifactsByG( String g, TreeViewRequest request ) throws IOException
     {
         return getArtifactsByGAVField( g, null, null, request );
     }
 
-    protected IteratorSearchResponse getArtifactsByGA( String g, String a, TreeViewRequest request )
-        throws IOException
+    protected IteratorSearchResponse getArtifactsByGA( String g, String a, TreeViewRequest request ) throws IOException
     {
         return getArtifactsByGAVField( g, a, null, request );
     }
 
     protected IteratorSearchResponse getArtifactsByGAV( String g, String a, String v, TreeViewRequest request )
-        throws IOException
+            throws IOException
     {
         return getArtifactsByGAVField( g, a, v, request );
     }
 
     protected IteratorSearchResponse getArtifactsByGAVField( String g, String a, String v, TreeViewRequest request )
-        throws IOException
+            throws IOException
     {
         assert g != null;
 

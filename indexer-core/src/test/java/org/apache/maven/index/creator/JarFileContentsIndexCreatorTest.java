@@ -19,32 +19,30 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
-import java.io.File;
-
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.AbstractTestSupport;
+
+import java.io.File;
 
 /**
  * @author Alin Dreghiciu
  */
 public class JarFileContentsIndexCreatorTest
-    extends AbstractTestSupport
+        extends AbstractTestSupport
 {
     protected IndexCreator indexCreator;
 
     @Override
-    public void setUp()
-        throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
 
         indexCreator = this.lookup( IndexCreator.class, "jarContent" );
     }
 
-    public void test_nexus_2318_indexJarWithClasses()
-        throws Exception
+    public void test_nexus_2318_indexJarWithClasses() throws Exception
     {
         File artifact = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar" );
 
@@ -59,11 +57,10 @@ public class JarFileContentsIndexCreatorTest
         assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
-    public void test_nexus_2318_indexJarWithSources()
-        throws Exception
+    public void test_nexus_2318_indexJarWithSources() throws Exception
     {
-        File artifact =
-            new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar" );
+        File artifact = new File( getBasedir(),
+                "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar" );
 
         File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
@@ -76,27 +73,25 @@ public class JarFileContentsIndexCreatorTest
         assertNull( "Classes should be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
-    public void testMindexer35ScanWar()
-        throws Exception
+    public void testMindexer35ScanWar() throws Exception
     {
-        File artifact =
-            new File( getBasedir(),
-                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.war" );
+        File artifact = new File( getBasedir(),
+                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT"
+                        + ".war" );
 
-        File pom =
-            new File( getBasedir(),
-                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom" );
+        File pom = new File( getBasedir(), "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0"
+                + "-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom" );
 
-        ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.maven.indexer.test", "sample-war", "1.0-SNAPSHOT", null, "war" );
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "org.apache.maven.indexer.test", "sample-war",
+                "1.0-SNAPSHOT", null, "war" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
         indexCreator.populateArtifactInfo( artifactContext );
 
         assertTrue( "Classes should contain WebappClass",
-            artifactContext.getArtifactInfo().getClassNames().contains( "WebappClass" ) );
-        assertEquals( "WebappClass should have proper package",
-            "/org/apache/maven/indexer/samples/webapp/WebappClass", artifactContext.getArtifactInfo().getClassNames() );
+                artifactContext.getArtifactInfo().getClassNames().contains( "WebappClass" ) );
+        assertEquals( "WebappClass should have proper package", "/org/apache/maven/indexer/samples/webapp/WebappClass",
+                artifactContext.getArtifactInfo().getClassNames() );
     }
 }

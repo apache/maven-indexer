@@ -23,11 +23,11 @@ import java.io.File;
 
 /**
  * An sha1 locator to locate the sha1 file relative to POM.
- * 
+ *
  * @author Jason van Zyl
  */
 public class Sha1Locator
-    implements Locator
+        implements Locator
 {
     public File locate( File source )
     {

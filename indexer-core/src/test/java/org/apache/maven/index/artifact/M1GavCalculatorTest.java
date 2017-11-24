@@ -19,32 +19,27 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import junit.framework.TestCase;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.M1GavCalculator;
-
-import junit.framework.TestCase;
-
 public class M1GavCalculatorTest
-    extends TestCase
+        extends TestCase
 {
     private M1GavCalculator gavCalculator;
 
     private SimpleDateFormat formatter = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
 
     @Override
-    public void setUp()
-        throws Exception
+    public void setUp() throws Exception
     {
         super.setUp();
 
         gavCalculator = new M1GavCalculator();
     }
 
-    protected Long parseTimestamp( String timeStamp )
-        throws ParseException
+    protected Long parseTimestamp( String timeStamp ) throws ParseException
     {
         if ( timeStamp == null )
         {
@@ -56,8 +51,7 @@ public class M1GavCalculatorTest
         }
     }
 
-    public void testGav()
-        throws Exception
+    public void testGav() throws Exception
     {
         Gav gav = gavCalculator.pathToGav( "/org.jruby/javadocs/jruby-1.0RC1-SNAPSHOT-javadoc.jar" );
 
@@ -260,8 +254,7 @@ public class M1GavCalculatorTest
         assertEquals( "/xpp3/poms/xpp3_min-1.1.3.4.O.pom", path );
     }
 
-    public void testNEXUS1336()
-        throws Exception
+    public void testNEXUS1336() throws Exception
     {
         Gav gav = gavCalculator.pathToGav( "/castor/ejbs/castor-ejb-1.0.7-SNAPSHOT-client.jar" );
 
@@ -336,8 +329,7 @@ public class M1GavCalculatorTest
         assertEquals( "/castor/ejbs/castor-ejb-1.0.7-client.jar", path );
     }
 
-    public void testGavExtreme()
-        throws Exception
+    public void testGavExtreme() throws Exception
     {
         Gav gav = gavCalculator.pathToGav( "/" );
         assertEquals( null, gav );

@@ -19,30 +19,30 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.lucene.search.Query;
-
-/** http://issues.sonatype.org/browse/NEXUS-13 */
+/**
+ * http://issues.sonatype.org/browse/NEXUS-13
+ */
 public class Nexus658NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-658" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testSearchFlat()
-        throws Exception
+    public void testSearchFlat() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org.sonatype.nexus", SearchType.SCORED );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );

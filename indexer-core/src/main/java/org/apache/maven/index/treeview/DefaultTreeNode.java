@@ -21,15 +21,15 @@ package org.apache.maven.index.treeview;
 
 /**
  * The simplest treenode, that does not adds any "decoration" to the nodes.
- * 
+ *
  * @author Tamas Cservenak
  */
 public class DefaultTreeNode
-    extends AbstractTreeNode
+        extends AbstractTreeNode
 {
     /**
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation.
-     * 
+     *
      * @param tview
      * @param factory
      */

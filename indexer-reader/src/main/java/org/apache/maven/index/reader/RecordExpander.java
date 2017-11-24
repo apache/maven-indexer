@@ -65,7 +65,7 @@ public class RecordExpander
                 final String[] splitInfo = FS_PATTERN.split( info );
                 if ( splitInfo.length > 6 )
                 {
-                    final String extension = splitInfo[6];
+                    final String extension = splitInfo[ 6 ];
                     if ( uinfo.endsWith( FIELD_SEPARATOR + NOT_AVAILABLE ) )
                     {
                         recordMap.put( UINFO, uinfo + FIELD_SEPARATOR + extension );
@@ -80,7 +80,7 @@ public class RecordExpander
     {
         final Record result = new Record( Type.DESCRIPTOR, new HashMap<EntryKey, Object>() );
         String[] r = FS_PATTERN.split( raw.get( "IDXINFO" ) );
-        result.put( Record.REPOSITORY_ID, r[1] );
+        result.put( Record.REPOSITORY_ID, r[ 1 ] );
         return result;
     }
 
@@ -122,21 +122,21 @@ public class RecordExpander
         if ( info != null )
         {
             String[] r = FS_PATTERN.split( info );
-            result.put( Record.PACKAGING, renvl( r[0] ) );
-            result.put( Record.FILE_MODIFIED, Long.valueOf( r[1] ) );
-            result.put( Record.FILE_SIZE, Long.valueOf( r[2] ) );
-            result.put( Record.HAS_SOURCES, "1".equals( r[3] ) ? Boolean.TRUE : Boolean.FALSE );
-            result.put( Record.HAS_JAVADOC, "1".equals( r[4] ) ? Boolean.TRUE : Boolean.FALSE );
-            result.put( Record.HAS_SIGNATURE, "1".equals( r[5] ) ? Boolean.TRUE : Boolean.FALSE );
+            result.put( Record.PACKAGING, renvl( r[ 0 ] ) );
+            result.put( Record.FILE_MODIFIED, Long.valueOf( r[ 1 ] ) );
+            result.put( Record.FILE_SIZE, Long.valueOf( r[ 2 ] ) );
+            result.put( Record.HAS_SOURCES, "1".equals( r[ 3 ] ) ? Boolean.TRUE : Boolean.FALSE );
+            result.put( Record.HAS_JAVADOC, "1".equals( r[ 4 ] ) ? Boolean.TRUE : Boolean.FALSE );
+            result.put( Record.HAS_SIGNATURE, "1".equals( r[ 5 ] ) ? Boolean.TRUE : Boolean.FALSE );
             if ( r.length > 6 )
             {
-                result.put( Record.FILE_EXTENSION, r[6] );
+                result.put( Record.FILE_EXTENSION, r[ 6 ] );
             }
             else
             {
                 final String packaging = Record.PACKAGING.coerce( result.get( Record.PACKAGING ) );
                 if ( result.containsKey( Record.CLASSIFIER ) || "pom".equals( packaging ) || "war".equals( packaging )
-                    || "ear".equals( packaging ) )
+                        || "ear".equals( packaging ) )
                 {
                     result.put( Record.FILE_EXTENSION, packaging );
                 }
@@ -186,21 +186,21 @@ public class RecordExpander
         if ( uinfo != null )
         {
             String[] r = FS_PATTERN.split( uinfo );
-            result.put( Record.GROUP_ID, r[0] );
-            result.put( Record.ARTIFACT_ID, r[1] );
-            result.put( Record.VERSION, r[2] );
-            String classifier = renvl( r[3] );
+            result.put( Record.GROUP_ID, r[ 0 ] );
+            result.put( Record.ARTIFACT_ID, r[ 1 ] );
+            result.put( Record.VERSION, r[ 2 ] );
+            String classifier = renvl( r[ 3 ] );
             if ( classifier != null )
             {
                 result.put( Record.CLASSIFIER, classifier );
                 if ( r.length > 4 )
                 {
-                    result.put( Record.FILE_EXTENSION, r[4] );
+                    result.put( Record.FILE_EXTENSION, r[ 4 ] );
                 }
             }
             else if ( r.length > 4 )
             {
-                result.put( Record.PACKAGING, r[4] );
+                result.put( Record.PACKAGING, r[ 4 ] );
             }
         }
     }

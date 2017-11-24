@@ -26,14 +26,13 @@ import org.apache.maven.index.SearchType;
  * CLI). It will be normalized and tokenized and then a search will happen against it. Search expressions of this type
  * will always provide "broader" (scored, not exact) results, since it defaults to prefix searches and assumes
  * "non complete" input.
- * 
+ *
  * @author cstamas
  */
 public class UserInputSearchExpression
-    extends SearchTypedStringSearchExpression
+        extends SearchTypedStringSearchExpression
 {
-    public UserInputSearchExpression( final String expression )
-        throws IllegalArgumentException
+    public UserInputSearchExpression( final String expression ) throws IllegalArgumentException
     {
         super( expression, SearchType.SCORED );
     }

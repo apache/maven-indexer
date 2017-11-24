@@ -23,7 +23,7 @@ import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
 
 public class TransferListenerFixture
-    implements TransferListener
+        implements TransferListener
 {
     private static final int ONE_CHUNK = 64;
 
@@ -73,8 +73,8 @@ public class TransferListenerFixture
 
     public void transferCompleted( final TransferEvent transferEvent )
     {
-        System.out.println( "\nCompleted transfer: " + transferEvent.getResource().getName() + " ("
-            + (double) ( count / ONE_CHUNK ) + " chunks of size: " + ONE_CHUNK + " bytes)" );
+        System.out.println( "\nCompleted transfer: " + transferEvent.getResource().getName() + " (" + ( double ) ( count
+                / ONE_CHUNK ) + " chunks of size: " + ONE_CHUNK + " bytes)" );
     }
 
     public void debug( final String message )

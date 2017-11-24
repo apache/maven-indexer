@@ -21,7 +21,7 @@ package org.apache.maven.index.artifact;
 
 /**
  * An immutable value class representing unique artifact coordinates.
- * 
+ *
  * @author cstamas
  * @author jvanzyl
  */
@@ -269,7 +269,7 @@ public class Gav
             return false;
         }
 
-        Gav other = (Gav) obj;
+        Gav other = ( Gav ) obj;
 
         if ( groupId == null )
         {

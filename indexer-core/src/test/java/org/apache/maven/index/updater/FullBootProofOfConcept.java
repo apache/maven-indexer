@@ -19,12 +19,6 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -38,13 +32,18 @@ import org.codehaus.plexus.PlexusContainerException;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.FileUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 public class FullBootProofOfConcept
 {
 
     private static final int ONE_MEGABYTE = 1024 * 1024;
 
-    public static void main( final String[] args )
-        throws IOException
+    public static void main( final String[] args ) throws IOException
     {
         for ( int i = 0; i < 1; i++ )
         {
@@ -89,8 +88,8 @@ public class FullBootProofOfConcept
     }
 
     public static void run( final File basedir )
-        throws IOException, ComponentLookupException, PlexusContainerException, ParseException,
-        UnsupportedExistingLuceneIndexException
+            throws IOException, ComponentLookupException, PlexusContainerException, ParseException,
+            UnsupportedExistingLuceneIndexException
     {
         try
         {
@@ -118,9 +117,8 @@ public class FullBootProofOfConcept
         // String repositoryUrl = "http://repository.sonatype.org/content/groups/sonatype/";
         String indexUrl = repositoryUrl + ".index";
 
-        IndexingContext ctx =
-            new DefaultIndexingContext( repositoryId, repositoryId, basedir, basedir, repositoryUrl, indexUrl,
-                creators, true );
+        IndexingContext ctx = new DefaultIndexingContext( repositoryId, repositoryId, basedir, basedir, repositoryUrl,
+                indexUrl, creators, true );
 
         // craft the Wagon based Resource
 
@@ -173,8 +171,9 @@ public class FullBootProofOfConcept
 
             public void transferCompleted( final TransferEvent transferEvent )
             {
-                System.out.println( "\nCompleted transfer: " + transferEvent.getResource().getName() + " ("
-                    + (double) ( count / ONE_MEGABYTE ) + " MB)" );
+                System.out.println(
+                        "\nCompleted transfer: " + transferEvent.getResource().getName() + " (" + ( double ) ( count
+                                / ONE_MEGABYTE ) + " MB)" );
             }
 
             public void debug( final String message )

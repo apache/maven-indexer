@@ -21,7 +21,7 @@ package org.apache.maven.index;
 
 /**
  * An abstraction for scanning content of the artifact repositories
- * 
+ *
  * @author Jason van Zyl
  */
 public interface Scanner

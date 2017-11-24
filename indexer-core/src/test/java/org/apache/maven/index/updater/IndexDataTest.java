@@ -19,14 +19,6 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
@@ -38,25 +30,30 @@ import org.apache.maven.index.AbstractRepoNexusIndexerTest;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexUtils;
-import org.apache.maven.index.updater.DefaultIndexUpdater;
-import org.apache.maven.index.updater.IndexDataWriter;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author Eugene Kuleshov
  */
 public class IndexDataTest
-    extends AbstractRepoNexusIndexerTest
+        extends AbstractRepoNexusIndexerTest
 {
     private Directory newDir;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         indexDir = new RAMDirectory();
 
-        context =
-            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         // assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -75,7 +72,8 @@ public class IndexDataTest
         try
         {
             dw.write( context, indexSearcher.getIndexReader(), null );
-        } finally
+        }
+        finally
         {
             context.releaseIndexSearcher( indexSearcher );
         }
@@ -91,13 +89,12 @@ public class IndexDataTest
         context.replace( newDir );
     }
 
-    public void testEmptyContext()
-        throws Exception
+    public void testEmptyContext() throws Exception
     {
         indexDir = new RAMDirectory();
 
-        context =
-            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
 
         assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -112,7 +109,8 @@ public class IndexDataTest
         try
         {
             dw.write( context, indexSearcher.getIndexReader(), null );
-        }finally
+        }
+        finally
         {
             context.releaseIndexSearcher( indexSearcher );
         }
@@ -128,8 +126,7 @@ public class IndexDataTest
         context.replace( newDir );
     }
 
-    public void testData()
-        throws Exception
+    public void testData() throws Exception
     {
         IndexReader r1 = context.acquireIndexSearcher().getIndexReader();
 
@@ -148,8 +145,7 @@ public class IndexDataTest
         assertEquals( r1map.size(), r2map.size() );
     }
 
-    private Map<String, ArtifactInfo> readIndex( IndexReader r1 )
-        throws CorruptIndexException, IOException
+    private Map<String, ArtifactInfo> readIndex( IndexReader r1 ) throws CorruptIndexException, IOException
     {
         Map<String, ArtifactInfo> map = new HashMap<String, ArtifactInfo>();
 

@@ -19,20 +19,20 @@ package org.apache.maven.index.search.grouping;
  * under the License.
  */
 
-import java.util.Comparator;
-import java.util.Map;
-
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.ArtifactInfoGroup;
 import org.apache.maven.index.Grouping;
 
+import java.util.Comparator;
+import java.util.Map;
+
 /**
  * An abstract {@link Grouping} implementation.
- * 
+ *
  * @author Tamas Cservenak
  */
 public abstract class AbstractGrouping
-    implements Grouping
+        implements Grouping
 {
     private Comparator<ArtifactInfo> comparator;
 

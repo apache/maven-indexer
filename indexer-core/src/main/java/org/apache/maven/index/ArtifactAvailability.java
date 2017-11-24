@@ -41,7 +41,7 @@ public enum ArtifactAvailability
 
     private final int n;
 
-    private ArtifactAvailability( int n )
+    ArtifactAvailability( int n )
     {
         this.n = n;
     }

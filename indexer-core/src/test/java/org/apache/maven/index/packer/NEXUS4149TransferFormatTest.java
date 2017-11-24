@@ -19,16 +19,7 @@ package org.apache.maven.index.packer;
  * under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-
 import junit.framework.Assert;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.AbstractNexusIndexerTest;
@@ -40,60 +31,64 @@ import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.IndexDataReader;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
+
 public class NEXUS4149TransferFormatTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File reposBase = new File( getBasedir(), "src/test/nexus-4149" );
 
     protected File idxsBase = new File( getBasedir(), "target/index/nexus-4149" );
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
     }
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        IndexingContext ctx1 =
-            nexusIndexer.addIndexingContext( "repo1", "repo1", new File( reposBase, "repo1" ), new File( idxsBase,
-                "repo1" ), null, null, MIN_CREATORS );
+        IndexingContext ctx1 = nexusIndexer
+                .addIndexingContext( "repo1", "repo1", new File( reposBase, "repo1" ), new File( idxsBase, "repo1" ),
+                        null, null, MIN_CREATORS );
         nexusIndexer.scan( ctx1 );
 
-        IndexingContext ctx2 =
-            nexusIndexer.addIndexingContext( "repo2", "repo2", new File( reposBase, "repo2" ), new File( idxsBase,
-                "repo2" ), null, null, MIN_CREATORS );
+        IndexingContext ctx2 = nexusIndexer
+                .addIndexingContext( "repo2", "repo2", new File( reposBase, "repo2" ), new File( idxsBase, "repo2" ),
+                        null, null, MIN_CREATORS );
         nexusIndexer.scan( ctx2 );
 
-        IndexingContext ctx3 =
-            nexusIndexer.addIndexingContext( "repo3", "repo3", new File( reposBase, "repo3" ), new File( idxsBase,
-                "repo3" ), null, null, MIN_CREATORS );
+        IndexingContext ctx3 = nexusIndexer
+                .addIndexingContext( "repo3", "repo3", new File( reposBase, "repo3" ), new File( idxsBase, "repo3" ),
+                        null, null, MIN_CREATORS );
         nexusIndexer.scan( ctx3 );
 
-        IndexingContext ctx4 =
-            nexusIndexer.addIndexingContext( "repo4", "repo4", new File( reposBase, "repo4" ), new File( idxsBase,
-                "repo4" ), null, null, MIN_CREATORS );
+        IndexingContext ctx4 = nexusIndexer
+                .addIndexingContext( "repo4", "repo4", new File( reposBase, "repo4" ), new File( idxsBase, "repo4" ),
+                        null, null, MIN_CREATORS );
         nexusIndexer.scan( ctx4 );
 
-        context =
-            nexusIndexer.addMergedIndexingContext( "ctx", "ctx", new File( reposBase, "merged" ), new File( idxsBase,
-                "merged" ), false, Arrays.asList( ctx1, ctx2, ctx3, ctx4 ) );
+        context = nexusIndexer.addMergedIndexingContext( "ctx", "ctx", new File( reposBase, "merged" ),
+                new File( idxsBase, "merged" ), false, Arrays.asList( ctx1, ctx2, ctx3, ctx4 ) );
 
         context.getIndexDirectoryFile().mkdirs();
     }
 
     @Override
-    protected void unprepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void unprepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         // remove the merged
         nexusIndexer.removeIndexingContext( context, true );
 
         // remove members
-        MergedIndexingContext mctx = (MergedIndexingContext) context;
+        MergedIndexingContext mctx = ( MergedIndexingContext ) context;
 
         for ( IndexingContext member : mctx.getMembers() )
         {
@@ -102,16 +97,14 @@ public class NEXUS4149TransferFormatTest
     }
 
     @Override
-    public void testDirectory()
-        throws IOException
+    public void testDirectory() throws IOException
     {
         // we use no directory
     }
 
-    public void testMembersAndMergedRootGroups()
-        throws Exception
+    public void testMembersAndMergedRootGroups() throws Exception
     {
-        MergedIndexingContext mctx = (MergedIndexingContext) context;
+        MergedIndexingContext mctx = ( MergedIndexingContext ) context;
 
         for ( IndexingContext member : mctx.getMembers() )
         {
@@ -119,11 +112,10 @@ public class NEXUS4149TransferFormatTest
         }
 
         Assert.assertEquals( "Merged should have one root multiply members count!", mctx.getMembers().size(),
-            mctx.getRootGroups().size() );
+                mctx.getRootGroups().size() );
     }
 
-    public void testTransportFile()
-        throws Exception
+    public void testTransportFile() throws Exception
     {
         File packTargetDir = new File( getBasedir(), "target/nexus-4149/packed" );
 
@@ -132,17 +124,21 @@ public class NEXUS4149TransferFormatTest
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), packTargetDir );
+            IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    packTargetDir );
             request.setCreateIncrementalChunks( false );
             request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
 
             packer.packIndex( request );
-        } finally {
+        }
+        finally
+        {
             context.releaseIndexSearcher( indexSearcher );
         }
 
         // read it up and verify, but stay "low level", directly consume the GZ file and count
-        InputStream fis = new BufferedInputStream( new FileInputStream( new File( packTargetDir, "nexus-maven-repository-index.gz" ) ) );
+        InputStream fis = new BufferedInputStream(
+                new FileInputStream( new File( packTargetDir, "nexus-maven-repository-index.gz" ) ) );
         IndexDataReader reader = new IndexDataReader( fis );
         try
         {
@@ -160,7 +156,7 @@ public class NEXUS4149TransferFormatTest
             {
                 totalDocs++;
                 if ( doc.getField( "DESCRIPTOR" ) != null || doc.getField( ArtifactInfo.ALL_GROUPS ) != null
-                    || doc.getField( ArtifactInfo.ROOT_GROUPS ) != null )
+                        || doc.getField( ArtifactInfo.ROOT_GROUPS ) != null )
                 {
                     specialDocs++;
 

@@ -19,8 +19,6 @@ package org.apache.maven.index.locator;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
@@ -29,8 +27,10 @@ import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.M2GavCalculator;
 
+import java.io.File;
+
 public class ArtifactLocatorTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
@@ -39,8 +39,7 @@ public class ArtifactLocatorTest
     private ArtifactPackagingMapper artifactPackagingMapper;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "al-test", "al-test", repo, indexDir, null, null, FULL_CREATORS );
 
@@ -53,8 +52,8 @@ public class ArtifactLocatorTest
 
     public void testContextProducer()
     {
-        final File pomFile =
-            getTestFile( "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+        final File pomFile = getTestFile(
+                "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin" + "-1.0.0.pom" );
 
         final ArtifactContext ac = artifactContextProducer.getArtifactContext( context, pomFile );
 
@@ -68,11 +67,11 @@ public class ArtifactLocatorTest
 
         final M2GavCalculator gavCalculator = new M2GavCalculator();
 
-        final File pomFile =
-            getTestFile( "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+        final File pomFile = getTestFile(
+                "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin" + "-1.0.0.pom" );
 
-        final Gav gav =
-            gavCalculator.pathToGav( "/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+        final Gav gav = gavCalculator
+                .pathToGav( "/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
 
         File artifactFile = al.locate( pomFile, gavCalculator, gav );
 

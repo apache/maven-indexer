@@ -19,12 +19,6 @@ package org.apache.maven.index.locator;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
@@ -34,13 +28,18 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+
 /**
  * Artifact locator.
- * 
+ *
  * @author Damian Bradicich
  */
 public class ArtifactLocator
-    implements GavHelpedLocator
+        implements GavHelpedLocator
 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactLocator.class );
@@ -56,15 +55,15 @@ public class ArtifactLocator
     {
         // if we don't have this data, nothing we can do
         if ( source == null //
-            || !source.exists() //
-            || gav == null //
-            || gav.getArtifactId() == null //
-            || gav.getVersion() == null )
+                || !source.exists() //
+                || gav == null //
+                || gav.getArtifactId() == null //
+                || gav.getVersion() == null )
         {
             return null;
         }
 
-        try (InputStream inputStream = Files.newInputStream( source.toPath() ))
+        try ( InputStream inputStream = Files.newInputStream( source.toPath() ) )
         {
             // need to read the pom model to get packaging
             final Model model = new MavenXpp3Reader().read( inputStream, false );
@@ -75,9 +74,8 @@ public class ArtifactLocator
             }
 
             // now generate the artifactname
-            String artifactName =
-                gav.getArtifactId() + "-" + gav.getVersion() + "."
-                    + mapper.getExtensionForPackaging( model.getPackaging() );
+            String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + "." + mapper
+                    .getExtensionForPackaging( model.getPackaging() );
 
             File artifact = new File( source.getParent(), artifactName );
 

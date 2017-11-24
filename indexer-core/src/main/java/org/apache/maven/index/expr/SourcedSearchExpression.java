@@ -25,14 +25,13 @@ import org.apache.maven.index.SearchType;
  * SourcedSearchExpression is a search expression usually "sourced" or backed from some programmatic source (drop down
  * with pre-filled values, values from previous searches, etc), and we already know it is complete, exact value that we
  * want to search for. Indexer will do it's best to match exactly the provided string value, no more no less.
- * 
+ *
  * @author cstamas
  */
 public class SourcedSearchExpression
-    extends SearchTypedStringSearchExpression
+        extends SearchTypedStringSearchExpression
 {
-    public SourcedSearchExpression( final String expression )
-        throws IllegalArgumentException
+    public SourcedSearchExpression( final String expression ) throws IllegalArgumentException
     {
         super( expression, SearchType.EXACT );
     }

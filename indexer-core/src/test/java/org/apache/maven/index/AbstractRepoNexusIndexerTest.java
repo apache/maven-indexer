@@ -19,6 +19,13 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.util.Bits;
+import org.apache.maven.index.search.grouping.GAGrouping;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,21 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.util.Bits;
-import org.apache.maven.index.search.grouping.GAGrouping;
-
 public abstract class AbstractRepoNexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
 
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
-    public void testRootGroups()
-        throws Exception
+    public void testRootGroups() throws Exception
     {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals( rootGroups.toString(), 12, rootGroups.size() );
@@ -77,11 +76,10 @@ public abstract class AbstractRepoNexusIndexerTest
         assertGroup( 0, "org.apache.maven.plugins.maven-core-it-plugin", context );
     }
 
-    public void testSearchFlatPaged()
-        throws Exception
+    public void testSearchFlatPaged() throws Exception
     {
-        FlatSearchRequest request =
-            new FlatSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED ) );
+        FlatSearchRequest request = new FlatSearchRequest(
+                nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED ) );
 
         // See MINDEXER-22
         // Flat search is not pageable
@@ -94,8 +92,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( response.getResults().toString(), 22, response.getTotalHits() );
     }
 
-    public void testSearchFlat()
-        throws Exception
+    public void testSearchFlat() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
@@ -120,8 +117,7 @@ public abstract class AbstractRepoNexusIndexerTest
         }
     }
 
-    public void testSearchGrouped()
-        throws Exception
+    public void testSearchGrouped() throws Exception
     {
         // ----------------------------------------------------------------------------
         //
@@ -155,8 +151,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( "test", ai.getRepository() );
     }
 
-    public void testSearchGroupedProblematicNames()
-        throws Exception
+    public void testSearchGroupedProblematicNames() throws Exception
     {
         {
             // "-" in the name
@@ -383,15 +378,14 @@ public abstract class AbstractRepoNexusIndexerTest
     //
     // }
 
-    public void testIdentify()
-        throws Exception
+    public void testIdentify() throws Exception
     {
         Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87" );
-        
+
         assertEquals( 1, ais.size() );
 
         ArtifactInfo ai = ais.iterator().next();
-        
+
         assertNotNull( ai );
 
         assertEquals( "qdox", ai.getGroupId() );
@@ -405,9 +399,9 @@ public abstract class AbstractRepoNexusIndexerTest
         File artifact = new File( repo, "qdox/qdox/1.5/qdox-1.5.jar" );
 
         ais = nexusIndexer.identify( artifact );
-        
+
         assertEquals( 1, ais.size() );
-        
+
         ai = ais.iterator().next();
 
         assertNotNull( "Can't identify qdox-1.5.jar", ai );
@@ -422,59 +416,58 @@ public abstract class AbstractRepoNexusIndexerTest
     // Paging is currently disabled
     // See MINDEXER-22
     // Flat search is not pageable
-//    public void donttestPaging()
-//        throws Exception
-//    {
-//        // we have 22 artifact for this search
-//        int total = 22;
-//
-//        int pageSize = 4;
-//
-//        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
-//
-//        FlatSearchRequest req = new FlatSearchRequest( q );
-//
-//        // have page size of 4, that will make us 4 pages
-//        req.setCount( pageSize );
-//
-//        List<ArtifactInfo> constructedPageList = new ArrayList<ArtifactInfo>();
-//
-//        int offset = 0;
-//
-//        while ( true )
-//        {
-//            req.setStart( offset );
-//
-//            FlatSearchResponse resp = nexusIndexer.searchFlat( req );
-//
-//            Collection<ArtifactInfo> p = resp.getResults();
-//
-//            assertEquals( p.toString(), total, resp.getTotalHits() );
-//
-//            assertEquals( Math.min( pageSize, total - offset ), p.size() );
-//
-//            constructedPageList.addAll( p );
-//
-//            offset += pageSize;
-//
-//            if ( offset > total )
-//            {
-//                break;
-//            }
-//        }
-//
-//        //
-//        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
-//        Collection<ArtifactInfo> onePage = response.getResults();
-//
-//        List<ArtifactInfo> onePageList = new ArrayList<ArtifactInfo>( onePage );
-//
-//        // onePage and constructedPage should hold equal elems in the same order
-//        assertTrue( resultsAreEqual( onePageList, constructedPageList ) );
-//    }
+    //    public void donttestPaging()
+    //        throws Exception
+    //    {
+    //        // we have 22 artifact for this search
+    //        int total = 22;
+    //
+    //        int pageSize = 4;
+    //
+    //        Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
+    //
+    //        FlatSearchRequest req = new FlatSearchRequest( q );
+    //
+    //        // have page size of 4, that will make us 4 pages
+    //        req.setCount( pageSize );
+    //
+    //        List<ArtifactInfo> constructedPageList = new ArrayList<ArtifactInfo>();
+    //
+    //        int offset = 0;
+    //
+    //        while ( true )
+    //        {
+    //            req.setStart( offset );
+    //
+    //            FlatSearchResponse resp = nexusIndexer.searchFlat( req );
+    //
+    //            Collection<ArtifactInfo> p = resp.getResults();
+    //
+    //            assertEquals( p.toString(), total, resp.getTotalHits() );
+    //
+    //            assertEquals( Math.min( pageSize, total - offset ), p.size() );
+    //
+    //            constructedPageList.addAll( p );
+    //
+    //            offset += pageSize;
+    //
+    //            if ( offset > total )
+    //            {
+    //                break;
+    //            }
+    //        }
+    //
+    //        //
+    //        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
+    //        Collection<ArtifactInfo> onePage = response.getResults();
+    //
+    //        List<ArtifactInfo> onePageList = new ArrayList<ArtifactInfo>( onePage );
+    //
+    //        // onePage and constructedPage should hold equal elems in the same order
+    //        assertTrue( resultsAreEqual( onePageList, constructedPageList ) );
+    //    }
 
-    public void testPurge()
-        throws Exception
+    public void testPurge() throws Exception
     {
         // we have 14 artifact for this search
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "org", SearchType.SCORED );
@@ -509,15 +502,14 @@ public abstract class AbstractRepoNexusIndexerTest
         return true;
     }
 
-    public void testPackaging()
-        throws Exception
+    public void testPackaging() throws Exception
     {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
 
-        Bits liveDocs = MultiFields.getLiveDocs(reader);
+        Bits liveDocs = MultiFields.getLiveDocs( reader );
         for ( int i = 0; i < reader.maxDoc(); i++ )
         {
-            if (liveDocs == null || liveDocs.get(i) )
+            if ( liveDocs == null || liveDocs.get( i ) )
             {
                 Document document = reader.document( i );
 
@@ -526,7 +518,7 @@ public abstract class AbstractRepoNexusIndexerTest
                 if ( uinfo != null )
                 {
                     String info = document.get( ArtifactInfo.INFO );
-                    assertFalse( "Bad:" + info,  info.startsWith( "null" ) );
+                    assertFalse( "Bad:" + info, info.startsWith( "null" ) );
                 }
             }
         }
@@ -556,12 +548,11 @@ public abstract class AbstractRepoNexusIndexerTest
         }
     }
 
-    public void testPrefixWildcard()
-        throws Exception
+    public void testPrefixWildcard() throws Exception
     {
         // see https://issues.apache.org/jira/browse/MINDEXER-108
-        IteratorSearchRequest request =
-            new IteratorSearchRequest( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*.forge", SearchType.EXACT ) );
+        IteratorSearchRequest request = new IteratorSearchRequest(
+                nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*" + ".forge", SearchType.EXACT ) );
 
         // two candidates (see src/test/repo):
         // org.terracotta.forge:forge-parent:1.0.5

@@ -19,14 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -42,13 +34,20 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An artifact context used to provide information about artifact during scanning. It is passed to the
  * {@link IndexCreator}, which can populate {@link ArtifactInfo} for the given artifact.
- * 
- * @see IndexCreator#populateArtifactInfo(ArtifactContext)
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
+ * @see IndexCreator#populateArtifactInfo(ArtifactContext)
  */
 public class ArtifactContext
 {
@@ -68,7 +67,7 @@ public class ArtifactContext
     private final List<Exception> errors = new ArrayList<>();
 
     public ArtifactContext( File pom, File artifact, File metadata, ArtifactInfo artifactInfo, Gav gav )
-        throws IllegalArgumentException
+            throws IllegalArgumentException
     {
         if ( artifactInfo == null )
         {
@@ -93,7 +92,7 @@ public class ArtifactContext
         File pom = getPom();
         if ( pom != null && pom.isFile() )
         {
-            try (InputStream inputStream = Files.newInputStream( pom.toPath() ))
+            try ( InputStream inputStream = Files.newInputStream( pom.toPath() ) )
             {
                 return new MavenXpp3Reader().read( inputStream, false );
             }
@@ -106,15 +105,15 @@ public class ArtifactContext
         else if ( getArtifact() != null && getArtifact().isFile() )
         {
             File artifact = getArtifact();
-            try(ZipHandle handle = ZipFacade.getZipHandle( artifact ))
+            try ( ZipHandle handle = ZipFacade.getZipHandle( artifact ) )
             {
 
                 final String embeddedPomPath =
-                    "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
+                        "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
 
                 if ( handle.hasEntry( embeddedPomPath ) )
                 {
-                    try(InputStream inputStream = handle.getEntryContent( embeddedPomPath ))
+                    try ( InputStream inputStream = handle.getEntryContent( embeddedPomPath ) )
                     {
                         return new MavenXpp3Reader().read( inputStream, false );
                     }
@@ -170,7 +169,7 @@ public class ArtifactContext
         doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), Store.YES, Index.NOT_ANALYZED ) );
 
         doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-            Long.toString( System.currentTimeMillis() ), Store.YES, Index.NO ) );
+                Long.toString( System.currentTimeMillis() ), Store.YES, Index.NO ) );
 
         for ( IndexCreator indexCreator : context.getIndexCreators() )
         {

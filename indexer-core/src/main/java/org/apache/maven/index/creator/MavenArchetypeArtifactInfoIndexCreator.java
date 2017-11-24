@@ -19,6 +19,13 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.maven.index.ArtifactContext;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IndexerField;
+import org.apache.maven.index.util.zip.ZipFacade;
+import org.apache.maven.index.util.zip.ZipHandle;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
@@ -27,32 +34,25 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.apache.lucene.document.Document;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
-
 /**
  * A Maven Archetype index creator used to detect and correct the artifact packaging to "maven-archetype" if the
  * inspected JAR is an Archetype. Since packaging is already handled by Minimal creator, this Creator only alters the
  * supplied ArtifactInfo packaging field during processing, but does not interferes with Lucene document fill-up or the
  * ArtifactInfo fill-up (the update* methods are empty).
- * 
+ *
  * @author cstamas
  */
 @Singleton
-@Named (MavenArchetypeArtifactInfoIndexCreator.ID)
+@Named( MavenArchetypeArtifactInfoIndexCreator.ID )
 public class MavenArchetypeArtifactInfoIndexCreator
-    extends AbstractIndexCreator
+        extends AbstractIndexCreator
 {
     public static final String ID = "maven-archetype";
 
     private static final String MAVEN_ARCHETYPE_PACKAGING = "maven-archetype";
 
-    private static final String[] ARCHETYPE_XML_LOCATIONS = { "META-INF/maven/archetype.xml", "META-INF/archetype.xml",
-        "META-INF/maven/archetype-metadata.xml" };
+    private static final String[] ARCHETYPE_XML_LOCATIONS = {"META-INF/maven/archetype.xml",
+            "META-INF/archetype" + "" + ".xml", "META-INF/maven/archetype-metadata.xml"};
 
     public MavenArchetypeArtifactInfoIndexCreator()
     {
@@ -66,8 +66,8 @@ public class MavenArchetypeArtifactInfoIndexCreator
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && artifact.isFile() && !MAVEN_ARCHETYPE_PACKAGING.equals( ai.getPackaging() )
-            && artifact.getName().endsWith( ".jar" ) )
+        if ( artifact != null && artifact.isFile() && !MAVEN_ARCHETYPE_PACKAGING.equals( ai.getPackaging() ) && artifact
+                .getName().endsWith( ".jar" ) )
         {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
 
@@ -79,7 +79,7 @@ public class MavenArchetypeArtifactInfoIndexCreator
 
     /**
      * Archetypes that are added will have their packaging types set correctly (to maven-archetype)
-     * 
+     *
      * @param ai
      * @param artifact
      */
@@ -105,13 +105,13 @@ public class MavenArchetypeArtifactInfoIndexCreator
         {
             if ( getLogger().isDebugEnabled() )
             {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to exception:", e );
+                getLogger().info( "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to "
+                        + "exception:", e );
             }
             else
             {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e.getMessage() );
+                getLogger().info( "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e
+                        .getMessage() );
             }
         }
         finally

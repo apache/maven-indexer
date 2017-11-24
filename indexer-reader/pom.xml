@@ -19,47 +19,48 @@ under the License.
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.apache.maven.indexer</groupId>
-    <artifactId>maven-indexer</artifactId>
-    <version>6.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>maven-indexer</artifactId>
+        <version>6.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>indexer-reader</artifactId>
-  <packaging>bundle</packaging>
+    <artifactId>indexer-reader</artifactId>
+    <packaging>bundle</packaging>
 
-  <name>Maven :: Indexer Reader</name>
-  <description>
-    Indexer Reader is a minimal dep-less library that is able to read published (remote) index with incremental update
-    support, making user able to integrate published Maven Indexes into any engine without depending on
-    maven-indexer-core and it's transitive dependencies.
-  </description>
+    <name>Maven :: Indexer Reader</name>
+    <description>
+        Indexer Reader is a minimal dep-less library that is able to read published (remote) index with incremental
+        update
+        support, making user able to integrate published Maven Indexes into any engine without depending on
+        maven-indexer-core and it's transitive dependencies.
+    </description>
 
-  <dependencies>
-    <!-- Test -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>3.0.0</version>
-        <extensions>true</extensions>
-      </plugin>
-    </plugins>
-  </build>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>3.0.0</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

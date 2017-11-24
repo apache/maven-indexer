@@ -23,11 +23,11 @@ import java.io.File;
 
 /**
  * A signature locator to locate the signature file relative to POM.
- * 
+ *
  * @author Jason van Zyl
  */
 public class SignatureLocator
-    implements Locator
+        implements Locator
 {
     public File locate( File source )
     {

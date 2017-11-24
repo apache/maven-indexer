@@ -19,11 +19,6 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
 import org.apache.maven.index.ArtifactInfo;
@@ -35,8 +30,13 @@ import org.apache.maven.index.fs.Locker;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class LocalIndexCacheTest
-    extends AbstractIndexUpdaterTest
+        extends AbstractIndexUpdaterTest
 {
     private File remoteRepo;
 
@@ -47,8 +47,7 @@ public class LocalIndexCacheTest
     private IndexingContext tempContext;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -66,28 +65,25 @@ public class LocalIndexCacheTest
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         removeTempContext();
 
         super.tearDown();
     }
 
-    private IndexingContext getNewTempContext()
-        throws IOException, UnsupportedExistingLuceneIndexException
+    private IndexingContext getNewTempContext() throws IOException, UnsupportedExistingLuceneIndexException
     {
         removeTempContext();
 
-        tempContext =
-            indexer.addIndexingContext( repositoryId + "temp", repositoryId, repoDir, indexDir, repositoryUrl, null,
-                MIN_CREATORS );
+        tempContext = indexer
+                .addIndexingContext( repositoryId + "temp", repositoryId, repoDir, indexDir, repositoryUrl, null,
+                        MIN_CREATORS );
 
         return tempContext;
     }
 
-    private void removeTempContext()
-        throws IOException
+    private void removeTempContext() throws IOException
     {
         if ( tempContext != null )
         {
@@ -97,12 +93,11 @@ public class LocalIndexCacheTest
         }
     }
 
-    public void testBasic()
-        throws Exception
+    public void testBasic() throws Exception
     {
         // create initial remote repo index
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //
@@ -142,7 +137,7 @@ public class LocalIndexCacheTest
 
         // incremental remote update
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.3", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         // update via cache (expected: incremental chunk download)
@@ -178,19 +173,17 @@ public class LocalIndexCacheTest
         assertGroupCount( 2, "commons-lang", testContext );
     }
 
-    private void assertGroupCount( int expectedCount, String groupId, IndexingContext context )
-        throws IOException
+    private void assertGroupCount( int expectedCount, String groupId, IndexingContext context ) throws IOException
     {
         TermQuery query = new TermQuery( new Term( ArtifactInfo.GROUP_ID, groupId ) );
         FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( query, context ) );
         assertEquals( expectedCount, response.getTotalHits() );
     }
 
-    public void testForceIndexDownload()
-        throws Exception
+    public void testForceIndexDownload() throws Exception
     {
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //
@@ -204,7 +197,8 @@ public class LocalIndexCacheTest
         updater.fetchAndUpdateIndex( updateRequest );
 
         // corrupt local cache
-        IOUtil.copy( "corrupted", new FileOutputStream( new File( localCacheDir, "nexus-maven-repository-index.gz" ) ) );
+        IOUtil.copy( "corrupted",
+                new FileOutputStream( new File( localCacheDir, "nexus-maven-repository-index.gz" ) ) );
 
         // try download again (it would have failed if force did not update local cache)
         removeTempContext();
@@ -215,11 +209,10 @@ public class LocalIndexCacheTest
         updater.fetchAndUpdateIndex( updateRequest );
     }
 
-    public void testInitialForcedFullDownload()
-        throws Exception
+    public void testInitialForcedFullDownload() throws Exception
     {
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //
@@ -236,11 +229,10 @@ public class LocalIndexCacheTest
         assertTrue( new File( localCacheDir, "nexus-maven-repository-index.properties" ).exists() );
     }
 
-    public void testFailedIndexDownload()
-        throws Exception
+    public void testFailedIndexDownload() throws Exception
     {
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //
@@ -250,16 +242,17 @@ public class LocalIndexCacheTest
         // failed download
         fetcher = new TrackingFetcher( remoteRepo )
         {
-            public InputStream retrieve( String name )
-                throws IOException, java.io.FileNotFoundException
+            public InputStream retrieve( String name ) throws IOException, java.io.FileNotFoundException
             {
-                if ( name.equals( IndexingContext.INDEX_FILE_PREFIX + ".gz" )
-                    || name.equals( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) )
+                if ( name.equals( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) || name
+                        .equals( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) )
                 {
                     throw new IOException();
                 }
                 return super.retrieve( name );
-            };
+            }
+
+            ;
         };
         updateRequest = new IndexUpdateRequest( getNewTempContext(), fetcher );
         updateRequest.setLocalIndexCacheDir( localCacheDir );
@@ -282,11 +275,10 @@ public class LocalIndexCacheTest
         assertTrue( new File( localCacheDir, "nexus-maven-repository-index.properties" ).exists() );
     }
 
-    public void testCleanCacheDirectory()
-        throws Exception
+    public void testCleanCacheDirectory() throws Exception
     {
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //
@@ -301,7 +293,7 @@ public class LocalIndexCacheTest
 
         // new remote index delta
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.3", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         // delta index download (expected: successfull download)
@@ -339,11 +331,10 @@ public class LocalIndexCacheTest
         assertFalse( unknownDirectory.isDirectory() );
     }
 
-    public void testOffline()
-        throws Exception
+    public void testOffline() throws Exception
     {
         indexer.addArtifactToIndex( createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.2", null ),
-            context );
+                context );
         packIndex( remoteRepo, context );
 
         //

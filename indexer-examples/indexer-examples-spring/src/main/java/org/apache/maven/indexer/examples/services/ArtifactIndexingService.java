@@ -35,17 +35,13 @@ public interface ArtifactIndexingService
 {
 
     void addToIndex( String repositoryId, File artifactFile, String groupId, String artifactId, String version,
-                     String extension, String classifier )
-        throws IOException;
+                     String extension, String classifier ) throws IOException;
 
     void deleteFromIndex( String repositoryId, String groupId, String artifactId, String version, String extension,
-                          String classifier )
-        throws IOException;
+                          String classifier ) throws IOException;
 
-    SearchResults search( SearchRequest searchRequest )
-        throws IOException, ParseException;
+    SearchResults search( SearchRequest searchRequest ) throws IOException, ParseException;
 
-    boolean contains( SearchRequest searchRequest )
-        throws IOException, ParseException;
+    boolean contains( SearchRequest searchRequest ) throws IOException, ParseException;
 
 }

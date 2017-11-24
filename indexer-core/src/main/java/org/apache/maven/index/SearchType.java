@@ -21,7 +21,7 @@ package org.apache.maven.index;
 
 /**
  * Designated search types that NexusIndexer supports.
- * 
+ *
  * @author cstamas
  */
 public enum SearchType

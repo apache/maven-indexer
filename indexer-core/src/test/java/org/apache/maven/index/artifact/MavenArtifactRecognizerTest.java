@@ -19,12 +19,10 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
-import org.apache.maven.index.artifact.M2ArtifactRecognizer;
-
 import junit.framework.TestCase;
 
 public class MavenArtifactRecognizerTest
-    extends TestCase
+        extends TestCase
 {
 
     public void testIsPom()
@@ -51,12 +49,11 @@ public class MavenArtifactRecognizerTest
 
     public void testIsSnapshot2()
     {
-        assertEquals(
-            true,
-            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/appassembler-maven-plugin/1.0-SNAPSHOT/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
-        assertEquals(
-            false,
-            M2ArtifactRecognizer.isSnapshot( "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
+        assertEquals( true, M2ArtifactRecognizer.isSnapshot(
+                "/org/somewhere/appassembler-maven-plugin/1.0-SNAPSHOT/appassembler-maven-plugin-1.0-20060714.142547"
+                        + "-1.pom" ) );
+        assertEquals( false, M2ArtifactRecognizer.isSnapshot(
+                "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
     }
 
     public void testIsMetadata()

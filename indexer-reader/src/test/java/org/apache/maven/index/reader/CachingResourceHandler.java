@@ -31,18 +31,16 @@ import java.util.Set;
  * A trivial caching {@link ResourceHandler} that caches forever during single session (existence of the instance).
  */
 public class CachingResourceHandler
-    implements ResourceHandler
+        implements ResourceHandler
 {
     private static final Resource NOT_EXISTING_RESOURCE = new Resource()
     {
-        public InputStream read()
-            throws IOException
+        public InputStream read() throws IOException
         {
             return null;
         }
 
-        public void close()
-            throws IOException
+        public void close() throws IOException
         {
             // nop
         }
@@ -65,8 +63,7 @@ public class CachingResourceHandler
         this.notFoundResources = new HashSet<>();
     }
 
-    public Resource locate( final String name )
-        throws IOException
+    public Resource locate( final String name ) throws IOException
     {
         if ( notFoundResources.contains( name ) )
         {
@@ -79,7 +76,7 @@ public class CachingResourceHandler
     }
 
     private class CachingResource
-        implements Resource
+            implements Resource
     {
         private final String name;
 
@@ -88,8 +85,7 @@ public class CachingResourceHandler
             this.name = name;
         }
 
-        public InputStream read()
-            throws IOException
+        public InputStream read() throws IOException
         {
             InputStream inputStream = local.locate( name ).read();
             if ( inputStream != null )
@@ -104,18 +100,17 @@ public class CachingResourceHandler
             return null;
         }
 
-        private boolean cacheLocally( final String name )
-            throws IOException
+        private boolean cacheLocally( final String name ) throws IOException
         {
             final Resource remoteResource = remote.locate( name );
             final WritableResource localResource = local.locate( name );
-            try (final InputStream inputStream = remoteResource.read(); //
-                 final OutputStream outputStream = localResource.write())
+            try ( final InputStream inputStream = remoteResource.read(); //
+                  final OutputStream outputStream = localResource.write() )
             {
                 if ( inputStream != null )
                 {
                     int read;
-                    byte[] bytes = new byte[8192];
+                    byte[] bytes = new byte[ 8192 ];
                     while ( ( read = inputStream.read( bytes ) ) != -1 )
                     {
                         outputStream.write( bytes, 0, read );
@@ -131,15 +126,13 @@ public class CachingResourceHandler
             }
         }
 
-        public void close()
-            throws IOException
+        public void close() throws IOException
         {
             // nop
         }
     }
 
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         remote.close();
         local.close();

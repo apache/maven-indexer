@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author cstamas
  */
 public class ConcurrentUseWithMergedContextPublishingTest
-    extends ConcurrentUseWithMergedContextTest
+        extends ConcurrentUseWithMergedContextTest
 {
     protected IndexPacker packer;
 
@@ -44,8 +44,7 @@ public class ConcurrentUseWithMergedContextPublishingTest
     protected final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -53,8 +52,7 @@ public class ConcurrentUseWithMergedContextPublishingTest
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         File props = new File( IndexingContext.INDEX_PACKER_PROPERTIES_FILE );
         if ( props.exists() )
@@ -65,8 +63,7 @@ public class ConcurrentUseWithMergedContextPublishingTest
     }
 
     @Override
-    protected int readIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext )
-        throws IOException
+    protected int readIndex( final NexusIndexer nexusIndexer, final IndexingContext indexingContext ) throws IOException
     {
         // note: concurrent Index publishing into SAME directory is not supported and should be avoided.
         // This test had multiple threads doing it, and since it was not checking actual results of publish (that was
@@ -77,10 +74,13 @@ public class ConcurrentUseWithMergedContextPublishingTest
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
         {
-            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(), publish );
+            final IndexPackingRequest request = new IndexPackingRequest( context, indexSearcher.getIndexReader(),
+                    publish );
             request.setCreateIncrementalChunks( false );
             packer.packIndex( request );
-        } finally {
+        }
+        finally
+        {
             context.releaseIndexSearcher( indexSearcher );
         }
 

@@ -19,19 +19,7 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UTFDataFormatException;
-import java.util.Date;
-import java.util.zip.GZIPInputStream;
-
 import com.google.common.base.Strings;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
@@ -40,6 +28,18 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+
+import java.io.BufferedInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UTFDataFormatException;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * An index data reader used to parse transfer index format.
@@ -50,8 +50,7 @@ public class IndexDataReader
 {
     private final DataInputStream dis;
 
-    public IndexDataReader( final InputStream is )
-        throws IOException
+    public IndexDataReader( final InputStream is ) throws IOException
     {
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
@@ -61,7 +60,7 @@ public class IndexDataReader
         if ( is.read() == 0x1f && is.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
             is.reset();
-            data = new BufferedInputStream(new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
+            data = new BufferedInputStream( new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
         }
         else
         {
@@ -73,8 +72,7 @@ public class IndexDataReader
         this.dis = new DataInputStream( data );
     }
 
-    public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context )
-        throws IOException
+    public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context ) throws IOException
     {
         long timestamp = readHeader();
 
@@ -96,13 +94,16 @@ public class IndexDataReader
         while ( ( doc = readDocument() ) != null )
         {
             ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
-            if(ai != null) {
+            if ( ai != null )
+            {
                 w.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
 
                 rootGroups.add( ai.getRootGroup() );
                 allGroups.add( ai.getGroupId() );
 
-            } else {
+            }
+            else
+            {
                 w.addDocument( doc );
             }
             n++;
@@ -119,12 +120,11 @@ public class IndexDataReader
         return result;
     }
 
-    public long readHeader()
-        throws IOException
+    public long readHeader() throws IOException
     {
-        final byte HDRBYTE = (byte) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
+        final byte hdrbyte = ( byte ) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
 
-        if ( HDRBYTE != dis.readByte() )
+        if ( hdrbyte != dis.readByte() )
         {
             // data format version mismatch
             throw new IOException( "Provided input contains unexpected data (0x01 expected as 1st byte)!" );
@@ -133,8 +133,7 @@ public class IndexDataReader
         return dis.readLong();
     }
 
-    public Document readDocument()
-        throws IOException
+    public Document readDocument() throws IOException
     {
         int fieldCount;
         try
@@ -154,15 +153,17 @@ public class IndexDataReader
         }
 
         // Fix up UINFO field wrt MINDEXER-41
-        final Field uinfoField = (Field) doc.getField( ArtifactInfo.UINFO );
-        final String info =  doc.get( ArtifactInfo.INFO );
-        if (uinfoField!= null && !Strings.isNullOrEmpty(info)) {
+        final Field uinfoField = ( Field ) doc.getField( ArtifactInfo.UINFO );
+        final String info = doc.get( ArtifactInfo.INFO );
+        if ( uinfoField != null && !Strings.isNullOrEmpty( info ) )
+        {
             final String[] splitInfo = ArtifactInfo.FS_PATTERN.split( info );
             if ( splitInfo.length > 6 )
             {
-                final String extension = splitInfo[6];
+                final String extension = splitInfo[ 6 ];
                 final String uinfoString = uinfoField.stringValue();
-                if (uinfoString.endsWith( ArtifactInfo.FS + ArtifactInfo.NA )) {
+                if ( uinfoString.endsWith( ArtifactInfo.FS + ArtifactInfo.NA ) )
+                {
                     uinfoField.setStringValue( uinfoString + ArtifactInfo.FS + ArtifactInfo.nvl( extension ) );
                 }
             }
@@ -171,8 +172,7 @@ public class IndexDataReader
         return doc;
     }
 
-    private Field readField()
-        throws IOException
+    private Field readField() throws IOException
     {
         int flags = dis.read();
 
@@ -195,8 +195,7 @@ public class IndexDataReader
         return new Field( name, value, store, index );
     }
 
-    private static String readUTF( DataInput in )
-        throws IOException
+    private static String readUTF( DataInput in ) throws IOException
     {
         int utflen = in.readInt();
 
@@ -205,38 +204,37 @@ public class IndexDataReader
 
         try
         {
-            bytearr = new byte[utflen];
-            chararr = new char[utflen];
+            bytearr = new byte[ utflen ];
+            chararr = new char[ utflen ];
         }
         catch ( OutOfMemoryError e )
         {
-            final IOException ex =
-                new IOException(
-                    "Index data content is inappropriate (is junk?), leads to OutOfMemoryError! See MINDEXER-28 for more information!" );
+            final IOException ex = new IOException( "Index data content is inappropriate (is junk?), leads to "
+                    + "OutOfMemoryError! See MINDEXER-28 for more information!" );
             ex.initCause( e );
             throw ex;
         }
 
         int c, char2, char3;
         int count = 0;
-        int chararr_count = 0;
+        int chararrCount = 0;
 
         in.readFully( bytearr, 0, utflen );
 
         while ( count < utflen )
         {
-            c = bytearr[count] & 0xff;
+            c = bytearr[ count ] & 0xff;
             if ( c > 127 )
             {
                 break;
             }
             count++;
-            chararr[chararr_count++] = (char) c;
+            chararr[ chararrCount++ ] = ( char ) c;
         }
 
         while ( count < utflen )
         {
-            c = bytearr[count] & 0xff;
+            c = bytearr[ count ] & 0xff;
             switch ( c >> 4 )
             {
                 case 0:
@@ -249,7 +247,7 @@ public class IndexDataReader
                 case 7:
                     /* 0xxxxxxx */
                     count++;
-                    chararr[chararr_count++] = (char) c;
+                    chararr[ chararrCount++ ] = ( char ) c;
                     break;
 
                 case 12:
@@ -260,12 +258,12 @@ public class IndexDataReader
                     {
                         throw new UTFDataFormatException( "malformed input: partial character at end" );
                     }
-                    char2 = bytearr[count - 1];
+                    char2 = bytearr[ count - 1 ];
                     if ( ( char2 & 0xC0 ) != 0x80 )
                     {
                         throw new UTFDataFormatException( "malformed input around byte " + count );
                     }
-                    chararr[chararr_count++] = (char) ( ( ( c & 0x1F ) << 6 ) | ( char2 & 0x3F ) );
+                    chararr[ chararrCount++ ] = ( char ) ( ( ( c & 0x1F ) << 6 ) | ( char2 & 0x3F ) );
                     break;
 
                 case 14:
@@ -275,14 +273,14 @@ public class IndexDataReader
                     {
                         throw new UTFDataFormatException( "malformed input: partial character at end" );
                     }
-                    char2 = bytearr[count - 2];
-                    char3 = bytearr[count - 1];
+                    char2 = bytearr[ count - 2 ];
+                    char3 = bytearr[ count - 1 ];
                     if ( ( ( char2 & 0xC0 ) != 0x80 ) || ( ( char3 & 0xC0 ) != 0x80 ) )
                     {
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
-                    chararr[chararr_count++] =
-                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) << 0 ) );
+                    chararr[ chararrCount++ ] = ( char ) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | (
+                            ( char3 & 0x3F ) << 0 ) );
                     break;
 
                 default:
@@ -292,7 +290,7 @@ public class IndexDataReader
         }
 
         // The number of chars produced may be less than utflen
-        return new String( chararr, 0, chararr_count );
+        return new String( chararr, 0, chararrCount );
     }
 
     /**
@@ -328,7 +326,7 @@ public class IndexDataReader
             return timestamp;
         }
 
-        public void setRootGroups(Set<String> rootGroups)
+        public void setRootGroups( Set<String> rootGroups )
         {
             this.rootGroups = rootGroups;
         }
@@ -338,7 +336,7 @@ public class IndexDataReader
             return rootGroups;
         }
 
-        public void setAllGroups(Set<String> allGroups)
+        public void setAllGroups( Set<String> allGroups )
         {
             this.allGroups = allGroups;
         }
@@ -360,7 +358,7 @@ public class IndexDataReader
      * @throws IOException in case of an IO exception during index file access
      */
     public IndexDataReadResult readIndex( final IndexDataReadVisitor visitor, final IndexingContext context )
-        throws IOException
+            throws IOException
     {
         dis.readByte(); // data format version
 
@@ -392,7 +390,7 @@ public class IndexDataReader
     /**
      * Visitor of indexed Lucene documents.
      */
-    public static interface IndexDataReadVisitor
+    public interface IndexDataReadVisitor
     {
 
         /**

@@ -19,16 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
@@ -46,21 +36,32 @@ import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
 import org.codehaus.plexus.util.FileUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * A default {@link NexusIndexer} implementation.
  *
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  * @deprecated Use {@link Indexer} instead. Discouraged from further use, as it suffers from multiple synchronization
- *             and other problems. As it tries to serve as "context registry" too, but it does not synchronize the
- *             access to it, but also, introduces some extras (like "targeted" vs "non targeted" search), that makes
- *             it's behavior less intuitive.
+ * and other problems. As it tries to serve as "context registry" too, but it does not synchronize the
+ * access to it, but also, introduces some extras (like "targeted" vs "non targeted" search), that makes
+ * it's behavior less intuitive.
  */
 @Deprecated
 @Singleton
 @Named
 public class DefaultNexusIndexer
-    implements NexusIndexer
+        implements NexusIndexer
 {
 
     private final Indexer indexer;
@@ -75,9 +76,7 @@ public class DefaultNexusIndexer
 
 
     @Inject
-    public DefaultNexusIndexer( Indexer indexer,
-                                Scanner scanner,
-                                IndexerEngine indexerEngine,
+    public DefaultNexusIndexer( Indexer indexer, Scanner scanner, IndexerEngine indexerEngine,
                                 QueryCreator queryCreator )
     {
         this.indexer = indexer;
@@ -96,15 +95,15 @@ public class DefaultNexusIndexer
     }
 
     public IndexingContext addIndexingContext( String id, String repositoryId, File repository, File indexDirectory,
-        String repositoryUrl, String indexUpdateUrl,
-        List<? extends IndexCreator> indexers )
-        throws IOException, UnsupportedExistingLuceneIndexException
+                                               String repositoryUrl, String indexUpdateUrl,
+                                               List<? extends IndexCreator> indexers )
+            throws IOException, UnsupportedExistingLuceneIndexException
     {
         try
         {
-            IndexingContext context =
-                indexer.createIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl,
-                                               indexUpdateUrl, true, false, indexers );
+            IndexingContext context = indexer
+                    .createIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
+                            true, false, indexers );
             indexingContexts.put( context.getId(), context );
             return context;
         }
@@ -115,27 +114,25 @@ public class DefaultNexusIndexer
     }
 
     public IndexingContext addIndexingContextForced( String id, String repositoryId, File repository,
-        File indexDirectory, String repositoryUrl, String indexUpdateUrl,
-        List<? extends IndexCreator> indexers )
-        throws IOException
+                                                     File indexDirectory, String repositoryUrl, String indexUpdateUrl,
+                                                     List<? extends IndexCreator> indexers ) throws IOException
     {
-        IndexingContext context =
-            indexer.createIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
-                                           true, true, indexers );
+        IndexingContext context = indexer
+                .createIndexingContext( id, repositoryId, repository, indexDirectory, repositoryUrl, indexUpdateUrl,
+                        true, true, indexers );
         indexingContexts.put( context.getId(), context );
         return context;
     }
 
     public IndexingContext addIndexingContext( String id, String repositoryId, File repository, Directory directory,
-        String repositoryUrl, String indexUpdateUrl,
-        List<? extends IndexCreator> indexers )
-        throws IOException, UnsupportedExistingLuceneIndexException
+                                               String repositoryUrl, String indexUpdateUrl,
+                                               List<? extends IndexCreator> indexers )
+            throws IOException, UnsupportedExistingLuceneIndexException
     {
         try
         {
-            IndexingContext context =
-                new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl, indexUpdateUrl,
-                                            IndexCreatorSorter.sort( indexers ), false );
+            IndexingContext context = new DefaultIndexingContext( id, repositoryId, repository, directory,
+                    repositoryUrl, indexUpdateUrl, IndexCreatorSorter.sort( indexers ), false );
             indexingContexts.put( context.getId(), context );
             return context;
         }
@@ -146,63 +143,55 @@ public class DefaultNexusIndexer
     }
 
     public IndexingContext addIndexingContextForced( String id, String repositoryId, File repository,
-        Directory directory, String repositoryUrl, String indexUpdateUrl,
-        List<? extends IndexCreator> indexers )
-        throws IOException
+                                                     Directory directory, String repositoryUrl, String indexUpdateUrl,
+                                                     List<? extends IndexCreator> indexers ) throws IOException
     {
-        IndexingContext context =
-            new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl, indexUpdateUrl,
-                                        IndexCreatorSorter.sort( indexers ), true );
+        IndexingContext context = new DefaultIndexingContext( id, repositoryId, repository, directory, repositoryUrl,
+                indexUpdateUrl, IndexCreatorSorter.sort( indexers ), true );
         indexingContexts.put( context.getId(), context );
         return context;
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-        File indexDirectory, boolean searchable,
-        Collection<IndexingContext> contexts )
-        throws IOException
+                                                     File indexDirectory, boolean searchable,
+                                                     Collection<IndexingContext> contexts ) throws IOException
     {
         return addMergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
-                                         new StaticContextMemberProvider( contexts ) );
+                new StaticContextMemberProvider( contexts ) );
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-        File indexDirectory, boolean searchable,
-        ContextMemberProvider membersProvider )
-        throws IOException
+                                                     File indexDirectory, boolean searchable,
+                                                     ContextMemberProvider membersProvider ) throws IOException
     {
-        IndexingContext context =
-            indexer.createMergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
-                                                 membersProvider );
+        IndexingContext context = indexer
+                .createMergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                        membersProvider );
         indexingContexts.put( context.getId(), context );
         return context;
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-        Directory indexDirectory, boolean searchable,
-        Collection<IndexingContext> contexts )
-        throws IOException
+                                                     Directory indexDirectory, boolean searchable,
+                                                     Collection<IndexingContext> contexts ) throws IOException
     {
-        IndexingContext context =
-            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
-                                       new StaticContextMemberProvider( contexts ) );
+        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                new StaticContextMemberProvider( contexts ) );
         indexingContexts.put( context.getId(), context );
         return context;
     }
 
     public IndexingContext addMergedIndexingContext( String id, String repositoryId, File repository,
-        Directory indexDirectory, boolean searchable,
-        ContextMemberProvider membersProvider )
-        throws IOException
+                                                     Directory indexDirectory, boolean searchable,
+                                                     ContextMemberProvider membersProvider ) throws IOException
     {
-        IndexingContext context =
-            new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable, membersProvider );
+        IndexingContext context = new MergedIndexingContext( id, repositoryId, repository, indexDirectory, searchable,
+                membersProvider );
         indexingContexts.put( context.getId(), context );
         return context;
     }
 
-    public void removeIndexingContext( IndexingContext context, boolean deleteFiles )
-        throws IOException
+    public void removeIndexingContext( IndexingContext context, boolean deleteFiles ) throws IOException
     {
         if ( indexingContexts.containsKey( context.getId() ) )
         {
@@ -220,26 +209,23 @@ public class DefaultNexusIndexer
     // Scanning
     // ----------------------------------------------------------------------------
 
-    public void scan( final IndexingContext context )
-        throws IOException
+    public void scan( final IndexingContext context ) throws IOException
     {
         scan( context, null );
     }
 
-    public void scan( final IndexingContext context, boolean update )
-        throws IOException
+    public void scan( final IndexingContext context, boolean update ) throws IOException
     {
         scan( context, null, update );
     }
 
-    public void scan( final IndexingContext context, final ArtifactScanningListener listener )
-        throws IOException
+    public void scan( final IndexingContext context, final ArtifactScanningListener listener ) throws IOException
     {
         scan( context, listener, false );
     }
 
     public void scan( final IndexingContext context, final ArtifactScanningListener listener, final boolean update )
-        throws IOException
+            throws IOException
     {
         scan( context, null, listener, update );
     }
@@ -253,8 +239,7 @@ public class DefaultNexusIndexer
      * @see #artifactDiscovered(ArtifactContext, IndexingContext)
      */
     public void scan( final IndexingContext context, final String fromPath, final ArtifactScanningListener listener,
-        final boolean update )
-        throws IOException
+                      final boolean update ) throws IOException
     {
         final File repositoryDirectory = context.getRepository();
         if ( repositoryDirectory == null )
@@ -286,25 +271,24 @@ public class DefaultNexusIndexer
                 IndexUtils.copyDirectory( context.getIndexDirectory(), directory );
             }
             tmpContext = new DefaultIndexingContext( context.getId() + "-tmp", //
-                                                     context.getRepositoryId(), //
-                                                     context.getRepository(), //
-                                                     directory, //
-                                                     context.getRepositoryUrl(), //
-                                                     context.getIndexUpdateUrl(), //
-                                                     context.getIndexCreators(), //
-                                                     true );
+                    context.getRepositoryId(), //
+                    context.getRepository(), //
+                    directory, //
+                    context.getRepositoryUrl(), //
+                    context.getIndexUpdateUrl(), //
+                    context.getIndexCreators(), //
+                    true );
 
             scanner.scan( new ScanningRequest( tmpContext, //
-                                               new DefaultScannerListener( tmpContext, indexerEngine,
-                                                                           update, listener ), fromPath ) );
+                    new DefaultScannerListener( tmpContext, indexerEngine, update, listener ), fromPath ) );
 
             tmpContext.updateTimestamp( true );
             context.replace( tmpContext.getIndexDirectory() );
         }
         catch ( Exception ex )
         {
-            throw (IOException) new IOException( "Error scanning context " + context.getId() + ": " + ex ).initCause(
-                ex );
+            throw ( IOException ) new IOException( "Error scanning context " + context.getId() + ": " + ex )
+                    .initCause( ex );
         }
         finally
         {
@@ -325,8 +309,7 @@ public class DefaultNexusIndexer
     /**
      * Delegates to the {@link IndexerEngine} to add a new artifact to the index
      */
-    public void artifactDiscovered( ArtifactContext ac, IndexingContext context )
-        throws IOException
+    public void artifactDiscovered( ArtifactContext ac, IndexingContext context ) throws IOException
     {
         if ( ac != null )
         {
@@ -341,14 +324,12 @@ public class DefaultNexusIndexer
     /**
      * Delegates to the {@link IndexerEngine} to update artifact to the index
      */
-    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
-        throws IOException
+    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context ) throws IOException
     {
         indexer.addArtifactsToIndex( Collections.singleton( ac ), context );
     }
 
-    public void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context )
-        throws IOException
+    public void addArtifactsToIndex( Collection<ArtifactContext> acs, IndexingContext context ) throws IOException
     {
         indexer.addArtifactsToIndex( acs, context );
     }
@@ -356,14 +337,12 @@ public class DefaultNexusIndexer
     /**
      * Delegates to the {@link IndexerEngine} to remove artifact from the index
      */
-    public void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context )
-        throws IOException
+    public void deleteArtifactFromIndex( ArtifactContext ac, IndexingContext context ) throws IOException
     {
         indexer.deleteArtifactsFromIndex( Collections.singleton( ac ), context );
     }
 
-    public void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context )
-        throws IOException
+    public void deleteArtifactsFromIndex( Collection<ArtifactContext> acs, IndexingContext context ) throws IOException
     {
         indexer.deleteArtifactsFromIndex( acs, context );
     }
@@ -372,8 +351,7 @@ public class DefaultNexusIndexer
     // Searching
     // ----------------------------------------------------------------------------
 
-    public FlatSearchResponse searchFlat( FlatSearchRequest request )
-        throws IOException
+    public FlatSearchResponse searchFlat( FlatSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
@@ -382,8 +360,7 @@ public class DefaultNexusIndexer
         return indexer.searchFlat( request );
     }
 
-    public IteratorSearchResponse searchIterator( IteratorSearchRequest request )
-        throws IOException
+    public IteratorSearchResponse searchIterator( IteratorSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
@@ -392,8 +369,7 @@ public class DefaultNexusIndexer
         return indexer.searchIterator( request );
     }
 
-    public GroupedSearchResponse searchGrouped( GroupedSearchRequest request )
-        throws IOException
+    public GroupedSearchResponse searchGrouped( GroupedSearchRequest request ) throws IOException
     {
         if ( request.getContexts().isEmpty() )
         {
@@ -407,8 +383,7 @@ public class DefaultNexusIndexer
     // ----------------------------------------------------------------------------
 
     @Deprecated
-    public Query constructQuery( Field field, String query, SearchType type )
-        throws IllegalArgumentException
+    public Query constructQuery( Field field, String query, SearchType type ) throws IllegalArgumentException
     {
         try
         {
@@ -420,8 +395,7 @@ public class DefaultNexusIndexer
         }
     }
 
-    public Query constructQuery( Field field, SearchExpression expression )
-        throws IllegalArgumentException
+    public Query constructQuery( Field field, SearchExpression expression ) throws IllegalArgumentException
     {
         return indexer.constructQuery( field, expression );
     }
@@ -430,32 +404,27 @@ public class DefaultNexusIndexer
     // Identification
     // ----------------------------------------------------------------------------
 
-    public Collection<ArtifactInfo> identify( Field field, String query )
-        throws IllegalArgumentException, IOException
+    public Collection<ArtifactInfo> identify( Field field, String query ) throws IllegalArgumentException, IOException
     {
         return identify( constructQuery( field, query, SearchType.EXACT ) );
     }
 
-    public Collection<ArtifactInfo> identify( File artifact )
-        throws IOException
+    public Collection<ArtifactInfo> identify( File artifact ) throws IOException
     {
         return identify( artifact, indexingContexts.values() );
     }
 
-    public Collection<ArtifactInfo> identify( File artifact, Collection<IndexingContext> contexts )
-        throws IOException
+    public Collection<ArtifactInfo> identify( File artifact, Collection<IndexingContext> contexts ) throws IOException
     {
         return indexer.identify( artifact, contexts );
     }
 
-    public Collection<ArtifactInfo> identify( Query query )
-        throws IOException
+    public Collection<ArtifactInfo> identify( Query query ) throws IOException
     {
         return identify( query, indexingContexts.values() );
     }
 
-    public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
-        throws IOException
+    public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts ) throws IOException
     {
         return indexer.identify( query, contexts );
     }

@@ -22,23 +22,23 @@ package org.apache.maven.index;
 import java.io.File;
 import java.util.Collection;
 
-/** http://issues.sonatype.org/browse/NEXUS-3233 */
+/**
+ * http://issues.sonatype.org/browse/NEXUS-3233
+ */
 public class Nexus3233NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-3233" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-3233", "nexus-3233", repo, indexDir, null, null, FULL_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-3233", "nexus-3233", repo, indexDir, null, null, FULL_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testIdentifyPomPackagingArtifacts()
-        throws Exception
+    public void testIdentifyPomPackagingArtifacts() throws Exception
     {
         // POM1
         Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );

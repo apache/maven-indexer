@@ -19,30 +19,28 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.IOException;
-
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+
+import java.io.IOException;
 
 /**
  * An extended Searcher, that holds reference to the IndexingContext that is a searcher for. Needed to provide "extra"
  * data for search hits, that are not on index, and support ArtifactInfoPostprocessor's.
- * 
+ *
  * @author cstamas
  */
 public class NexusIndexSearcher
-    extends IndexSearcher
+        extends IndexSearcher
 {
     private final IndexingContext indexingContext;
 
-    public NexusIndexSearcher( final IndexReader reader )
-        throws IOException
+    public NexusIndexSearcher( final IndexReader reader ) throws IOException
     {
         this( null, reader );
     }
 
-    public NexusIndexSearcher( final IndexingContext indexingContext, final IndexReader reader )
-        throws IOException
+    public NexusIndexSearcher( final IndexingContext indexingContext, final IndexReader reader ) throws IOException
     {
         super( reader );
 

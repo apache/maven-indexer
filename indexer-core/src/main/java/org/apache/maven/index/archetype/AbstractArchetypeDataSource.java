@@ -19,13 +19,6 @@ package org.apache.maven.index.archetype;
  * under the License.
  */
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.inject.Inject;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.archetype.catalog.Archetype;
 import org.apache.maven.archetype.catalog.ArchetypeCatalog;
@@ -38,6 +31,12 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Support class to implement {@code org.apache.maven.archetype.source.ArchetypeDataSource} interface. Extend this class
@@ -68,7 +67,8 @@ public abstract class AbstractArchetypeDataSource
         try
         {
             final Map<String, String> repositories = getRepositoryMap();
-            final Query pq = indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
+            final Query pq = indexer
+                    .constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
             final FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
             searchRequest.setContexts( getIndexingContexts() );
             final FlatSearchResponse searchResponse = indexer.searchFlat( searchRequest );

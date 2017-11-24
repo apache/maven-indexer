@@ -19,20 +19,6 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -59,14 +45,29 @@ import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * The default {@link IndexingContext} implementation.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
 public class DefaultIndexingContext
-    extends AbstractIndexingContext
+        extends AbstractIndexingContext
 {
     /**
      * A standard location for indices served up by a webserver.
@@ -116,14 +117,11 @@ public class DefaultIndexingContext
      */
     private GavCalculator gavCalculator;
 
-    private DefaultIndexingContext( String id,
-                                    String repositoryId,
-                                    File repository, //
+    private DefaultIndexingContext( String id, String repositoryId, File repository, //
                                     String repositoryUrl, String indexUpdateUrl,
                                     List<? extends IndexCreator> indexCreators, Directory indexDirectory,
-                                    TrackingLockFactory lockFactory,
-                                    boolean reclaimIndex )
-        throws ExistingLuceneIndexMismatchException, IOException
+                                    TrackingLockFactory lockFactory, boolean reclaimIndex )
+            throws ExistingLuceneIndexMismatchException, IOException
     {
 
         this.id = id;
@@ -165,12 +163,12 @@ public class DefaultIndexingContext
     }
 
     private DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
-                                   TrackingLockFactory lockFactory, String repositoryUrl, String indexUpdateUrl,
-                                   List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-        throws IOException, ExistingLuceneIndexMismatchException
+                                    TrackingLockFactory lockFactory, String repositoryUrl, String indexUpdateUrl,
+                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
+            throws IOException, ExistingLuceneIndexMismatchException
     {
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
-            FSDirectory.open( indexDirectoryFile.toPath(), lockFactory ), lockFactory, reclaimIndex );
+                FSDirectory.open( indexDirectoryFile.toPath(), lockFactory ), lockFactory, reclaimIndex );
 
         setIndexDirectoryFile( indexDirectoryFile );
     }
@@ -178,23 +176,24 @@ public class DefaultIndexingContext
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
                                    String repositoryUrl, String indexUpdateUrl,
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-        throws IOException, ExistingLuceneIndexMismatchException
+            throws IOException, ExistingLuceneIndexMismatchException
     {
-                this( id, repositoryId, repository, indexDirectoryFile, new TrackingLockFactory( FSLockFactory.getDefault() ),
-                        repositoryUrl, indexUpdateUrl, indexCreators, reclaimIndex );
+        this( id, repositoryId, repository, indexDirectoryFile, new TrackingLockFactory( FSLockFactory.getDefault() ),
+                repositoryUrl, indexUpdateUrl, indexCreators, reclaimIndex );
     }
 
     @Deprecated
     public DefaultIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
                                    String repositoryUrl, String indexUpdateUrl,
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
-        throws IOException, ExistingLuceneIndexMismatchException
+            throws IOException, ExistingLuceneIndexMismatchException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null, reclaimIndex ); //Lock factory already installed - pass null
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null,
+                reclaimIndex ); //Lock factory already installed - pass null
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            setIndexDirectoryFile(( (FSDirectory) indexDirectory ).getDirectory().toFile() );
+            setIndexDirectoryFile( ( ( FSDirectory ) indexDirectory ).getDirectory().toFile() );
         }
     }
 
@@ -202,12 +201,12 @@ public class DefaultIndexingContext
     {
         return indexDirectory;
     }
-    
+
     /**
      * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
      * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
      */
-    protected void setIndexDirectoryFile(File dir) throws IOException
+    protected void setIndexDirectoryFile( File dir ) throws IOException
     {
         if ( dir == null )
         {
@@ -229,8 +228,7 @@ public class DefaultIndexingContext
         return indexDirectoryFile;
     }
 
-    private void prepareIndex( boolean reclaimIndex )
-        throws IOException, ExistingLuceneIndexMismatchException
+    private void prepareIndex( boolean reclaimIndex ) throws IOException, ExistingLuceneIndexMismatchException
     {
         if ( DirectoryReader.indexExists( indexDirectory ) )
         {
@@ -266,8 +264,7 @@ public class DefaultIndexingContext
         timestamp = IndexUtils.getTimestamp( indexDirectory );
     }
 
-    private void prepareCleanIndex( boolean deleteExisting )
-        throws IOException
+    private void prepareCleanIndex( boolean deleteExisting ) throws IOException
     {
         if ( deleteExisting )
         {
@@ -293,7 +290,7 @@ public class DefaultIndexingContext
     }
 
     private void checkAndUpdateIndexDescriptor( boolean reclaimIndex )
-        throws IOException, ExistingLuceneIndexMismatchException
+            throws IOException, ExistingLuceneIndexMismatchException
     {
         if ( reclaimIndex )
         {
@@ -314,7 +311,7 @@ public class DefaultIndexingContext
                 if ( collector.getTotalHits() == 0 )
                 {
                     throw new ExistingLuceneIndexMismatchException(
-                        "The existing index has no NexusIndexer descriptor" );
+                            "The existing index has no NexusIndexer " + "descriptor" );
                 }
 
                 if ( collector.getTotalHits() > 1 )
@@ -326,10 +323,10 @@ public class DefaultIndexingContext
                 else
                 {
                     // good, we have one descriptor as should
-                    Document descriptor = indexSearcher.doc( collector.topDocs().scoreDocs[0].doc );
+                    Document descriptor = indexSearcher.doc( collector.topDocs().scoreDocs[ 0 ].doc );
                     String[] h = StringUtils.split( descriptor.get( FLD_IDXINFO ), ArtifactInfo.FS );
                     // String version = h[0];
-                    String repoId = h[1];
+                    String repoId = h[ 1 ];
 
                     // // compare version
                     // if ( !VERSION.equals( version ) )
@@ -345,7 +342,7 @@ public class DefaultIndexingContext
                     else if ( !getRepositoryId().equals( repoId ) )
                     {
                         throw new ExistingLuceneIndexMismatchException( "The existing index is for repository " //
-                            + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
+                                + "[" + repoId + "] and not for repository [" + getRepositoryId() + "]" );
                     }
                 }
             }
@@ -356,14 +353,14 @@ public class DefaultIndexingContext
         }
     }
 
-    private void storeDescriptor()
-        throws IOException
+    private void storeDescriptor() throws IOException
     {
         Document hdr = new Document();
 
         hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
-        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES, Field.Index.NO ) );
+        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES,
+                Field.Index.NO ) );
 
         IndexWriter w = getIndexWriter();
 
@@ -372,8 +369,7 @@ public class DefaultIndexingContext
         w.commit();
     }
 
-    private void deleteIndexFiles( boolean full )
-        throws IOException
+    private void deleteIndexFiles( boolean full ) throws IOException
     {
         if ( indexDirectory != null )
         {
@@ -382,11 +378,12 @@ public class DefaultIndexingContext
             if ( names != null )
             {
 
-                for (String name : names)
+                for ( String name : names )
                 {
-                    if (! (name.equals(INDEX_PACKER_PROPERTIES_FILE) || name.equals(INDEX_UPDATER_PROPERTIES_FILE) ))
+                    if ( !( name.equals( INDEX_PACKER_PROPERTIES_FILE ) || name
+                            .equals( INDEX_UPDATER_PROPERTIES_FILE ) ) )
                     {
-                        indexDirectory.deleteFile(name);
+                        indexDirectory.deleteFile( name );
                     }
                 }
             }
@@ -433,20 +430,17 @@ public class DefaultIndexingContext
         return id;
     }
 
-    public void updateTimestamp()
-        throws IOException
+    public void updateTimestamp() throws IOException
     {
         updateTimestamp( false );
     }
 
-    public void updateTimestamp( boolean save )
-        throws IOException
+    public void updateTimestamp( boolean save ) throws IOException
     {
         updateTimestamp( save, new Date() );
     }
 
-    public void updateTimestamp( boolean save, Date timestamp )
-        throws IOException
+    public void updateTimestamp( boolean save, Date timestamp ) throws IOException
     {
         this.timestamp = timestamp;
 
@@ -461,8 +455,7 @@ public class DefaultIndexingContext
         return timestamp;
     }
 
-    public int getSize()
-        throws IOException
+    public int getSize() throws IOException
     {
         final IndexSearcher is = acquireIndexSearcher();
         try
@@ -507,8 +500,7 @@ public class DefaultIndexingContext
         return new NexusAnalyzer();
     }
 
-    protected void openAndWarmup()
-        throws IOException
+    protected void openAndWarmup() throws IOException
     {
         // IndexWriter (close)
         if ( indexWriter != null )
@@ -531,7 +523,7 @@ public class DefaultIndexingContext
 
     /**
      * Returns new IndexWriterConfig instance
-     * 
+     *
      * @since 5.1
      */
     protected IndexWriterConfig getWriterConfig()
@@ -539,22 +531,19 @@ public class DefaultIndexingContext
         return NexusIndexWriter.defaultConfig();
     }
 
-    public IndexWriter getIndexWriter()
-        throws IOException
+    public IndexWriter getIndexWriter() throws IOException
     {
         return indexWriter;
     }
 
-    public IndexSearcher acquireIndexSearcher()
-        throws IOException
+    public IndexSearcher acquireIndexSearcher() throws IOException
     {
         // TODO: move this to separate thread to not penalty next incoming searcher
         searcherManager.maybeRefresh();
         return searcherManager.acquire();
     }
 
-    public void releaseIndexSearcher( final IndexSearcher is )
-        throws IOException
+    public void releaseIndexSearcher( final IndexSearcher is ) throws IOException
     {
         if ( is == null )
         {
@@ -563,26 +552,22 @@ public class DefaultIndexingContext
         searcherManager.release( is );
     }
 
-    public void commit()
-        throws IOException
+    public void commit() throws IOException
     {
         getIndexWriter().commit();
     }
 
-    public void rollback()
-        throws IOException
+    public void rollback() throws IOException
     {
         getIndexWriter().rollback();
     }
 
-    public synchronized void optimize()
-        throws CorruptIndexException, IOException
+    public synchronized void optimize() throws CorruptIndexException, IOException
     {
         commit();
     }
 
-    public synchronized void close( boolean deleteFiles )
-        throws IOException
+    public synchronized void close( boolean deleteFiles ) throws IOException
     {
         if ( indexDirectory != null )
         {
@@ -597,8 +582,7 @@ public class DefaultIndexingContext
         indexDirectory = null;
     }
 
-    public synchronized void purge()
-        throws IOException
+    public synchronized void purge() throws IOException
     {
         closeReaders();
         deleteIndexFiles( true );
@@ -615,14 +599,13 @@ public class DefaultIndexingContext
         updateTimestamp( true, null );
     }
 
-    public synchronized void replace( Directory directory )
-        throws IOException
+    public synchronized void replace( Directory directory ) throws IOException
     {
         replace( directory, null, null );
     }
 
     public synchronized void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
-        throws IOException
+            throws IOException
     {
         final Date ts = IndexUtils.getTimestamp( directory );
         closeReaders();
@@ -650,14 +633,12 @@ public class DefaultIndexingContext
         optimize();
     }
 
-    public synchronized void merge( Directory directory )
-        throws IOException
+    public synchronized void merge( Directory directory ) throws IOException
     {
         merge( directory, null );
     }
 
-    public synchronized void merge( Directory directory, DocumentFilter filter )
-        throws IOException
+    public synchronized void merge( Directory directory, DocumentFilter filter ) throws IOException
     {
         final IndexSearcher s = acquireIndexSearcher();
         try
@@ -668,11 +649,11 @@ public class DefaultIndexingContext
             try
             {
                 int numDocs = directoryReader.maxDoc();
-                
-                Bits liveDocs = MultiFields.getLiveDocs(directoryReader);
+
+                Bits liveDocs = MultiFields.getLiveDocs( directoryReader );
                 for ( int i = 0; i < numDocs; i++ )
                 {
-                    if (liveDocs != null && ! liveDocs.get(i) )
+                    if ( liveDocs != null && !liveDocs.get( i ) )
                     {
                         continue;
                     }
@@ -735,8 +716,7 @@ public class DefaultIndexingContext
         }
     }
 
-    private void closeReaders()
-        throws CorruptIndexException, IOException
+    private void closeReaders() throws CorruptIndexException, IOException
     {
         if ( searcherManager != null )
         {
@@ -762,8 +742,7 @@ public class DefaultIndexingContext
 
     // groups
 
-    public synchronized void rebuildGroups()
-        throws IOException
+    public synchronized void rebuildGroups() throws IOException
     {
         final IndexSearcher is = acquireIndexSearcher();
         try
@@ -774,11 +753,11 @@ public class DefaultIndexingContext
             Set<String> allGroups = new LinkedHashSet<String>();
 
             int numDocs = r.maxDoc();
-            Bits liveDocs = MultiFields.getLiveDocs(r);
+            Bits liveDocs = MultiFields.getLiveDocs( r );
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if (liveDocs != null && !liveDocs.get(i) )
+                if ( liveDocs != null && !liveDocs.get( i ) )
                 {
                     continue;
                 }
@@ -806,34 +785,30 @@ public class DefaultIndexingContext
         }
     }
 
-    public Set<String> getAllGroups()
-        throws IOException
+    public Set<String> getAllGroups() throws IOException
     {
         return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
     }
 
-    public synchronized void setAllGroups( Collection<String> groups )
-        throws IOException
+    public synchronized void setAllGroups( Collection<String> groups ) throws IOException
     {
         setGroups( groups, ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
         commit();
     }
 
-    public Set<String> getRootGroups()
-        throws IOException
+    public Set<String> getRootGroups() throws IOException
     {
         return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
     }
 
-    public synchronized void setRootGroups( Collection<String> groups )
-        throws IOException
+    public synchronized void setRootGroups( Collection<String> groups ) throws IOException
     {
         setGroups( groups, ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
         commit();
     }
 
     protected Set<String> getGroups( String field, String filedValue, String listField )
-        throws IOException, CorruptIndexException
+            throws IOException, CorruptIndexException
     {
         final TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
         final IndexSearcher indexSearcher = acquireIndexSearcher();
@@ -844,7 +819,7 @@ public class DefaultIndexingContext
             Set<String> groups = new LinkedHashSet<String>( Math.max( 10, topDocs.totalHits ) );
             if ( topDocs.totalHits > 0 )
             {
-                Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );
+                Document doc = indexSearcher.doc( topDocs.scoreDocs[ 0 ].doc );
                 String groupList = doc.get( listField );
                 if ( groupList != null )
                 {
@@ -860,12 +835,11 @@ public class DefaultIndexingContext
     }
 
     protected void setGroups( Collection<String> groups, String groupField, String groupFieldValue,
-                              String groupListField )
-        throws IOException, CorruptIndexException
+                              String groupListField ) throws IOException, CorruptIndexException
     {
         final IndexWriter w = getIndexWriter();
         w.updateDocument( new Term( groupField, groupFieldValue ),
-            createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
+                createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
     }
 
     protected Document createGroupsDocument( Collection<String> groups, String field, String fieldValue,
@@ -873,9 +847,9 @@ public class DefaultIndexingContext
     {
         final Document groupDoc = new Document();
         groupDoc.add( new Field( field, //
-            fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+                fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
         groupDoc.add( new Field( listField, //
-            ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
+                ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
         return groupDoc;
     }
 
@@ -892,34 +866,46 @@ public class DefaultIndexingContext
         //For now try to do the best to simulate the IndexWriter.unlock at least on FSDirectory
         //using FSLockFactory, the RAMDirectory uses SingleInstanceLockFactory.
         //custom lock factory?
-        if (lockFactory != null) {
-            final Set<? extends Lock> emittedLocks = lockFactory.getEmittedLocks(IndexWriter.WRITE_LOCK_NAME);
-            for (Lock emittedLock : emittedLocks) {
+        if ( lockFactory != null )
+        {
+            final Set<? extends Lock> emittedLocks = lockFactory.getEmittedLocks( IndexWriter.WRITE_LOCK_NAME );
+            for ( Lock emittedLock : emittedLocks )
+            {
                 emittedLock.close();
             }
         }
-        if (dir instanceof FSDirectory) {
-            final FSDirectory fsdir = (FSDirectory) dir;
+        if ( dir instanceof FSDirectory )
+        {
+            final FSDirectory fsdir = ( FSDirectory ) dir;
             final Path dirPath = fsdir.getDirectory();
-            if (Files.isDirectory(dirPath)) {
-                Path lockPath = dirPath.resolve(IndexWriter.WRITE_LOCK_NAME);
-                try {
+            if ( Files.isDirectory( dirPath ) )
+            {
+                Path lockPath = dirPath.resolve( IndexWriter.WRITE_LOCK_NAME );
+                try
+                {
                     lockPath = lockPath.toRealPath();
-                } catch (IOException ioe) {
+                }
+                catch ( IOException ioe )
+                {
                     //Not locked
                     return;
                 }
-                try (final FileChannel fc = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                try ( final FileChannel fc = FileChannel
+                        .open( lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE ) )
+                {
                     final FileLock lck = fc.tryLock();
-                    if (lck == null) {
+                    if ( lck == null )
+                    {
                         //Still active
-                        throw new LockObtainFailedException("Lock held by another process: " + lockPath);
-                    } else {
+                        throw new LockObtainFailedException( "Lock held by another process: " + lockPath );
+                    }
+                    else
+                    {
                         //Not held fine to release
                         lck.close();
                     }
                 }
-                Files.delete(lockPath);
+                Files.delete( lockPath );
             }
         }
     }

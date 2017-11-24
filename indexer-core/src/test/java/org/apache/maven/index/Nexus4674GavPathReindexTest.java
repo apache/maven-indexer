@@ -24,13 +24,12 @@ import java.util.Collection;
 import java.util.Set;
 
 public class Nexus4674GavPathReindexTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS );
 
@@ -38,8 +37,7 @@ public class Nexus4674GavPathReindexTest
         nexusIndexer.scan( context, "/org/slf4j/slf4j-api/1.4.1", null, true );
     }
 
-    public void testRootGroups()
-        throws Exception
+    public void testRootGroups() throws Exception
     {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals( rootGroups.toString(), 1, rootGroups.size() );
@@ -49,8 +47,7 @@ public class Nexus4674GavPathReindexTest
         assertGroup( 4, "org.slf4j", context );
     }
 
-    public void testIdentify()
-        throws Exception
+    public void testIdentify() throws Exception
     {
         Collection<ArtifactInfo> ais;
         File artifact;

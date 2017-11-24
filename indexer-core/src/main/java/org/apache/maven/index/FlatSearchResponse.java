@@ -19,17 +19,17 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Set;
-
 import org.apache.lucene.search.Query;
+
+import java.util.Set;
 
 /**
  * A flat search response.
- * 
+ *
  * @see Indexer#searchFlat(FlatSearchRequest)
  */
 public class FlatSearchResponse
-    extends AbstractSearchResponse
+        extends AbstractSearchResponse
 {
     private final Set<ArtifactInfo> results;
 

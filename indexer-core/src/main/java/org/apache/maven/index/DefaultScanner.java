@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.maven.index.context.IndexingContext;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -28,18 +30,16 @@ import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.maven.index.context.IndexingContext;
-
 /**
  * A default repository scanner for Maven 2 repository.
- * 
+ *
  * @author Jason Van Zyl
  * @author Tamas Cservenak
  */
 @Singleton
 @Named
 public class DefaultScanner
-    implements Scanner
+        implements Scanner
 {
 
     private final ArtifactContextProducer artifactContextProducer;
@@ -124,7 +124,7 @@ public class DefaultScanner
      * -> POM direction is trivial.
      */
     private static class ScannerFileComparator
-        implements Comparator<File>
+            implements Comparator<File>
     {
         public int compare( File o1, File o2 )
         {

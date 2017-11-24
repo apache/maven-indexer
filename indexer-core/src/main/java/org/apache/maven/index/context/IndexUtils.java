@@ -19,14 +19,6 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.NoSuchFileException;
-import java.util.Date;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -38,6 +30,14 @@ import org.apache.lucene.store.IndexOutput;
 import org.apache.maven.index.ArtifactInfo;
 import org.codehaus.plexus.util.FileUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.NoSuchFileException;
+import java.util.Date;
+
 public class IndexUtils
 {
     public static final String TIMESTAMP_FILE = "timestamp";
@@ -46,12 +46,11 @@ public class IndexUtils
 
     // Directory
 
-    public static void copyDirectory( Directory source, Directory target )
-        throws IOException
+    public static void copyDirectory( Directory source, Directory target ) throws IOException
     {
         //FIXME: check if this copies too much, Lucene 4 has no filter for lucene files
         //Directory.copy( source, target, false );
-        
+
         for ( String file : source.listAll() )
         {
             target.copyFrom( source, file, file, IOContext.DEFAULT );
@@ -64,20 +63,19 @@ public class IndexUtils
         updateTimestamp( target, ts );
     }
 
-    public static boolean copyFile( Directory source, Directory target, String name )
-        throws IOException
+    public static boolean copyFile( Directory source, Directory target, String name ) throws IOException
     {
         return copyFile( source, target, name, name );
     }
 
     public static boolean copyFile( Directory source, Directory target, String srcName, String targetName )
-        throws IOException
+            throws IOException
     {
         try
         {
-            source.fileLength(  srcName  ); // instead of fileExists
+            source.fileLength( srcName ); // instead of fileExists
         }
-        catch (FileNotFoundException | NoSuchFileException e)
+        catch ( FileNotFoundException | NoSuchFileException e )
         {
             return false;
         }
@@ -102,7 +100,7 @@ public class IndexUtils
         // Add minimal information to the artifact info linking it to the context it belongs to.
         try
         {
-            artifactInfo.setRepository(context.getRepositoryId());
+            artifactInfo.setRepository( context.getRepositoryId() );
         }
         catch ( UnsupportedOperationException e )
         {
@@ -110,7 +108,7 @@ public class IndexUtils
         }
         try
         {
-            artifactInfo.setContext(context.getId());
+            artifactInfo.setContext( context.getId() );
         }
         catch ( Exception e )
         {
@@ -132,12 +130,14 @@ public class IndexUtils
 
     public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified )
     {
-         return updateDocument(doc, context, updateLastModified, null);
+        return updateDocument( doc, context, updateLastModified, null );
     }
 
-    public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified, ArtifactInfo ai )
+    public static Document updateDocument( Document doc, IndexingContext context, boolean updateLastModified,
+                                           ArtifactInfo ai )
     {
-        if( ai == null ) {
+        if ( ai == null )
+        {
             ai = constructArtifactInfo( doc, context );
             if ( ai == null )
             {
@@ -152,7 +152,7 @@ public class IndexUtils
         if ( updateLastModified || doc.getField( ArtifactInfo.LAST_MODIFIED ) == null )
         {
             document.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+                    Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
         }
         else
         {
@@ -167,21 +167,19 @@ public class IndexUtils
         return document;
     }
 
-    public static void deleteTimestamp( Directory directory )
-        throws IOException
+    public static void deleteTimestamp( Directory directory ) throws IOException
     {
         try
         {
             directory.deleteFile( TIMESTAMP_FILE );
         }
-        catch (FileNotFoundException | NoSuchFileException e)
+        catch ( FileNotFoundException | NoSuchFileException e )
         {
             //Does not exist
         }
     }
 
-    public static void updateTimestamp( Directory directory, Date timestamp )
-        throws IOException
+    public static void updateTimestamp( Directory directory, Date timestamp ) throws IOException
     {
         synchronized ( directory )
         {
@@ -191,7 +189,7 @@ public class IndexUtils
             {
                 deleteTimestamp( directory );
 
-                IndexOutput io = directory.createOutput( TIMESTAMP_FILE, IOContext.DEFAULT);
+                IndexOutput io = directory.createOutput( TIMESTAMP_FILE, IOContext.DEFAULT );
 
                 try
                 {
@@ -210,11 +208,15 @@ public class IndexUtils
         synchronized ( directory )
         {
             Date result = null;
-            try (IndexInput ii = directory.openInput( TIMESTAMP_FILE, IOContext.DEFAULT)) {
+            try ( IndexInput ii = directory.openInput( TIMESTAMP_FILE, IOContext.DEFAULT ) )
+            {
                 result = new Date( ii.readLong() );
-            } catch (FileNotFoundException | NoSuchFileException e) {
+            }
+            catch ( FileNotFoundException | NoSuchFileException e )
+            {
                 //Does not exist
-            } catch ( IOException ex )
+            }
+            catch ( IOException ex )
             {
                 //IO failure
             }

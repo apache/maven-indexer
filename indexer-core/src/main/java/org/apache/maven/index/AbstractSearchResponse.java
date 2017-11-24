@@ -19,13 +19,13 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+
 import java.io.Closeable;
 import java.io.IOException;
 
-import org.apache.lucene.search.Query;
-
 public class AbstractSearchResponse
-    implements Closeable
+        implements Closeable
 {
     private final Query query;
 
@@ -49,7 +49,7 @@ public class AbstractSearchResponse
 
     /**
      * Returns the number of total hits found. This may be different that actual hits returned (is usually more).
-     * 
+     *
      * @return
      * @deprecated use {@link #getTotalHitsCount()} instead.
      */
@@ -62,7 +62,7 @@ public class AbstractSearchResponse
      * Returns the number of total hits found by this query (total number of potential hits as reported by Lucene
      * index). This is the number of existing AIs matching your query, and does not represent the count of hits
      * delivered, which is returned by {@link #getReturnedHitsCount()}.
-     * 
+     *
      * @return
      */
     public int getTotalHitsCount()
@@ -75,7 +75,7 @@ public class AbstractSearchResponse
      * (like count set on request) and filtering, paging, etc. Warning: this number's meaning depends on actual search
      * response (for flat response number of actual AIs, for grouped response number of actual groups), and also, might
      * be not precise at all (see {@link IteratorSearchResponse}).
-     * 
+     *
      * @return
      */
     public int getReturnedHitsCount()
@@ -85,10 +85,10 @@ public class AbstractSearchResponse
 
     /**
      * Returns true if hit limit exceeded.
-     * 
+     *
      * @return
-     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
+     * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      */
     public boolean isHitLimitExceeded()
     {
@@ -98,11 +98,10 @@ public class AbstractSearchResponse
     /**
      * Frees any resource associated with this response. Should be called as last method on this response, when it's not
      * used anymore.
-     * 
+     *
      * @throws IOException
      */
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         // noop
     }

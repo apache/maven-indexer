@@ -19,16 +19,16 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.search.IndexSearcher;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.search.IndexSearcher;
 
 public class NexusIndexMultiReader
 {
@@ -41,8 +41,7 @@ public class NexusIndexMultiReader
         this.contexts = Collections.unmodifiableList( new ArrayList<IndexingContext>( contexts ) );
     }
 
-    public synchronized IndexReader acquire()
-        throws IOException
+    public synchronized IndexReader acquire() throws IOException
     {
         if ( searchers != null )
         {
@@ -57,11 +56,10 @@ public class NexusIndexMultiReader
             searchers.add( indexSearcher );
             contextReaders.add( indexSearcher.getIndexReader() );
         }
-        return new MultiReader( contextReaders.toArray( new IndexReader[contextReaders.size()] ) );
+        return new MultiReader( contextReaders.toArray( new IndexReader[ contextReaders.size() ] ) );
     }
 
-    public synchronized void release()
-        throws IOException
+    public synchronized void release() throws IOException
     {
         if ( searchers != null )
         {
@@ -75,7 +73,8 @@ public class NexusIndexMultiReader
 
             if ( ic.hasNext() || is.hasNext() )
             {
-                throw new IllegalStateException( "Context and IndexSearcher mismatch: " + contexts + " vs " + searchers );
+                throw new IllegalStateException(
+                        "Context and IndexSearcher mismatch: " + contexts + " vs " + searchers );
             }
         }
 
@@ -85,7 +84,7 @@ public class NexusIndexMultiReader
     /**
      * Watch out with this method, as it's use depends on (if you control it at all) was {@link #acquire()} method
      * invoked at all or not. Returns {@code null} if not, otherwise the list of acquired searchers. Not thread safe.
-     * 
+     *
      * @return
      */
     public synchronized List<IndexSearcher> getAcquiredSearchers()

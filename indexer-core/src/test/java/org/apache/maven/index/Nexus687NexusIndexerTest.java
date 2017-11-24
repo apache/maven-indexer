@@ -19,32 +19,30 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.lucene.search.Query;
-
 /**
  * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
  */
 public class Nexus687NexusIndexerTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/nexus-687" );
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-687", "nexus-687", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer
+                .addIndexingContext( "nexus-687", "nexus-687", repo, indexDir, null, null, DEFAULT_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    public void testSearchFlat()
-        throws Exception
+    public void testSearchFlat() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "xstream", SearchType.SCORED );
 
@@ -66,6 +64,6 @@ public class Nexus687NexusIndexerTest
 
         assertEquals( "1.2.2", ai.getVersion() );
 
-        assertEquals( "jar",  ai.getPackaging() );
+        assertEquals( "jar", ai.getPackaging() );
     }
 }

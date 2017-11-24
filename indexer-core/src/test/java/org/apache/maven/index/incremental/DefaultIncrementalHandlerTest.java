@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class DefaultIncrementalHandlerTest
-    extends AbstractIndexCreatorHelper
+        extends AbstractIndexCreatorHelper
 {
     IncrementalHandler handler = null;
 
@@ -49,8 +49,7 @@ public class DefaultIncrementalHandlerTest
     File repoDir = null;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -66,16 +65,14 @@ public class DefaultIncrementalHandlerTest
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         super.tearDown();
 
         indexer.removeIndexingContext( context, true );
     }
 
-    public void testUpdateInvalidProperties()
-        throws Exception
+    public void testUpdateInvalidProperties() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try
@@ -104,8 +101,7 @@ public class DefaultIncrementalHandlerTest
         }
     }
 
-    public void testUpdateValid()
-        throws Exception
+    public void testUpdateValid() throws Exception
     {
         Properties properties = new Properties();
 
@@ -129,35 +125,30 @@ public class DefaultIncrementalHandlerTest
         }
     }
 
-    public void testRemoteUpdatesInvalidProperties()
-        throws Exception
+    public void testRemoteUpdatesInvalidProperties() throws Exception
     {
         // just a dummy fetcher, it's not used here anyway
         IndexUpdateRequest request = new IndexUpdateRequest( context, new ResourceFetcher()
         {
-            public InputStream retrieve( String name )
-                throws IOException, FileNotFoundException
+            public InputStream retrieve( String name ) throws IOException, FileNotFoundException
             {
                 // TODO Auto-generated method stub
                 return null;
             }
 
-            public void retrieve( String name, File targetFile )
-                throws IOException, FileNotFoundException
+            public void retrieve( String name, File targetFile ) throws IOException, FileNotFoundException
             {
                 // TODO Auto-generated method stub
 
             }
 
-            public void disconnect()
-                throws IOException
+            public void disconnect() throws IOException
             {
                 // TODO Auto-generated method stub
 
             }
 
-            public void connect( String id, String url )
-                throws IOException
+            public void connect( String id, String url ) throws IOException
             {
                 // TODO Auto-generated method stub
 

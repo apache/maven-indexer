@@ -41,7 +41,7 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  * @since 5.1.2
  */
 public class IndexReader
-    implements Iterable<ChunkReader>, Closeable
+        implements Iterable<ChunkReader>, Closeable
 {
     private final WritableResourceHandler local;
 
@@ -59,8 +59,7 @@ public class IndexReader
 
     private final List<String> chunkNames;
 
-    public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
-        throws IOException
+    public IndexReader( final WritableResourceHandler local, final ResourceHandler remote ) throws IOException
     {
         if ( remote == null )
         {
@@ -86,8 +85,8 @@ public class IndexReader
                     if ( remoteIndexId == null || localIndexId == null || !remoteIndexId.equals( localIndexId ) )
                     {
                         throw new IllegalArgumentException(
-                            "local and remote index IDs does not match or is null: " + localIndexId + ", "
-                                + remoteIndexId );
+                                "local and remote index IDs does not match or is null: " + localIndexId + ", "
+                                        + remoteIndexId );
                     }
                     this.indexId = localIndexId;
                     this.incremental = canRetrieveAllChunks();
@@ -105,8 +104,8 @@ public class IndexReader
                 this.indexId = remoteIndexProperties.getProperty( "nexus.index.id" );
                 this.incremental = false;
             }
-            this.publishedTimestamp =
-                Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
+            this.publishedTimestamp = Utils.INDEX_DATE_FORMAT
+                    .parse( remoteIndexProperties.getProperty( "nexus.index" + ".timestamp" ) );
             this.chunkNames = calculateChunkNames();
         }
         catch ( ParseException e )
@@ -135,7 +134,8 @@ public class IndexReader
     }
 
     /**
-     * Returns {@code true} if incremental update is about to happen. If incremental update, the {@link #iterator()} will
+     * Returns {@code true} if incremental update is about to happen. If incremental update, the {@link #iterator()}
+     * will
      * return only the diff from the last update.
      */
     public boolean isIncremental()
@@ -155,13 +155,13 @@ public class IndexReader
 
     /**
      * Closes the underlying {@link ResourceHandler}s. In case of incremental update use, it also assumes that user
-     * consumed all the iterator and integrated it, hence, it will update the {@link WritableResourceHandler} contents to
+     * consumed all the iterator and integrated it, hence, it will update the {@link WritableResourceHandler}
+     * contents to
      * prepare it for future incremental update. If this is not desired (ie. due to aborted update), then this method
      * should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
      * this class should be closed manually.
      */
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         remote.close();
         if ( local != null )
@@ -191,8 +191,7 @@ public class IndexReader
      * Stores the remote index properties into local index properties, preparing local {@link WritableResourceHandler}
      * for future incremental updates.
      */
-    private void syncLocalWithRemote()
-        throws IOException
+    private void syncLocalWithRemote() throws IOException
     {
         storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), remoteIndexProperties );
     }
@@ -236,14 +235,14 @@ public class IndexReader
 
         try
         {
-            int localLastIncremental =
-                Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
+            int localLastIncremental = Integer
+                    .parseInt( localIndexProperties.getProperty( "nexus.index" + "" + "" + ".last-incremental" ) );
             String currentLocalCounter = String.valueOf( localLastIncremental );
             String nextLocalCounter = String.valueOf( localLastIncremental + 1 );
             // check remote props for existence of current or next chunk after local
             for ( Object key : remoteIndexProperties.keySet() )
             {
-                String sKey = (String) key;
+                String sKey = ( String ) key;
                 if ( sKey.startsWith( "nexus.index.incremental-" ) )
                 {
                     String value = remoteIndexProperties.getProperty( sKey );
@@ -266,7 +265,7 @@ public class IndexReader
      * is being consumed.
      */
     private static class ChunkReaderIterator
-        implements Iterator<ChunkReader>
+            implements Iterator<ChunkReader>
     {
         private final ResourceHandler resourceHandler;
 

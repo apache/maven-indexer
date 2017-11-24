@@ -19,14 +19,14 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.StringUtils;
 
+import java.io.File;
+
 /**
  * A scanning request provides various input parameters for repository scan
- * 
+ *
  * @author Jason van Zyl
  */
 public class ScanningRequest

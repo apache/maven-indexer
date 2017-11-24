@@ -27,7 +27,7 @@ import org.codehaus.plexus.PlexusTestCase;
  * @author cstamas
  */
 public class AbstractTestSupport
-    extends PlexusTestCase
+        extends PlexusTestCase
 {
     @Override
     protected void customizeContainerConfiguration( final ContainerConfiguration containerConfiguration )

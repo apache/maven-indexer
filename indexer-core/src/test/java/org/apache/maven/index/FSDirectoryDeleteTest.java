@@ -19,15 +19,15 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
 
+import java.io.File;
+
 public class FSDirectoryDeleteTest
-    extends AbstractIndexCreatorHelper
+        extends AbstractIndexCreatorHelper
 {
     protected NexusIndexer nexusIndexer;
 
@@ -46,8 +46,7 @@ public class FSDirectoryDeleteTest
     protected Directory otherIndexDir;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -61,15 +60,14 @@ public class FSDirectoryDeleteTest
 
         otherIndexDir = FSDirectory.open( otherIndexDirFile.toPath() );
 
-        otherContext =
-            nexusIndexer.addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );
+        otherContext = nexusIndexer
+                .addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );
 
         nexusIndexer.scan( otherContext );
     }
 
     @Override
-    protected void tearDown()
-        throws Exception
+    protected void tearDown() throws Exception
     {
         super.tearDown();
 
@@ -82,15 +80,14 @@ public class FSDirectoryDeleteTest
         super.deleteDirectory( otherIndexDirFile );
     }
 
-    public void testIndexAndDelete()
-        throws Exception
+    public void testIndexAndDelete() throws Exception
     {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         final IndexSearcher otherIndexSearcher = otherContext.acquireIndexSearcher();
-        
+
         indexSearcher.getIndexReader().maxDoc();
         otherIndexSearcher.getIndexReader().maxDoc();
-        
+
         context.releaseIndexSearcher( indexSearcher );
         otherContext.releaseIndexSearcher( otherIndexSearcher );
 

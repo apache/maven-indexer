@@ -23,18 +23,17 @@ import java.io.IOException;
 
 /**
  * Component rendering a "tree" based on index data.
- * 
+ *
  * @author cstamas
  */
 public interface IndexTreeView
 {
     /**
      * Returns the TreeNode, as calculated by passed in request, using index data.
-     * 
+     *
      * @param request
      * @return
      * @throws IOException
      */
-    TreeNode listNodes( TreeViewRequest request )
-        throws IOException;
+    TreeNode listNodes( TreeViewRequest request ) throws IOException;
 }

@@ -39,14 +39,13 @@ import static org.junit.Assert.assertThat;
  * UT for {@link ChunkReader}
  */
 public class ChunkReaderTest
-    extends TestSupport
+        extends TestSupport
 {
     @Test
-    public void simple()
-        throws IOException
+    public void simple() throws IOException
     {
         final ChunkReader chunkReader = new ChunkReader( "full", testResourceHandler( "simple" ) //
-            .locate( "nexus-maven-repository-index.gz" ).read() );
+                .locate( "nexus-maven-repository-index.gz" ).read() );
         final Map<Type, List<Record>> recordTypes = loadRecordsByType( chunkReader );
         assertThat( recordTypes.get( Type.DESCRIPTOR ).size(), equalTo( 1 ) );
         assertThat( recordTypes.get( Type.ROOT_GROUPS ).size(), equalTo( 1 ) );
@@ -56,19 +55,17 @@ public class ChunkReaderTest
     }
 
     @Test
-    public void roundtrip()
-        throws IOException
+    public void roundtrip() throws IOException
     {
         final Date published;
         File tempChunkFile = createTempFile( "nexus-maven-repository-index.gz" );
         {
             final Resource resource = testResourceHandler( "simple" ) //
-                .locate( "nexus-maven-repository-index.gz" );
+                    .locate( "nexus-maven-repository-index.gz" );
 
-            try (ChunkReader chunkReader = new ChunkReader( "full",
-                                                            resource.read() ); ChunkWriter chunkWriter = new ChunkWriter(
-                chunkReader.getName(), //
-                new FileOutputStream( tempChunkFile ), 1, new Date() ))
+            try ( ChunkReader chunkReader = new ChunkReader( "full", resource.read() );
+                  ChunkWriter chunkWriter = new ChunkWriter( chunkReader.getName(), //
+                          new FileOutputStream( tempChunkFile ), 1, new Date() ) )
             {
                 chunkWriter.writeChunk( chunkReader.iterator() );
                 published = chunkWriter.getTimestamp();

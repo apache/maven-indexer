@@ -19,19 +19,19 @@ package org.apache.maven.index.util;
  * under the License.
  */
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.AbstractIndexCreator;
 
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 public class SpoofIndexCreator
-    extends AbstractIndexCreator
+        extends AbstractIndexCreator
 {
     protected SpoofIndexCreator( final String id, final List<String> creatorDependencies )
     {
@@ -43,8 +43,7 @@ public class SpoofIndexCreator
         return Collections.emptyList();
     }
 
-    public void populateArtifactInfo( ArtifactContext artifactContext )
-        throws IOException
+    public void populateArtifactInfo( ArtifactContext artifactContext ) throws IOException
     {
         // TODO Auto-generated method stub
     }

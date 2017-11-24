@@ -18,18 +18,18 @@
 
 <configuration>
 
-  <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>[%p] %c - %m%n</pattern>
-    </encoder>
-  </appender>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%p] %c - %m%n</pattern>
+        </encoder>
+    </appender>
 
-  <logger name="org.springframework" level="ERROR" />
-  <logger name="org.apache.maven.indexer.examples.indexing" level="DEBUG" />
-  <logger name="org.apache.maven.indexer.examples.boot" level="ERROR" />
+    <logger name="org.springframework" level="ERROR"/>
+    <logger name="org.apache.maven.indexer.examples.indexing" level="DEBUG"/>
+    <logger name="org.apache.maven.indexer.examples.boot" level="ERROR"/>
 
-  <root level="ERROR">
-    <appender-ref ref="stdout" />
-  </root>
+    <root level="ERROR">
+        <appender-ref ref="stdout"/>
+    </root>
 
 </configuration>

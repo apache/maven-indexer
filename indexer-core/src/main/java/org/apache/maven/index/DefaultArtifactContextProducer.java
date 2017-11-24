@@ -19,11 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.File;
-
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.context.IndexingContext;
@@ -34,16 +29,21 @@ import org.apache.maven.index.locator.MetadataLocator;
 import org.apache.maven.index.locator.PomLocator;
 import org.codehaus.plexus.util.StringUtils;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.File;
+
 /**
  * A default implementation of the {@link ArtifactContextProducer}.
- * 
+ *
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
 @Singleton
 @Named
 public class DefaultArtifactContextProducer
-    implements ArtifactContextProducer
+        implements ArtifactContextProducer
 {
 
     private final ArtifactPackagingMapper mapper;
@@ -117,7 +117,8 @@ public class DefaultArtifactContextProducer
 
         String classifier = gav.getClassifier();
 
-        ArtifactInfo ai = new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier, gav.getExtension() );
+        ArtifactInfo ai = new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier,
+                gav.getExtension() );
 
         // store extension if classifier is not empty
         if ( !StringUtils.isEmpty( ai.getClassifier() ) )
@@ -143,12 +144,12 @@ public class DefaultArtifactContextProducer
         String filename = file.getName();
 
         if ( filename.equals( "maven-metadata.xml" )
-        // || filename.endsWith( "-javadoc.jar" )
-        // || filename.endsWith( "-javadocs.jar" )
-        // || filename.endsWith( "-sources.jar" )
-            || filename.endsWith( ".properties" )
-            // || filename.endsWith( ".xml" ) // NEXUS-3029
-            || filename.endsWith( ".asc" ) || filename.endsWith( ".md5" ) || filename.endsWith( ".sha1" ) )
+                // || filename.endsWith( "-javadoc.jar" )
+                // || filename.endsWith( "-javadocs.jar" )
+                // || filename.endsWith( "-sources.jar" )
+                || filename.endsWith( ".properties" )
+                // || filename.endsWith( ".xml" ) // NEXUS-3029
+                || filename.endsWith( ".asc" ) || filename.endsWith( ".md5" ) || filename.endsWith( ".sha1" ) )
         {
             return false;
         }

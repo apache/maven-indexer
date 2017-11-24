@@ -19,6 +19,14 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.maven.index.artifact.GavCalculator;
+import org.apache.maven.index.artifact.M2GavCalculator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,22 +36,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.apache.maven.index.artifact.GavCalculator;
-import org.apache.maven.index.artifact.M2GavCalculator;
-
 /**
  * A merged indexing context that offers read only "view" on multiple other indexing contexts merged and presented as
  * one. Usable for searching and publishing, but all write operations are basically noop.
- * 
+ *
  * @author cstamas
  */
 public class MergedIndexingContext
-    extends AbstractIndexingContext
+        extends AbstractIndexingContext
 {
     private final String id;
 
@@ -62,8 +62,7 @@ public class MergedIndexingContext
     private boolean searchable;
 
     private MergedIndexingContext( ContextMemberProvider membersProvider, String id, String repositoryId,
-                                   File repository, Directory indexDirectory, boolean searchable )
-        throws IOException
+                                   File repository, Directory indexDirectory, boolean searchable ) throws IOException
     {
         this.id = id;
         this.repositoryId = repositoryId;
@@ -76,24 +75,23 @@ public class MergedIndexingContext
     }
 
     public MergedIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
-                                  boolean searchable, ContextMemberProvider membersProvider )
-        throws IOException
+                                  boolean searchable, ContextMemberProvider membersProvider ) throws IOException
     {
-        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ), searchable );
+        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ),
+                searchable );
 
         setIndexDirectoryFile( indexDirectoryFile );
     }
 
     @Deprecated
     public MergedIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
-                                  boolean searchable, ContextMemberProvider membersProvider )
-        throws IOException
+                                  boolean searchable, ContextMemberProvider membersProvider ) throws IOException
     {
         this( membersProvider, id, repositoryId, repository, indexDirectory, searchable );
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory().toFile() );
+            setIndexDirectoryFile( ( ( FSDirectory ) indexDirectory ).getDirectory().toFile() );
         }
     }
 
@@ -157,26 +155,22 @@ public class MergedIndexingContext
         return ts;
     }
 
-    public void updateTimestamp()
-        throws IOException
+    public void updateTimestamp() throws IOException
     {
         // noop
     }
 
-    public void updateTimestamp( boolean save )
-        throws IOException
+    public void updateTimestamp( boolean save ) throws IOException
     {
         // noop
     }
 
-    public void updateTimestamp( boolean save, Date date )
-        throws IOException
+    public void updateTimestamp( boolean save, Date date ) throws IOException
     {
         // noop
     }
 
-    public int getSize()
-        throws IOException
+    public int getSize() throws IOException
     {
         int size = 0;
 
@@ -188,31 +182,29 @@ public class MergedIndexingContext
         return size;
     }
 
-    public IndexSearcher acquireIndexSearcher()
-        throws IOException
+    public IndexSearcher acquireIndexSearcher() throws IOException
     {
         final NexusIndexMultiReader mr = new NexusIndexMultiReader( getMembers() );
         return new NexusIndexMultiSearcher( mr );
     }
 
-    public void releaseIndexSearcher( IndexSearcher indexSearcher )
-        throws IOException
+    public void releaseIndexSearcher( IndexSearcher indexSearcher ) throws IOException
     {
         if ( indexSearcher instanceof NexusIndexMultiSearcher )
         {
-            ( (NexusIndexMultiSearcher) indexSearcher ).release();
+            ( ( NexusIndexMultiSearcher ) indexSearcher ).release();
         }
         else
         {
             throw new IllegalArgumentException( String.format(
-                "Illegal argument to merged idexing context: it emits class %s but and cannot release class %s!",
-                NexusIndexMultiSearcher.class.getName(), indexSearcher.getClass().getName() ) );
+                    "Illegal argument to merged idexing context: it emits " + "" + ""
+                            + "class %s but and cannot release class %s!", NexusIndexMultiSearcher.class.getName(),
+                    indexSearcher.getClass().getName() ) );
         }
 
     }
 
-    public IndexWriter getIndexWriter()
-        throws IOException
+    public IndexWriter getIndexWriter() throws IOException
     {
         throw new UnsupportedOperationException( getClass().getName() + " indexing context is read-only!" );
     }
@@ -234,56 +226,47 @@ public class MergedIndexingContext
         return new NexusAnalyzer();
     }
 
-    public void commit()
-        throws IOException
+    public void commit() throws IOException
     {
         // noop
     }
 
-    public void rollback()
-        throws IOException
+    public void rollback() throws IOException
     {
         // noop
     }
 
-    public void optimize()
-        throws IOException
+    public void optimize() throws IOException
     {
         // noop
     }
 
-    public void close( boolean deleteFiles )
-        throws IOException
+    public void close( boolean deleteFiles ) throws IOException
     {
         // noop
     }
 
-    public void purge()
-        throws IOException
+    public void purge() throws IOException
     {
         // noop
     }
 
-    public void merge( Directory directory )
-        throws IOException
+    public void merge( Directory directory ) throws IOException
     {
         // noop
     }
 
-    public void merge( Directory directory, DocumentFilter filter )
-        throws IOException
+    public void merge( Directory directory, DocumentFilter filter ) throws IOException
     {
         // noop
     }
 
-    public void replace( Directory directory )
-        throws IOException
+    public void replace( Directory directory ) throws IOException
     {
         // noop
     }
 
-    public void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
-        throws IOException
+    public void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups ) throws IOException
     {
         // noop
     }
@@ -302,7 +285,7 @@ public class MergedIndexingContext
      * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
      * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
      */
-    protected void setIndexDirectoryFile(File dir) throws IOException
+    protected void setIndexDirectoryFile( File dir ) throws IOException
     {
         if ( dir == null )
         {
@@ -324,14 +307,12 @@ public class MergedIndexingContext
         return gavCalculator;
     }
 
-    public void setAllGroups( Collection<String> groups )
-        throws IOException
+    public void setAllGroups( Collection<String> groups ) throws IOException
     {
         // noop
     }
 
-    public Set<String> getAllGroups()
-        throws IOException
+    public Set<String> getAllGroups() throws IOException
     {
         HashSet<String> result = new HashSet<String>();
 
@@ -343,14 +324,12 @@ public class MergedIndexingContext
         return result;
     }
 
-    public void setRootGroups( Collection<String> groups )
-        throws IOException
+    public void setRootGroups( Collection<String> groups ) throws IOException
     {
         // noop
     }
 
-    public Set<String> getRootGroups()
-        throws IOException
+    public Set<String> getRootGroups() throws IOException
     {
         HashSet<String> result = new HashSet<String>();
 
@@ -362,8 +341,7 @@ public class MergedIndexingContext
         return result;
     }
 
-    public void rebuildGroups()
-        throws IOException
+    public void rebuildGroups() throws IOException
     {
         // noop
     }

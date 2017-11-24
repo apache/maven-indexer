@@ -21,7 +21,7 @@ package org.apache.maven.index;
 
 /**
  * A listener notified upon artifact discovery.
- * 
+ *
  * @author Tamas Cservenak
  */
 public interface ArtifactDiscoveryListener

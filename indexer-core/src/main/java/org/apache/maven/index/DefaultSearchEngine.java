@@ -19,6 +19,18 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.maven.index.context.IndexUtils;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.NexusIndexMultiReader;
+import org.apache.maven.index.context.NexusIndexMultiSearcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.IOException;
@@ -32,28 +44,16 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import org.apache.lucene.document.Document;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
-import org.apache.maven.index.context.IndexUtils;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.context.NexusIndexMultiReader;
-import org.apache.maven.index.context.NexusIndexMultiSearcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * A default search engine implementation
- * 
+ *
  * @author Eugene Kuleshov
  * @author Tamas Cservenak
  */
 @Singleton
 @Named
 public class DefaultSearchEngine
-    implements SearchEngine
+        implements SearchEngine
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -65,79 +65,73 @@ public class DefaultSearchEngine
 
     @Deprecated
     public Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                         IndexingContext indexingContext, Query query )
-        throws IOException
+                                         IndexingContext indexingContext, Query query ) throws IOException
     {
         return searchFlatPaged( new FlatSearchRequest( query, artifactInfoComparator, indexingContext ),
-            Arrays.asList( indexingContext ), true ).getResults();
+                Arrays.asList( indexingContext ), true ).getResults();
     }
 
     @Deprecated
     public Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                         Collection<IndexingContext> indexingContexts, Query query )
-        throws IOException
+                                         Collection<IndexingContext> indexingContexts, Query query ) throws IOException
     {
         return searchFlatPaged( new FlatSearchRequest( query, artifactInfoComparator ), indexingContexts ).getResults();
     }
 
     public FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException
+            throws IOException
     {
         return searchFlatPaged( request, indexingContexts, false );
     }
 
     public FlatSearchResponse forceSearchFlatPaged( FlatSearchRequest request,
-                                                    Collection<IndexingContext> indexingContexts )
-        throws IOException
+                                                    Collection<IndexingContext> indexingContexts ) throws IOException
     {
         return searchFlatPaged( request, indexingContexts, true );
     }
 
     protected FlatSearchResponse searchFlatPaged( FlatSearchRequest request,
                                                   Collection<IndexingContext> indexingContexts, boolean ignoreContext )
-        throws IOException
+            throws IOException
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
         final TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
         return new FlatSearchResponse( request.getQuery(), searchFlat( request, result, contexts, request.getQuery() ),
-            result );
+                result );
     }
 
     // ==
 
     public GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
-                                                Collection<IndexingContext> indexingContexts )
-        throws IOException
+                                                Collection<IndexingContext> indexingContexts ) throws IOException
     {
         return searchGrouped( request, indexingContexts, false );
     }
 
     public GroupedSearchResponse forceSearchGrouped( GroupedSearchRequest request,
-                                                     Collection<IndexingContext> indexingContexts )
-        throws IOException
+                                                     Collection<IndexingContext> indexingContexts ) throws IOException
     {
         return searchGrouped( request, indexingContexts, true );
     }
 
     protected GroupedSearchResponse searchGrouped( GroupedSearchRequest request,
                                                    Collection<IndexingContext> indexingContexts, boolean ignoreContext )
-        throws IOException
+            throws IOException
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        final TreeMap<String, ArtifactInfoGroup> result =
-            new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
+        final TreeMap<String, ArtifactInfoGroup> result = new TreeMap<String, ArtifactInfoGroup>(
+                request.getGroupKeyComparator() );
 
-        return new GroupedSearchResponse( request.getQuery(), searchGrouped( request, result, request.getGrouping(),
-            contexts, request.getQuery() ), result );
+        return new GroupedSearchResponse( request.getQuery(),
+                searchGrouped( request, result, request.getGrouping(), contexts, request.getQuery() ), result );
     }
 
     // ===
 
     protected int searchFlat( FlatSearchRequest req, Collection<ArtifactInfo> result,
-                              List<IndexingContext> participatingContexts, Query query )
-        throws IOException
+                              List<IndexingContext> participatingContexts, Query query ) throws IOException
     {
         int hitCount = 0;
         for ( IndexingContext context : participatingContexts )
@@ -164,7 +158,7 @@ public class DefaultSearchEngine
                 // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
                 for ( int i = start; i < scoreDocs.length; i++ )
                 {
-                    Document doc = indexSearcher.doc( scoreDocs[i].doc );
+                    Document doc = indexSearcher.doc( scoreDocs[ i ].doc );
 
                     ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
@@ -199,8 +193,7 @@ public class DefaultSearchEngine
     }
 
     protected int searchGrouped( GroupedSearchRequest req, Map<String, ArtifactInfoGroup> result, Grouping grouping,
-                                 List<IndexingContext> participatingContexts, Query query )
-        throws IOException
+                                 List<IndexingContext> participatingContexts, Query query ) throws IOException
     {
         int hitCount = 0;
 
@@ -219,7 +212,7 @@ public class DefaultSearchEngine
 
                     for ( int i = 0; i < scoreDocs.length; i++ )
                     {
-                        Document doc = indexSearcher.doc( scoreDocs[i].doc );
+                        Document doc = indexSearcher.doc( scoreDocs[ i ].doc );
 
                         ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
@@ -261,23 +254,21 @@ public class DefaultSearchEngine
     // == NG Search
 
     public IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
-                                                       Collection<IndexingContext> indexingContexts )
-        throws IOException
+                                                       Collection<IndexingContext> indexingContexts ) throws IOException
     {
         return searchIteratorPaged( request, indexingContexts, false );
     }
 
     public IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
                                                             Collection<IndexingContext> indexingContexts )
-        throws IOException
+            throws IOException
     {
         return searchIteratorPaged( request, indexingContexts, true );
     }
 
     private IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
                                                         Collection<IndexingContext> indexingContexts,
-                                                        boolean ignoreContext )
-        throws IOException
+                                                        boolean ignoreContext ) throws IOException
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
@@ -290,8 +281,7 @@ public class DefaultSearchEngine
             TopScoreDocCollector hits = doSearchWithCeiling( request, indexSearcher, request.getQuery() );
 
             return new IteratorSearchResponse( request.getQuery(), hits.getTotalHits(),
-                                               new DefaultIteratorResultSet( request, indexSearcher, contexts,
-                                                                             hits.topDocs() ) );
+                    new DefaultIteratorResultSet( request, indexSearcher, contexts, hits.topDocs() ) );
         }
         catch ( IOException e )
         {
@@ -323,7 +313,7 @@ public class DefaultSearchEngine
 
     protected TopScoreDocCollector doSearchWithCeiling( final AbstractSearchRequest request,
                                                         final IndexSearcher indexSearcher, final Query query )
-        throws IOException
+            throws IOException
     {
         int topHitCount = getTopDocsCollectorHitNum( request, AbstractSearchRequest.UNDEFINED );
 
@@ -354,10 +344,12 @@ public class DefaultSearchEngine
                 {
                     // warn the user and leave trace just before OOM might happen
                     // the hits.getTotalHits() might be HUUGE
-                    getLogger().debug(
-                        "Executing unbounded search, and fitting topHitCounts to "
-                            + topHitCount
-                            + ", an OOMEx might follow. To avoid OOM use narrower queries or limit your expectancy with request.setCount() method where appropriate. See MINDEXER-14 for details." );
+                    getLogger()
+                            .debug( "Executing unbounded search, and fitting topHitCounts to " + topHitCount + ", " + ""
+                                    + "" + "an OOMEx might follow. To avoid OOM use narrower queries or limit your "
+                                    + "expectancy " + "with "
+                                    + "request.setCount() method where appropriate. See MINDEXER-14"
+                                    + " for details." );
                 }
 
                 // redo all, but this time with correct numbers
@@ -393,15 +385,14 @@ public class DefaultSearchEngine
     /**
      * Locks down participating contexts, and returns a "merged" reader of them. In case of error, unlocks as part of
      * cleanup and re-throws exception. Without error, it is the duty of caller to unlock contexts!
-     * 
+     *
      * @param indexingContexts
      * @param ignoreContext
      * @return
      * @throws IOException
      */
     protected NexusIndexMultiReader getMergedIndexReader( final Collection<IndexingContext> indexingContexts,
-                                                          final boolean ignoreContext )
-        throws IOException
+                                                          final boolean ignoreContext ) throws IOException
     {
         final List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
         return new NexusIndexMultiReader( contexts );
@@ -411,7 +402,7 @@ public class DefaultSearchEngine
     {
         if ( request instanceof AbstractSearchPageableRequest )
         {
-            final AbstractSearchPageableRequest prequest = (AbstractSearchPageableRequest) request;
+            final AbstractSearchPageableRequest prequest = ( AbstractSearchPageableRequest ) request;
 
             if ( AbstractSearchRequest.UNDEFINED != prequest.getCount() )
             {

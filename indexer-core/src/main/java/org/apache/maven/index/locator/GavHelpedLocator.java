@@ -19,10 +19,10 @@ package org.apache.maven.index.locator;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
+
+import java.io.File;
 
 /**
  * An artifact locator used to locate repository "elements" relative to some file with given {@link Gav}.

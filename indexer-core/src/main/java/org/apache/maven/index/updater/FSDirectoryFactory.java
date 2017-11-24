@@ -19,10 +19,10 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import org.apache.lucene.store.FSDirectory;
+
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.lucene.store.FSDirectory;
 
 /**
  * FSDirectoryFactory allows host application choose specific FSDirectory implementation used during index update. This
@@ -35,15 +35,13 @@ public interface FSDirectoryFactory
     /**
      * Default implementation that lets Lucene choose FSDirectory implementation.
      */
-    public static final FSDirectoryFactory DEFAULT = new FSDirectoryFactory()
+    FSDirectoryFactory DEFAULT = new FSDirectoryFactory()
     {
-        public FSDirectory open( File indexDir )
-            throws IOException
+        public FSDirectory open( File indexDir ) throws IOException
         {
             return FSDirectory.open( indexDir.toPath() );
         }
     };
 
-    public FSDirectory open( File indexDir )
-        throws IOException;
+    FSDirectory open( File indexDir ) throws IOException;
 }

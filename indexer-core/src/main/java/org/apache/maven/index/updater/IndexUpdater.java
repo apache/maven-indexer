@@ -21,14 +21,12 @@ package org.apache.maven.index.updater;
 
 import java.io.IOException;
 
-import org.apache.maven.index.packer.IndexPacker;
-
 /**
  * An index updater provides functionality to update index for remote repositories using transfer format produced by the
- * {@link IndexPacker}.
+ * {@link org.apache.maven.index.packer.IndexPacker}.
  * <p>
  * The following snippet shows how to update/download remote index:
- * 
+ * <p>
  * <pre>
  *   IndexingContext context = indexer.getIndexingContexts().get( indexId );
  *   Settings settings = embedder.getSettings();
@@ -43,11 +41,11 @@ import org.apache.maven.index.packer.IndexPacker;
  *       proxyInfo.setUserName( proxy.getUsername() );
  *       proxyInfo.setPassword( proxy.getPassword() );
  *   }
- *   
+ *
  *   Date indexTime = updater.fetchAndUpdateIndex( context, transferListener, proxyInfo );
  *   ...
  * </pre>
- * 
+ *
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
@@ -56,6 +54,5 @@ public interface IndexUpdater
     /**
      * @return IndexUpdateResult
      */
-    IndexUpdateResult fetchAndUpdateIndex( IndexUpdateRequest updateRequest )
-        throws IOException;
+    IndexUpdateResult fetchAndUpdateIndex( IndexUpdateRequest updateRequest ) throws IOException;
 }

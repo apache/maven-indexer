@@ -19,21 +19,21 @@ package org.apache.maven.index.creator;
  * under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.maven.index.context.IndexCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * An abstract base class for {@link IndexCreator} implementations.
- * 
+ *
  * @author Jason van Zyl
  */
 public abstract class AbstractIndexCreator
-    implements IndexCreator
+        implements IndexCreator
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );

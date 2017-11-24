@@ -29,13 +29,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class JavaZipFileHandle
-    extends AbstractZipHandle
-    implements ZipHandle
+        extends AbstractZipHandle
+        implements ZipHandle
 {
     private final ZipFile zipFile;
 
-    public JavaZipFileHandle( final File targetFile )
-        throws IOException
+    public JavaZipFileHandle( final File targetFile ) throws IOException
     {
         super( targetFile );
 
@@ -47,8 +46,7 @@ public class JavaZipFileHandle
         return zipFile;
     }
 
-    public boolean hasEntry( String path )
-        throws IOException
+    public boolean hasEntry( String path ) throws IOException
     {
         return getZipFile().getEntry( path ) != null;
     }
@@ -87,8 +85,7 @@ public class JavaZipFileHandle
         return entries;
     }
 
-    public InputStream getEntryContent( String path )
-        throws IOException
+    public InputStream getEntryContent( String path ) throws IOException
     {
         ZipEntry entry = getZipFile().getEntry( path );
 
@@ -102,8 +99,7 @@ public class JavaZipFileHandle
         }
     }
 
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         getZipFile().close();
     }

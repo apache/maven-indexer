@@ -19,19 +19,19 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.maven.index.context.IndexingContext;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import org.apache.maven.index.context.IndexingContext;
 
 /**
  * A special reusable filter, that filters the result set to unique Repository-GroupId-ArtifactId combination, leaving
  * out Version. There is a switch to make the Indexer-wide unique by ignoring repositories too.
- * 
+ *
  * @author cstamas
  */
 public class UniqueArtifactFilterPostprocessor
-    implements ArtifactInfoFilter
+        implements ArtifactInfoFilter
 {
     public static final String COLLAPSED = "COLLAPSED";
 

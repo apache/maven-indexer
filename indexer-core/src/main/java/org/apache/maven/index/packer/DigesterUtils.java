@@ -29,25 +29,22 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.codehaus.plexus.util.IOUtil;
-
 /**
  * A util class to calculate various digests on Strings. Useful for some simple password management.
- * 
+ *
  * @author cstamas
  */
 public class DigesterUtils
 {
     /**
      * Calculates a digest for a String user the requested algorithm.
-     * 
+     *
      * @param alg
      * @param is
      * @return
      * @throws NoSuchAlgorithmException
      */
-    private static String getDigest( String alg, InputStream is )
-        throws NoSuchAlgorithmException
+    private static String getDigest( String alg, InputStream is ) throws NoSuchAlgorithmException
     {
         String result = null;
 
@@ -55,7 +52,7 @@ public class DigesterUtils
         {
             try
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[ 1024 ];
 
                 MessageDigest md = MessageDigest.getInstance( alg );
 
@@ -92,7 +89,7 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a string.
-     * 
+     *
      * @param content
      * @return
      */
@@ -118,7 +115,7 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a stream.
-     * 
+     *
      * @param is
      * @return
      */
@@ -137,14 +134,13 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a file.
-     * 
+     *
      * @param file
      * @return
      */
-    public static String getSha1Digest( File file )
-        throws IOException
+    public static String getSha1Digest( File file ) throws IOException
     {
-        try (FileInputStream fis = new FileInputStream( file ))
+        try ( FileInputStream fis = new FileInputStream( file ) )
         {
             return getDigest( "SHA1", fis );
         }
@@ -164,7 +160,7 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a string.
-     * 
+     *
      * @param content
      * @return
      */
@@ -190,7 +186,7 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a stream.
-     * 
+     *
      * @param is
      * @return
      */
@@ -209,15 +205,14 @@ public class DigesterUtils
 
     /**
      * Calculates a SHA1 digest for a file.
-     * 
+     *
      * @param file
      * @return
      */
-    public static String getMd5Digest( File file )
-        throws IOException
+    public static String getMd5Digest( File file ) throws IOException
     {
 
-        try (InputStream fis = new FileInputStream( file ))
+        try ( InputStream fis = new FileInputStream( file ) )
         {
             return getDigest( "MD5", fis );
         }
@@ -235,12 +230,12 @@ public class DigesterUtils
 
     // --
 
-    private static final char[] DIGITS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
-        'f' };
+    private static final char[] DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
+            'f'};
 
     /**
      * Blatantly copied from commons-codec version 1.3
-     * 
+     *
      * @param data
      * @return
      */
@@ -248,13 +243,13 @@ public class DigesterUtils
     {
         int l = data.length;
 
-        char[] out = new char[l << 1];
+        char[] out = new char[ l << 1 ];
 
         // two characters form the hex value.
         for ( int i = 0, j = 0; i < l; i++ )
         {
-            out[j++] = DIGITS[( 0xF0 & data[i] ) >>> 4];
-            out[j++] = DIGITS[0x0F & data[i]];
+            out[ j++ ] = DIGITS[ ( 0xF0 & data[ i ] ) >>> 4 ];
+            out[ j++ ] = DIGITS[ 0x0F & data[ i ] ];
         }
 
         return out;

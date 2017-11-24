@@ -49,7 +49,7 @@ public class RepositoryIndexerFactory
     }
 
     public RepositoryIndexer createRepositoryIndexer( String repositoryId, File repositoryBasedir, File indexDir )
-        throws IOException
+            throws IOException
     {
         RepositoryIndexer repositoryIndexer = new RepositoryIndexer();
         repositoryIndexer.setRepositoryId( repositoryId );
@@ -63,16 +63,17 @@ public class RepositoryIndexerFactory
     }
 
     private IndexingContext createIndexingContext( String repositoryId, File repositoryBasedir, File indexDir )
-        throws IOException
+            throws IOException
     {
-        return getIndexer().createIndexingContext( repositoryId + "/ctx", repositoryId, repositoryBasedir, indexDir,
-                                                   null, null, true,
-                                                   // if context should be searched in non-targeted mode.
-                                                   true, // if indexDirectory is known to contain (or should contain)
-                                                   // valid Maven Indexer lucene index, and no checks needed to be
-                                                   // performed, or, if we want to "stomp" over existing index
-                                                   // (unsafe to do!).
-                                                   indexerConfiguration.getIndexersAsList() );
+        return getIndexer()
+                .createIndexingContext( repositoryId + "/ctx", repositoryId, repositoryBasedir, indexDir, null, null,
+                        true,
+                        // if context should be searched in non-targeted mode.
+                        true, // if indexDirectory is known to contain (or should contain)
+                        // valid Maven Indexer lucene index, and no checks needed to be
+                        // performed, or, if we want to "stomp" over existing index
+                        // (unsafe to do!).
+                        indexerConfiguration.getIndexersAsList() );
     }
 
     public IndexerConfiguration getIndexerConfiguration()

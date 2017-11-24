@@ -27,11 +27,10 @@ import java.util.regex.Pattern;
 public class VersionUtils
 {
 
-    private static String SNAPSHOT_VERSION = "SNAPSHOT";
+    private static final String SNAPSHOT_VERSION = "SNAPSHOT";
 
-    private static final Pattern VERSION_FILE_PATTERN =
-        Pattern.compile(
-            "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$|^([0-9]{8}.[0-9]{6})-([0-9]+)$|^(.*)([0-9]{8}.[0-9]{6})-([0-9]+)$" );
+    private static final Pattern VERSION_FILE_PATTERN = Pattern.compile( "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$|^" + ""
+            + "([0-9]{8}.[0-9]{6})-([0-9]+)$|^(.*)([0-9]{8}.[0-9]{6})-([0-9]+)$" );
 
     public static boolean isSnapshot( String version )
     {

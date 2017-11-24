@@ -26,19 +26,20 @@ import java.util.regex.Pattern;
 
 /**
  * An M1 <code>GavCalculator</code>. Heavily under-maintained.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
 @Singleton
-@Named ("maven1")
+@Named( "maven1" )
 public class M1GavCalculator
-    implements GavCalculator
+        implements GavCalculator
 {
 
-    private static final Pattern pat1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
-    private static final Pattern pat2 = Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT2 = Pattern
+            .compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0," + "1}$" );
 
     public Gav pathToGav( String str )
     {
@@ -73,8 +74,8 @@ public class M1GavCalculator
             {
                 classifier = "javadoc";
             }
-            else if ( "ejbs".equals( middle )
-                && ( n.endsWith( "client.jar" ) || n.endsWith( "client.jar.sha1" ) || n.endsWith( "client.jar.md5" ) ) )
+            else if ( "ejbs".equals( middle ) && ( n.endsWith( "client.jar" ) || n.endsWith( "client.jar.sha1" ) || n
+                    .endsWith( "client.jar.md5" ) ) )
             {
                 classifier = "client";
             }
@@ -101,7 +102,7 @@ public class M1GavCalculator
 
             String ext = s.substring( s.lastIndexOf( '.' ) + 1 );
 
-            Matcher m = pat1.matcher( n );
+            Matcher m = PAT1.matcher( n );
             if ( m.matches() )
             {
                 String a = m.group( 1 );
@@ -111,12 +112,11 @@ public class M1GavCalculator
                     version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
                 }
 
-                return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false,
-                    null );
+                return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false, null );
             }
             else
             {
-                m = pat2.matcher( n );
+                m = PAT2.matcher( n );
                 if ( m.matches() )
                 {
                     String a = m.group( 1 );
@@ -126,8 +126,8 @@ public class M1GavCalculator
                         version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
                     }
 
-                    return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType,
-                        false, null );
+                    return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false,
+                            null );
                 }
                 else
                 {
@@ -147,8 +147,9 @@ public class M1GavCalculator
 
     /**
      * // XXX this is not accurate, m1 is using packaging as an artifact folder name.
-     * 
-     * @see org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout#pathOf(org.apache.maven.artifact.Artifact)
+     *
+     * @see org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout#pathOf(org.apache.maven.artifact
+     * .Artifact)
      * @see org.apache.maven.artifact.handler.DefaultArtifactHandler#getDirectory()
      */
     public String gavToPath( Gav gav )

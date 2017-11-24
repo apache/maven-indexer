@@ -19,12 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
@@ -36,13 +30,19 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.IndexingContext;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * A default scanning listener
- * 
+ *
  * @author Eugene Kuleshov
  */
 public class DefaultScannerListener
-    implements ArtifactScanningListener
+        implements ArtifactScanningListener
 {
     private final IndexingContext context;
 
@@ -65,8 +65,8 @@ public class DefaultScannerListener
     private int count = 0;
 
     public DefaultScannerListener( IndexingContext context, //
-                            IndexerEngine indexerEngine, boolean update, //
-                            ArtifactScanningListener listener )
+                                   IndexerEngine indexerEngine, boolean update, //
+                                   ArtifactScanningListener listener )
     {
         this.context = context;
         this.indexerEngine = indexerEngine;
@@ -205,18 +205,17 @@ public class DefaultScannerListener
         }
     }
 
-    private void initialize( IndexingContext ctx )
-        throws IOException, CorruptIndexException
+    private void initialize( IndexingContext ctx ) throws IOException, CorruptIndexException
     {
         final IndexSearcher indexSearcher = ctx.acquireIndexSearcher();
         try
         {
             final IndexReader r = indexSearcher.getIndexReader();
-            Bits liveDocs = MultiFields.getLiveDocs(r);
+            Bits liveDocs = MultiFields.getLiveDocs( r );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
-                if (liveDocs == null || liveDocs.get(i) )
+                if ( liveDocs == null || liveDocs.get( i ) )
                 {
                     Document d = r.document( i );
 
@@ -252,7 +251,7 @@ public class DefaultScannerListener
     }
 
     private void removeDeletedArtifacts( IndexingContext context, ScanningResult result, String contextPath )
-        throws IOException
+            throws IOException
     {
         int deleted = 0;
 
@@ -273,20 +272,20 @@ public class DefaultScannerListener
 
                     ai.setRepository( context.getRepositoryId() );
 
-                    ai.setGroupId( ra[0] );
+                    ai.setGroupId( ra[ 0 ] );
 
-                    ai.setArtifactId( ra[1] );
+                    ai.setArtifactId( ra[ 1 ] );
 
-                    ai.setVersion( ra[2] );
+                    ai.setVersion( ra[ 2 ] );
 
                     if ( ra.length > 3 )
                     {
-                        ai.setClassifier( ArtifactInfo.renvl( ra[3] ) );
+                        ai.setClassifier( ArtifactInfo.renvl( ra[ 3 ] ) );
                     }
 
                     if ( ra.length > 4 )
                     {
-                        ai.setPackaging( ArtifactInfo.renvl( ra[4] ) );
+                        ai.setPackaging( ArtifactInfo.renvl( ra[ 4 ] ) );
                     }
 
                     // minimal ArtifactContext for removal
@@ -294,8 +293,8 @@ public class DefaultScannerListener
 
                     for ( int i = 0; i < collector.getTotalHits(); i++ )
                     {
-                        if ( contextPath == null
-                            || context.getGavCalculator().gavToPath( ac.getGav() ).startsWith( contextPath ) )
+                        if ( contextPath == null || context.getGavCalculator().gavToPath( ac.getGav() )
+                                .startsWith( contextPath ) )
                         {
                             indexerEngine.remove( context, ac );
                         }

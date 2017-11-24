@@ -19,18 +19,17 @@ package org.apache.maven.index.search.grouping;
  * under the License.
  */
 
+import org.apache.maven.index.ArtifactInfo;
+
 import java.util.Comparator;
 
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.Grouping;
-
 /**
- * A GroupId : ArtifactId {@link Grouping} implementation.
- * 
+ * A GroupId : ArtifactId {@link org.apache.maven.index.Grouping} implementation.
+ *
  * @author Tamas Cservenak
  */
 public class GAGrouping
-    extends AbstractGrouping
+        extends AbstractGrouping
 {
 
     public GAGrouping()

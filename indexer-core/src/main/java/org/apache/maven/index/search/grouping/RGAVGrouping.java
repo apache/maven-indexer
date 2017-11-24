@@ -19,18 +19,17 @@ package org.apache.maven.index.search.grouping;
  * under the License.
  */
 
+import org.apache.maven.index.ArtifactInfo;
+
 import java.util.Comparator;
 
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.Grouping;
-
 /**
- * A Repository : GroupId : ArtifactId : Version {@link Grouping} implementation.
- * 
+ * A Repository : GroupId : ArtifactId : Version {@link org.apache.maven.index.Grouping} implementation.
+ *
  * @author Tamas Cservenak
  */
 public class RGAVGrouping
-    extends AbstractGrouping
+        extends AbstractGrouping
 {
 
     public RGAVGrouping()
@@ -47,7 +46,7 @@ public class RGAVGrouping
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
         return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId() + ":" + artifactInfo.getArtifactId() + ":"
-            + artifactInfo.getVersion() + ":" + artifactInfo.getClassifier();
+                + artifactInfo.getVersion() + ":" + artifactInfo.getClassifier();
     }
 
 }

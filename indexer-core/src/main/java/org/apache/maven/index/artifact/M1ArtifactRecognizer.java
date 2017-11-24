@@ -53,8 +53,8 @@ public class M1ArtifactRecognizer
      */
     public static boolean isMetadata( String path )
     {
-        return path.endsWith( "maven-metadata.xml" ) || path.endsWith( "maven-metadata.xml.sha1" )
-            || path.endsWith( "maven-metadata.xml.md5" );
+        return path.endsWith( "maven-metadata.xml" ) || path.endsWith( "maven-metadata.xml.sha1" ) || path
+                .endsWith( "maven-metadata.xml.md5" );
     }
 
 }

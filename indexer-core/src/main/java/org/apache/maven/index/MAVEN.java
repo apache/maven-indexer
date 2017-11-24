@@ -21,12 +21,14 @@ package org.apache.maven.index;
 
 /**
  * Maven ontology.
- * 
+ *
  * @author cstamas
  */
 public interface MAVEN
 {
-    /** Maven namespace */
+    /**
+     * Maven namespace
+     */
     String MAVEN_NAMESPACE = "urn:maven#";
 
     Field REPOSITORY_ID = new Field( null, MAVEN_NAMESPACE, "repositoryId", "Artifact Repository ID" );

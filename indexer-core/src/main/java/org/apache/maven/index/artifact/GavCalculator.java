@@ -22,7 +22,7 @@ package org.apache.maven.index.artifact;
 /**
  * An interface to calculate <code>Gav</code> based on provided artifact path and to calculate an artifact path from
  * provided <code>Gav</code>.
- * 
+ *
  * @author Tamas Cservenak
  */
 public interface GavCalculator
@@ -32,7 +32,7 @@ public interface GavCalculator
      * If path represents a proper artifact path (conforming to given layout), GAV is "calculated" from it and is
      * returned. If path represents some file that is not an artifact, but is part of the repository layout (like
      * maven-metadata.xml), or in any other case it returns null.
-     * 
+     *
      * @param path the repository path
      * @return Gav parsed from the path
      */
@@ -40,7 +40,7 @@ public interface GavCalculator
 
     /**
      * Reassembles the repository path from the supplied GAV. It will be an absolute path.
-     * 
+     *
      * @param gav
      * @return the path calculated from GAV, obeying current layout.
      */

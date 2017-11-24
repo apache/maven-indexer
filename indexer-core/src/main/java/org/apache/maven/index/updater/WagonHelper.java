@@ -56,8 +56,7 @@ public class WagonHelper
         this.plexusContainer = plexusContainer;
     }
 
-    public WagonFetcher getWagonResourceFetcher( final TransferListener listener )
-        throws ComponentLookupException
+    public WagonFetcher getWagonResourceFetcher( final TransferListener listener ) throws ComponentLookupException
     {
         return getWagonResourceFetcher( listener, null, null );
     }
@@ -72,12 +71,11 @@ public class WagonHelper
      */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
                                                  final AuthenticationInfo authenticationInfo,
-                                                 final ProxyInfo proxyInfo )
-        throws ComponentLookupException
+                                                 final ProxyInfo proxyInfo ) throws ComponentLookupException
     {
         // we limit ourselves to HTTP only
         return new WagonFetcher( plexusContainer.lookup( Wagon.class, "http" ), listener, authenticationInfo,
-                                 proxyInfo );
+                proxyInfo );
     }
 
     /**
@@ -91,15 +89,14 @@ public class WagonHelper
      */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
                                                  final AuthenticationInfo authenticationInfo, final ProxyInfo proxyInfo,
-                                                 String protocol )
-        throws ComponentLookupException
+                                                 String protocol ) throws ComponentLookupException
     {
         return new WagonFetcher( plexusContainer.lookup( Wagon.class, protocol ), listener, authenticationInfo,
-                                 proxyInfo );
+                proxyInfo );
     }
 
     public static class WagonFetcher
-        implements ResourceFetcher
+            implements ResourceFetcher
     {
         private final TransferListener listener;
 
@@ -118,8 +115,7 @@ public class WagonHelper
             this.proxyInfo = proxyInfo;
         }
 
-        public void connect( final String id, final String url )
-            throws IOException
+        public void connect( final String id, final String url ) throws IOException
         {
             Repository repository = new Repository( id, url );
 
@@ -176,8 +172,7 @@ public class WagonHelper
             }
         }
 
-        public void disconnect()
-            throws IOException
+        public void disconnect() throws IOException
         {
             if ( wagon != null )
             {
@@ -194,8 +189,7 @@ public class WagonHelper
             }
         }
 
-        public InputStream retrieve( String name )
-            throws IOException, FileNotFoundException
+        public InputStream retrieve( String name ) throws IOException, FileNotFoundException
         {
             final File target = File.createTempFile( name, "" );
             target.deleteOnExit();
@@ -203,8 +197,7 @@ public class WagonHelper
             return new FileInputStream( target )
             {
                 @Override
-                public void close()
-                    throws IOException
+                public void close() throws IOException
                 {
                     super.close();
                     target.delete();
@@ -212,8 +205,7 @@ public class WagonHelper
             };
         }
 
-        public void retrieve( final String name, final File targetFile )
-            throws IOException, FileNotFoundException
+        public void retrieve( final String name, final File targetFile ) throws IOException, FileNotFoundException
         {
             try
             {

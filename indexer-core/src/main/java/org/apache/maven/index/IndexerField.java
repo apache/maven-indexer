@@ -27,7 +27,7 @@ import org.apache.lucene.document.Field.TermVector;
 /**
  * Holds basic information about Indexer field, how it is stored. To keep this centralized, and not spread across code.
  * Since Lucene 2.x, the field names are encoded, so please use real chatty names instead of cryptic chars!
- * 
+ *
  * @author cstamas
  */
 public class IndexerField

@@ -19,6 +19,20 @@ package org.apache.maven.index.incremental;
  * under the License.
  */
 
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.util.Bits;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.updater.IndexUpdateRequest;
+import org.codehaus.plexus.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -35,25 +49,10 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
-import org.apache.lucene.util.Bits;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdateRequest;
-import org.codehaus.plexus.util.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @Singleton
 @Named
 public class DefaultIncrementalHandler
-    implements IncrementalHandler
+        implements IncrementalHandler
 {
 
     private final Logger logger = LoggerFactory.getLogger( getClass() );
@@ -63,8 +62,7 @@ public class DefaultIncrementalHandler
         return logger;
     }
 
-    public List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
-        throws IOException
+    public List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties ) throws IOException
     {
         getLogger().debug( "Handling Incremental Updates" );
 
@@ -76,8 +74,8 @@ public class DefaultIncrementalHandler
 
         // Get the list of document ids that have been added since the last time
         // the index ran
-        List<Integer> chunk =
-            getIndexChunk( request, parse( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) ) );
+        List<Integer> chunk = getIndexChunk( request,
+                parse( properties.getProperty( IndexingContext.INDEX_TIMESTAMP ) ) );
 
         getLogger().debug( "Found " + chunk.size() + " differences to put in incremental index." );
 
@@ -93,8 +91,7 @@ public class DefaultIncrementalHandler
     }
 
     public List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
-                                                      Properties remoteProperties )
-        throws IOException
+                                                      Properties remoteProperties ) throws IOException
     {
         List<String> filenames = null;
         // If we have local properties, will parse and see what we need to download
@@ -153,8 +150,7 @@ public class DefaultIncrementalHandler
         }
     }
 
-    private List<Integer> getIndexChunk( IndexPackingRequest request, Date timestamp )
-        throws IOException
+    private List<Integer> getIndexChunk( IndexPackingRequest request, Date timestamp ) throws IOException
     {
         final List<Integer> chunk = new ArrayList<>();
         final IndexReader r = request.getIndexReader();
@@ -183,8 +179,7 @@ public class DefaultIncrementalHandler
         return chunk;
     }
 
-    private void updateProperties( Properties properties, IndexPackingRequest request )
-        throws IOException
+    private void updateProperties( Properties properties, IndexPackingRequest request ) throws IOException
     {
         Set<Object> keys = new HashSet<>( properties.keySet() );
         Map<Integer, String> dataMap = new TreeMap<>();
@@ -192,7 +187,7 @@ public class DefaultIncrementalHandler
         // First go through and retrieve all keys and their values
         for ( Object key : keys )
         {
-            String sKey = (String) key;
+            String sKey = ( String ) key;
 
             if ( sKey.startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) )
             {
@@ -228,8 +223,7 @@ public class DefaultIncrementalHandler
         properties.put( IndexingContext.INDEX_CHUNK_COUNTER, Integer.toString( nextValue ) );
     }
 
-    private void cleanUpIncrementalChunks( IndexPackingRequest request, Properties properties )
-        throws IOException
+    private void cleanUpIncrementalChunks( IndexPackingRequest request, Properties properties ) throws IOException
     {
         File[] files = request.getTargetDir().listFiles( new FilenameFilter()
         {
@@ -237,8 +231,8 @@ public class DefaultIncrementalHandler
             {
                 String[] parts = name.split( "\\." );
 
-                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals(
-                    "gz" ) )
+                if ( parts.length == 3 && parts[ 0 ].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[ 2 ]
+                        .equals( "gz" ) )
                 {
                     return true;
                 }
@@ -249,13 +243,13 @@ public class DefaultIncrementalHandler
 
         for ( int i = 0; i < files.length; i++ )
         {
-            String[] parts = files[i].getName().split( "\\." );
+            String[] parts = files[ i ].getName().split( "\\." );
 
             boolean found = false;
             for ( Entry<Object, Object> entry : properties.entrySet() )
             {
-                if ( entry.getKey().toString().startsWith( IndexingContext.INDEX_CHUNK_PREFIX )
-                    && entry.getValue().equals( parts[1] ) )
+                if ( entry.getKey().toString().startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) && entry.getValue()
+                        .equals( parts[ 1 ] ) )
                 {
                     found = true;
                     break;
@@ -264,7 +258,7 @@ public class DefaultIncrementalHandler
 
             if ( !found )
             {
-                files[i].delete();
+                files[ i ].delete();
             }
         }
     }
@@ -315,15 +309,15 @@ public class DefaultIncrementalHandler
         // if we find it, then we are ok to retrieve the rest of the chunks
         for ( Object key : remoteProps.keySet() )
         {
-            String sKey = (String) key;
+            String sKey = ( String ) key;
 
             if ( sKey.startsWith( IndexingContext.INDEX_CHUNK_PREFIX ) )
             {
                 String value = remoteProps.getProperty( sKey );
 
                 // If we have the current counter, or the next counter, we are good to go
-                if ( Integer.toString( currentLocalCounter ).equals( value ) || Integer.toString(
-                    currentLocalCounter + 1 ).equals( value ) )
+                if ( Integer.toString( currentLocalCounter ).equals( value ) || Integer
+                        .toString( currentLocalCounter + 1 ).equals( value ) )
                 {
                     return true;
                 }

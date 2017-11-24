@@ -19,32 +19,26 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.util.Set;
-
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
+
+import java.util.Set;
 
 /**
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
 public class MinimalIndexNexusIndexerTest
-    extends AbstractRepoNexusIndexerTest
+        extends AbstractRepoNexusIndexerTest
 {
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS );
 
         nexusIndexer.scan( context );
     }
 
-    public void testNEXUS2712()
-        throws Exception
+    public void testNEXUS2712() throws Exception
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT );// WAS SCORED
 

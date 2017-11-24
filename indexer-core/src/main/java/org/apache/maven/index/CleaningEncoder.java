@@ -22,7 +22,7 @@ package org.apache.maven.index;
 import org.apache.lucene.search.highlight.Encoder;
 
 public class CleaningEncoder
-    implements Encoder
+        implements Encoder
 {
     public String encodeText( String originalText )
     {

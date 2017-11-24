@@ -19,17 +19,17 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+import org.apache.maven.index.context.IndexingContext;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 
-import org.apache.lucene.search.Query;
-import org.apache.maven.index.context.IndexingContext;
-
 /**
  * A search engine used to perform searches trough repository indexes.
- * 
+ *
  * @author Eugene Kuleshov
  * @author Jason van Zyl
  * @author Tamas Cservenak
@@ -38,50 +38,45 @@ public interface SearchEngine
 {
     @Deprecated
     Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext indexingContext,
-                                  Query query )
-        throws IOException;
+                                  Query query ) throws IOException;
 
     @Deprecated
     Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                  Collection<IndexingContext> indexingContexts, Query query )
-        throws IOException;
+                                  Collection<IndexingContext> indexingContexts, Query query ) throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
     FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+            throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
     IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
-                                                Collection<IndexingContext> indexingContexts )
-        throws IOException;
+                                                Collection<IndexingContext> indexingContexts ) throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
     GroupedSearchResponse searchGrouped( GroupedSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+            throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
     FlatSearchResponse forceSearchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+            throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
     IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
-                                                     Collection<IndexingContext> indexingContexts )
-        throws IOException;
+                                                     Collection<IndexingContext> indexingContexts ) throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
     GroupedSearchResponse forceSearchGrouped( GroupedSearchRequest request,
-                                              Collection<IndexingContext> indexingContexts )
-        throws IOException;
+                                              Collection<IndexingContext> indexingContexts ) throws IOException;
 }

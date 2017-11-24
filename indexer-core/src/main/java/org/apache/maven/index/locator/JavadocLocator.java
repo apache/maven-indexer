@@ -23,11 +23,11 @@ import java.io.File;
 
 /**
  * A JavaDoc locator to locate the JavaDoc bundle relative to POM.
- * 
+ *
  * @author Jason van Zyl
  */
 public class JavadocLocator
-    implements Locator
+        implements Locator
 {
     /**
      * Locates the JavaDoc bundle relative to POM.

@@ -19,16 +19,13 @@ package org.apache.maven.index.treeview;
  * under the License.
  */
 
-import java.io.File;
-
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
-import org.apache.maven.index.treeview.IndexTreeView;
-import org.apache.maven.index.treeview.TreeNode;
+
+import java.io.File;
 
 public class IndexTreeViewTest
-    extends AbstractNexusIndexerTest
+        extends AbstractNexusIndexerTest
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
@@ -37,8 +34,7 @@ public class IndexTreeViewTest
     protected boolean debug = false;
 
     @Override
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
@@ -46,15 +42,13 @@ public class IndexTreeViewTest
     }
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
+    protected void prepareNexusIndexer( NexusIndexer nexusIndexer ) throws Exception
     {
         context = nexusIndexer.addIndexingContext( "test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS );
         nexusIndexer.scan( context );
     }
 
-    protected int prettyPrint( boolean debug, TreeNode node, int level )
-        throws Exception
+    protected int prettyPrint( boolean debug, TreeNode node, int level ) throws Exception
     {
         if ( debug )
         {
@@ -81,11 +75,10 @@ public class IndexTreeViewTest
         return files;
     }
 
-    public void testRoot()
-        throws Exception
+    public void testRoot() throws Exception
     {
-        TreeViewRequest req =
-            new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/", context );
+        TreeViewRequest req = new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/",
+                context );
         TreeNode root = indexTreeView.listNodes( req );
 
         int leafsFound = prettyPrint( debug, root, 0 );
@@ -95,11 +88,10 @@ public class IndexTreeViewTest
         assertEquals( 49, leafsFound );
     }
 
-    public void testPathIsAboveRealGroup()
-        throws Exception
+    public void testPathIsAboveRealGroup() throws Exception
     {
-        TreeViewRequest req =
-            new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/org/", context );
+        TreeViewRequest req = new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/org/",
+                context );
         TreeNode root = indexTreeView.listNodes( req );
 
         int leafsFound = prettyPrint( debug, root, 0 );
@@ -109,11 +101,10 @@ public class IndexTreeViewTest
         assertEquals( 22, leafsFound );
     }
 
-    public void testPathIsRealGroup()
-        throws Exception
+    public void testPathIsRealGroup() throws Exception
     {
-        TreeViewRequest req =
-            new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/org/slf4j/", context );
+        TreeViewRequest req = new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ),
+                "/org/slf4j/", context );
         TreeNode root = indexTreeView.listNodes( req );
 
         int leafsFound = prettyPrint( debug, root, 0 );
@@ -123,12 +114,10 @@ public class IndexTreeViewTest
         assertEquals( 10, leafsFound );
     }
 
-    public void testPathIsRealGroupArtifact()
-        throws Exception
+    public void testPathIsRealGroupArtifact() throws Exception
     {
-        TreeViewRequest req =
-            new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ), "/org/slf4j/slf4j-log4j12/",
-                context );
+        TreeViewRequest req = new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ),
+                "/org/slf4j/slf4j-log4j12/", context );
         TreeNode root = indexTreeView.listNodes( req );
 
         int leafsFound = prettyPrint( debug, root, 0 );
@@ -138,11 +127,9 @@ public class IndexTreeViewTest
         assertEquals( 4, leafsFound );
     }
 
-    public void testPathIsRealGroupArtifactVersion()
-        throws Exception
+    public void testPathIsRealGroupArtifactVersion() throws Exception
     {
-        TreeViewRequest req =
-            new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ),
+        TreeViewRequest req = new TreeViewRequest( new DefaultTreeNodeFactory( context.getRepositoryId() ),
                 "/org/slf4j/slf4j-log4j12/1.4.1/", context );
         TreeNode root = indexTreeView.listNodes( req );
 

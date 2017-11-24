@@ -19,22 +19,22 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import org.apache.lucene.search.Query;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Iterator;
-
-import org.apache.lucene.search.Query;
 
 /**
  * A Search Response for the "iterator-like" search request. The totalHitsCount reports <em>total</em> hits found on
  * index, even if the set of ArtifactInfos are usually limited! On the flipside, the hitsCount is actually unknown,
  * since this instance performs filtering on the fly, hence it does not know how many hits it will return ahead of time.
- * 
+ *
  * @author cstamas
  */
 public class IteratorSearchResponse
-    extends AbstractSearchResponse
-    implements Iterable<ArtifactInfo>, Closeable
+        extends AbstractSearchResponse
+        implements Iterable<ArtifactInfo>, Closeable
 {
     private final IteratorResultSet results;
 
@@ -56,15 +56,14 @@ public class IteratorSearchResponse
     }
 
     @Override
-    public void close()
-        throws IOException
+    public void close() throws IOException
     {
         getResults().close();
     }
 
     /**
      * A helper method delegating the call to the IteratorResultSet.
-     * 
+     *
      * @return
      */
     public int getTotalProcessedArtifactInfoCount()
@@ -101,8 +100,7 @@ public class IteratorSearchResponse
             return 0;
         }
 
-        public void close()
-            throws IOException
+        public void close() throws IOException
         {
         }
     };
@@ -114,15 +112,17 @@ public class IteratorSearchResponse
 
     /**
      * Empty search response.
-     * 
+     *
      * @deprecated Use {@link #empty(Query)} instead.
      */
     public static final IteratorSearchResponse EMPTY_ITERATOR_SEARCH_RESPONSE = empty( null );
 
     /**
      * Too many search response.
-     * 
-     * @deprecated Left here for backward compatibility, but since version 4.1.0 (see MINDEXER-14) there is NO notion of "hit limit" anymore.
+     *
+     * @deprecated Left here for backward compatibility, but since version 4.1.0 (see MINDEXER-14) there is NO notion
+     * of "hit limit" anymore.
      */
-    public static final IteratorSearchResponse TOO_MANY_HITS_ITERATOR_SEARCH_RESPONSE = new IteratorSearchResponse( null, -1, EMPTY_ITERATOR_RESULT_SET );
+    public static final IteratorSearchResponse TOO_MANY_HITS_ITERATOR_SEARCH_RESPONSE = new IteratorSearchResponse(
+            null, -1, EMPTY_ITERATOR_RESULT_SET );
 }

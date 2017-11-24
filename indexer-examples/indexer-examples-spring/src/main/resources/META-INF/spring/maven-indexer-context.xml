@@ -47,7 +47,8 @@
     <!-- Index creators: -->
     <bean id="minimalArtifactInfoIndexCreator" class="org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator"/>
     <bean id="jarFileContentsIndexCreator" class="org.apache.maven.index.creator.JarFileContentsIndexCreator"/>
-    <bean id="mavenPluginArtifactInfoIndexCreator" class="org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator"/>
+    <bean id="mavenPluginArtifactInfoIndexCreator"
+          class="org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator"/>
     <!-- Index creators. -->
 
     <util:map id="indexers"

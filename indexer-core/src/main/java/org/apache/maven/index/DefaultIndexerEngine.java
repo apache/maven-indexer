@@ -19,13 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import javax.inject.Named;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
@@ -37,19 +30,25 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * A default {@link IndexerEngine} implementation.
- * 
+ *
  * @author Tamas Cservenak
  */
 @Singleton
 @Named
 public class DefaultIndexerEngine
-    implements IndexerEngine
+        implements IndexerEngine
 {
 
-    public void index( IndexingContext context, ArtifactContext ac )
-        throws IOException
+    public void index( IndexingContext context, ArtifactContext ac ) throws IOException
     {
         // skip artifacts not obeying repository layout (whether m1 or m2)
         if ( ac != null && ac.getGav() != null )
@@ -65,8 +64,7 @@ public class DefaultIndexerEngine
         }
     }
 
-    public void update( IndexingContext context, ArtifactContext ac )
-        throws IOException
+    public void update( IndexingContext context, ArtifactContext ac ) throws IOException
     {
         if ( ac != null && ac.getGav() != null )
         {
@@ -90,8 +88,7 @@ public class DefaultIndexerEngine
         }
     }
 
-    public void remove( IndexingContext context, ArtifactContext ac )
-        throws IOException
+    public void remove( IndexingContext context, ArtifactContext ac ) throws IOException
     {
         if ( ac != null )
         {
@@ -102,7 +99,7 @@ public class DefaultIndexerEngine
 
             doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
             doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+                    Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
 
             IndexWriter w = context.getIndexWriter();
             w.addDocument( doc );
@@ -139,8 +136,8 @@ public class DefaultIndexerEngine
 
         for ( Object o : d.getFields() )
         {
-            IndexableField f = (IndexableField) o;
-            if ( f.fieldType().stored())
+            IndexableField f = ( IndexableField ) o;
+            if ( f.fieldType().stored() )
             {
                 result.put( f.name(), f.stringValue() );
             }
@@ -156,13 +153,12 @@ public class DefaultIndexerEngine
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try
             {
-                TopDocs result =
-                    indexSearcher.search(
-                        new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ), 2 );
+                TopDocs result = indexSearcher
+                        .search( new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ), 2 );
 
                 if ( result.totalHits == 1 )
                 {
-                    return indexSearcher.doc( result.scoreDocs[0].doc );
+                    return indexSearcher.doc( result.scoreDocs[ 0 ].doc );
                 }
             }
             finally
@@ -178,8 +174,7 @@ public class DefaultIndexerEngine
         return null;
     }
 
-    private void updateGroups( IndexingContext context, ArtifactContext ac )
-        throws IOException
+    private void updateGroups( IndexingContext context, ArtifactContext ac ) throws IOException
     {
         String rootGroup = ac.getArtifactInfo().getRootGroup();
         Set<String> rootGroups = context.getRootGroups();

@@ -19,43 +19,39 @@ package org.apache.maven.index.context;
  * under the License.
  */
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import junit.framework.TestCase;
-
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class NexusAnalyzerTest
-    extends TestCase
+        extends TestCase
 {
     protected NexusAnalyzer nexusAnalyzer;
 
-    protected void setUp()
-        throws Exception
+    protected void setUp() throws Exception
     {
         super.setUp();
 
         nexusAnalyzer = new NexusAnalyzer();
     }
 
-    public void testGroupIdTokenization()
-        throws IOException
+    public void testGroupIdTokenization() throws IOException
     {
-        runAndCompare( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID, "org.slf4j", new String[] { "org", "slf4j" } );
+        runAndCompare( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID, "org.slf4j", new String[] {"org", "slf4j"} );
 
-        runAndCompare( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW, "org.slf4j", new String[] { "org.slf4j" } );
+        runAndCompare( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW, "org.slf4j", new String[] {"org.slf4j"} );
     }
 
-    protected void runAndCompare( IndexerField indexerField, String text, String[] expected )
-        throws IOException
+    protected void runAndCompare( IndexerField indexerField, String text, String[] expected ) throws IOException
     {
-        Tokenizer ts = (Tokenizer) nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader( text ) );
+        Tokenizer ts = ( Tokenizer ) nexusAnalyzer.tokenStream( indexerField.getKey(), new StringReader( text ) );
         ts.reset();
 
         ArrayList<String> tokenList = new ArrayList<String>();
@@ -65,7 +61,7 @@ public class NexusAnalyzerTest
             while ( ts.incrementToken() )
             {
                 CharTermAttribute term = ts.addAttribute( CharTermAttribute.class );
-                tokenList.add( term.toString());
+                tokenList.add( term.toString() );
             }
         }
         else

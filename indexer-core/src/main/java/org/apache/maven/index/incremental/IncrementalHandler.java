@@ -28,12 +28,10 @@ import java.util.Properties;
 
 public interface IncrementalHandler
 {
-    List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
-        throws IOException;
+    List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties ) throws IOException;
 
     List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
-                                               Properties remoteProperties )
-        throws IOException;
+                                               Properties remoteProperties ) throws IOException;
 
     void initializeProperties( Properties properties );
 }
