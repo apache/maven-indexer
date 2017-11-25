@@ -32,8 +32,6 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.expr.SearchExpression;
-import org.apache.maven.index.packer.IndexPacker;
-import org.apache.maven.index.updater.IndexUpdater;
 
 /**
  * The Nexus indexer is a statefull facade that maintains state of indexing contexts.
@@ -57,8 +55,9 @@ import org.apache.maven.index.updater.IndexUpdater;
  * {@link #addArtifactToIndex(ArtifactContext, IndexingContext)} or
  * {@link #deleteArtifactFromIndex(ArtifactContext, IndexingContext)} methods.
  * <p>
- * An {@link IndexUpdater} could be used to fetch indexes from remote repositories. These indexers could be created
- * using the {@link NexusIndexerCli} command line tool or {@link IndexPacker} API.
+ * An {@link org.apache.maven.index.updater.IndexUpdater} could be used to fetch indexes from remote repositories.
+ * These indexers could be created using the Indexer CLI command line tool or
+ * {@link org.apache.maven.index.packer.IndexPacker} API.
  * <p>
  * Once index is populated you can perform search queries using field names declared in the {@link ArtifactInfo}:
  * 
@@ -79,7 +78,7 @@ import org.apache.maven.index.updater.IndexUpdater;
  * supported queries.
  * 
  * @see IndexingContext
- * @see IndexUpdater
+ * @see org.apache.maven.index.updater.IndexUpdater
  * @see DefaultQueryCreator
  * @author Jason van Zyl
  * @author Tamas Cservenak

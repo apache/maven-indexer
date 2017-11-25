@@ -47,7 +47,7 @@ public class ArtifactIndexingServiceImpl
     implements ArtifactIndexingService
 {
 
-    private static final Logger logger = LoggerFactory.getLogger( ArtifactIndexingServiceImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactIndexingServiceImpl.class );
 
     @Autowired
     private RepositoryIndexManager repositoryIndexManager;
@@ -86,7 +86,7 @@ public class ArtifactIndexingServiceImpl
 
         if ( repositoryId != null && !repositoryId.isEmpty() )
         {
-            logger.debug( "Repository: {}", repositoryId );
+            LOGGER.debug( "Repository: {}", repositoryId );
 
             final Map<String, Collection<ArtifactInfo>> resultsMap =
                 getResultsMap( repositoryId, searchRequest.getQuery() );
@@ -96,11 +96,11 @@ public class ArtifactIndexingServiceImpl
                 searchResults.setResults( resultsMap );
             }
 
-            if ( logger.isDebugEnabled() )
+            if ( LOGGER.isDebugEnabled() )
             {
                 int results = resultsMap.entrySet().iterator().next().getValue().size();
 
-                logger.debug( "Results: {}", results );
+                LOGGER.debug( "Results: {}", results );
             }
         }
         else
@@ -108,7 +108,7 @@ public class ArtifactIndexingServiceImpl
             Map<String, Collection<ArtifactInfo>> resultsMap = new LinkedHashMap<>();
             for ( String repoId : repositoryIndexManager.getIndexes().keySet() )
             {
-                logger.debug( "Repository: {}", repoId );
+                LOGGER.debug( "Repository: {}", repoId );
 
                 final RepositoryIndexer repositoryIndex = repositoryIndexManager.getRepositoryIndex( repoId );
                 if ( repositoryIndex != null )
@@ -121,7 +121,7 @@ public class ArtifactIndexingServiceImpl
                         resultsMap.put( repoId, artifactInfoResults );
                     }
 
-                    logger.debug( "Results: {}", artifactInfoResults.size() );
+                    LOGGER.debug( "Results: {}", artifactInfoResults.size() );
                 }
             }
 

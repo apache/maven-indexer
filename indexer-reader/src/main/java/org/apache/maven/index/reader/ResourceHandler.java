@@ -33,6 +33,9 @@ import java.io.InputStream;
 public interface ResourceHandler
     extends Closeable
 {
+    /**
+     * Handle of content.
+     */
     interface Resource
     {
         /**

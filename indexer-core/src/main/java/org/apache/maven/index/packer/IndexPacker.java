@@ -21,10 +21,9 @@ package org.apache.maven.index.packer;
 
 import java.io.IOException;
 
-import org.apache.maven.index.updater.IndexUpdater;
-
 /**
- * An index packer used to create transfer index format that can be used by the {@link IndexUpdater}.
+ * An index packer used to create transfer index format that can be used by the
+ * {@link org.apache.maven.index.updater.IndexUpdater}.
  * 
  * @author Tamas Cservenak
  */
@@ -36,8 +35,7 @@ public interface IndexPacker
      * Pack a context into a target directory. If the directory does not exists, it will be created. If the directory
      * exists, it should be writable.
      * 
-     * @param context the context to pack-up
-     * @param targetDir the directory where to write results, has to be non-null
+     * @param request the request to process.
      * @throws IllegalArgumentException when the targetDir already exists and is not a writable directory.
      * @throws IOException on lethal IO problem
      */

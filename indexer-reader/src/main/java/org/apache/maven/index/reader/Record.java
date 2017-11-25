@@ -28,6 +28,11 @@ import java.util.Map;
  */
 public final class Record
 {
+    /**
+     * Entry key is field key with some metadata.
+     *
+     * @param <T> The type of the value belonging to this key instance.
+     */
     public static final class EntryKey<T>
     {
         private final String name;
@@ -273,8 +278,8 @@ public final class Record
     public static final EntryKey<String> OSGI_FRAGMENT_HOST = new EntryKey<String>( "Fragment-Host", String.class );
 
     /**
-     * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}. Extracted by {@code
-     * OsgiArtifactIndexCreator}.
+     * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}.
+     * Extracted by {@code OsgiArtifactIndexCreator}.
      */
     public static final EntryKey<String> OSGI_BREE =
         new EntryKey<String>( "Bundle-RequiredExecutionEnvironment", String.class );
@@ -327,8 +332,8 @@ public final class Record
         ARTIFACT_ADD,
 
         /**
-         * Artifact REMOVE record. In case of incremental updates, signals that this artifact was removed. Records of this
-         * type should be removed from your indexing system.
+         * Artifact REMOVE record. In case of incremental updates, signals that this artifact was removed. Records of
+         * this type should be removed from your indexing system.
          * Contains following entries:
          * <ul>
          * <li>{@link #REC_MODIFIED} (when record was deleted from index)</li>
@@ -352,8 +357,8 @@ public final class Record
         ALL_GROUPS,
 
         /**
-         * Special record, containing all the root groups of Maven "groupId"s that are enlisted on the index. Can be safely
-         * ignored.
+         * Special record, containing all the root groups of Maven "groupId"s that are enlisted on the index. Can be
+         * safely ignored.
          * Contains following entries:
          * <ul>
          * <li>{@link #ROOT_GROUPS}</li>
@@ -373,9 +378,9 @@ public final class Record
     }
 
     /**
-     * Returns the {@link Type} of this record. Usually users would be interested in {@link Type#ARTIFACT_ADD} and {@link
-     * Type#ARTIFACT_REMOVE} types only to maintain their own index. Still, indexer offers extra records too, see {@link
-     * Type} for all existing types.
+     * Returns the {@link Type} of this record. Usually users would be interested in {@link Type#ARTIFACT_ADD} and
+     * {@link Type#ARTIFACT_REMOVE} types only to maintain their own index. Still, indexer offers extra records too,
+     * see {@link Type} for all existing types.
      */
     public Type getType()
     {

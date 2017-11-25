@@ -77,7 +77,8 @@ public class IndexReader
         {
             if ( local != null )
             {
-                Properties localProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
+                Properties localProperties =
+                        loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
                 if ( localProperties != null )
                 {
                     this.localIndexProperties = localProperties;
@@ -135,8 +136,8 @@ public class IndexReader
     }
 
     /**
-     * Returns {@code true} if incremental update is about to happen. If incremental update, the {@link #iterator()} will
-     * return only the diff from the last update.
+     * Returns {@code true} if incremental update is about to happen. If incremental update, the {@link #iterator()}
+     * will return only the diff from the last update.
      */
     public boolean isIncremental()
     {
@@ -155,9 +156,9 @@ public class IndexReader
 
     /**
      * Closes the underlying {@link ResourceHandler}s. In case of incremental update use, it also assumes that user
-     * consumed all the iterator and integrated it, hence, it will update the {@link WritableResourceHandler} contents to
-     * prepare it for future incremental update. If this is not desired (ie. due to aborted update), then this method
-     * should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
+     * consumed all the iterator and integrated it, hence, it will update the {@link WritableResourceHandler} contents
+     * to prepare it for future incremental update. If this is not desired (ie. due to aborted update), then this
+     * method should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
      * this class should be closed manually.
      */
     public void close()

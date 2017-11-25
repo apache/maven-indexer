@@ -25,7 +25,13 @@ import org.apache.maven.index.reader.Record.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.apache.maven.index.reader.Utils.*;
+import static org.apache.maven.index.reader.Utils.FIELD_SEPARATOR;
+import static org.apache.maven.index.reader.Utils.FS_PATTERN;
+import static org.apache.maven.index.reader.Utils.INFO;
+import static org.apache.maven.index.reader.Utils.NOT_AVAILABLE;
+import static org.apache.maven.index.reader.Utils.UINFO;
+import static org.apache.maven.index.reader.Utils.renvl;
+
 
 /**
  * Maven 2 Index record transformer, that transforms "native" Maven Indexer records into {@link Record}s.

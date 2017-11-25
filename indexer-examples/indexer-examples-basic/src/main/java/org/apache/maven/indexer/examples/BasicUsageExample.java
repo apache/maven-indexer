@@ -74,6 +74,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Collection of some use cases.
+ */
 public class BasicUsageExample
 {
     public static void main( String[] args )
@@ -295,7 +298,9 @@ public class BasicUsageExample
         // doing sha1 search
         searchAndDump( indexer, "SHA1 7ab67e6b20e5332a7fb4fdf2f019aec4275846c2",
                        indexer.constructQuery( MAVEN.SHA1,
-                                               new SourcedSearchExpression( "7ab67e6b20e5332a7fb4fdf2f019aec4275846c2" ) ) );
+                                               new SourcedSearchExpression( "7ab67e6b20e5332a7fb4fdf2f019aec4275846c2" )
+                       )
+        );
 
         searchAndDump( indexer, "SHA1 7ab67e6b20 (partial hash)",
                        indexer.constructQuery( MAVEN.SHA1, new UserInputSearchExpression( "7ab67e6b20" ) ) );
@@ -339,6 +344,8 @@ public class BasicUsageExample
         System.out.println();
     }
 
+    private static final int MAX_WIDTH = 60;
+
     public void searchGroupedAndDump( Indexer nexusIndexer, String descr, Query q, Grouping g )
         throws IOException
     {
@@ -353,7 +360,7 @@ public class BasicUsageExample
             System.out.println( "  Latest version:  " + ai.getVersion() );
             System.out.println( StringUtils.isBlank( ai.getDescription() )
                                     ? "No description in plugin's POM."
-                                    : StringUtils.abbreviate( ai.getDescription(), 60 ) );
+                                    : StringUtils.abbreviate( ai.getDescription(), MAX_WIDTH ) );
             System.out.println();
         }
 

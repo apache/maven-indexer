@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * An object that holds grouped sets of {@link ArtifactInfos} in case of grouped search.
+ * An object that holds grouped sets of {@link ArtifactInfo} in case of grouped search.
  * 
  * @author Tamas Cservenak
  */
@@ -32,7 +32,7 @@ public class ArtifactInfoGroup
 {
     private String groupKey;
 
-    public final Set<ArtifactInfo> artifactInfos;
+    private final Set<ArtifactInfo> artifactInfos;
 
     public ArtifactInfoGroup( String groupKey )
     {
@@ -64,7 +64,7 @@ public class ArtifactInfoGroup
     @Override
     public String toString()
     {
-        return new StringBuilder().append( groupKey ).append( "=" ).append( artifactInfos.toString() ).toString();
+        return groupKey + "=" + artifactInfos;
     }
 
 }

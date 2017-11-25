@@ -19,15 +19,6 @@ package org.apache.maven.index.cli;
  * under the License.
  */
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
@@ -56,7 +47,16 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.LoggerManager;
 import org.codehaus.plexus.tools.cli.AbstractCli;
-import org.codehaus.plexus.util.IOUtil;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A command line tool that can be used to index local Maven repository.
@@ -64,7 +64,8 @@ import org.codehaus.plexus.util.IOUtil;
  * The following command line options are supported:
  * <ul>
  * <li>-repository <path> : required path to repository to be indexed</li>
- * <li>-index <path> : required index folder used to store created index or where previously created index is stored</li>
+ * <li>-index <path> : required index folder used to store created index or where previously created index is
+ * stored</li>
  * <li>-name <path> : required repository name/id</li>
  * <li>-target <path> : optional folder name where to save produced index files</li>
  * <li>-type <path> : optional indexer types</li>
@@ -206,7 +207,8 @@ public class NexusIndexerCli
         .withDescription( "Create checksums for all files (sha1, md5)." ).create( CREATE_FILE_CHECKSUMS ) );
 
         options.addOption( OptionBuilder.withLongOpt( "type" ).hasArg() //
-        .withDescription( "Indexer type (default, min, full or comma separated list of custom types)." ).create( TYPE ) );
+        .withDescription( "Indexer type (default, min, full or comma separated list of custom types)." )
+        .create( TYPE ) );
 
         options.addOption( OptionBuilder.withLongOpt( "unpack" ) //
         .withDescription( "Unpack an index file" ).create( UNPACK ) );
@@ -308,8 +310,8 @@ public class NexusIndexerCli
 
         boolean quiet = cli.hasOption( QUIET );
 
-        Integer chunkCount =
-            cli.hasOption( INCREMENTAL_CHUNK_KEEP_COUNT ) ? Integer.parseInt( cli.getOptionValue( INCREMENTAL_CHUNK_KEEP_COUNT ) )
+        Integer chunkCount = cli.hasOption( INCREMENTAL_CHUNK_KEEP_COUNT )
+                ? Integer.parseInt( cli.getOptionValue( INCREMENTAL_CHUNK_KEEP_COUNT ) )
                 : null;
 
         if ( !quiet )
@@ -365,24 +367,24 @@ public class NexusIndexerCli
             try
             {
                 IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), outputFolder);
+                        new IndexPackingRequest( context, indexSearcher.getIndexReader(), outputFolder );
 
-                request.setCreateChecksumFiles(createChecksums);
+                request.setCreateChecksumFiles( createChecksums );
 
-                request.setCreateIncrementalChunks(createIncrementalChunks);
+                request.setCreateIncrementalChunks( createIncrementalChunks );
 
-                request.setFormats(Arrays.asList(IndexFormat.FORMAT_V1));
+                request.setFormats( Arrays.asList( IndexFormat.FORMAT_V1 ) );
 
-                if (chunkCount != null)
+                if ( chunkCount != null )
                 {
-                    request.setMaxIndexChunks(chunkCount.intValue());
+                    request.setMaxIndexChunks( chunkCount.intValue() );
                 }
 
-                packIndex(packer, request, debug, quiet);
+                packIndex( packer, request, debug, quiet );
             }
             finally
             {
-                context.releaseIndexSearcher(indexSearcher);
+                context.releaseIndexSearcher( indexSearcher );
             }
 
             if ( !quiet )
@@ -417,8 +419,8 @@ public class NexusIndexerCli
 
         final List<IndexCreator> indexers = getIndexers( cli, plexus );
 
-        try (BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
-             FSDirectory directory = FSDirectory.open( outputFolder.toPath() ))
+        try ( BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
+             FSDirectory directory = FSDirectory.open( outputFolder.toPath() ) )
         {
             DefaultIndexUpdater.unpackIndexData( is, directory, (IndexingContext) Proxy.newProxyInstance(
                 getClass().getClassLoader(), new Class[] { IndexingContext.class }, new PartialImplementation()
@@ -496,10 +498,10 @@ public class NexusIndexerCli
     {
         long t = System.currentTimeMillis() - startTimeInMillis;
 
-        long s = t / 1000L;
-        if ( t > 60 * 1000 )
+        long s = TimeUnit.MILLISECONDS.toSeconds( t );
+        if ( t > TimeUnit.MINUTES.toMillis( 1 ) )
         {
-            long m = t / 1000L / 60L;
+            long m = TimeUnit.MILLISECONDS.toMinutes( t );
 
             System.err.printf( "Total time:   %d min %d sec\n", m, s - ( m * 60 ) );
         }

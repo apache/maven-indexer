@@ -30,8 +30,6 @@ import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SearchExpression;
-import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.apache.maven.index.expr.UserInputSearchExpression;
 
 /**
  * Indexer component. It is the main component of Maven Indexer, offering {@link IndexingContext} creation and close
@@ -214,8 +212,8 @@ public interface Indexer
      * @param expression
      * @return the query to be used for search.
      * @see SearchExpression
-     * @see UserInputSearchExpression
-     * @see SourcedSearchExpression
+     * @see org.apache.maven.index.expr.UserInputSearchExpression
+     * @see org.apache.maven.index.expr.SourcedSearchExpression
      * @throws IllegalArgumentException
      */
     Query constructQuery( Field field, SearchExpression expression )

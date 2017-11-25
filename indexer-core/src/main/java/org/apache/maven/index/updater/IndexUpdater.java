@@ -21,11 +21,9 @@ package org.apache.maven.index.updater;
 
 import java.io.IOException;
 
-import org.apache.maven.index.packer.IndexPacker;
-
 /**
  * An index updater provides functionality to update index for remote repositories using transfer format produced by the
- * {@link IndexPacker}.
+ * {@link org.apache.maven.index.packer.IndexPacker}.
  * <p>
  * The following snippet shows how to update/download remote index:
  * 

@@ -134,8 +134,8 @@ public class IndexWriter
     }
 
     /**
-     * Returns the chain id of published index. If {@link #isIncremental()} is {@code false}, this is the newly generated
-     * chain ID.
+     * Returns the chain id of published index. If {@link #isIncremental()} is {@code false}, this is the newly
+     * generated chain ID.
      */
     public String getChainId()
     {
@@ -158,7 +158,7 @@ public class IndexWriter
     {
         int written;
 
-        try (WritableResource writableResource = local.locate( nextChunkName ))
+        try ( WritableResource writableResource = local.locate( nextChunkName ) )
         {
             final ChunkWriter chunkWriter =
                 new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1, new Date() );

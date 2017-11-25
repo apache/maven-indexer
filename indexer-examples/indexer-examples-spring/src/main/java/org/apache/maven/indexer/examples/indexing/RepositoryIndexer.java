@@ -60,9 +60,9 @@ public class RepositoryIndexer
 
     private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryIndexer.class );
 
-    private static final String[] luceneFields = new String[]{ "g", "a", "v", "p", "c" };
+    private static final String[] LUCENE_FIELDS = new String[]{"g", "a", "v", "p", "c" };
 
-    private static final WhitespaceAnalyzer luceneAnalyzer = new WhitespaceAnalyzer( );
+    private static final WhitespaceAnalyzer LUCENE_ANALYZER = new WhitespaceAnalyzer( );
 
     private Indexer indexer;
 
@@ -173,7 +173,7 @@ public class RepositoryIndexer
     public Set<ArtifactInfo> search( final String queryText )
         throws ParseException, IOException
     {
-        final Query query = new MultiFieldQueryParser( luceneFields, luceneAnalyzer ).parse( queryText );
+        final Query query = new MultiFieldQueryParser( LUCENE_FIELDS, LUCENE_ANALYZER ).parse( queryText );
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
                       new String[]{ query.toString(), indexingContext.getId(),

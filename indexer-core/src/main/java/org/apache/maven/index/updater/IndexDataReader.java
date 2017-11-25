@@ -125,9 +125,9 @@ public class IndexDataReader
     public long readHeader()
         throws IOException
     {
-        final byte HDRBYTE = (byte) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
+        final byte hdrbyte = (byte) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
 
-        if ( HDRBYTE != dis.readByte() )
+        if ( hdrbyte != dis.readByte() )
         {
             // data format version mismatch
             throw new IOException( "Provided input contains unexpected data (0x01 expected as 1st byte)!" );
@@ -224,7 +224,7 @@ public class IndexDataReader
 
         int c, char2, char3;
         int count = 0;
-        int chararr_count = 0;
+        int chararrCount = 0;
 
         in.readFully( bytearr, 0, utflen );
 
@@ -236,7 +236,7 @@ public class IndexDataReader
                 break;
             }
             count++;
-            chararr[chararr_count++] = (char) c;
+            chararr[chararrCount++] = (char) c;
         }
 
         while ( count < utflen )
@@ -254,7 +254,7 @@ public class IndexDataReader
                 case 7:
                     /* 0xxxxxxx */
                     count++;
-                    chararr[chararr_count++] = (char) c;
+                    chararr[chararrCount++] = (char) c;
                     break;
 
                 case 12:
@@ -270,7 +270,7 @@ public class IndexDataReader
                     {
                         throw new UTFDataFormatException( "malformed input around byte " + count );
                     }
-                    chararr[chararr_count++] = (char) ( ( ( c & 0x1F ) << 6 ) | ( char2 & 0x3F ) );
+                    chararr[chararrCount++] = (char) ( ( ( c & 0x1F ) << 6 ) | ( char2 & 0x3F ) );
                     break;
 
                 case 14:
@@ -286,7 +286,7 @@ public class IndexDataReader
                     {
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
-                    chararr[chararr_count++] =
+                    chararr[chararrCount++] =
                         (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) << 0 ) );
                     break;
 
@@ -297,7 +297,7 @@ public class IndexDataReader
         }
 
         // The number of chars produced may be less than utflen
-        return new String( chararr, 0, chararr_count );
+        return new String( chararr, 0, chararrCount );
     }
 
     /**

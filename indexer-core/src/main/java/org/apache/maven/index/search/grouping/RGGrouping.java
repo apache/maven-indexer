@@ -22,10 +22,9 @@ package org.apache.maven.index.search.grouping;
 import java.util.Comparator;
 
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.Grouping;
 
 /**
- * A Repository : GroupId {@link Grouping} implementation.
+ * A Repository : GroupId grouping implementation.
  * 
  * @author Tamas Cservenak
  */
