@@ -420,6 +420,17 @@ under the License.
           <failsOnError>false</failsOnError>
         </configuration>
       </plugin>
+      <plugin><!-- TODO remove when upgrading to parent pom 31 -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.0-beta-6</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
     <pluginManagement>
       <plugins>

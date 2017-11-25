@@ -23,12 +23,6 @@ under the License.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
 
-  <skin>
-    <groupId>org.apache.maven.skins</groupId>
-    <artifactId>maven-fluido-skin</artifactId>
-    <version>1.3.0</version>
-  </skin>
-
   <custom>
     <fluidoSkin>
       <topBarEnabled>false</topBarEnabled>
@@ -37,21 +31,11 @@ under the License.
         <sitesearch>${project.url}</sitesearch>
       </googleSearch>
     </fluidoSkin>
-
   </custom>
-
-  <bannerLeft>
-    <name>${project.name}</name>
-    <src>http://maven.apache.org/images/apache-maven-project.png</src>
-    <href>http://maven.apache.org/</href>
-  </bannerLeft>
-  <bannerRight>
-    <src>http://maven.apache.org/images/maventxt_logo_200.gif</src>
-  </bannerRight>
 
   <body>
     <breadcrumbs>
-      <item name="Maven Indexer" href="http://maven.apache.org/maven-indexer/index.html" />
+      <item name="Maven Indexer" href="/maven-indexer/index.html" />
     </breadcrumbs>
 
     <menu name="Overview">
