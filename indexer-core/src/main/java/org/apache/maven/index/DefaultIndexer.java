@@ -43,7 +43,6 @@ import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.expr.SearchTypedStringSearchExpression;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.codehaus.plexus.util.IOUtil;
 
 /**
  * A default {@link Indexer} implementation.
@@ -109,7 +108,7 @@ public class DefaultIndexer
     // Modifying
     // ----------------------------------------------------------------------------
 
-    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context)
+    public void addArtifactToIndex( ArtifactContext ac, IndexingContext context )
         throws IOException
     {
         if ( ac != null )
@@ -157,7 +156,7 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo> emptySet() );
+            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo>emptySet() );
         }
         else
         {
@@ -183,7 +182,8 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new GroupedSearchResponse( request.getQuery(), 0, Collections.<String, ArtifactInfoGroup> emptyMap() );
+            return new GroupedSearchResponse( request.getQuery(), 0,
+                                              Collections.<String, ArtifactInfoGroup>emptyMap() );
         }
         else
         {
@@ -199,7 +199,7 @@ public class DefaultIndexer
     public Collection<ArtifactInfo> identify( final File artifact, final Collection<IndexingContext> contexts )
         throws IOException
     {
-        try (FileInputStream is = new FileInputStream( artifact ))
+        try ( FileInputStream is = new FileInputStream( artifact ) )
         {
             final MessageDigest sha1 = MessageDigest.getInstance( "SHA-1" );
             final byte[] buff = new byte[4096];
@@ -259,7 +259,7 @@ public class DefaultIndexer
     public Query constructQuery( Field field, String expression, SearchType searchType )
         throws IllegalArgumentException
     {
-        return constructQuery( field, new SearchTypedStringSearchExpression( expression, searchType ));
+        return constructQuery( field, new SearchTypedStringSearchExpression( expression, searchType ) );
     }
     // ==
 

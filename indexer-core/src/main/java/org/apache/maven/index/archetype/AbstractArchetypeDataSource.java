@@ -68,7 +68,8 @@ public abstract class AbstractArchetypeDataSource
         try
         {
             final Map<String, String> repositories = getRepositoryMap();
-            final Query pq = indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
+            final Query pq =
+                indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
             final FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
             searchRequest.setContexts( getIndexingContexts() );
             final FlatSearchResponse searchResponse = indexer.searchFlat( searchRequest );

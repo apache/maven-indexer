@@ -344,7 +344,8 @@ public class ArtifactInfo
         versionScheme = new GenericVersionScheme();
     }
 
-    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier, String extension )
+    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier,
+                         String extension )
     {
         this();
         this.repository = repository;
@@ -1062,43 +1063,53 @@ public class ArtifactInfo
         this.fields = fields;
     }
 
-    public String getBundleProvideCapability() {
+    public String getBundleProvideCapability()
+    {
         return bundleProvideCapability;
     }
 
-    public void setBundleProvideCapability(String bundleProvideCapability) {
+    public void setBundleProvideCapability( String bundleProvideCapability )
+    {
         this.bundleProvideCapability = bundleProvideCapability;
     }
 
-    public String getBundleRequireCapability() {
+    public String getBundleRequireCapability()
+    {
         return bundleRequireCapability;
     }
 
-    public void setBundleRequireCapability(String bundleRequireCapability) {
+    public void setBundleRequireCapability( String bundleRequireCapability )
+    {
         this.bundleRequireCapability = bundleRequireCapability;
     }
 
-    public String getSha256() {
+    public String getSha256()
+    {
         return sha256;
     }
 
-    public void setSha256(String sha256) {
+    public void setSha256( String sha256 )
+    {
         this.sha256 = sha256;
     }
 
-    public String getBundleFragmentHost() {
+    public String getBundleFragmentHost()
+    {
         return bundleFragmentHost;
     }
 
-    public void setBundleFragmentHost(String bundleFragmentHost) {
+    public void setBundleFragmentHost( String bundleFragmentHost )
+    {
         this.bundleFragmentHost = bundleFragmentHost;
     }
 
-    public String getBundleRequiredExecutionEnvironment() {
+    public String getBundleRequiredExecutionEnvironment()
+    {
         return bundleRequiredExecutionEnvironment;
     }
 
-    public void setBundleRequiredExecutionEnvironment(String bundleRequiredExecutionEnvironment) {
+    public void setBundleRequiredExecutionEnvironment( String bundleRequiredExecutionEnvironment )
+    {
         this.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
     }
 

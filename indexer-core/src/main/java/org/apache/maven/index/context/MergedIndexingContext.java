@@ -79,7 +79,8 @@ public class MergedIndexingContext
                                   boolean searchable, ContextMemberProvider membersProvider )
         throws IOException
     {
-        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ), searchable );
+        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ),
+              searchable );
 
         setIndexDirectoryFile( indexDirectoryFile );
     }
@@ -302,7 +303,8 @@ public class MergedIndexingContext
      * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
      * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
      */
-    protected void setIndexDirectoryFile(File dir) throws IOException
+    protected void setIndexDirectoryFile( File dir )
+        throws IOException
     {
         if ( dir == null )
         {

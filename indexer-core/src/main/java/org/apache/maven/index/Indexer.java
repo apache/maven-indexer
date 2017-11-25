@@ -1,19 +1,5 @@
 package org.apache.maven.index;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.lucene.search.Query;
-import org.apache.maven.index.context.ContextMemberProvider;
-import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
-import org.apache.maven.index.context.IndexCreator;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.expr.SearchExpression;
-import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.apache.maven.index.expr.UserInputSearchExpression;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -32,6 +18,20 @@ import org.apache.maven.index.expr.UserInputSearchExpression;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.lucene.search.Query;
+import org.apache.maven.index.context.ContextMemberProvider;
+import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
+import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.expr.SearchExpression;
+import org.apache.maven.index.expr.SourcedSearchExpression;
+import org.apache.maven.index.expr.UserInputSearchExpression;
 
 /**
  * Indexer component. It is the main component of Maven Indexer, offering {@link IndexingContext} creation and close
@@ -231,5 +231,6 @@ public interface Indexer
      * @return
      * @throws IllegalArgumentException
      */
-    Query constructQuery( Field field, String expression, SearchType searchType) throws IllegalArgumentException;
+    Query constructQuery( Field field, String expression, SearchType searchType )
+        throws IllegalArgumentException;
 }

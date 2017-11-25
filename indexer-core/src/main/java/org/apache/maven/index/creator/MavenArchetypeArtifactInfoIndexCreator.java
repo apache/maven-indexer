@@ -43,7 +43,7 @@ import org.apache.maven.index.util.zip.ZipHandle;
  * @author cstamas
  */
 @Singleton
-@Named (MavenArchetypeArtifactInfoIndexCreator.ID)
+@Named( MavenArchetypeArtifactInfoIndexCreator.ID )
 public class MavenArchetypeArtifactInfoIndexCreator
     extends AbstractIndexCreator
 {
@@ -51,8 +51,8 @@ public class MavenArchetypeArtifactInfoIndexCreator
 
     private static final String MAVEN_ARCHETYPE_PACKAGING = "maven-archetype";
 
-    private static final String[] ARCHETYPE_XML_LOCATIONS = { "META-INF/maven/archetype.xml", "META-INF/archetype.xml",
-        "META-INF/maven/archetype-metadata.xml" };
+    private static final String[] ARCHETYPE_XML_LOCATIONS =
+        { "META-INF/maven/archetype.xml", "META-INF/archetype.xml", "META-INF/maven/archetype-metadata.xml" };
 
     public MavenArchetypeArtifactInfoIndexCreator()
     {

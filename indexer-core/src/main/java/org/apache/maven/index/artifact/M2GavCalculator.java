@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat;
  * @author Tamas Cservenak
  */
 @Singleton
-@Named ("maven2")
+@Named( "maven2" )
 public class M2GavCalculator
     implements GavCalculator
 {

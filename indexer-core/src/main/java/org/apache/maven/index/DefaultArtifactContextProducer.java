@@ -117,7 +117,8 @@ public class DefaultArtifactContextProducer
 
         String classifier = gav.getClassifier();
 
-        ArtifactInfo ai = new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier, gav.getExtension() );
+        ArtifactInfo ai =
+            new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier, gav.getExtension() );
 
         // store extension if classifier is not empty
         if ( !StringUtils.isEmpty( ai.getClassifier() ) )

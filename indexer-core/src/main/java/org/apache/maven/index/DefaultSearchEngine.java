@@ -355,9 +355,9 @@ public class DefaultSearchEngine
                     // warn the user and leave trace just before OOM might happen
                     // the hits.getTotalHits() might be HUUGE
                     getLogger().debug(
-                        "Executing unbounded search, and fitting topHitCounts to "
-                            + topHitCount
-                            + ", an OOMEx might follow. To avoid OOM use narrower queries or limit your expectancy with request.setCount() method where appropriate. See MINDEXER-14 for details." );
+                        "Executing unbounded search, and fitting topHitCounts to " + topHitCount
+                        + ", an OOMEx might follow. To avoid OOM use narrower queries or limit your expectancy with "
+                        + "request.setCount() method where appropriate. See MINDEXER-14 for details." );
                 }
 
                 // redo all, but this time with correct numbers

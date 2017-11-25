@@ -30,17 +30,20 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
-import org.apache.maven.index.*;
 import org.apache.maven.index.ArtifactAvailability;
+import org.apache.maven.index.ArtifactContext;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IndexerField;
+import org.apache.maven.index.IndexerFieldVersion;
+import org.apache.maven.index.MAVEN;
+import org.apache.maven.index.NEXUS;
 import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.locator.JavadocLocator;
 import org.apache.maven.index.locator.Locator;
 import org.apache.maven.index.locator.Sha1Locator;
 import org.apache.maven.index.locator.SignatureLocator;
 import org.apache.maven.index.locator.SourcesLocator;
 import org.apache.maven.model.Model;
-import org.codehaus.plexus.component.annotations.Component;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -53,7 +56,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @author cstamas
  */
 @Singleton
-@Named (MinimalArtifactInfoIndexCreator.ID)
+@Named( MinimalArtifactInfoIndexCreator.ID )
 public class MinimalArtifactInfoIndexCreator
     extends AbstractIndexCreator
     implements LegacyDocumentUpdater
@@ -202,7 +205,8 @@ public class MinimalArtifactInfoIndexCreator
         {
             File signature = sigl.locate( artifact );
 
-            ai.setSignatureExists( signature.exists() ? ArtifactAvailability.PRESENT : ArtifactAvailability.NOT_PRESENT );
+            ai.setSignatureExists( signature.exists() ? ArtifactAvailability.PRESENT
+                            : ArtifactAvailability.NOT_PRESENT );
 
             File sha1 = sha1l.locate( artifact );
 
@@ -253,11 +257,13 @@ public class MinimalArtifactInfoIndexCreator
     public void updateDocument( ArtifactInfo ai, Document doc )
     {
         String info =
-            new StringBuilder().append( ArtifactInfo.nvl( ai.getPackaging() )).append( ArtifactInfo.FS ).append(
-                Long.toString( ai.getLastModified() ) ).append( ArtifactInfo.FS ).append( Long.toString( ai.getSize() ) ).append(
-                ArtifactInfo.FS ).append( ai.getSourcesExists().toString() ).append( ArtifactInfo.FS ).append(
-                ai.getJavadocExists().toString() ).append( ArtifactInfo.FS ).append( ai.getSignatureExists().toString() ).append(
-                ArtifactInfo.FS ).append( ai.getFileExtension() ).toString();
+            new StringBuilder().append( ArtifactInfo.nvl( ai.getPackaging() ) )
+                .append( ArtifactInfo.FS ).append( Long.toString( ai.getLastModified() ) )
+                .append( ArtifactInfo.FS ).append( Long.toString( ai.getSize() ) )
+                .append( ArtifactInfo.FS ).append( ai.getSourcesExists().toString() )
+                .append( ArtifactInfo.FS ).append( ai.getJavadocExists().toString() )
+                .append( ArtifactInfo.FS ).append( ai.getSignatureExists().toString() )
+                .append( ArtifactInfo.FS ).append( ai.getFileExtension() ).toString();
 
         doc.add( FLD_INFO.toField( info ) );
 
@@ -304,7 +310,8 @@ public class MinimalArtifactInfoIndexCreator
         // legacy!
         if ( ai.getPrefix() != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.getPrefix(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.getPrefix(), Field.Store.YES,
+                                Field.Index.NOT_ANALYZED ) );
         }
 
         if ( ai.getGoals() != null )
@@ -349,7 +356,7 @@ public class MinimalArtifactInfoIndexCreator
         {
             String[] r = ArtifactInfo.FS_PATTERN.split( info );
 
-            ai.setPackaging( ArtifactInfo.renvl( r[0] ));
+            ai.setPackaging( ArtifactInfo.renvl( r[0] ) );
 
             ai.setLastModified( Long.parseLong( r[1] ) );
 

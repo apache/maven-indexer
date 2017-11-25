@@ -74,9 +74,9 @@ public abstract class AbstractTreeNode
      */
     private String repositoryId;
 
-    final private transient IndexTreeView treeView;
+    private final transient IndexTreeView treeView;
 
-    final private transient TreeViewRequest request;
+    private final transient TreeViewRequest request;
 
     /**
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation;

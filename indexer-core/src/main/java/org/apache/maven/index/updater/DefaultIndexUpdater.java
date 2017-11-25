@@ -90,7 +90,8 @@ public class DefaultIndexUpdater
 
 
     @Inject
-    public DefaultIndexUpdater( final IncrementalHandler incrementalHandler, final List<IndexUpdateSideEffect> sideEffects )
+    public DefaultIndexUpdater( final IncrementalHandler incrementalHandler,
+                                final List<IndexUpdateSideEffect> sideEffects )
     {
         this.incrementalHandler = incrementalHandler;
         this.sideEffects = sideEffects;
@@ -134,7 +135,7 @@ public class DefaultIndexUpdater
 
                     try
                     {
-                        if( fetchAndUpdateIndex( updateRequest, fetcher, cache ).isSuccessful() )
+                        if ( fetchAndUpdateIndex( updateRequest, fetcher, cache ).isSuccessful() )
                         {
                             cache.commit();
                         }
@@ -159,7 +160,7 @@ public class DefaultIndexUpdater
                     LuceneIndexAdaptor target = new LuceneIndexAdaptor( updateRequest );
                     result = fetchAndUpdateIndex( updateRequest, fetcher, target );
                     
-                    if(result.isSuccessful())
+                    if ( result.isSuccessful() )
                     {
                         target.commit();
                     }
@@ -189,8 +190,8 @@ public class DefaultIndexUpdater
         indexDir.delete();
         indexDir.mkdirs();
 
-        try(BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
-            Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ))
+        try ( BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
+                        Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ) )
         {
             Date timestamp = null;
 
@@ -206,7 +207,8 @@ public class DefaultIndexUpdater
             else
             {
                 // legacy transfer format
-                throw new IllegalArgumentException("The legacy format is no longer supported by this version of maven-indexer.");
+                throw new IllegalArgumentException( "The legacy format is no longer supported "
+                    + "by this version of maven-indexer." );
             }
 
             if ( updateRequest.getDocumentFilter() != null )
@@ -256,13 +258,13 @@ public class DefaultIndexUpdater
             r = DirectoryReader.open( directory );
             w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
             
-            Bits liveDocs = MultiFields.getLiveDocs(r);
+            Bits liveDocs = MultiFields.getLiveDocs( r );
 
             int numDocs = r.maxDoc();
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if (liveDocs != null && ! liveDocs.get(i) )
+                if ( liveDocs != null && !liveDocs.get( i ) )
                 {
                     continue;
                 }
@@ -271,8 +273,8 @@ public class DefaultIndexUpdater
 
                 if ( !filter.accept( d ) )
                 {
-                    boolean success = w.tryDeleteDocument(r, i);
-                    //FIXME handle deletion failure
+                    boolean success = w.tryDeleteDocument( r, i );
+                    // FIXME handle deletion failure
                 }
             }
             w.commit();
@@ -301,7 +303,7 @@ public class DefaultIndexUpdater
     {
         File indexProperties = new File( indexDirectoryFile, remoteIndexPropertiesName );
 
-        try ( FileInputStream fis = new FileInputStream( indexProperties ))
+        try ( FileInputStream fis = new FileInputStream( indexProperties ) )
         {
             Properties properties = new Properties();
 
@@ -323,7 +325,7 @@ public class DefaultIndexUpdater
 
         if ( properties != null )
         {
-            try (OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) ))
+            try ( OutputStream os = new BufferedOutputStream( new FileOutputStream( file ) ) )
             {
                 properties.store( os, null );
             }
@@ -337,7 +339,7 @@ public class DefaultIndexUpdater
     private Properties downloadIndexProperties( final ResourceFetcher fetcher )
         throws IOException
     {
-        try (InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ))
+        try ( InputStream fis = fetcher.retrieve( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ) )
         {
             Properties properties = new Properties();
 
@@ -373,7 +375,8 @@ public class DefaultIndexUpdater
      * @param w a writer to save index data
      * @param ics a collection of index creators for updating unpacked documents.
      */
-    public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d, final IndexingContext context )
+    public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d,
+                                                       final IndexingContext context )
         throws IOException
     {
         NexusIndexWriter w = new NexusIndexWriter( d, new NexusAnalyzer(), true );
@@ -477,7 +480,7 @@ public class DefaultIndexUpdater
     {
         private final IndexUpdateRequest updateRequest;
 
-        public LuceneIndexAdaptor( IndexUpdateRequest updateRequest )
+        LuceneIndexAdaptor( IndexUpdateRequest updateRequest )
         {
             super( updateRequest.getIndexingContext().getIndexDirectoryFile() );
             this.updateRequest = updateRequest;
@@ -536,7 +539,7 @@ public class DefaultIndexUpdater
 
         private final ArrayList<String> newChunks = new ArrayList<String>();
 
-        public LocalCacheIndexAdaptor( File dir, IndexUpdateResult result )
+        LocalCacheIndexAdaptor( File dir, IndexUpdateResult result )
         {
             super( dir );
             this.result = result;
@@ -601,8 +604,8 @@ public class DefaultIndexUpdater
             throws IOException
         {
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            try (BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) ); //
-                 Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING ))
+            try ( BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) ); //
+                            Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING ) )
             {
                 for ( String filename : newChunks )
                 {
@@ -619,8 +622,8 @@ public class DefaultIndexUpdater
             ArrayList<String> chunks = new ArrayList<String>();
 
             File chunksFile = new File( dir, CHUNKS_FILENAME );
-            try (BufferedReader r =
-                     new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) ))
+            try ( BufferedReader r =
+                new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) ) )
             {
                 String str;
                 while ( ( str = r.readLine() ) != null )
@@ -648,7 +651,7 @@ public class DefaultIndexUpdater
     abstract static class LocalIndexCacheFetcher
         extends FileFetcher
     {
-        public LocalIndexCacheFetcher( File basedir )
+        LocalIndexCacheFetcher( File basedir )
         {
             super( basedir );
         }
@@ -693,8 +696,8 @@ public class DefaultIndexUpdater
                         target.addIndexChunk( source, filename );
                     }
 
-                    result.setTimestamp(updateTimestamp);
-                    result.setSuccessful(true);
+                    result.setTimestamp( updateTimestamp );
+                    result.setSuccessful( true );
                     return result;
                 }
             }
@@ -714,7 +717,7 @@ public class DefaultIndexUpdater
                 if ( updateTimestamp != null && localTimestamp != null && !updateTimestamp.after( localTimestamp ) )
                 {
                     //Index is up to date
-                    result.setSuccessful(true);
+                    result.setSuccessful( true );
                     return result;
                 }
             }
@@ -725,7 +728,7 @@ public class DefaultIndexUpdater
             target.setProperties( source );
         }
 
-        if( !updateRequest.isIncrementalOnly() )
+        if ( !updateRequest.isIncrementalOnly() )
         {
             Date timestamp = null;
             try
@@ -756,9 +759,9 @@ public class DefaultIndexUpdater
                 }
             }
             
-            result.setTimestamp(timestamp);
-            result.setSuccessful(true);
-            result.setFullUpdate(true);
+            result.setTimestamp( timestamp );
+            result.setSuccessful( true );
+            result.setFullUpdate( true );
         }
         
         return result;

@@ -31,14 +31,15 @@ import java.util.regex.Pattern;
  * @author Tamas Cservenak
  */
 @Singleton
-@Named ("maven1")
+@Named( "maven1" )
 public class M1GavCalculator
     implements GavCalculator
 {
 
-    private static final Pattern pat1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
-    private static final Pattern pat2 = Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT2 =
+        Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
 
     public Gav pathToGav( String str )
     {
@@ -101,7 +102,7 @@ public class M1GavCalculator
 
             String ext = s.substring( s.lastIndexOf( '.' ) + 1 );
 
-            Matcher m = pat1.matcher( n );
+            Matcher m = PAT1.matcher( n );
             if ( m.matches() )
             {
                 String a = m.group( 1 );
@@ -116,7 +117,7 @@ public class M1GavCalculator
             }
             else
             {
-                m = pat2.matcher( n );
+                m = PAT2.matcher( n );
                 if ( m.matches() )
                 {
                     String a = m.group( 1 );

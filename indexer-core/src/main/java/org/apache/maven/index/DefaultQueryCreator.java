@@ -34,7 +34,6 @@ import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.util.Version;
 import org.apache.maven.index.context.NexusAnalyzer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -150,8 +149,8 @@ public class DefaultQueryCreator
             {
                 if ( query.contains( "*" ) && query.matches( ".*(\\.|-|_).*" ) )
                 {
-                    query =
-                        query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X", "*" );
+                    query = query.toLowerCase().replaceAll( "\\*", "X" ).replaceAll( "\\.|-|_", " " ).replaceAll( "X",
+                                                                                                                  "*" );
                 }
             }
 
@@ -184,10 +183,8 @@ public class DefaultQueryCreator
     {
         if ( indexerField == null )
         {
-            getLogger().warn(
-                "Querying for field \""
-                    + field.toString()
-                    + "\" without any indexer field was tried. Please review your code, and consider adding this field to index!" );
+            getLogger().warn( "Querying for field \"" + field.toString() + "\" without any indexer field was tried. "
+                + "Please review your code, and consider adding this field to index!" );
 
             return null;
         }
@@ -243,7 +240,8 @@ public class DefaultQueryCreator
                         type.toString()
                             + " type of querying for non-keyword (but stored) field "
                             + indexerField.getOntology().toString()
-                            + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is currently unsupported." );
+                            + " was tried. Please review your code, or indexCreator involved, "
+                            + "since this type of querying of this field is currently unsupported." );
 
                     // will never succeed (unless we supply him "filter" too, but that would kill performance)
                     // and is possible with stored fields only
@@ -256,7 +254,8 @@ public class DefaultQueryCreator
                     type.toString()
                         + " type of querying for non-keyword (and not stored) field "
                         + indexerField.getOntology().toString()
-                        + " was tried. Please review your code, or indexCreator involved, since this type of querying of this field is impossible." );
+                        + " was tried. Please review your code, or indexCreator involved, "
+                        + "since this type of querying of this field is impossible." );
 
                 // not a keyword indexerField, nor stored. No hope at all. Impossible even with "filtering"
                 return null;
@@ -463,7 +462,7 @@ public class DefaultQueryCreator
     {
         try
         {
-            TokenStream ts = nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader(query));
+            TokenStream ts = nexusAnalyzer.tokenStream( indexerField.getKey(), new StringReader( query ) );
             ts.reset();
 
             int result = 0;

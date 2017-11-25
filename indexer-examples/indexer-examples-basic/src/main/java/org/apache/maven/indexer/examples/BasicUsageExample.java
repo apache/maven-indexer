@@ -293,9 +293,9 @@ public class BasicUsageExample
         searchAndDump( indexer, "main artifacts under GA org.apache.maven.indexer:indexer-artifact", bq );
 
         // doing sha1 search
-        searchAndDump( indexer, "SHA1 7ab67e6b20e5332a7fb4fdf2f019aec4275846c2", indexer.constructQuery( MAVEN.SHA1,
-                                                                                                         new SourcedSearchExpression(
-                                                                                                             "7ab67e6b20e5332a7fb4fdf2f019aec4275846c2" ) ) );
+        searchAndDump( indexer, "SHA1 7ab67e6b20e5332a7fb4fdf2f019aec4275846c2",
+                       indexer.constructQuery( MAVEN.SHA1,
+                                               new SourcedSearchExpression( "7ab67e6b20e5332a7fb4fdf2f019aec4275846c2" ) ) );
 
         searchAndDump( indexer, "SHA1 7ab67e6b20 (partial hash)",
                        indexer.constructQuery( MAVEN.SHA1, new UserInputSearchExpression( "7ab67e6b20" ) ) );

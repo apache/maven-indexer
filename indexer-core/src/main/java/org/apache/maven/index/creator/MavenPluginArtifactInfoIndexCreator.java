@@ -52,7 +52,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  * @author cstamas
  */
 @Singleton
-@Named (MavenPluginArtifactInfoIndexCreator.ID)
+@Named( MavenPluginArtifactInfoIndexCreator.ID )
 public class MavenPluginArtifactInfoIndexCreator
     extends AbstractIndexCreator
 {
@@ -78,7 +78,8 @@ public class MavenPluginArtifactInfoIndexCreator
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && MAVEN_PLUGIN_PACKAGING.equals( ai.getPackaging() ) && artifact.getName().endsWith( ".jar" ) )
+        if ( artifact != null && MAVEN_PLUGIN_PACKAGING.equals( ai.getPackaging() )
+            && artifact.getName().endsWith( ".jar" ) )
         {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
 

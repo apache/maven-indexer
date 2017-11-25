@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,25 +57,25 @@ public class DefaultArtifactPackagingMapper
 
     private volatile Map<String, String> packaging2extensionMapping;
 
-    private final static Map<String, String> defaults;
+    private static final Map<String, String> DEFAULTS;
 
     static
     {
-        defaults = new HashMap<String, String>();
-        defaults.put( "ejb-client", "jar" );
-        defaults.put( "ejb", "jar" );
-        defaults.put( "rar", "jar" );
-        defaults.put( "par", "jar" );
-        defaults.put( "maven-plugin", "jar" );
-        defaults.put( "maven-archetype", "jar" );
-        defaults.put( "plexus-application", "jar" );
-        defaults.put( "eclipse-plugin", "jar" );
-        defaults.put( "eclipse-feature", "jar" );
-        defaults.put( "eclipse-application", "zip" );
-        defaults.put( "nexus-plugin", "jar" );
-        defaults.put( "java-source", "jar" );
-        defaults.put( "javadoc", "jar" );
-        defaults.put( "test-jar", "jar" );
+        DEFAULTS = new HashMap<String, String>();
+        DEFAULTS.put( "ejb-client", "jar" );
+        DEFAULTS.put( "ejb", "jar" );
+        DEFAULTS.put( "rar", "jar" );
+        DEFAULTS.put( "par", "jar" );
+        DEFAULTS.put( "maven-plugin", "jar" );
+        DEFAULTS.put( "maven-archetype", "jar" );
+        DEFAULTS.put( "plexus-application", "jar" );
+        DEFAULTS.put( "eclipse-plugin", "jar" );
+        DEFAULTS.put( "eclipse-feature", "jar" );
+        DEFAULTS.put( "eclipse-application", "zip" );
+        DEFAULTS.put( "nexus-plugin", "jar" );
+        DEFAULTS.put( "java-source", "jar" );
+        DEFAULTS.put( "javadoc", "jar" );
+        DEFAULTS.put( "test-jar", "jar" );
     }
 
     public void setPropertiesFile( File propertiesFile )
@@ -96,7 +95,7 @@ public class DefaultArtifactPackagingMapper
                     packaging2extensionMapping = new HashMap<String, String>();
 
                     // merge defaults
-                    packaging2extensionMapping.putAll( defaults );
+                    packaging2extensionMapping.putAll( DEFAULTS );
 
                     if ( propertiesFile != null && propertiesFile.exists() )
                     {
@@ -104,7 +103,7 @@ public class DefaultArtifactPackagingMapper
 
                         Properties userMappings = new Properties();
 
-                        try (FileInputStream fis= new FileInputStream( propertiesFile ))
+                        try ( FileInputStream fis = new FileInputStream( propertiesFile ) )
                         {
                             userMappings.load( fis );
 
@@ -149,7 +148,7 @@ public class DefaultArtifactPackagingMapper
 
     public Map<String, String> getDefaults()
     {
-        return defaults;
+        return DEFAULTS;
     }
 
     public String getExtensionForPackaging( String packaging )

@@ -29,8 +29,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.codehaus.plexus.util.IOUtil;
-
 /**
  * A util class to calculate various digests on Strings. Useful for some simple password management.
  * 
@@ -144,7 +142,7 @@ public class DigesterUtils
     public static String getSha1Digest( File file )
         throws IOException
     {
-        try (FileInputStream fis = new FileInputStream( file ))
+        try ( FileInputStream fis = new FileInputStream( file ) )
         {
             return getDigest( "SHA1", fis );
         }
@@ -217,7 +215,7 @@ public class DigesterUtils
         throws IOException
     {
 
-        try (InputStream fis = new FileInputStream( file ))
+        try ( InputStream fis = new FileInputStream( file ) )
         {
             return getDigest( "MD5", fis );
         }

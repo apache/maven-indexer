@@ -20,7 +20,6 @@ package org.apache.maven.index.locator;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -64,7 +63,7 @@ public class ArtifactLocator
             return null;
         }
 
-        try (InputStream inputStream = Files.newInputStream( source.toPath() ))
+        try ( InputStream inputStream = Files.newInputStream( source.toPath() ) )
         {
             // need to read the pom model to get packaging
             final Model model = new MavenXpp3Reader().read( inputStream, false );

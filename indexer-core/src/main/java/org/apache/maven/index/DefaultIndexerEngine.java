@@ -140,7 +140,7 @@ public class DefaultIndexerEngine
         for ( Object o : d.getFields() )
         {
             IndexableField f = (IndexableField) o;
-            if ( f.fieldType().stored())
+            if ( f.fieldType().stored() )
             {
                 result.put( f.name(), f.stringValue() );
             }

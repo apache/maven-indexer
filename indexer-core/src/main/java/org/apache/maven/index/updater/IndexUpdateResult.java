@@ -61,7 +61,7 @@ public class IndexUpdateResult
         return successful;
     }
 
-    public void setSuccessful(boolean successful)
+    public void setSuccessful( boolean successful )
     {
         this.successful = successful;
     }

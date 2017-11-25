@@ -75,7 +75,8 @@ public class NexusIndexMultiReader
 
             if ( ic.hasNext() || is.hasNext() )
             {
-                throw new IllegalStateException( "Context and IndexSearcher mismatch: " + contexts + " vs " + searchers );
+                throw new IllegalStateException( "Context and IndexSearcher mismatch: " + contexts + " vs "
+                    + searchers );
             }
         }
 

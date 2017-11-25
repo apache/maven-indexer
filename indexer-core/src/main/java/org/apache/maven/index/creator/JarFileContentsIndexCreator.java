@@ -44,7 +44,7 @@ import org.codehaus.plexus.util.StringUtils;
  * collect all the class names from it.
  */
 @Singleton
-@Named (JarFileContentsIndexCreator.ID)
+@Named( JarFileContentsIndexCreator.ID )
 public class JarFileContentsIndexCreator
     extends AbstractIndexCreator
     implements LegacyDocumentUpdater
@@ -189,7 +189,8 @@ public class JarFileContentsIndexCreator
                             // class name without ".class"
                             sb.append( name.substring( 0, name.length() - 6 ) ).append( '\n' );
                         }
-                        else if ( name.startsWith( strippedPrefix ) && (name.length() > ( strippedPrefix.length() + 6 )) )
+                        else if ( name.startsWith( strippedPrefix )
+                            && ( name.length() > ( strippedPrefix.length() + 6 ) ) )
                         {
                             // class name without ".class" and stripped prefix
                             sb.append( name.substring( strippedPrefix.length(), name.length() - 6 ) ).append( '\n' );

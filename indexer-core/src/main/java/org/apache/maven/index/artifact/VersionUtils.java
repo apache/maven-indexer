@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class VersionUtils
 {
 
-    private static String SNAPSHOT_VERSION = "SNAPSHOT";
+    private static final String SNAPSHOT_VERSION = "SNAPSHOT";
 
     private static final Pattern VERSION_FILE_PATTERN =
         Pattern.compile(

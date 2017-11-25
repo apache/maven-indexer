@@ -96,7 +96,8 @@ public class DefaultIteratorResultSet
             this.starts = new int[contexts.size() + 1]; // build starts array
             // this is good to do as we have NexusIndexMultiSearcher passed in contructor, so it is already open, hence
             // #acquire() already invoked on underlying NexusIndexMultiReader
-            final List<IndexSearcher> acquiredSearchers = indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
+            final List<IndexSearcher> acquiredSearchers =
+                indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
             for ( int i = 0; i < contexts.size(); i++ )
             {
                 starts[i] = maxDoc;
@@ -115,7 +116,8 @@ public class DefaultIteratorResultSet
         for ( MatchHighlightRequest hr : request.getMatchHighlightRequests() )
         {
             Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
-            matchHighlightRequests.add( new MatchHighlightRequest( hr.getField(), rewrittenQuery, hr.getHighlightMode() ) );
+            matchHighlightRequests.add( new MatchHighlightRequest( hr.getField(), rewrittenQuery,
+                                                                   hr.getHighlightMode() ) );
         }
 
         this.hits = hits;
@@ -369,7 +371,7 @@ public class DefaultIteratorResultSet
         Analyzer analyzer = context.getAnalyzer();
         TokenStream baseTokenStream = analyzer.tokenStream( field.getKey(), new StringReader( text ) );
         
-        CachingTokenFilter tokenStream = new CachingTokenFilter(baseTokenStream);
+        CachingTokenFilter tokenStream = new CachingTokenFilter( baseTokenStream );
 
         Formatter formatter = null;
 

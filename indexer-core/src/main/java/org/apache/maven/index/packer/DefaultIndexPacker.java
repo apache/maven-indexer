@@ -38,7 +38,6 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.incremental.IncrementalHandler;
 import org.apache.maven.index.updater.IndexDataWriter;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -221,7 +220,7 @@ public class DefaultIndexPacker
             targetArchive.delete();
         }
 
-        try( OutputStream os = new FileOutputStream( targetArchive ) )
+        try ( OutputStream os = new FileOutputStream( targetArchive ) )
         {
             IndexDataWriter dw = new IndexDataWriter( os );
             dw.write( request.getContext(), request.getIndexReader(), docIndexes );
@@ -239,12 +238,12 @@ public class DefaultIndexPacker
 
         info.setProperty( IndexingContext.INDEX_ID, request.getContext().getId() );
 
-        try (OutputStream os = new FileOutputStream( propertyFile ))
+        try ( OutputStream os = new FileOutputStream( propertyFile ) )
         {
             info.store( os, null );
         }
 
-        try (OutputStream os = new FileOutputStream( targetPropertyFile ))
+        try ( OutputStream os = new FileOutputStream( targetPropertyFile ) )
         {
             info.store( os, null );
         }

@@ -61,7 +61,7 @@ public class IndexDataReader
         if ( is.read() == 0x1f && is.read() == 0x8b ) // GZIPInputStream.GZIP_MAGIC
         {
             is.reset();
-            data = new BufferedInputStream(new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
+            data = new BufferedInputStream( new GZIPInputStream( is, 1024 * 8 ), 1024 * 8 );
         }
         else
         {
@@ -96,13 +96,16 @@ public class IndexDataReader
         while ( ( doc = readDocument() ) != null )
         {
             ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
-            if(ai != null) {
+            if ( ai != null )
+            {
                 w.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
 
                 rootGroups.add( ai.getRootGroup() );
                 allGroups.add( ai.getGroupId() );
 
-            } else {
+            }
+            else
+            {
                 w.addDocument( doc );
             }
             n++;
@@ -156,13 +159,15 @@ public class IndexDataReader
         // Fix up UINFO field wrt MINDEXER-41
         final Field uinfoField = (Field) doc.getField( ArtifactInfo.UINFO );
         final String info =  doc.get( ArtifactInfo.INFO );
-        if (uinfoField!= null && !Strings.isNullOrEmpty(info)) {
+        if ( uinfoField != null && !Strings.isNullOrEmpty( info ) )
+        {
             final String[] splitInfo = ArtifactInfo.FS_PATTERN.split( info );
             if ( splitInfo.length > 6 )
             {
                 final String extension = splitInfo[6];
                 final String uinfoString = uinfoField.stringValue();
-                if (uinfoString.endsWith( ArtifactInfo.FS + ArtifactInfo.NA )) {
+                if ( uinfoString.endsWith( ArtifactInfo.FS + ArtifactInfo.NA ) )
+                {
                     uinfoField.setStringValue( uinfoString + ArtifactInfo.FS + ArtifactInfo.nvl( extension ) );
                 }
             }
@@ -211,8 +216,8 @@ public class IndexDataReader
         catch ( OutOfMemoryError e )
         {
             final IOException ex =
-                new IOException(
-                    "Index data content is inappropriate (is junk?), leads to OutOfMemoryError! See MINDEXER-28 for more information!" );
+                new IOException( "Index data content is inappropriate (is junk?), leads to OutOfMemoryError!"
+                    + " See MINDEXER-28 for more information!" );
             ex.initCause( e );
             throw ex;
         }
@@ -328,7 +333,7 @@ public class IndexDataReader
             return timestamp;
         }
 
-        public void setRootGroups(Set<String> rootGroups)
+        public void setRootGroups( Set<String> rootGroups )
         {
             this.rootGroups = rootGroups;
         }
@@ -338,7 +343,7 @@ public class IndexDataReader
             return rootGroups;
         }
 
-        public void setAllGroups(Set<String> allGroups)
+        public void setAllGroups( Set<String> allGroups )
         {
             this.allGroups = allGroups;
         }
@@ -392,7 +397,7 @@ public class IndexDataReader
     /**
      * Visitor of indexed Lucene documents.
      */
-    public static interface IndexDataReadVisitor
+    public interface IndexDataReadVisitor
     {
 
         /**

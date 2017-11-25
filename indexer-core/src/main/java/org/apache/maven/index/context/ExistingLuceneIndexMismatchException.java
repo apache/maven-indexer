@@ -1,7 +1,5 @@
 package org.apache.maven.index.context;
 
-import java.io.IOException;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,6 +18,8 @@ import java.io.IOException;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import java.io.IOException;
 
 /**
  * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index, and there is a

@@ -1,8 +1,5 @@
 package org.apache.maven.index.context;
 
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.NexusIndexer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,6 +18,9 @@ import org.apache.maven.index.NexusIndexer;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import org.apache.maven.index.Indexer;
+import org.apache.maven.index.NexusIndexer;
 
 /**
  * Thrown when a user tries to create a NexusInder IndexingContext over and existing Lucene index. The reason for

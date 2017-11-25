@@ -180,8 +180,8 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, ExistingLuceneIndexMismatchException
     {
-                this( id, repositoryId, repository, indexDirectoryFile, new TrackingLockFactory( FSLockFactory.getDefault() ),
-                        repositoryUrl, indexUpdateUrl, indexCreators, reclaimIndex );
+        this( id, repositoryId, repository, indexDirectoryFile, new TrackingLockFactory( FSLockFactory.getDefault() ),
+              repositoryUrl, indexUpdateUrl, indexCreators, reclaimIndex );
     }
 
     @Deprecated
@@ -190,11 +190,12 @@ public class DefaultIndexingContext
                                    List<? extends IndexCreator> indexCreators, boolean reclaimIndex )
         throws IOException, ExistingLuceneIndexMismatchException
     {
-        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null, reclaimIndex ); //Lock factory already installed - pass null
+        this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null,
+              reclaimIndex ); // Lock factory already installed - pass null
 
         if ( indexDirectory instanceof FSDirectory )
         {
-            setIndexDirectoryFile(( (FSDirectory) indexDirectory ).getDirectory().toFile() );
+            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory().toFile() );
         }
     }
 
@@ -207,7 +208,8 @@ public class DefaultIndexingContext
      * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
      * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
      */
-    protected void setIndexDirectoryFile(File dir) throws IOException
+    protected void setIndexDirectoryFile( File dir )
+        throws IOException
     {
         if ( dir == null )
         {
@@ -363,7 +365,8 @@ public class DefaultIndexingContext
 
         hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
 
-        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES, Field.Index.NO ) );
+        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES,
+                            Field.Index.NO ) );
 
         IndexWriter w = getIndexWriter();
 
@@ -382,11 +385,12 @@ public class DefaultIndexingContext
             if ( names != null )
             {
 
-                for (String name : names)
+                for ( String name : names )
                 {
-                    if (! (name.equals(INDEX_PACKER_PROPERTIES_FILE) || name.equals(INDEX_UPDATER_PROPERTIES_FILE) ))
+                    if ( !( name.equals( INDEX_PACKER_PROPERTIES_FILE )
+                        || name.equals( INDEX_UPDATER_PROPERTIES_FILE ) ) )
                     {
-                        indexDirectory.deleteFile(name);
+                        indexDirectory.deleteFile( name );
                     }
                 }
             }
@@ -669,10 +673,10 @@ public class DefaultIndexingContext
             {
                 int numDocs = directoryReader.maxDoc();
                 
-                Bits liveDocs = MultiFields.getLiveDocs(directoryReader);
+                Bits liveDocs = MultiFields.getLiveDocs( directoryReader );
                 for ( int i = 0; i < numDocs; i++ )
                 {
-                    if (liveDocs != null && ! liveDocs.get(i) )
+                    if ( liveDocs != null && !liveDocs.get( i ) )
                     {
                         continue;
                     }
@@ -774,11 +778,11 @@ public class DefaultIndexingContext
             Set<String> allGroups = new LinkedHashSet<String>();
 
             int numDocs = r.maxDoc();
-            Bits liveDocs = MultiFields.getLiveDocs(r);
+            Bits liveDocs = MultiFields.getLiveDocs( r );
 
             for ( int i = 0; i < numDocs; i++ )
             {
-                if (liveDocs != null && !liveDocs.get(i) )
+                if ( liveDocs != null && !liveDocs.get( i ) )
                 {
                     continue;
                 }
@@ -885,41 +889,54 @@ public class DefaultIndexingContext
         return id + " : " + timestamp;
     }
 
-    private static void unlockForcibly( final TrackingLockFactory lockFactory, final Directory dir ) throws IOException
+    private static void unlockForcibly( final TrackingLockFactory lockFactory, final Directory dir )
+        throws IOException
     {
         //Warning: Not doable in lucene >= 5.3 consider to remove it as IndexWriter.unlock
         //was always strongly non recommended by Lucene.
         //For now try to do the best to simulate the IndexWriter.unlock at least on FSDirectory
         //using FSLockFactory, the RAMDirectory uses SingleInstanceLockFactory.
         //custom lock factory?
-        if (lockFactory != null) {
-            final Set<? extends Lock> emittedLocks = lockFactory.getEmittedLocks(IndexWriter.WRITE_LOCK_NAME);
-            for (Lock emittedLock : emittedLocks) {
+        if ( lockFactory != null )
+        {
+            final Set<? extends Lock> emittedLocks = lockFactory.getEmittedLocks( IndexWriter.WRITE_LOCK_NAME );
+            for ( Lock emittedLock : emittedLocks )
+            {
                 emittedLock.close();
             }
         }
-        if (dir instanceof FSDirectory) {
+        if ( dir instanceof FSDirectory )
+        {
             final FSDirectory fsdir = (FSDirectory) dir;
             final Path dirPath = fsdir.getDirectory();
-            if (Files.isDirectory(dirPath)) {
-                Path lockPath = dirPath.resolve(IndexWriter.WRITE_LOCK_NAME);
-                try {
+            if ( Files.isDirectory( dirPath ) )
+            {
+                Path lockPath = dirPath.resolve( IndexWriter.WRITE_LOCK_NAME );
+                try
+                {
                     lockPath = lockPath.toRealPath();
-                } catch (IOException ioe) {
-                    //Not locked
+                }
+                catch ( IOException ioe )
+                {
+                    // Not locked
                     return;
                 }
-                try (final FileChannel fc = FileChannel.open(lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                try ( final FileChannel fc =
+                    FileChannel.open( lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE ) )
+                {
                     final FileLock lck = fc.tryLock();
-                    if (lck == null) {
-                        //Still active
-                        throw new LockObtainFailedException("Lock held by another process: " + lockPath);
-                    } else {
-                        //Not held fine to release
+                    if ( lck == null )
+                    {
+                        // Still active
+                        throw new LockObtainFailedException( "Lock held by another process: " + lockPath );
+                    }
+                    else
+                    {
+                        // Not held fine to release
                         lck.close();
                     }
                 }
-                Files.delete(lockPath);
+                Files.delete( lockPath );
             }
         }
     }

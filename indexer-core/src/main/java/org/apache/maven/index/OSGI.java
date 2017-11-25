@@ -61,12 +61,14 @@ public interface OSGI
     Field REQUIRE_BUNDLE  = new Field( null, OSGI_NAMESPACE, "requireBundle", "Require-Bundle" );
 
     /**
-     * used by OSGI resolvers to determine which bundles / artifacts / environments, etc. can satisfy a given requirement.
-     * It replaces headers like Export-Service and Required Execution Environment, and uses the default OSGI header format
+     * used by OSGI resolvers to determine which bundles / artifacts / environments, etc. can satisfy a given
+     * requirement. It replaces headers like Export-Service and Required Execution Environment, and uses the default
+     * OSGI header format
      *
      * @since 5.1.2
      */
-    final Field PROVIDE_CAPABILITY = new Field(null, OSGI_NAMESPACE, "provideCapability", "Bundle Provide-Capability");
+    Field PROVIDE_CAPABILITY =
+        new Field( null, OSGI_NAMESPACE, "provideCapability", "Bundle Provide-Capability" );
 
     /**
      * used by OSGI resolvers to indicate which services, features, etc are required by a given   .
@@ -74,28 +76,29 @@ public interface OSGI
      *
      * @since 5.1.2
      */
-    final Field REQUIRE_CAPABILITY = new Field(null, OSGI_NAMESPACE, "requireCapability", "Bundle Require-Capability");
+    Field REQUIRE_CAPABILITY =
+        new Field( null, OSGI_NAMESPACE, "requireCapability", "Bundle Require-Capability" );
 
     /**
      * used to hold the SHA256 checksum required as identifier for OSGI Content resources.
      *
      * @since 5.1.2
      */
-    final Field SHA256 = new Field(null, OSGI_NAMESPACE, "sha256", "SHA-256 checksum");
+    Field SHA256 = new Field( null, OSGI_NAMESPACE, "sha256", "SHA-256 checksum" );
 
     /**
      * used to hold the Fragment Host header  for an OSGI Fragment bundle.
      *
      * @since 5.1.2
      */
-    final Field FRAGMENT_HOST = new Field(null, OSGI_NAMESPACE, "fragmentHost", "Bundle Fragment-Host");
+    Field FRAGMENT_HOST = new Field( null, OSGI_NAMESPACE, "fragmentHost", "Bundle Fragment-Host" );
 
     /**
      * used to hold the Fragment Host header  for an OSGI Fragment bundle.
      *
      * @since 5.1.2
      */
-    final Field BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT = new Field(null, OSGI_NAMESPACE, "bree",
-            "Bundle Required Execution Environment");
+    Field BUNDLE_REQUIRED_EXECUTION_ENVIRONMENT =
+        new Field( null, OSGI_NAMESPACE, "bree", "Bundle Required Execution Environment" );
 
 }

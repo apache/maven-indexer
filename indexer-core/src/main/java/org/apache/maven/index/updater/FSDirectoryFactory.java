@@ -35,7 +35,7 @@ public interface FSDirectoryFactory
     /**
      * Default implementation that lets Lucene choose FSDirectory implementation.
      */
-    public static final FSDirectoryFactory DEFAULT = new FSDirectoryFactory()
+    FSDirectoryFactory DEFAULT = new FSDirectoryFactory()
     {
         public FSDirectory open( File indexDir )
             throws IOException
@@ -44,6 +44,6 @@ public interface FSDirectoryFactory
         }
     };
 
-    public FSDirectory open( File indexDir )
+    FSDirectory open( File indexDir )
         throws IOException;
 }

@@ -20,7 +20,6 @@ package org.apache.maven.index;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -93,7 +92,7 @@ public class ArtifactContext
         File pom = getPom();
         if ( pom != null && pom.isFile() )
         {
-            try (InputStream inputStream = Files.newInputStream( pom.toPath() ))
+            try ( InputStream inputStream = Files.newInputStream( pom.toPath() ) )
             {
                 return new MavenXpp3Reader().read( inputStream, false );
             }
@@ -106,7 +105,7 @@ public class ArtifactContext
         else if ( getArtifact() != null && getArtifact().isFile() )
         {
             File artifact = getArtifact();
-            try(ZipHandle handle = ZipFacade.getZipHandle( artifact ))
+            try ( ZipHandle handle = ZipFacade.getZipHandle( artifact ) )
             {
 
                 final String embeddedPomPath =
@@ -114,7 +113,7 @@ public class ArtifactContext
 
                 if ( handle.hasEntry( embeddedPomPath ) )
                 {
-                    try(InputStream inputStream = handle.getEntryContent( embeddedPomPath ))
+                    try ( InputStream inputStream = handle.getEntryContent( embeddedPomPath ) )
                     {
                         return new MavenXpp3Reader().read( inputStream, false );
                     }

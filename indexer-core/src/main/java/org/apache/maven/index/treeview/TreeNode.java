@@ -24,7 +24,7 @@ import java.util.List;
 
 public interface TreeNode
 {
-    public enum Type
+    enum Type
     {
         G, A, V, artifact
     };

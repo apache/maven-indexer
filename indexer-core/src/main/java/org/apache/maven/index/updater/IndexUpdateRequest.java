@@ -99,7 +99,7 @@ public class IndexUpdateRequest
         return incrementalOnly;
     }
 
-    public void setIncrementalOnly(boolean incrementalOnly)
+    public void setIncrementalOnly( boolean incrementalOnly )
     {
         this.incrementalOnly = incrementalOnly;
     }

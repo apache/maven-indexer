@@ -189,7 +189,8 @@ public class DefaultIndexTreeView
 
                             // it needs to be created only if not found (is null) and is _below_ groupParentResource
                             if ( groupResource == null
-                                && groupParentResource.getPath().length() < getPathForAi( ai, MAVEN.GROUP_ID ).length() )
+                                && groupParentResource.getPath().length() < getPathForAi( ai,
+                                                                                          MAVEN.GROUP_ID ).length() )
                             {
                                 String gNodeName =
                                     partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
@@ -218,8 +219,8 @@ public class DefaultIndexTreeView
                             }
                         }
 
-                        artifactResource =
-                            request.getFactory().createANode( this, request, ai, getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+                        artifactResource = request.getFactory().createANode( this, request, ai,
+                                                                             getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
 
                         groupParentResource.getChildren().add( artifactResource );
 

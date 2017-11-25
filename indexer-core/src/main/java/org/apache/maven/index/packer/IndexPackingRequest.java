@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -54,7 +53,7 @@ public class IndexPackingRequest
 
     public IndexPackingRequest( final IndexingContext context, final IndexReader indexReader, final File targetDir )
     {
-        this.context = checkNotNull(context);
+        this.context = checkNotNull( context );
 
         this.indexReader = checkNotNull( indexReader );
 
@@ -76,7 +75,10 @@ public class IndexPackingRequest
         return context;
     }
 
-    public IndexReader getIndexReader() { return indexReader; }
+    public IndexReader getIndexReader()
+    {
+        return indexReader;
+    }
 
     /**
      * Sets index formats to be created
@@ -142,7 +144,7 @@ public class IndexPackingRequest
     /**
      * Index format enumeration.
      */
-    public static enum IndexFormat
+    public enum IndexFormat
     {
         FORMAT_V1;
     }
