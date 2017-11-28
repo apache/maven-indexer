@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>6.0.1-SNAPSHOT</version>
+  <version>6.0.0</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
@@ -64,7 +64,7 @@ under the License.
     <connection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</connection>
     <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</developerConnection>
     <url>https://github.com/apache/maven-indexer</url>
-    <tag>HEAD</tag>
+    <tag>maven-indexer-6.0.0</tag>
   </scm>
 
   <issueManagement>
