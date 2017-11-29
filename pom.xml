@@ -509,8 +509,16 @@ under the License.
               <packages>org.apache.maven.index*</packages>
             </group>
             <group>
+              <title>Indexer Reader</title>
+              <packages>org.apache.maven.index.reader*</packages>
+            </group>
+            <group>
               <title>Indexer CLI</title>
               <packages>org.apache.maven.index.cli*</packages>
+            </group>
+            <group>
+              <title>Indexer Examples</title>
+              <packages>org.apache.maven.indexer.examples*</packages>
             </group>
           </groups>
         </configuration>
