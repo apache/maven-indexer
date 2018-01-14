@@ -134,7 +134,7 @@ public class DefaultArtifactContextProducer
         return new ArtifactContext( pom, artifact, metadata, ai, gav );
     }
 
-    private boolean isIndexable( File file )
+    protected boolean isIndexable( File file )
     {
         if ( file == null )
         {
@@ -157,7 +157,7 @@ public class DefaultArtifactContextProducer
         return true;
     }
 
-    private Gav getGavFromPath( IndexingContext context, String repositoryPath, String artifactPath )
+    protected Gav getGavFromPath( IndexingContext context, String repositoryPath, String artifactPath )
     {
         String path = artifactPath.substring( repositoryPath.length() + 1 ).replace( '\\', '/' );
 
