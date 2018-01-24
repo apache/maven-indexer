@@ -40,8 +40,8 @@ import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * An index creator used to index Java class names from a Maven artifact (JAR or WAR for now). Will open up the file and
- * collect all the class names from it.
+ * An index creator used to index Java class names from a Maven artifact (JAR, ZIP or WAR for now).
+ * Will open up the file and collect all the class names from it.
  */
 @Singleton
 @Named( JarFileContentsIndexCreator.ID )
@@ -75,7 +75,9 @@ public class JarFileContentsIndexCreator
         File artifactFile = artifactContext.getArtifact();
 
         if ( artifactFile != null && artifactFile.isFile()
-            && ( artifactFile.getName().endsWith( ".jar" ) || artifactFile.getName().endsWith( ".war" ) ) )
+            && ( artifactFile.getName().endsWith( ".jar" )
+                 || artifactFile.getName().endsWith( ".war" )
+                 || artifactFile.getName().endsWith( ".zip" ) ) )
         {
             updateArtifactInfo( ai, artifactFile );
         }
@@ -145,7 +147,7 @@ public class JarFileContentsIndexCreator
     private void updateArtifactInfo( final ArtifactInfo ai, final File f )
         throws IOException
     {
-        if ( f.getName().endsWith( ".jar" ) )
+        if ( f.getName().endsWith( ".jar" ) || f.getName().endsWith( ".zip" ) )
         {
             updateArtifactInfo( ai, f, null );
         }
