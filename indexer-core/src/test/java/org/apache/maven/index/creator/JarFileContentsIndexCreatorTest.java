@@ -59,6 +59,44 @@ public class JarFileContentsIndexCreatorTest
         assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
+    public void test_nexus_2318_indexZipWithClasses()
+            throws Exception
+    {
+        File artifact = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.zip" );
+
+        File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null, "zip" );
+
+        ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
+
+        indexCreator.populateArtifactInfo( artifactContext );
+
+        assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().getClassNames() );
+
+        String[] classNames = artifactContext.getArtifactInfo().getClassNames().split("\n");
+
+        assertEquals("Unexpected classes length", 9, classNames.length );
+
+        assertEquals("Advice class was expected", "/org/aopalliance/aop/Advice", classNames[0] );
+
+        assertEquals("AspectException class was expected", "/org/aopalliance/aop/AspectException", classNames[1] );
+
+        assertEquals("ConstructorInterceptor class was expected", "/org/aopalliance/intercept/ConstructorInterceptor", classNames[2] );
+
+        assertEquals("ConstructorInvocation class was expected", "/org/aopalliance/intercept/ConstructorInvocation", classNames[3] );
+
+        assertEquals("Interceptor class was expected", "/org/aopalliance/intercept/Interceptor", classNames[4] );
+
+        assertEquals("Invocation class was expected", "/org/aopalliance/intercept/Invocation", classNames[5] );
+
+        assertEquals("Joinpoint class was expected", "/org/aopalliance/intercept/Joinpoint", classNames[6] );
+
+        assertEquals("MethodInterceptor class was expected", "/org/aopalliance/intercept/MethodInterceptor", classNames[7] );
+
+        assertEquals("MethodInvocation class was expected", "/org/aopalliance/intercept/MethodInvocation", classNames[8] );
+    }
+
     public void test_nexus_2318_indexJarWithSources()
         throws Exception
     {
@@ -68,6 +106,23 @@ public class JarFileContentsIndexCreatorTest
         File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
 
         ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null, "jar" );
+
+        ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
+
+        indexCreator.populateArtifactInfo( artifactContext );
+
+        assertNull( "Classes should be null", artifactContext.getArtifactInfo().getClassNames() );
+    }
+
+    public void test_nexus_2318_indexZipWithSources()
+            throws Exception
+    {
+        File artifact =
+                new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.zip" );
+
+        File pom = new File( getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+
+        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0", null, "zip" );
 
         ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
 
