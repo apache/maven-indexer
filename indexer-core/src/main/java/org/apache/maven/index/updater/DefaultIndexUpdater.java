@@ -186,7 +186,11 @@ public class DefaultIndexUpdater
                                      final boolean merge, final String remoteIndexFile )
         throws IOException
     {
-        File indexDir = File.createTempFile( remoteIndexFile, ".dir" );
+        if ( updateRequest.getIndexTempDir() != null )
+        {
+            updateRequest.getIndexTempDir().mkdirs();
+        }
+        File indexDir = File.createTempFile( remoteIndexFile, ".dir" , updateRequest.getIndexTempDir() );
         indexDir.delete();
         indexDir.mkdirs();
 
