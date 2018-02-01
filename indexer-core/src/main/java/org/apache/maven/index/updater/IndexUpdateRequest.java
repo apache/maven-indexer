@@ -43,6 +43,8 @@ public class IndexUpdateRequest
     
     private boolean incrementalOnly;
 
+    private File indexTempDir;
+
     private File localIndexCacheDir;
 
     private Locker locker;
@@ -152,5 +154,15 @@ public class IndexUpdateRequest
     public FSDirectoryFactory getFSDirectoryFactory()
     {
         return directoryFactory != null ? directoryFactory : FSDirectoryFactory.DEFAULT;
+    }
+
+    public void setIndexTempDir( File indexTempDir )
+    {
+        this.indexTempDir = indexTempDir;
+    }
+
+    public File getIndexTempDir()
+    {
+        return indexTempDir;
     }
 }
