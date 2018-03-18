@@ -61,10 +61,10 @@ under the License.
   </contributors>
 
   <scm>
-    <connection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/maven-indexer.git</developerConnection>
-    <url>https://github.com/apache/maven-indexer</url>
-    <tag>HEAD</tag>
+    <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</developerConnection>
+    <url>https://github.com/apache/maven-indexer/tree/${project.scm.tag}</url>
+    <tag>master</tag>
   </scm>
 
   <issueManagement>
@@ -73,7 +73,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://builds.apache.org/job/maven-indexer/</url>
+    <url>https://builds.apache.org/job/maven-box/job/maven-indexer/</url>
   </ciManagement>
   <distributionManagement>
     <site>
