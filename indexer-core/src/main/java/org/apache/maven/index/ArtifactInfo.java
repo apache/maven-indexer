@@ -338,6 +338,21 @@ public class ArtifactInfo
 
     private String uinfo = null;
 
+    /**
+     * Java module system name declared by or derived for this artifact.
+     * @since 6.0.1
+     */
+    private String moduleName = null;
+
+    /**
+     * @since 6.0.1
+     */
+    private boolean moduleIsAutomatic = false;
+
+    /**
+     * @since 6.0.1
+     */
+    private boolean moduleNameIsSetViaMetaInf = false;
 
     public ArtifactInfo()
     {
@@ -1113,4 +1128,36 @@ public class ArtifactInfo
         this.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
     }
 
+    public String getModuleName()
+    {
+        return moduleName;
+    }
+
+    public ArtifactInfo setModuleName( String moduleName )
+    {
+        this.moduleName = moduleName;
+        return this;
+    }
+
+    public boolean isModuleIsAutomatic()
+    {
+        return moduleIsAutomatic;
+    }
+
+    public ArtifactInfo setModuleIsAutomatic( boolean moduleIsAutomatic )
+    {
+        this.moduleIsAutomatic = moduleIsAutomatic;
+        return this;
+    }
+
+    public boolean isModuleNameIsSetViaMetaInf()
+    {
+        return moduleNameIsSetViaMetaInf;
+    }
+
+    public ArtifactInfo setModuleNameIsSetViaMetaInf( boolean moduleNameIsSetViaMetaInf )
+    {
+        this.moduleNameIsSetViaMetaInf = moduleNameIsSetViaMetaInf;
+        return this;
+    }
 }
