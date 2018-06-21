@@ -9,7 +9,7 @@ package org.apache.maven.index.creator;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -23,9 +23,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.lang.module.ModuleDescriptor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Index;
@@ -148,6 +150,7 @@ public class JarFileContentsIndexCreator
         if ( f.getName().endsWith( ".jar" ) )
         {
             updateArtifactInfo( ai, f, null );
+            updateArtifactInfoWithModuleDescriptorProperties( ai, f );
         }
         else if ( f.getName().endsWith( ".war" ) )
         {
@@ -220,6 +223,20 @@ public class JarFileContentsIndexCreator
             {
                 getLogger().error( "Could not close jar file properly.", e );
             }
+        }
+    }
+
+    private void updateArtifactInfoWithModuleDescriptorProperties( final ArtifactInfo ai, final File f )
+    {
+        ModuleHelper helper = new ModuleHelper();
+        Optional<ModuleDescriptor> od = helper.describeModule( f.toPath(), true );
+        if ( od.isPresent() )
+        {
+            ModuleDescriptor d = od.get();
+            System.out.println( d );
+            ai.setModuleName( d.name() );
+            ai.setModuleIsAutomatic( d.isAutomatic() );
+            ai.setModuleNameIsSetViaMetaInf( true );
         }
     }
 
