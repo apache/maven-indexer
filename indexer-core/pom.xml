@@ -254,6 +254,11 @@ under the License.
                   <exclude>org.apache.maven.wagon:*</exclude>
                   <exclude>org.codehaus.*:*</exclude>
                   <exclude>de.schlichtherle.truezip:*</exclude>
+                  <exclude>org.apache.maven.resolver:*</exclude>
+                  <exclude>org.apache.maven:maven-model</exclude>
+                  <exclude>org.apache.commons:*</exclude>
+                  <exclude>org.bouncycastle:*</exclude>
+                  <exclude>aopalliance:*</exclude>
                 </excludes>
               </artifactSet>
               <filters>
