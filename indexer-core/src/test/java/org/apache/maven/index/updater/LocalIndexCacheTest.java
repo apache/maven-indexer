@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
@@ -204,7 +205,10 @@ public class LocalIndexCacheTest
         updater.fetchAndUpdateIndex( updateRequest );
 
         // corrupt local cache
-        IOUtil.copy( "corrupted", new FileOutputStream( new File( localCacheDir, "nexus-maven-repository-index.gz" ) ) );
+        try ( FileOutputStream fos = new FileOutputStream( new File( localCacheDir, "nexus-maven-repository-index.gz" ) ) )
+        {
+            IOUtil.copy( "corrupted", fos );
+        }
 
         // try download again (it would have failed if force did not update local cache)
         removeTempContext();
@@ -315,12 +319,19 @@ public class LocalIndexCacheTest
 
         // .lock files are expected to be preserved
         File lockFile = new File( localCacheDir, Locker.LOCK_FILE );
-        IOUtil.copy( "", new FileOutputStream( lockFile ) );
+        try ( FileOutputStream lockFileOutput = new FileOutputStream( lockFile ) )
+        {
+            IOUtil.copy( "", lockFileOutput );
+        }
         assertTrue( lockFile.canRead() );
 
         // all unknown files and directories are expected to be removed
         File unknownFile = new File( localCacheDir, "unknownFile" );
-        IOUtil.copy( "", new FileOutputStream( unknownFile ) );
+        try ( FileOutputStream fileOutputStream = new FileOutputStream( unknownFile ) )
+        {
+            IOUtil.copy( "", fileOutputStream );
+        }
+
         File unknownDirectory = new File( localCacheDir, "unknownDirectory" );
         unknownDirectory.mkdirs();
         assertTrue( unknownFile.canRead() );
