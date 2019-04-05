@@ -115,13 +115,13 @@ under the License.
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>1.2.3</version>
-        <scope>optional</scope>
+        <optional>true</optional>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>1.2.3</version>
-        <scope>optional</scope>
+        <optional>true</optional>
       </dependency>
       <dependency>
         <!-- This dependency is required in order to intercept Spring logging and handle it through Logback + SLF4J,
@@ -129,7 +129,7 @@ under the License.
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
         <version>1.7.25</version>
-        <scope>optional</scope>
+        <optional>true</optional>
       </dependency>
 
       <dependency>
