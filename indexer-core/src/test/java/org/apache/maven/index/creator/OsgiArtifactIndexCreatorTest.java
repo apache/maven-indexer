@@ -22,7 +22,7 @@ package org.apache.maven.index.creator;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
@@ -193,11 +193,9 @@ public class OsgiArtifactIndexCreatorTest
         {
             indexOSGIRepo();
 
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.command" ) ),
-                   BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.command" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
@@ -205,11 +203,9 @@ public class OsgiArtifactIndexCreatorTest
             // here only one results !
             assertEquals( 1, response.getResults().size() );
 
-            q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.core" ) ),
-                   BooleanClause.Occur.MUST );
+            q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
+                .build();
 
             request = new FlatSearchRequest( q );
             response = nexusIndexer.searchFlat( request );
@@ -232,14 +228,10 @@ public class OsgiArtifactIndexCreatorTest
         try
         {
 
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.core" ) ),
-                   BooleanClause.Occur.MUST );
-
-            q.add( nexusIndexer.constructQuery( OSGI.VERSION, new StringSearchExpression( "2.2.1" ) ),
-                   BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
+                .add( nexusIndexer.constructQuery( OSGI.VERSION, new StringSearchExpression( "2.2.1" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
@@ -261,11 +253,9 @@ public class OsgiArtifactIndexCreatorTest
 
         try {
 
-            BooleanQuery q = new BooleanQuery();
-
-
-            q.add(nexusIndexer.constructQuery(OSGI.SHA256, new StringSearchExpression(CORE_4_1_0_SHA256)),
-                    BooleanClause.Occur.MUST);
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add(nexusIndexer.constructQuery( OSGI.SHA256, new StringSearchExpression(CORE_4_1_0_SHA256)), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest(q);
             FlatSearchResponse response = nexusIndexer.searchFlat(request);
@@ -290,11 +280,9 @@ public class OsgiArtifactIndexCreatorTest
 
         try
         {
-
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.EXPORT_PACKAGE, new StringSearchExpression(
-                "org.apache.karaf.features.command.completers" ) ), BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.EXPORT_PACKAGE, new StringSearchExpression( "org.apache.karaf.features.command.completers" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = nexusIndexer.searchFlat( request );
@@ -336,11 +324,9 @@ public class OsgiArtifactIndexCreatorTest
 
         try
         {
-
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.EXPORT_SERVICE, new StringSearchExpression(
-                "org.apache.felix.bundlerepository.RepositoryAdmin" ) ), BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.EXPORT_SERVICE, new StringSearchExpression( "org.apache.felix.bundlerepository.RepositoryAdmin" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             FlatSearchResponse response = nexusIndexer.searchFlat( request );

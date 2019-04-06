@@ -103,8 +103,7 @@ public class RepositoryIndexer
         for ( final ArtifactInfo artifact : artifacts )
         {
             LOGGER.debug( "Deleting artifact: {}; ctx id: {}; idx dir: {}",
-                          new String[]{ artifact.toString(), indexingContext.getId(),
-                              indexingContext.getIndexDirectory().toString() } );
+                          artifact, indexingContext.getId(), indexingContext.getIndexDirectory() );
 
             delete.add( new ArtifactContext( null, null, null, artifact, null ) );
         }
@@ -116,43 +115,49 @@ public class RepositoryIndexer
                                      final String packaging, final String classifier )
         throws IOException
     {
-        final BooleanQuery query = new BooleanQuery();
+        final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
         if ( groupId != null )
         {
-            query.add( getIndexer().constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( groupId ) ), MUST );
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.GROUP_ID,
+                    new SourcedSearchExpression( groupId ) ), MUST );
         }
 
         if ( artifactId != null )
         {
-            query.add( getIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( artifactId ) ),
-                       MUST );
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.ARTIFACT_ID,
+                    new SourcedSearchExpression( artifactId ) ), MUST );
         }
 
         if ( version != null )
         {
-            query.add( getIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( version ) ), MUST );
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.VERSION,
+                    new SourcedSearchExpression( version ) ), MUST );
         }
 
         if ( packaging != null )
         {
-            query.add( getIndexer().constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( packaging ) ), MUST );
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.PACKAGING,
+                    new SourcedSearchExpression( packaging ) ), MUST );
         }
         else
         {
             // Fallback to jar
-            query.add( getIndexer().constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "jar" ) ), MUST );
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.PACKAGING,
+                    new SourcedSearchExpression( "jar" ) ), MUST );
         }
 
         if ( classifier != null )
         {
-            query.add( getIndexer().constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( classifier ) ),
+            queryBuilder.add( getIndexer().constructQuery( MAVEN.CLASSIFIER,
+                    new SourcedSearchExpression( classifier ) ),
                        MUST );
         }
 
+        Query query = queryBuilder.build();
+
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                      query, indexingContext.getId(), indexingContext.getIndexDirectory() );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -176,8 +181,7 @@ public class RepositoryIndexer
         final Query query = new MultiFieldQueryParser( LUCENE_FIELDS, LUCENE_ANALYZER ).parse( queryText );
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                      query, indexingContext.getId(), indexingContext.getIndexDirectory() );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -198,12 +202,12 @@ public class RepositoryIndexer
     public Set<ArtifactInfo> searchBySHA1( final String checksum )
         throws IOException
     {
-        final BooleanQuery query = new BooleanQuery();
-        query.add( getIndexer().constructQuery( MAVEN.SHA1, new SourcedSearchExpression( checksum ) ), MUST );
+        final BooleanQuery query = new BooleanQuery.Builder()
+                .add( getIndexer().constructQuery( MAVEN.SHA1, new SourcedSearchExpression( checksum ) ), MUST )
+                .build();
 
         LOGGER.debug( "Executing search query: {}; ctx id: {}; idx dir: {}",
-                      new String[]{ query.toString(), indexingContext.getId(),
-                          indexingContext.getIndexDirectory().toString() } );
+                      query, indexingContext.getId(), indexingContext.getIndexDirectory() );
 
         final FlatSearchResponse response = getIndexer().searchFlat( new FlatSearchRequest( query, indexingContext ) );
 
@@ -232,8 +236,9 @@ public class RepositoryIndexer
     public void addArtifactToIndex( final File artifactFile, final ArtifactInfo artifactInfo )
         throws IOException
     {
-        getIndexer().addArtifactsToIndex( asList( new ArtifactContext( null, artifactFile, null, artifactInfo, null ) ),
-                                          indexingContext );
+        getIndexer().addArtifactsToIndex(
+                asList( new ArtifactContext( null, artifactFile, null, artifactInfo, null ) ),
+                indexingContext );
     }
 
     public void addArtifactToIndex( String repository, File artifactFile, String groupId, String artifactId,
@@ -246,8 +251,7 @@ public class RepositoryIndexer
             artifactInfo.setFieldValue( MAVEN.EXTENSION, extension );
         }
 
-        LOGGER.debug( "Adding artifact: {}; repo: {}; type: {}",
-                      new String[]{ artifactInfo.getUinfo(), repository, extension } );
+        LOGGER.debug( "Adding artifact: {}; repo: {}; type: {}", artifactInfo.getUinfo(), repository, extension );
 
         getIndexer().addArtifactsToIndex(
             asList( new ArtifactContext( null, artifactFile, null, artifactInfo, artifactInfo.calculateGav() ) ),
@@ -288,8 +292,7 @@ public class RepositoryIndexer
             try
             {
                 LOGGER.debug( "Adding artifact gav: {}; ctx id: {}; idx dir: {}",
-                              new String[]{ ac.getGav().toString(), context.getId(),
-                                  context.getIndexDirectory().toString() } );
+                        ac.getGav(), context.getId(), context.getIndexDirectory() );
 
                 getIndexer().addArtifactsToIndex( asList( ac ), context );
                 totalFiles++;

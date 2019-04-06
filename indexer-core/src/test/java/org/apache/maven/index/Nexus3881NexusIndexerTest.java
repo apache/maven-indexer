@@ -25,7 +25,6 @@ import junit.framework.Assert;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
 
 public class Nexus3881NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -44,14 +43,11 @@ public class Nexus3881NexusIndexerTest
     public void testRelevances()
         throws Exception
     {
-        Query q1 = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "solution", SearchType.SCORED );
-        Query q2 = nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "solution", SearchType.SCORED );
+        IteratorSearchRequest request = new IteratorSearchRequest( new BooleanQuery.Builder()
+            .add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, "solution", SearchType.SCORED ), Occur.SHOULD )
+            .add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, "solution", SearchType.SCORED ), Occur.SHOULD )
+            .build() );
 
-        BooleanQuery bq = new BooleanQuery();
-        bq.add( q1, Occur.SHOULD );
-        bq.add( q2, Occur.SHOULD );
-
-        IteratorSearchRequest request = new IteratorSearchRequest( bq );
         request.setLuceneExplain( true );
         
         IteratorSearchResponse response = nexusIndexer.searchIterator( request );

@@ -63,10 +63,11 @@ import org.apache.maven.index.expr.SearchExpression;
  * 
  * <pre>
  *   // run search query
- *   BooleanQuery q = new BooleanQuery();
- *   q.add(indexer.constructQuery(ArtifactInfo.GROUP_ID, term), Occur.SHOULD);
- *   q.add(indexer.constructQuery(ArtifactInfo.ARTIFACT_ID, term), Occur.SHOULD);
- *   q.add(new PrefixQuery(new Term(ArtifactInfo.SHA1, term)), Occur.SHOULD);
+ *   BooleanQuery q = new BooleanQuery.Builder()
+ *    .add(indexer.constructQuery(ArtifactInfo.GROUP_ID, term), Occur.SHOULD)
+ *    .add(indexer.constructQuery(ArtifactInfo.ARTIFACT_ID, term), Occur.SHOULD)
+ *    .add(new PrefixQuery(new Term(ArtifactInfo.SHA1, term)), Occur.SHOULD)
+ *    .build();
  *   
  *   FlatSearchRequest request = new FlatSearchRequest(q);
  *   FlatSearchResponse response = indexer.searchFlat(request);

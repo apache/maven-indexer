@@ -91,12 +91,6 @@ public class Nexus13NexusIndexerTest
     public void testSearchArchetypes()
         throws Exception
     {
-        // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
-        // BooleanQuery bq = new BooleanQuery();
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.GROUP_ID, term + "*")), Occur.SHOULD);
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.ARTIFACT_ID, term + "*")), Occur.SHOULD);
-        // FilteredQuery query = new FilteredQuery(tq, new QueryWrapperFilter(bq));
-
         Query q = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );

@@ -19,8 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -33,16 +31,14 @@ import java.util.Set;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -51,6 +47,7 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 
+import static org.apache.lucene.search.BooleanClause.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -294,12 +291,6 @@ public class FullIndexNexusIndexerTest
     public void testSearchArchetypes()
         throws Exception
     {
-        // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
-        // BooleanQuery bq = new BooleanQuery();
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.GROUP_ID, term + "*")), Occur.SHOULD);
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.ARTIFACT_ID, term + "*")), Occur.SHOULD);
-        // FilteredQuery query = new FilteredQuery(tq, new QueryWrapperFilter(bq));
-
         Query q = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
@@ -418,9 +409,12 @@ public class FullIndexNexusIndexerTest
 
         Query bq = new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, term ) );
         TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
+        FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest(
+                new BooleanQuery.Builder()
+                .add(tq, Occur.MUST)
+                .add(bq, Occur.FILTER)
+                .build() ) );
 
         Collection<ArtifactInfo> r = response.getResults();
 

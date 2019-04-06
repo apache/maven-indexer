@@ -19,7 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexCreator;
@@ -33,6 +32,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.apache.lucene.search.BooleanClause.*;
 
 /**
  * @author Olivier Lamy
@@ -89,11 +90,9 @@ public class SearchWithAnEmptyIndexTest
 
         try
         {
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.command" ) ),
-                   BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.command" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
@@ -104,11 +103,9 @@ public class SearchWithAnEmptyIndexTest
 
             assertEquals( 1, response.getResults().size() );
 
-            q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME,
-                                                new StringSearchExpression( "org.apache.karaf.features.core" ) ),
-                   BooleanClause.Occur.MUST );
+            q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
+                .build();
 
             request = new FlatSearchRequest( q );
             request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
@@ -119,18 +116,13 @@ public class SearchWithAnEmptyIndexTest
 
             String term = "org.apache.karaf.features";
 
-            q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
-            q.add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
-            q.add( nexusIndexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
-            q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
-            q.add( nexusIndexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ),
-                   BooleanClause.Occur.SHOULD );
+            q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD )
+                .add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ), Occur.SHOULD )
+                .add( nexusIndexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD )
+                .add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD )
+                .add( nexusIndexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD )
+                .build();
 
             request = new FlatSearchRequest( q );
             request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
@@ -173,16 +165,11 @@ public class SearchWithAnEmptyIndexTest
 
         try
         {
-            BooleanQuery q = new BooleanQuery();
-
-            q.add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-cli" ) ),
-                   BooleanClause.Occur.MUST );
-
-            q.add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( "jar" ) ),
-                   BooleanClause.Occur.MUST );
-
-            q.add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( "sources" ) ),
-                   BooleanClause.Occur.MUST );
+            BooleanQuery q = new BooleanQuery.Builder()
+                .add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-cli" ) ), Occur.MUST )
+                .add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( "jar" ) ), Occur.MUST )
+                .add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( "sources" ) ), Occur.MUST )
+                .build();
 
             FlatSearchRequest request = new FlatSearchRequest( q );
             assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );

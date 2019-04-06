@@ -518,21 +518,20 @@ public class DefaultIndexTreeView
             versionQ = getIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( v ) );
         }
 
-        BooleanQuery q = new BooleanQuery();
-
-        q.add( new BooleanClause( groupIdQ, BooleanClause.Occur.MUST ) );
+        BooleanQuery.Builder qb = new BooleanQuery.Builder()
+            .add( new BooleanClause( groupIdQ, BooleanClause.Occur.MUST ) );
 
         if ( artifactIdQ != null )
         {
-            q.add( new BooleanClause( artifactIdQ, BooleanClause.Occur.MUST ) );
+            qb.add( new BooleanClause( artifactIdQ, BooleanClause.Occur.MUST ) );
         }
 
         if ( versionQ != null )
         {
-            q.add( new BooleanClause( versionQ, BooleanClause.Occur.MUST ) );
+            qb.add( new BooleanClause( versionQ, BooleanClause.Occur.MUST ) );
         }
 
-        IteratorSearchRequest searchRequest = new IteratorSearchRequest( q, request.getArtifactInfoFilter() );
+        IteratorSearchRequest searchRequest = new IteratorSearchRequest( qb.build(), request.getArtifactInfoFilter() );
 
         searchRequest.getContexts().add( request.getIndexingContext() );
 

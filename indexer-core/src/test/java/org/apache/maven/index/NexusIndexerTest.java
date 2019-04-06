@@ -49,7 +49,6 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.context.StaticContextMemberProvider;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.apache.maven.index.packer.DefaultIndexPacker;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -119,13 +118,13 @@ public class NexusIndexerTest
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.PACKAGING, "maven-archetype", SearchType.SCORED );
 
-        assertEquals( "p:maven-archetype p:maven-archetype*", q.toString() );
+        assertEquals( "p:maven-archetype p:maven-archetype*^0.8", q.toString() );
 
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.SCORED );
 
         assertEquals(
-            "(a:commons-logging a:commons-logging*) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
+            "(a:commons-logging a:commons-logging*^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
             q.toString() );
 
         // scored search against field having tokenized IndexerField only (should be impossible).
@@ -227,7 +226,6 @@ public class NexusIndexerTest
         // and comes the "trick", i will perform single _selection_!
         // I want to ensure there is an artifact present!
         // explanation: see for yourself ;)
-        BooleanQuery bq = new BooleanQuery();
 
         Query g = indexer.constructQuery( MAVEN.GROUP_ID, "commons-logging", SearchType.EXACT );
         Query a = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.EXACT );
@@ -236,11 +234,13 @@ public class NexusIndexerTest
         Query c = indexer.constructQuery( MAVEN.CLASSIFIER, Field.NOT_PRESENT, SearchType.EXACT );
 
         // so, I am looking up GAVP (for content of those look above) that _has no_ classifier
-        bq.add( g, Occur.MUST );
-        bq.add( a, Occur.MUST );
-        bq.add( v, Occur.MUST );
-        bq.add( p, Occur.MUST );
-        bq.add( c, Occur.MUST_NOT );
+        BooleanQuery bq = new BooleanQuery.Builder()
+            .add( g, Occur.MUST )
+            .add( a, Occur.MUST )
+            .add( v, Occur.MUST )
+            .add( p, Occur.MUST )
+            .add( c, Occur.MUST_NOT )
+            .build();
 
         // invoking the old method (was present since day 1), that will return the match only and if only there is 1 hit
         Collection<ArtifactInfo> ais = indexer.identify( bq, Collections.singletonList( context ) );
@@ -443,10 +443,12 @@ public class NexusIndexerTest
         }
 
         {
-            BooleanQuery bq = new BooleanQuery( true );
-            bq.add( new WildcardQuery( new Term( ArtifactInfo.GROUP_ID, "testng*" ) ), Occur.SHOULD );
-            bq.add( new WildcardQuery( new Term( ArtifactInfo.ARTIFACT_ID, "testng*" ) ), Occur.SHOULD );
-            bq.setMinimumNumberShouldMatch( 1 );
+            BooleanQuery bq = new BooleanQuery.Builder()
+                .setDisableCoord( true )
+                .add( new WildcardQuery( new Term( ArtifactInfo.GROUP_ID, "testng*" ) ), Occur.SHOULD )
+                .add( new WildcardQuery( new Term( ArtifactInfo.ARTIFACT_ID, "testng*" ) ), Occur.SHOULD )
+                .setMinimumNumberShouldMatch( 1 )
+                .build();
 
             FlatSearchResponse response = indexer.searchFlat( new FlatSearchRequest( bq ) );
             Set<ArtifactInfo> r = response.getResults();

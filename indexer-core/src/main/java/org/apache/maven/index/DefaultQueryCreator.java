@@ -30,6 +30,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
@@ -280,19 +281,12 @@ public class DefaultQueryCreator
                 }
                 else
                 {
-                    BooleanQuery bq = new BooleanQuery();
-
                     Term t = new Term( indexerField.getKey(), query );
-
-                    bq.add( new TermQuery( t ), Occur.SHOULD );
-
-                    PrefixQuery pq = new PrefixQuery( t );
-                    pq.setBoost( 0.8f );
-
-                    bq.add( pq, Occur.SHOULD );
-
-                    return bq;
-                }
+                    return new BooleanQuery.Builder()
+                        .add( new TermQuery( t ), Occur.SHOULD )
+                        .add( new BoostQuery( new PrefixQuery( t ), 0.8f ), Occur.SHOULD )
+                        .build();
+            }
             }
             else
             {
@@ -326,13 +320,12 @@ public class DefaultQueryCreator
                 {
                     // qpQuery = "\"" + qpQuery + "\"";
 
-                    BooleanQuery q1 = new BooleanQuery();
-
-                    q1.add( qp.parse( qpQuery ), Occur.SHOULD );
+                    BooleanQuery.Builder q1b = new BooleanQuery.Builder()
+                            .add( qp.parse( qpQuery ), Occur.SHOULD );
 
                     if ( qpQuery.contains( " " ) )
                     {
-                        q1.add( qp.parse( "\"" + qpQuery + "\"" ), Occur.SHOULD );
+                        q1b.add( qp.parse( "\"" + qpQuery + "\"" ), Occur.SHOULD );
                     }
 
                     Query q2 = null;
@@ -353,17 +346,15 @@ public class DefaultQueryCreator
 
                     if ( q2 == null )
                     {
-                        return q1;
+                        return q1b.build();
                     }
                     else
                     {
-                        BooleanQuery bq = new BooleanQuery();
-
-                        // trick with order
-                        bq.add( q2, Occur.SHOULD );
-                        bq.add( q1, Occur.SHOULD );
-
-                        return bq;
+                        return new BooleanQuery.Builder()
+                            // trick with order
+                            .add( q2, Occur.SHOULD )
+                            .add( q1b.build(), Occur.SHOULD )
+                            .build();
                     }
                 }
                 catch ( ParseException e )

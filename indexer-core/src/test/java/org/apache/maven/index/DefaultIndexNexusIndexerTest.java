@@ -29,11 +29,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.FilteredQuery;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -64,18 +64,10 @@ public class DefaultIndexNexusIndexerTest
     public void testPlugin()
         throws Exception
     {
-        // String term = "plugin";
-        // String term = "maven-core-it-plugin";
-        String term = "org.apache.maven.plugins";
-
-        // Query bq = new TermQuery(new Term(ArtifactInfo.GROUP_ID, "org.apache.maven.plugins"));
-        // Query bq = new TermQuery(new Term(ArtifactInfo.ARTIFACT_ID, term));
-        Query bq = new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, term ) );
-        // BooleanQuery bq = new BooleanQuery();
-        // bq.add(new PrefixQuery(new Term(ArtifactInfo.GROUP_ID, term + "*")), Occur.SHOULD);
-        // bq.add(new PrefixQuery(new Term(ArtifactInfo.ARTIFACT_ID, term + "*")), Occur.SHOULD);
-        TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-plugin" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
+        Query query = new BooleanQuery.Builder()
+            .add( new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-plugin" ) ), Occur.MUST )
+            .add( new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, "org.apache.maven.plugins" ) ), Occur.FILTER )
+            .build();
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
 
@@ -119,12 +111,6 @@ public class DefaultIndexNexusIndexerTest
     public void testSearchArchetypes()
         throws Exception
     {
-        // TermQuery tq = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
-        // BooleanQuery bq = new BooleanQuery();
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.GROUP_ID, term + "*")), Occur.SHOULD);
-        // bq.add(new WildcardQuery(new Term(ArtifactInfo.ARTIFACT_ID, term + "*")), Occur.SHOULD);
-        // FilteredQuery query = new FilteredQuery(tq, new QueryWrapperFilter(bq));
-
         Query q = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( q ) );
         Collection<ArtifactInfo> r = response.getResults();
@@ -240,11 +226,10 @@ public class DefaultIndexNexusIndexerTest
     public void testArchetype()
         throws Exception
     {
-        String term = "proptest";
-
-        Query bq = new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, term ) );
-        TermQuery tq = new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) );
-        Query query = new FilteredQuery( tq, new QueryWrapperFilter( bq ) );
+        Query query = new BooleanQuery.Builder()
+            .add( new TermQuery( new Term( ArtifactInfo.PACKAGING, "maven-archetype" ) ), Occur.MUST )
+            .add( new PrefixQuery( new Term( ArtifactInfo.GROUP_ID, "proptest" ) ), Occur.FILTER )
+            .build();
 
         FlatSearchResponse response = nexusIndexer.searchFlat( new FlatSearchRequest( query ) );
 
