@@ -14,7 +14,7 @@ https://issues.apache.org/jira/projects/MINDEXER
 Mailing lists:
 Developers: dev@maven.apache.org
 Users: users@maven.apache.org
-(more at http://maven.apache.org/mail-lists.html)
+(more at https://maven.apache.org/mailing-lists.html)
 
 CI:
-https://builds.apache.org/job/maven-indexer/
+https://builds.apache.org/view/M-R/view/Maven/job/maven-box/job/maven-indexer/
