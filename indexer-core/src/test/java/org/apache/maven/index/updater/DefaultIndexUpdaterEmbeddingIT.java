@@ -119,6 +119,46 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    public void testIndexTempDirB()
+            throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+    {
+        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
+        basedir.delete();
+        basedir.mkdirs();
+
+        File indexTempDir = Files.createTempDirectory("index-temp" ).toFile();
+        indexTempDir.delete();
+        // temp dir should not exists
+        assertFalse( indexTempDir.exists());
+
+        try
+        {
+            IndexingContext ctx = newTestContext( basedir, baseUrl );
+
+            IndexUpdateRequest updateRequest =
+                    new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(), null,
+                            null ) );
+            updateRequest.setIndexTempDir( indexTempDir );
+
+            updater.fetchAndUpdateIndex( updateRequest );
+
+            // dir should still exists after retrival
+            assertTrue( indexTempDir.exists() );
+            indexTempDir.delete();
+            ctx.close( false );
+        }
+        finally
+        {
+            try
+            {
+                FileUtils.forceDelete( basedir );
+            }
+            catch ( IOException e )
+            {
+            }
+        }
+    }
+
     public void testBasicAuthenticatedIndexRetrieval()
         throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
     {
