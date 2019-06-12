@@ -19,7 +19,6 @@ package org.apache.maven.index;
  * under the License.
  */
 
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.highlight.Fragmenter;
 
@@ -31,16 +30,6 @@ public class OneLineFragmenter
     public void start( String originalText )
     {
         setText( originalText );
-    }
-
-    public boolean isNewFragment( Token nextToken )
-    {
-        // text: /org/sonatype/...
-        // tokens: org sonatype
-        boolean result =
-            isNewline( getChar( nextToken.startOffset() - 1 ) ) || isNewline( getChar( nextToken.startOffset() - 2 ) );
-
-        return result;
     }
 
     protected boolean isNewline( char c )

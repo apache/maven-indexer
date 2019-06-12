@@ -33,9 +33,11 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -55,6 +57,7 @@ import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.artifact.GavCalculator;
 import org.apache.maven.index.artifact.M2GavCalculator;
 import org.codehaus.plexus.util.StringUtils;
@@ -363,10 +366,9 @@ public class DefaultIndexingContext
     {
         Document hdr = new Document();
 
-        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, IndexerField.KEYWORD_STORED ) );
 
-        hdr.add( new Field( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(), Field.Store.YES,
-                            Field.Index.NO ) );
+        hdr.add( new StoredField( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId() ) );
 
         IndexWriter w = getIndexWriter();
 
@@ -876,10 +878,8 @@ public class DefaultIndexingContext
                                              String listField )
     {
         final Document groupDoc = new Document();
-        groupDoc.add( new Field( field, //
-            fieldValue, Field.Store.YES, Field.Index.NOT_ANALYZED ) );
-        groupDoc.add( new Field( listField, //
-            ArtifactInfo.lst2str( groups ), Field.Store.YES, Field.Index.NO ) );
+        groupDoc.add( new Field( field, fieldValue, IndexerField.KEYWORD_STORED ) );
+        groupDoc.add( new StoredField( listField, ArtifactInfo.lst2str( groups ) ) );
         return groupDoc;
     }
 

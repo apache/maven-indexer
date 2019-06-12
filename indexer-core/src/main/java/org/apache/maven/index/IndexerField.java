@@ -20,9 +20,8 @@ package org.apache.maven.index;
  */
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexOptions;
 
 /**
  * Holds basic information about Indexer field, how it is stored. To keep this centralized, and not spread across code.
@@ -38,21 +37,45 @@ public class IndexerField
 
     private final String key;
 
-    private final Store storeMethod;
+    private final FieldType fieldType;
 
-    private final Index indexMethod;
+    /** Indexed, not tokenized, not stored. */
+    public static final FieldType KEYWORD_NOT_STORED = new FieldType();
 
-    private final TermVector termVector;
+    /** Indexed, not tokenized, stored. */
+    public static final FieldType KEYWORD_STORED = new FieldType();
 
-    public IndexerField( final org.apache.maven.index.Field ontology, final IndexerFieldVersion version,
-                         final String key, final String description, final Store storeMethod, final Index indexMethod )
+    /** Indexed, tokenized, not stored. */
+    public static final FieldType ANALYZED_NOT_STORED = new FieldType();
+
+    /** Indexed, tokenized, stored. */
+    public static final FieldType ANALYZED_STORED = new FieldType();
+
+    static
     {
-        this( ontology, version, key, description, storeMethod, indexMethod, null );
+        KEYWORD_NOT_STORED.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
+        KEYWORD_NOT_STORED.setStored( false );
+        KEYWORD_NOT_STORED.setTokenized( false );
+        KEYWORD_NOT_STORED.freeze();
+
+        KEYWORD_STORED.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
+        KEYWORD_STORED.setStored( true );
+        KEYWORD_STORED.setTokenized( false );
+        KEYWORD_STORED.freeze();
+
+        ANALYZED_NOT_STORED.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
+        ANALYZED_NOT_STORED.setStored( false );
+        ANALYZED_NOT_STORED.setTokenized( true );
+        ANALYZED_NOT_STORED.freeze();
+
+        ANALYZED_STORED.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
+        ANALYZED_STORED.setStored( true );
+        ANALYZED_STORED.setTokenized( true );
+        ANALYZED_STORED.freeze();
     }
 
     public IndexerField( final org.apache.maven.index.Field ontology, final IndexerFieldVersion version,
-                         final String key, final String description, final Store storeMethod, final Index indexMethod,
-                         final TermVector termVector )
+            final String key, final String description, final FieldType fieldType )
     {
         this.ontology = ontology;
 
@@ -60,11 +83,7 @@ public class IndexerField
 
         this.key = key;
 
-        this.storeMethod = storeMethod;
-
-        this.indexMethod = indexMethod;
-
-        this.termVector = termVector;
+        this.fieldType = fieldType;
 
         ontology.addIndexerField( this );
     }
@@ -84,55 +103,28 @@ public class IndexerField
         return key;
     }
 
-    public Field.Store getStoreMethod()
+    public FieldType getFieldType()
     {
-        return storeMethod;
-    }
-
-    public Field.Index getIndexMethod()
-    {
-        return indexMethod;
-    }
-
-    public Field.TermVector getTermVector()
-    {
-        return termVector;
+        return fieldType;
     }
 
     public boolean isIndexed()
     {
-        return !Index.NO.equals( indexMethod );
+        return fieldType.indexOptions() != IndexOptions.NONE;
     }
 
     public boolean isKeyword()
     {
-        return isIndexed() && !Index.ANALYZED.equals( indexMethod );
+        return isIndexed() && !fieldType.tokenized();
     }
 
     public boolean isStored()
     {
-        return !( Store.NO.equals( storeMethod ) );
+        return fieldType.stored();
     }
 
     public Field toField( String value )
     {
-        Field result;
-
-        if ( getTermVector() != null )
-        {
-            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod(), getTermVector() );
-        }
-        else
-        {
-            result = new Field( getKey(), value, getStoreMethod(), getIndexMethod() );
-        }
-
-        // if ( isKeyword() )
-        // {
-        // result.setOmitNorms( true );
-        // result.setOmitTf( true );
-        // }
-
-        return result;
+        return new Field( getKey(), value, getFieldType() );
     }
 }

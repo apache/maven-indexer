@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.Term;
@@ -100,9 +100,9 @@ public class DefaultIndexerEngine
             // add artifact deletion marker
             final Document doc = new Document();
 
-            doc.add( new Field( ArtifactInfo.DELETED, uinfo, Field.Store.YES, Field.Index.NO ) );
-            doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+            doc.add( new StoredField( ArtifactInfo.DELETED, uinfo ) );
+            doc.add( new StoredField( ArtifactInfo.LAST_MODIFIED, //
+                Long.toString( System.currentTimeMillis() ) ) );
 
             IndexWriter w = context.getIndexWriter();
             w.addDocument( doc );

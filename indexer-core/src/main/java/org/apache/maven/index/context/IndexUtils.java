@@ -29,6 +29,7 @@ import java.util.Date;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.store.Directory;
@@ -36,6 +37,7 @@ import org.apache.lucene.store.IOContext;
 import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IndexerField;
 import org.codehaus.plexus.util.FileUtils;
 
 public class IndexUtils
@@ -149,12 +151,12 @@ public class IndexUtils
         Document document = new Document();
 
         // unique key
-        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), Field.Store.YES, Field.Index.NOT_ANALYZED ) );
+        document.add( new Field( ArtifactInfo.UINFO, ai.getUinfo(), IndexerField.KEYWORD_STORED ) );
 
         if ( updateLastModified || doc.getField( ArtifactInfo.LAST_MODIFIED ) == null )
         {
-            document.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-                Long.toString( System.currentTimeMillis() ), Field.Store.YES, Field.Index.NO ) );
+            document.add( new StoredField( ArtifactInfo.LAST_MODIFIED, //
+                Long.toString( System.currentTimeMillis() ) ) );
         }
         else
         {

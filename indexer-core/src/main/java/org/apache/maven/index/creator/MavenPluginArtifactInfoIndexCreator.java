@@ -31,8 +31,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
@@ -61,10 +59,10 @@ public class MavenPluginArtifactInfoIndexCreator
     private static final String MAVEN_PLUGIN_PACKAGING = "maven-plugin";
 
     public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField( MAVEN.PLUGIN_PREFIX, IndexerFieldVersion.V1,
-        "px", "MavenPlugin prefix (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
+        "px", "MavenPlugin prefix (as keyword, stored)", IndexerField.KEYWORD_STORED );
 
     public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
-        "gx", "MavenPlugin goals (as keyword, stored)", Store.YES, Index.ANALYZED );
+        "gx", "MavenPlugin goals (as keyword, stored)", IndexerField.ANALYZED_STORED );
 
     public MavenPluginArtifactInfoIndexCreator()
     {
