@@ -28,8 +28,7 @@ import java.util.Collection;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StoredField;
 import org.apache.maven.index.ArtifactAvailability;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
@@ -67,46 +66,46 @@ public class MinimalArtifactInfoIndexCreator
      * Info: packaging, lastModified, size, sourcesExists, javadocExists, signatureExists. Stored, not indexed.
      */
     public static final IndexerField FLD_INFO = new IndexerField( NEXUS.INFO, IndexerFieldVersion.V1, "i",
-        "Artifact INFO (not indexed, stored)", Store.YES, Index.NO );
+        "Artifact INFO (not indexed, stored)", StoredField.TYPE );
 
     public static final IndexerField FLD_GROUP_ID_KW = new IndexerField( MAVEN.GROUP_ID, IndexerFieldVersion.V1, "g",
-        "Artifact GroupID (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "Artifact GroupID (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_GROUP_ID = new IndexerField( MAVEN.GROUP_ID, IndexerFieldVersion.V3,
-        "groupId", "Artifact GroupID (tokenized)", Store.NO, Index.ANALYZED );
+        "groupId", "Artifact GroupID (tokenized)", IndexerField.ANALYZED_NOT_STORED );
 
     public static final IndexerField FLD_ARTIFACT_ID_KW = new IndexerField( MAVEN.ARTIFACT_ID, IndexerFieldVersion.V1,
-        "a", "Artifact ArtifactID (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "a", "Artifact ArtifactID (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_ARTIFACT_ID = new IndexerField( MAVEN.ARTIFACT_ID, IndexerFieldVersion.V3,
-        "artifactId", "Artifact ArtifactID (tokenized)", Store.NO, Index.ANALYZED );
+        "artifactId", "Artifact ArtifactID (tokenized)", IndexerField.ANALYZED_NOT_STORED );
 
     public static final IndexerField FLD_VERSION_KW = new IndexerField( MAVEN.VERSION, IndexerFieldVersion.V1, "v",
-        "Artifact Version (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "Artifact Version (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_VERSION = new IndexerField( MAVEN.VERSION, IndexerFieldVersion.V3, "version",
-        "Artifact Version (tokenized)", Store.NO, Index.ANALYZED );
+        "Artifact Version (tokenized)", IndexerField.ANALYZED_NOT_STORED );
 
     public static final IndexerField FLD_PACKAGING = new IndexerField( MAVEN.PACKAGING, IndexerFieldVersion.V1, "p",
-        "Artifact Packaging (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "Artifact Packaging (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_EXTENSION = new IndexerField( MAVEN.EXTENSION, IndexerFieldVersion.V1, "e",
-        "Artifact extension (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "Artifact extension (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_CLASSIFIER = new IndexerField( MAVEN.CLASSIFIER, IndexerFieldVersion.V1, "l",
-        "Artifact classifier (as keyword)", Store.NO, Index.NOT_ANALYZED );
+        "Artifact classifier (as keyword)", IndexerField.KEYWORD_NOT_STORED );
 
     public static final IndexerField FLD_NAME = new IndexerField( MAVEN.NAME, IndexerFieldVersion.V1, "n",
-        "Artifact name (tokenized, stored)", Store.YES, Index.ANALYZED );
+        "Artifact name (tokenized, stored)", IndexerField.ANALYZED_STORED );
 
     public static final IndexerField FLD_DESCRIPTION = new IndexerField( MAVEN.DESCRIPTION, IndexerFieldVersion.V1,
-        "d", "Artifact description (tokenized, stored)", Store.YES, Index.ANALYZED );
+        "d", "Artifact description (tokenized, stored)", IndexerField.ANALYZED_STORED );
 
     public static final IndexerField FLD_LAST_MODIFIED = new IndexerField( MAVEN.LAST_MODIFIED, IndexerFieldVersion.V1,
-        "m", "Artifact last modified (not indexed, stored)", Store.YES, Index.NO );
+        "m", "Artifact last modified (not indexed, stored)", StoredField.TYPE );
 
     public static final IndexerField FLD_SHA1 = new IndexerField( MAVEN.SHA1, IndexerFieldVersion.V1, "1",
-        "Artifact SHA1 checksum (as keyword, stored)", Store.YES, Index.NOT_ANALYZED );
+        "Artifact SHA1 checksum (as keyword, stored)", IndexerField.KEYWORD_STORED );
 
     private Locator jl = new JavadocLocator();
 
@@ -310,18 +309,16 @@ public class MinimalArtifactInfoIndexCreator
         // legacy!
         if ( ai.getPrefix() != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.getPrefix(), Field.Store.YES,
-                                Field.Index.NOT_ANALYZED ) );
+            doc.add( new Field( ArtifactInfo.PLUGIN_PREFIX, ai.getPrefix(), IndexerField.KEYWORD_STORED ) );
         }
 
         if ( ai.getGoals() != null )
         {
-            doc.add( new Field( ArtifactInfo.PLUGIN_GOALS, ArtifactInfo.lst2str( ai.getGoals() ), Field.Store.YES,
-                Field.Index.NO ) );
+            doc.add( new StoredField( ArtifactInfo.PLUGIN_GOALS, ArtifactInfo.lst2str( ai.getGoals() ) ) );
         }
 
         doc.removeField( ArtifactInfo.GROUP_ID );
-        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.getGroupId(), Field.Store.NO, Field.Index.NOT_ANALYZED ) );
+        doc.add( new Field( ArtifactInfo.GROUP_ID, ai.getGroupId(), IndexerField.KEYWORD_NOT_STORED ) );
     }
 
     public boolean updateArtifactInfo( Document doc, ArtifactInfo ai )

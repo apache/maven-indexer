@@ -34,8 +34,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
@@ -181,23 +181,20 @@ public class IndexDataReader
     {
         int flags = dis.read();
 
-        Index index = Index.NO;
+        FieldType fieldType = new FieldType();
         if ( ( flags & IndexDataWriter.F_INDEXED ) > 0 )
         {
-            boolean isTokenized = ( flags & IndexDataWriter.F_TOKENIZED ) > 0;
-            index = isTokenized ? Index.ANALYZED : Index.NOT_ANALYZED;
+            boolean tokenized = ( flags & IndexDataWriter.F_TOKENIZED ) > 0;
+            fieldType.setTokenized( tokenized );
+            fieldType.setOmitNorms( !tokenized );
+            fieldType.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
         }
-
-        Store store = Store.NO;
-        if ( ( flags & IndexDataWriter.F_STORED ) > 0 )
-        {
-            store = Store.YES;
-        }
+        fieldType.setStored( ( flags & IndexDataWriter.F_STORED ) > 0 );
 
         String name = dis.readUTF();
         String value = readUTF( dis );
 
-        return new Field( name, value, store, index );
+        return new Field( name, value, fieldType );
     }
 
     private static String readUTF( DataInput in )

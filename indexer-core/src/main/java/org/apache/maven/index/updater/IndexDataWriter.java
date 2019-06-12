@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.index.MultiFields;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 
@@ -122,18 +122,19 @@ public class IndexDataWriter
     {
         {
             List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
-            allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, Store.YES ) );
-            allGroupsFields.add( new StringField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
-                                                  Store.YES ) );
+            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE,
+                                            IndexerField.KEYWORD_STORED ) );
+            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
+                                            IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( allGroupsFields );
         }
 
         {
             List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
-            rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE,
-                                                   Store.YES ) );
-            rootGroupsFields.add( new StringField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
-                                                   Store.YES ) );
+            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE,
+                                             IndexerField.KEYWORD_STORED ) );
+            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
+                                             IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( rootGroupsFields );
         }
     }

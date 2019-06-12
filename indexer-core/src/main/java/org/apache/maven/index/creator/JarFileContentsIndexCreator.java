@@ -28,8 +28,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
@@ -52,7 +50,7 @@ public class JarFileContentsIndexCreator
     public static final String ID = "jarContent";
 
     public static final IndexerField FLD_CLASSNAMES = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V3,
-        "classnames", "Artifact Classes (tokenized)", Store.NO, Index.ANALYZED );
+        "classnames", "Artifact Classes (tokenized)", IndexerField.ANALYZED_NOT_STORED );
 
     /**
      * NexusAnalyzer makes exception with this field only, to keep backward compatibility with old consumers of
@@ -60,7 +58,7 @@ public class JarFileContentsIndexCreator
      * registered BEFORE FLD_CLASSNAMES_KW!
      */
     public static final IndexerField FLD_CLASSNAMES_KW = new IndexerField( MAVEN.CLASSNAMES, IndexerFieldVersion.V1,
-        "c", "Artifact Classes (tokenized on newlines only)", Store.YES, Index.ANALYZED );
+        "c", "Artifact Classes (tokenized on newlines only)", IndexerField.ANALYZED_STORED );
 
     public JarFileContentsIndexCreator()
     {

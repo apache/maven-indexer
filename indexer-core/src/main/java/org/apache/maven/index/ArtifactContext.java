@@ -28,8 +28,7 @@ import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.StoredField;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -166,10 +165,10 @@ public class ArtifactContext
         Document doc = new Document();
 
         // unique key
-        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), Store.YES, Index.NOT_ANALYZED ) );
+        doc.add( new Field( ArtifactInfo.UINFO, getArtifactInfo().getUinfo(), IndexerField.KEYWORD_STORED ) );
 
-        doc.add( new Field( ArtifactInfo.LAST_MODIFIED, //
-            Long.toString( System.currentTimeMillis() ), Store.YES, Index.NO ) );
+        doc.add( new StoredField( ArtifactInfo.LAST_MODIFIED, //
+            Long.toString( System.currentTimeMillis() ) ) );
 
         for ( IndexCreator indexCreator : context.getIndexCreators() )
         {
