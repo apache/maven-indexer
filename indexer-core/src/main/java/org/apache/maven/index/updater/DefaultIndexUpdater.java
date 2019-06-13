@@ -48,7 +48,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.DocumentFilter;
@@ -256,9 +257,9 @@ public class DefaultIndexUpdater
         try
         {
             r = DirectoryReader.open( directory );
-            w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
-            
-            Bits liveDocs = MultiFields.getLiveDocs( r );
+            w = new NexusIndexWriter( directory, new IndexWriterConfig( new NexusAnalyzer() ) );
+
+            Bits liveDocs = MultiBits.getLiveDocs( r );
 
             int numDocs = r.maxDoc();
 
@@ -273,7 +274,7 @@ public class DefaultIndexUpdater
 
                 if ( !filter.accept( d ) )
                 {
-                    boolean success = w.tryDeleteDocument( r, i );
+                    boolean success = w.tryDeleteDocument( r, i ) != -1;
                     // FIXME handle deletion failure
                 }
             }
@@ -289,7 +290,7 @@ public class DefaultIndexUpdater
         try
         {
             // analyzer is unimportant, since we are not adding/searching to/on index, only reading/deleting
-            w = new NexusIndexWriter( directory, new NexusAnalyzer(), false );
+            w = new NexusIndexWriter( directory, new IndexWriterConfig( new NexusAnalyzer() ) );
 
             w.commit();
         }
@@ -379,7 +380,7 @@ public class DefaultIndexUpdater
                                                        final IndexingContext context )
         throws IOException
     {
-        NexusIndexWriter w = new NexusIndexWriter( d, new NexusAnalyzer(), true );
+        NexusIndexWriter w = new NexusIndexWriter( d, new IndexWriterConfig( new NexusAnalyzer() ) );
         try
         {
             IndexDataReader dr = new IndexDataReader( is );

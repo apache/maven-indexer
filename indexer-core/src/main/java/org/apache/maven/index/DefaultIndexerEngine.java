@@ -160,7 +160,7 @@ public class DefaultIndexerEngine
                     indexSearcher.search(
                         new TermQuery( new Term( ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo() ) ), 2 );
 
-                if ( result.totalHits == 1 )
+                if ( result.totalHits.value == 1 )
                 {
                     return indexSearcher.doc( result.scoreDocs[0].doc );
                 }
