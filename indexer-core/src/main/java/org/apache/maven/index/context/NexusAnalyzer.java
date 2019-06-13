@@ -21,6 +21,8 @@ package org.apache.maven.index.context;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.AnalyzerWrapper;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
@@ -40,7 +42,8 @@ public final class NexusAnalyzer
         @Override
         protected TokenStreamComponents createComponents( String fieldName )
         {
-            return new TokenStreamComponents( new DeprecatedClassnamesTokenizer() );
+            final Tokenizer tokenizer = new DeprecatedClassnamesTokenizer();
+            return new TokenStreamComponents( tokenizer, new LowerCaseFilter( tokenizer ) );
         }
     };
 
@@ -49,7 +52,8 @@ public final class NexusAnalyzer
         @Override
         protected TokenStreamComponents createComponents( String filedName )
         {
-            return new TokenStreamComponents( new LetterOrDigitTokenizer() );
+            final Tokenizer tokenizer = new LetterOrDigitTokenizer();
+            return new TokenStreamComponents( tokenizer, new LowerCaseFilter( tokenizer ) );
         }
     };
 
@@ -103,12 +107,6 @@ public final class NexusAnalyzer
         {
             return i != '\n';
         }
-        
-        @Override
-        protected int normalize( int c )
-        {
-            return Character.toLowerCase( c );
-        }
     }
 
     public static class LetterOrDigitTokenizer
@@ -124,12 +122,5 @@ public final class NexusAnalyzer
         {
             return Character.isLetterOrDigit( c );
         }
-
-        @Override
-        protected int normalize( int c )
-        {
-            return Character.toLowerCase( c );
-        }
     }
-
 }
