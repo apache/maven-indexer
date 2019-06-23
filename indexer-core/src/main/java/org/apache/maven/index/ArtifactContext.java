@@ -25,6 +25,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -32,8 +34,6 @@ import org.apache.lucene.document.StoredField;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -103,16 +103,16 @@ public class ArtifactContext
         // Otherwise, check for pom contained in maven generated artifact
         else if ( getArtifact() != null && getArtifact().isFile() )
         {
-            File artifact = getArtifact();
-            try ( ZipHandle handle = ZipFacade.getZipHandle( artifact ) )
+            try ( ZipFile zipFile = new ZipFile( artifact ) )
             {
-
                 final String embeddedPomPath =
                     "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
 
-                if ( handle.hasEntry( embeddedPomPath ) )
+                ZipEntry zipEntry = zipFile.getEntry( embeddedPomPath );
+
+                if ( zipEntry != null )
                 {
-                    try ( InputStream inputStream = handle.getEntryContent( embeddedPomPath ) )
+                    try ( InputStream inputStream = zipFile.getInputStream( zipEntry ) )
                     {
                         return new MavenXpp3Reader().read( inputStream, false );
                     }

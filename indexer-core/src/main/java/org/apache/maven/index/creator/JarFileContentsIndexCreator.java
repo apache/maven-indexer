@@ -25,7 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
@@ -33,8 +35,6 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -158,18 +158,16 @@ public class JarFileContentsIndexCreator
     private void updateArtifactInfo( final ArtifactInfo ai, final File f, final String strippedPrefix )
         throws IOException
     {
-        ZipHandle handle = null;
 
-        try
+        try ( ZipFile zipFile = new ZipFile( f ) )
         {
-            handle = ZipFacade.getZipHandle( f );
-
-            final List<String> entries = handle.getEntries();
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
             final StringBuilder sb = new StringBuilder();
 
-            for ( String name : entries )
+            while ( entries.hasMoreElements() )
             {
+                String name = entries.nextElement().getName();
                 if ( name.endsWith( ".class" ) )
                 {
                     // TODO verify if class is public or protected
@@ -208,17 +206,6 @@ public class JarFileContentsIndexCreator
             else
             {
                 ai.setClassNames( null );
-            }
-        }
-        finally
-        {
-            try
-            {
-                ZipFacade.close( handle );
-            }
-            catch ( Exception e )
-            {
-                getLogger().error( "Could not close jar file properly.", e );
             }
         }
     }

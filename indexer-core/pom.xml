@@ -135,19 +135,6 @@ under the License.
       <optional>true</optional>
     </dependency>
 
-    <!-- ZipFacade (as optional, who wants to use it should include TrueZip) -->
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-file</artifactId>
-      <optional>true</optional>
-    </dependency>
-
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-driver-zip</artifactId>
-      <optional>true</optional>
-    </dependency>
-
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -230,10 +217,6 @@ under the License.
                   <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.bouncycastle</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
                   <pattern>org.apache.commons.compress</pattern>
                   <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
                 </relocation>
@@ -249,7 +232,6 @@ under the License.
                   <exclude>org.apache.maven.archetype:*</exclude>
                   <exclude>org.apache.maven.wagon:*</exclude>
                   <exclude>org.codehaus.*:*</exclude>
-                  <exclude>de.schlichtherle.truezip:*</exclude>
                   <exclude>org.apache.maven.resolver:*</exclude>
                   <exclude>org.apache.maven:maven-model</exclude>
                   <exclude>org.apache.commons:*</exclude>

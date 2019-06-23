@@ -23,12 +23,13 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
@@ -36,8 +37,6 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.configuration.PlexusConfiguration;
 import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
@@ -88,19 +87,13 @@ public class MavenPluginArtifactInfoIndexCreator
 
     private void checkMavenPlugin( ArtifactInfo ai, File artifact )
     {
-        ZipHandle handle = null;
-
-        try
+        try ( ZipFile zipFile = new ZipFile( artifact ) )
         {
-            handle = ZipFacade.getZipHandle( artifact );
-
             final String pluginDescriptorPath = "META-INF/maven/plugin.xml";
-
-            if ( handle.hasEntry( pluginDescriptorPath ) )
+            ZipEntry zipEntry = zipFile.getEntry( pluginDescriptorPath );
+            if ( zipEntry != null )
             {
-                InputStream is = new BufferedInputStream( handle.getEntryContent( pluginDescriptorPath ) );
-
-                try
+                try ( InputStream is = new BufferedInputStream( zipFile.getInputStream( zipEntry ) ) )
                 {
                     // here the reader is closed
                     PlexusConfiguration plexusConfig =
@@ -117,10 +110,6 @@ public class MavenPluginArtifactInfoIndexCreator
                         ai.getGoals().add( mojoConfig.getChild( "goal" ).getValue() );
                     }
                 }
-                finally
-                {
-                    is.close();
-                }
             }
         }
         catch ( Exception e )
@@ -134,16 +123,6 @@ public class MavenPluginArtifactInfoIndexCreator
             {
                 getLogger().info(
                     "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e.getMessage() );
-            }
-        }
-        finally
-        {
-            try
-            {
-                ZipFacade.close( handle );
-            }
-            catch ( IOException e )
-            {
             }
         }
     }

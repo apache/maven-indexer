@@ -22,17 +22,15 @@ package org.apache.maven.index.creator;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
 
 /**
  * A Maven Archetype index creator used to detect and correct the artifact packaging to "maven-archetype" if the
@@ -85,15 +83,11 @@ public class MavenArchetypeArtifactInfoIndexCreator
      */
     private void checkMavenArchetype( ArtifactInfo ai, File artifact )
     {
-        ZipHandle handle = null;
-
-        try
+        try ( ZipFile zipFile = new ZipFile( artifact ) )
         {
-            handle = ZipFacade.getZipHandle( artifact );
-
             for ( String path : ARCHETYPE_XML_LOCATIONS )
             {
-                if ( handle.hasEntry( path ) )
+                if ( zipFile.getEntry( path ) != null )
                 {
                     ai.setPackaging( MAVEN_ARCHETYPE_PACKAGING );
 
@@ -112,16 +106,6 @@ public class MavenArchetypeArtifactInfoIndexCreator
             {
                 getLogger().info(
                     "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e.getMessage() );
-            }
-        }
-        finally
-        {
-            try
-            {
-                ZipFacade.close( handle );
-            }
-            catch ( IOException ex )
-            {
             }
         }
     }

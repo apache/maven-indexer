@@ -93,7 +93,6 @@ under the License.
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.5.2</maven.version>
     <resolver.version>1.1.0</resolver.version>
-    <truezip.version>7.7.10</truezip.version>
     <archetype.version>2.4</archetype.version>
     <wagon.version>2.12</wagon.version>
     <surefire.version>2.22.2</surefire.version>
@@ -265,37 +264,6 @@ under the License.
         <groupId>org.apache.maven.archetype</groupId>
         <artifactId>archetype-catalog</artifactId>
         <version>${archetype.version}</version>
-      </dependency>
-
-      <!-- ZipFacade -->
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-kernel</artifactId>
-        <version>${truezip.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-file</artifactId>
-        <version>${truezip.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>de.schlichtherle.truezip</groupId>
-        <artifactId>truezip-driver-zip</artifactId>
-        <version>${truezip.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>de.schlichtherle.truezip</groupId>
-            <artifactId>truezip-swing</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <!-- Test -->

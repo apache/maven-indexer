@@ -77,16 +77,6 @@ under the License.
       <version>1.2</version>
     </dependency>
 
-    <!-- ZipFacade -->
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-file</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>de.schlichtherle.truezip</groupId>
-      <artifactId>truezip-driver-zip</artifactId>
-    </dependency>
-
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -132,15 +122,6 @@ under the License.
                   <mainClass>org.apache.maven.index.cli.NexusIndexerCli</mainClass>
                 </transformer>
               </transformers>
-              <filters>
-                <filter>
-                  <artifact>org.bouncycastle:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/BCKEY.SF</exclude>
-                    <exclude>META-INF/BCKEY.DSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
             </configuration>
           </execution>
         </executions>

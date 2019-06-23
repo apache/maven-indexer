@@ -28,8 +28,6 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.OSGI;
-import org.apache.maven.index.util.zip.ZipFacade;
-import org.apache.maven.index.util.zip.ZipHandle;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
@@ -40,9 +38,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * This indexCreator will index some OSGI metadatas.
@@ -419,22 +419,19 @@ public class OsgiArtifactIndexCreator
     private boolean updateArtifactInfo( ArtifactInfo ai, File f )
         throws IOException
     {
-        ZipHandle handle = null;
-
         boolean updated = false;
 
-
-        try
+        try ( ZipFile zipFile = new ZipFile( f ) )
         {
-            handle = ZipFacade.getZipHandle( f );
+            final Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
-            final List<String> entries = handle.getEntries();
-
-            for ( String name : entries )
+            while ( entries.hasMoreElements() )
             {
-                if ( name.equals( "META-INF/MANIFEST.MF" ) )
+                ZipEntry zipEntry = entries.nextElement();
+
+                if ( zipEntry.getName().equals( "META-INF/MANIFEST.MF" ) )
                 {
-                    Manifest manifest = new Manifest( handle.getEntryContent( name ) );
+                    Manifest manifest = new Manifest( zipFile.getInputStream( zipEntry ) );
 
                     Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -595,18 +592,6 @@ public class OsgiArtifactIndexCreator
                         }
                     }
                 }
-            }
-
-        }
-        finally
-        {
-            try
-            {
-                ZipFacade.close( handle );
-            }
-            catch ( Exception e )
-            {
-                getLogger().error( "Could not close jar file properly.", e );
             }
         }
 
