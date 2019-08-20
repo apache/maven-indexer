@@ -97,7 +97,7 @@ public final class Utils
         {
             return null;
         }
-        return loadProperties( resource.read() );
+        return loadProperties( inputStream );
     }
 
     /**
