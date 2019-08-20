@@ -58,6 +58,11 @@ public final class Record
             return (T) proto.cast( object );
         }
 
+        public String getName()
+        {
+            return name;
+        }
+
         @Override
         public boolean equals( final Object o )
         {
