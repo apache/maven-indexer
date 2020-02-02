@@ -117,7 +117,7 @@ under the License.
         <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
-            <id>jdk15</id>
+            <id>jdk7</id>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>

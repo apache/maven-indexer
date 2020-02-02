@@ -23,7 +23,8 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>33</version>
+    <version>34</version>
+    <relativePath />
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
@@ -95,8 +96,9 @@ under the License.
     <truezip.version>7.7.10</truezip.version>
     <archetype.version>2.4</archetype.version>
     <wagon.version>2.12</wagon.version>
-
+    <surefire.version>2.22.2</surefire.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
+    <project.build.outputTimestamp>2020-02-02T02:02:02Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
@@ -420,7 +422,6 @@ under the License.
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>2.17</version>
           <dependencies>
             <dependency>
               <groupId>org.apache.maven.shared</groupId>
@@ -440,15 +441,8 @@ under the License.
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
-            <additionalparam>-Xdoclint:none</additionalparam>
+            <doclint>none</doclint>
           </configuration>
-        </plugin>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build
-          itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -460,7 +454,7 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
-          <additionalparam>-Xdoclint:none</additionalparam>
+          <doclint>none</doclint>
           <groups>
             <group>
               <title>Indexer core</title>
