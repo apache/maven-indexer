@@ -40,12 +40,6 @@ public class CachingResourceHandler
         {
             return null;
         }
-
-        public void close()
-            throws IOException
-        {
-            // nop
-        }
     };
 
     private final WritableResourceHandler local;
@@ -129,12 +123,6 @@ public class CachingResourceHandler
             {
                 localResource.close();
             }
-        }
-
-        public void close()
-            throws IOException
-        {
-            // nop
         }
     }
 
