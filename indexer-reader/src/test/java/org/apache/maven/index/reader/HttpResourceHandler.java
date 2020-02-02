@@ -63,10 +63,6 @@ public class HttpResourceHandler
       conn.setRequestProperty("User-Agent", "ASF Maven-Indexer-Reader/1.0");
       return new BufferedInputStream(conn.getInputStream());
     }
-
-    public void close() throws IOException {
-      // nop
-    }
   }
 
   public void close() throws IOException {
