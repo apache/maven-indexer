@@ -23,6 +23,7 @@ import org.apache.maven.index.reader.ResourceHandler.Resource;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
@@ -184,6 +187,21 @@ public class IndexReader
     public Iterator<ChunkReader> iterator()
     {
         return new ChunkReaderIterator( remote, chunkNames.iterator() );
+    }
+
+    public Stream<ChunkReader> stream()
+    {
+        return StreamSupport.stream(spliterator(), false).onClose(() ->
+        {
+            try
+            {
+                close();
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     /**

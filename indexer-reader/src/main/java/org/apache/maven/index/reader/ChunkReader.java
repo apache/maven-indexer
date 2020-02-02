@@ -26,11 +26,14 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
+import java.io.UncheckedIOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -95,6 +98,21 @@ public class ChunkReader
         {
             throw new RuntimeException( "error", e );
         }
+    }
+
+    public Stream<Map<String, String>> stream()
+    {
+        return StreamSupport.stream(spliterator(), false).onClose(() ->
+        {
+            try
+            {
+                close();
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     /**
