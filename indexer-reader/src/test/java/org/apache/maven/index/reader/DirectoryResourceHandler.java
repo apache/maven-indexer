@@ -56,10 +56,6 @@ public class DirectoryResourceHandler
     return new FileResource(new File(rootDirectory, name));
   }
 
-  public void close() throws IOException {
-    // nop
-  }
-
   private class FileResource
       implements WritableResource
   {
@@ -79,10 +75,6 @@ public class DirectoryResourceHandler
 
     public OutputStream write() throws IOException {
       return new BufferedOutputStream(new FileOutputStream(file));
-    }
-
-    public void close() throws IOException {
-      // nop
     }
   }
 

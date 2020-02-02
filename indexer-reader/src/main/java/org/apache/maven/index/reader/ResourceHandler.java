@@ -53,4 +53,11 @@ public interface ResourceHandler
      */
     Resource locate( String name )
         throws IOException;
+
+    @Override
+    default void close()
+        throws IOException
+    {
+        // nop
+    }
 }

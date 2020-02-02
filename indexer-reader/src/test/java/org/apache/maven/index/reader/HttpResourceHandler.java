@@ -64,8 +64,4 @@ public class HttpResourceHandler
       return new BufferedInputStream(conn.getInputStream());
     }
   }
-
-  public void close() throws IOException {
-    // nop
-  }
 }

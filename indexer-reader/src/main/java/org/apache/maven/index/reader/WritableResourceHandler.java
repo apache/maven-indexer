@@ -50,6 +50,13 @@ public interface WritableResourceHandler
          */
         OutputStream write()
             throws IOException;
+
+        @Override
+        default void close()
+            throws IOException
+        {
+            // nop
+        }
     }
 
     /**
