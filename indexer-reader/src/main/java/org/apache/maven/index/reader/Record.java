@@ -20,6 +20,7 @@ package org.apache.maven.index.reader;
  */
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Maven 2 Index record.
@@ -41,14 +42,8 @@ public final class Record
 
         public EntryKey( final String name, final Class<T> proto )
         {
-            if ( name == null )
-            {
-                throw new NullPointerException( "name is null" );
-            }
-            if ( proto == null )
-            {
-                throw new NullPointerException( "proto is null" );
-            }
+            Objects.requireNonNull( name, "name is null" );
+            Objects.requireNonNull( proto, "proto is null" );
             this.name = name;
             this.proto = proto;
         }
