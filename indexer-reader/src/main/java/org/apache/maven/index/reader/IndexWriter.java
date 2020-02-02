@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -59,14 +60,8 @@ public class IndexWriter
     public IndexWriter( final WritableResourceHandler local, final String indexId, final boolean incrementalSupported )
         throws IOException
     {
-        if ( local == null )
-        {
-            throw new NullPointerException( "local resource handler null" );
-        }
-        if ( indexId == null )
-        {
-            throw new NullPointerException( "indexId null" );
-        }
+        Objects.requireNonNull(local, "local resource handler null");
+        Objects.requireNonNull(indexId, "indexId null");
         this.local = local;
         Properties indexProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
         if ( incrementalSupported && indexProperties != null )

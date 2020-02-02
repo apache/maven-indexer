@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.apache.maven.index.reader.Utils.loadProperties;
@@ -62,10 +63,7 @@ public class IndexReader
     public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
         throws IOException
     {
-        if ( remote == null )
-        {
-            throw new NullPointerException( "remote resource handler null" );
-        }
+        Objects.requireNonNull(remote, "remote resource handler null");
         this.local = local;
         this.remote = remote;
         remoteIndexProperties = loadProperties( remote.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
