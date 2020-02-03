@@ -330,7 +330,7 @@ public class ArtifactInfo
      */
     private String bundleRequiredExecutionEnvironment;
 
-    private final Map<String, String> attributes = new HashMap<String, String>();
+    private final Map<String, String> attributes = new HashMap<>();
 
     private final List<MatchHighlight> matchHighlights = new ArrayList<>();
 

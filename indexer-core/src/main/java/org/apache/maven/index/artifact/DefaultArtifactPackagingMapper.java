@@ -61,7 +61,7 @@ public class DefaultArtifactPackagingMapper
 
     static
     {
-        DEFAULTS = new HashMap<String, String>();
+        DEFAULTS = new HashMap<>();
         DEFAULTS.put( "ejb-client", "jar" );
         DEFAULTS.put( "ejb", "jar" );
         DEFAULTS.put( "rar", "jar" );
@@ -92,7 +92,7 @@ public class DefaultArtifactPackagingMapper
             {
                 if ( packaging2extensionMapping == null )
                 {
-                    packaging2extensionMapping = new HashMap<String, String>();
+                    packaging2extensionMapping = new HashMap<>();
 
                     // merge defaults
                     packaging2extensionMapping.putAll( DEFAULTS );

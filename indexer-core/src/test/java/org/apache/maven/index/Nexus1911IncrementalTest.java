@@ -314,11 +314,11 @@ public class Nexus1911IncrementalTest
 
     private Set<String> getFilenamesFromFiles( File[] files )
     {
-        Set<String> filenames = new HashSet<String>();
+        Set<String> filenames = new HashSet<>();
 
-        for ( int i = 0; i < files.length; i++ )
+        for ( File file : files )
         {
-            filenames.add( files[i].getName() );
+            filenames.add( file.getName() );
         }
 
         return filenames;
@@ -330,25 +330,18 @@ public class Nexus1911IncrementalTest
         Properties props = new Properties();
         File propertyFile = null;
 
-        for ( int i = 0; i < files.length; i++ )
+        for ( File file : files )
         {
-            if ( ( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ).equalsIgnoreCase( files[i].getName() ) )
+            if ( ( IndexingContext.INDEX_REMOTE_PROPERTIES_FILE ).equalsIgnoreCase( file.getName() ) )
             {
-                propertyFile = files[i];
+                propertyFile = file;
                 break;
             }
         }
 
-        FileInputStream fis = null;
-
-        try
+        try ( FileInputStream fis = new FileInputStream( propertyFile ) )
         {
-            fis = new FileInputStream( propertyFile );
             props.load( fis );
-        }
-        finally
-        {
-            fis.close();
         }
 
         return props;

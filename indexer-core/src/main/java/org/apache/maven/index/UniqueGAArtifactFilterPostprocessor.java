@@ -38,7 +38,7 @@ public class UniqueGAArtifactFilterPostprocessor
 
     private final boolean repositoriesIgnored;
 
-    private final Set<String> gas = new HashSet<String>();
+    private final Set<String> gas = new HashSet<>();
 
     public UniqueGAArtifactFilterPostprocessor( boolean repositoriesIgnored )
     {

@@ -136,10 +136,6 @@ public class M1GavCalculator
                 }
             }
         }
-        catch ( StringIndexOutOfBoundsException e )
-        {
-            return null;
-        }
         catch ( IndexOutOfBoundsException e )
         {
             return null;

@@ -139,15 +139,13 @@ public class DefaultIndexTreeView
     {
         String path = root.getPath();
 
-        Map<String, TreeNode> folders = new HashMap<String, TreeNode>();
+        Map<String, TreeNode> folders = new HashMap<>();
 
         String rootPartialGroupId = StringUtils.strip( root.getPath().replaceAll( "/", "." ), "." );
 
         folders.put( Type.G + ":" + rootPartialGroupId, root );
 
-        IteratorSearchResponse artifacts = getArtifacts( root, request );
-
-        try
+        try ( IteratorSearchResponse artifacts = getArtifacts( root, request ) )
         {
             for ( ArtifactInfo ai : artifacts )
             {
@@ -188,17 +186,14 @@ public class DefaultIndexTreeView
                             groupResource = folders.get( groupKey );
 
                             // it needs to be created only if not found (is null) and is _below_ groupParentResource
-                            if ( groupResource == null
-                                && groupParentResource.getPath().length() < getPathForAi( ai,
-                                                                                          MAVEN.GROUP_ID ).length() )
+                            if ( groupResource == null && groupParentResource.getPath().length() < getPathForAi( ai,
+                                    MAVEN.GROUP_ID ).length() )
                             {
-                                String gNodeName =
-                                    partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
-                                        partialGroupId.lastIndexOf( '.' ) + 1, partialGroupId.length() )
-                                        : partialGroupId;
+                                String gNodeName = partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
+                                        partialGroupId.lastIndexOf( '.' ) + 1,
+                                        partialGroupId.length() ) : partialGroupId;
 
-                                groupResource =
-                                    request.getFactory().createGNode( this, request,
+                                groupResource = request.getFactory().createGNode( this, request,
                                         "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
 
                                 groupParentResource.getChildren().add( groupResource );
@@ -220,15 +215,15 @@ public class DefaultIndexTreeView
                         }
 
                         artifactResource = request.getFactory().createANode( this, request, ai,
-                                                                             getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+                                getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
 
                         groupParentResource.getChildren().add( artifactResource );
 
                         folders.put( artifactKey, artifactResource );
                     }
 
-                    versionResource =
-                        request.getFactory().createVNode( this, request, ai, getPathForAi( ai, MAVEN.VERSION ) );
+                    versionResource = request.getFactory().createVNode( this, request, ai,
+                            getPathForAi( ai, MAVEN.VERSION ) );
 
                     artifactResource.getChildren().add( versionResource );
 
@@ -238,12 +233,8 @@ public class DefaultIndexTreeView
                 String nodePath = getPathForAi( ai, null );
 
                 versionResource.getChildren().add(
-                    request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
+                        request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
             }
-        }
-        finally
-        {
-            artifacts.close();
         }
 
         if ( !request.hasFieldHints() )
@@ -325,7 +316,7 @@ public class DefaultIndexTreeView
 
         int n = path.length();
 
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
 
         for ( String group : allGroups )
         {

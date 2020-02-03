@@ -539,7 +539,7 @@ public class DefaultIndexUpdater
 
         private final IndexUpdateResult result;
 
-        private final ArrayList<String> newChunks = new ArrayList<String>();
+        private final ArrayList<String> newChunks = new ArrayList<>();
 
         LocalCacheIndexAdaptor( File dir, IndexUpdateResult result )
         {
@@ -621,7 +621,7 @@ public class DefaultIndexUpdater
         public List<String> getChunks()
             throws IOException
         {
-            ArrayList<String> chunks = new ArrayList<String>();
+            ArrayList<String> chunks = new ArrayList<>();
 
             File chunksFile = new File( dir, CHUNKS_FILENAME );
             try ( BufferedReader r =

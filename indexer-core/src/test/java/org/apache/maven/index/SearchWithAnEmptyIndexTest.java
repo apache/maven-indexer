@@ -108,7 +108,7 @@ public class SearchWithAnEmptyIndexTest
                 .build();
 
             request = new FlatSearchRequest( q );
-            request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
+            request.setContexts( new ArrayList<>( nexusIndexer.getIndexingContexts().values() ) );
 
             response = nexusIndexer.searchFlat( request );
 
@@ -125,7 +125,7 @@ public class SearchWithAnEmptyIndexTest
                 .build();
 
             request = new FlatSearchRequest( q );
-            request.setContexts( new ArrayList( nexusIndexer.getIndexingContexts().values() ) );
+            request.setContexts( new ArrayList<>( nexusIndexer.getIndexingContexts().values() ) );
 
             response = nexusIndexer.searchFlat( request );
 

@@ -70,7 +70,7 @@ public class RecordCompactor
 
     private static Map<String, String> compactDescriptor( final Record record )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         result.put( "DESCRIPTOR", "NexusIndex" );
         result.put( "IDXINFO", "1.0|" + record.get( Record.REPOSITORY_ID ) );
         return result;
@@ -78,7 +78,7 @@ public class RecordCompactor
 
     private static Map<String, String> compactAllGroups( final Record record )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         result.put( "allGroups", "allGroups" );
         putIfNotNullAsStringArray( record.get( Record.ALL_GROUPS ), result, "allGroupsList" );
         return result;
@@ -86,7 +86,7 @@ public class RecordCompactor
 
     private static Map<String, String> compactRootGroups( final Record record )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         result.put( "rootGroups", "allGroups" );
         putIfNotNullAsStringArray( record.get( Record.ROOT_GROUPS ), result, "rootGroupsList" );
         return result;
@@ -94,7 +94,7 @@ public class RecordCompactor
 
     private static Map<String, String> compactDeletedArtifact( final Record record )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
         putIfNotNullTS( record.get( Record.REC_MODIFIED ), result, "m" );
         result.put( "del", compactUinfo( record ) );
         return result;
@@ -105,7 +105,7 @@ public class RecordCompactor
      */
     private static Map<String, String> compactAddedArtifact( final Record record )
     {
-        final Map<String, String> result = new HashMap<String, String>();
+        final Map<String, String> result = new HashMap<>();
 
         // Minimal
         result.put( UINFO, compactUinfo( record ) );

@@ -49,9 +49,9 @@ public class AbstractIndexCreatorHelper
     {
         super.setUp();
 
-        DEFAULT_CREATORS = new ArrayList<IndexCreator>();
-        FULL_CREATORS = new ArrayList<IndexCreator>();
-        MIN_CREATORS = new ArrayList<IndexCreator>();
+        DEFAULT_CREATORS = new ArrayList<>();
+        FULL_CREATORS = new ArrayList<>();
+        MIN_CREATORS = new ArrayList<>();
 
         IndexCreator min = lookup( IndexCreator.class, MinimalArtifactInfoIndexCreator.ID );
         IndexCreator mavenPlugin = lookup( IndexCreator.class, MavenPluginArtifactInfoIndexCreator.ID );

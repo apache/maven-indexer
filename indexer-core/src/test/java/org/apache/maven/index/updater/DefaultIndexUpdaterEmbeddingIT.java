@@ -479,7 +479,7 @@ public class DefaultIndexUpdaterEmbeddingIT
         IndexCreator min = container.lookup( IndexCreator.class, "min" );
         IndexCreator jar = container.lookup( IndexCreator.class, "jarContent" );
 
-        List<IndexCreator> creators = new ArrayList<IndexCreator>();
+        List<IndexCreator> creators = new ArrayList<>();
         creators.add( min );
         creators.add( jar );
 

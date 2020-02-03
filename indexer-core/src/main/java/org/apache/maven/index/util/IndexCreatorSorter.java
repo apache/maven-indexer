@@ -35,7 +35,7 @@ public class IndexCreatorSorter
     {
         try
         {
-            final HashMap<String, IndexCreator> creatorsById = new HashMap<String, IndexCreator>( creators.size() );
+            final HashMap<String, IndexCreator> creatorsById = new HashMap<>( creators.size() );
 
             DAG dag = new DAG();
 

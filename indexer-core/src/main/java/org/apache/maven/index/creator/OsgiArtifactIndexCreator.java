@@ -620,9 +620,8 @@ public class OsgiArtifactIndexCreator
         try
         {
             MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
-            DigestInputStream in = new DigestInputStream( new FileInputStream( f ), digest );
 
-            try
+            try ( DigestInputStream in = new DigestInputStream( new FileInputStream( f ), digest ) )
             {
                 byte buf[] = new byte[8192];
                 while ( in.read( buf ) >= 0 )
@@ -637,10 +636,6 @@ public class OsgiArtifactIndexCreator
                     builder.append( String.format( "%02x", b ) );
                     sha256 = builder.toString();
                 }
-            }
-            finally
-            {
-                in.close();
             }
 
         }

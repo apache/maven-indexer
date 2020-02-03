@@ -220,14 +220,14 @@ public class MergedIndexingContext
 
     public List<IndexCreator> getIndexCreators()
     {
-        HashSet<IndexCreator> creators = new HashSet<IndexCreator>();
+        HashSet<IndexCreator> creators = new HashSet<>();
 
         for ( IndexingContext ctx : getMembers() )
         {
             creators.addAll( ctx.getIndexCreators() );
         }
 
-        return new ArrayList<IndexCreator>( creators );
+        return new ArrayList<>( creators );
     }
 
     public Analyzer getAnalyzer()
@@ -335,7 +335,7 @@ public class MergedIndexingContext
     public Set<String> getAllGroups()
         throws IOException
     {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
 
         for ( IndexingContext ctx : getMembers() )
         {
@@ -354,7 +354,7 @@ public class MergedIndexingContext
     public Set<String> getRootGroups()
         throws IOException
     {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
 
         for ( IndexingContext ctx : getMembers() )
         {

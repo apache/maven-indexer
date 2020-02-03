@@ -37,7 +37,7 @@ public class TrackingFetcher
     extends DefaultIndexUpdater.FileFetcher
 {
 
-    private final ArrayList<String> resources = new ArrayList<String>();
+    private final ArrayList<String> resources = new ArrayList<>();
 
     public TrackingFetcher( File basedir )
     {

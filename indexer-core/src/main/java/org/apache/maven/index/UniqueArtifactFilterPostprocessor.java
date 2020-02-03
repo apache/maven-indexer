@@ -35,9 +35,9 @@ public class UniqueArtifactFilterPostprocessor
 {
     public static final String COLLAPSED = "COLLAPSED";
 
-    private final Set<Field> uniqueFields = new HashSet<Field>();
+    private final Set<Field> uniqueFields = new HashSet<>();
 
-    private final Set<String> gas = new HashSet<String>();
+    private final Set<String> gas = new HashSet<>();
 
     public UniqueArtifactFilterPostprocessor()
     {

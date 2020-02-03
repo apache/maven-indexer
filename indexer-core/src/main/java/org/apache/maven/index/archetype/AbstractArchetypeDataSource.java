@@ -95,7 +95,7 @@ public abstract class AbstractArchetypeDataSource
     private Map<String, String> getRepositoryMap()
     {
         // can't cache this because indexes can be changed
-        Map<String, String> repositories = new HashMap<String, String>();
+        Map<String, String> repositories = new HashMap<>();
 
         for ( IndexingContext context : getIndexingContexts() )
         {

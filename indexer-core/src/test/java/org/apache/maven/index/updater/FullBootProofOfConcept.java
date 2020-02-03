@@ -55,23 +55,7 @@ public class FullBootProofOfConcept
             {
                 run( basedir );
             }
-            catch ( UnsupportedExistingLuceneIndexException e )
-            {
-                e.printStackTrace();
-            }
-            catch ( IOException e )
-            {
-                e.printStackTrace();
-            }
-            catch ( ComponentLookupException e )
-            {
-                e.printStackTrace();
-            }
-            catch ( PlexusContainerException e )
-            {
-                e.printStackTrace();
-            }
-            catch ( ParseException e )
+            catch ( UnsupportedExistingLuceneIndexException | ParseException | PlexusContainerException | ComponentLookupException | IOException e )
             {
                 e.printStackTrace();
             }
@@ -108,7 +92,7 @@ public class FullBootProofOfConcept
         IndexCreator min = container.lookup( IndexCreator.class, "min" );
         IndexCreator jar = container.lookup( IndexCreator.class, "jarContent" );
 
-        List<IndexCreator> creators = new ArrayList<IndexCreator>();
+        List<IndexCreator> creators = new ArrayList<>();
         creators.add( min );
         creators.add( jar );
 

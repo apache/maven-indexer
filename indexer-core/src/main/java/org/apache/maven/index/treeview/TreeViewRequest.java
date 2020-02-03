@@ -51,7 +51,7 @@ public class TreeViewRequest
 
         this.path = path;
 
-        this.fieldHints = new HashMap<Field, String>();
+        this.fieldHints = new HashMap<>();
 
         if ( hints != null && hints.size() != 0 )
         {

@@ -78,8 +78,8 @@ public class IndexDataWriter
         gos = new GZIPOutputStream( bos, 1024 * 2 );
         dos = new DataOutputStream( gos );
 
-        this.allGroups = new HashSet<String>();
-        this.rootGroups = new HashSet<String>();
+        this.allGroups = new HashSet<>();
+        this.rootGroups = new HashSet<>();
         this.descriptorWritten = false;
     }
 

@@ -71,7 +71,7 @@ public class DefaultNexusIndexer
 
     private final QueryCreator queryCreator;
 
-    private final Map<String, IndexingContext> indexingContexts = new ConcurrentHashMap<String, IndexingContext>();
+    private final Map<String, IndexingContext> indexingContexts = new ConcurrentHashMap<>();
 
 
     @Inject

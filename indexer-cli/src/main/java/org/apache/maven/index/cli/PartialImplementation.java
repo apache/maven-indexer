@@ -42,11 +42,7 @@ public class PartialImplementation
             final Method localMethod = getClass().getMethod( method.getName(), method.getParameterTypes() );
             return localMethod.invoke( this, args );
         }
-        catch ( NoSuchMethodException e )
-        {
-            throw new UnsupportedOperationException( "Method " + method.getName() + "() is not supported" );
-        }
-        catch ( IllegalAccessException e )
+        catch ( NoSuchMethodException | IllegalAccessException e )
         {
             throw new UnsupportedOperationException( "Method " + method.getName() + "() is not supported" );
         }

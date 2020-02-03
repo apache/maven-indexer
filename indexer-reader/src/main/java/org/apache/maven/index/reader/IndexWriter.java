@@ -155,15 +155,10 @@ public class IndexWriter
 
         try ( WritableResource writableResource = local.locate( nextChunkName ) )
         {
-            final ChunkWriter chunkWriter =
-                new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1, new Date() );
-            try
+            try ( ChunkWriter chunkWriter = new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1,
+                    new Date() ) )
             {
                 written = chunkWriter.writeChunk( iterator );
-            }
-            finally
-            {
-                chunkWriter.close();
             }
             if ( incremental )
             {

@@ -102,12 +102,7 @@ public class DigesterUtils
 
             return getDigest( "SHA1", fis );
         }
-        catch ( NoSuchAlgorithmException e )
-        {
-            // will not happen
-            return null;
-        }
-        catch ( UnsupportedEncodingException e )
+        catch ( NoSuchAlgorithmException | UnsupportedEncodingException e )
         {
             // will not happen
             return null;
@@ -146,12 +141,7 @@ public class DigesterUtils
         {
             return getDigest( "SHA1", fis );
         }
-        catch ( NoSuchAlgorithmException e )
-        {
-            // will not happen
-            return null;
-        }
-        catch ( FileNotFoundException e )
+        catch ( NoSuchAlgorithmException | FileNotFoundException e )
         {
             // will not happen
             return null;
@@ -174,12 +164,7 @@ public class DigesterUtils
 
             return getDigest( "MD5", fis );
         }
-        catch ( NoSuchAlgorithmException e )
-        {
-            // will not happen
-            return null;
-        }
-        catch ( UnsupportedEncodingException e )
+        catch ( NoSuchAlgorithmException | UnsupportedEncodingException e )
         {
             // will not happen
             return null;
@@ -219,12 +204,7 @@ public class DigesterUtils
         {
             return getDigest( "MD5", fis );
         }
-        catch ( NoSuchAlgorithmException e )
-        {
-            // will not happen
-            return null;
-        }
-        catch ( FileNotFoundException e )
+        catch ( NoSuchAlgorithmException | FileNotFoundException e )
         {
             // will not happen
             return null;

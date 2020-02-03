@@ -53,7 +53,7 @@ public class Mindexer35NexusIndexerTest
 
         assertThat(r.size(), is(1));
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         ArtifactInfo ai = null;
 

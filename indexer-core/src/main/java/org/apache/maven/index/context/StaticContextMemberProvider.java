@@ -36,7 +36,7 @@ public class StaticContextMemberProvider
 
     public StaticContextMemberProvider( Collection<IndexingContext> members )
     {
-        ArrayList<IndexingContext> m = new ArrayList<IndexingContext>();
+        ArrayList<IndexingContext> m = new ArrayList<>();
 
         if ( members != null )
         {

@@ -411,11 +411,11 @@ public class DefaultIteratorResultSet
         {
             frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
 
-            for ( int i = 0; i < frag.length; i++ )
+            for ( TextFragment textFragment : frag )
             {
-                if ( ( frag[i] != null ) && ( frag[i].getScore() > 0 ) )
+                if ( ( textFragment != null ) && ( textFragment.getScore() > 0 ) )
                 {
-                    fragTexts.add( frag[i].toString() );
+                    fragTexts.add( textFragment.toString() );
                 }
             }
         }

@@ -68,7 +68,7 @@ public class MavenPluginArtifactInfoIndexCreatorTest
 
         assertEquals( "dependency", artifactContext.getArtifactInfo().getPrefix() );
 
-        List<String> goals = new ArrayList<String>( 16 );
+        List<String> goals = new ArrayList<>( 16 );
         goals.add( "analyze-dep-mgt" );
         goals.add( "analyze" );
         goals.add( "analyze-only" );

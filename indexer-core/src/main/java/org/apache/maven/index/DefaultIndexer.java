@@ -222,20 +222,15 @@ public class DefaultIndexer
     public Collection<ArtifactInfo> identify( Query query, Collection<IndexingContext> contexts )
         throws IOException
     {
-        final IteratorSearchResponse result =
-            searcher.searchIteratorPaged( new IteratorSearchRequest( query ), contexts );
-        try
+        try ( IteratorSearchResponse result = searcher.searchIteratorPaged(
+                new IteratorSearchRequest( query ), contexts ) )
         {
-            final ArrayList<ArtifactInfo> ais = new ArrayList<ArtifactInfo>( result.getTotalHitsCount() );
+            final List<ArtifactInfo> ais = new ArrayList<>( result.getTotalHitsCount() );
             for ( ArtifactInfo ai : result )
             {
                 ais.add( ai );
             }
             return ais;
-        }
-        finally
-        {
-            result.close();
         }
     }
 

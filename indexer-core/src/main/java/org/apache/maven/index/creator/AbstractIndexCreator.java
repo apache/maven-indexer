@@ -56,7 +56,7 @@ public abstract class AbstractIndexCreator
     {
         this.id = id;
 
-        final ArrayList<String> deps = new ArrayList<String>();
+        final ArrayList<String> deps = new ArrayList<>();
 
         if ( creatorDependencies != null && !creatorDependencies.isEmpty() )
         {

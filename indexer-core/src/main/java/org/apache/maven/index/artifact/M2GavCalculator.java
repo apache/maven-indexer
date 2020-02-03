@@ -109,11 +109,7 @@ public class M2GavCalculator
                     checksumType, signatureType );
             }
         }
-        catch ( NumberFormatException e )
-        {
-            return null;
-        }
-        catch ( StringIndexOutOfBoundsException e )
+        catch ( NumberFormatException | StringIndexOutOfBoundsException e )
         {
             return null;
         }
@@ -193,7 +189,7 @@ public class M2GavCalculator
             try
             {
                 SimpleDateFormat df = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-                snapshotTimestamp = Long.valueOf( df.parse( sb.toString() ).getTime() );
+                snapshotTimestamp = df.parse( sb.toString() ).getTime();
             }
             catch ( ParseException e )
             {

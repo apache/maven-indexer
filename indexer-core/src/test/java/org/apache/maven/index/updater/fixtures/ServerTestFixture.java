@@ -152,10 +152,8 @@ public class ServerTestFixture
             }
 
             File f = new File( base, "slow" + subPath );
-            InputStream in = null;
-            try
+            try ( InputStream in = new FileInputStream( f ) )
             {
-                in = new FileInputStream( f );
                 OutputStream out = resp.getOutputStream();
 
                 int read = -1;
@@ -175,19 +173,6 @@ public class ServerTestFixture
                 }
 
                 out.flush();
-            }
-            finally
-            {
-                if ( in != null )
-                {
-                    try
-                    {
-                        in.close();
-                    }
-                    catch ( IOException e )
-                    {
-                    }
-                }
             }
         }
     }

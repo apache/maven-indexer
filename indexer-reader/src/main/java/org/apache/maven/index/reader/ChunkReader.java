@@ -173,7 +173,7 @@ public class ChunkReader
             return null; // no more documents
         }
 
-        Map<String, String> recordMap = new HashMap<String, String>();
+        Map<String, String> recordMap = new HashMap<>();
         for ( int i = 0; i < fieldCount; i++ )
         {
             readField( recordMap, dataInput );

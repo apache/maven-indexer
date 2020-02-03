@@ -52,7 +52,7 @@ public class M2GavCalculatorTest
         }
         else
         {
-            return Long.valueOf( formatter.parse( timeStamp ).getTime() );
+            return formatter.parse( timeStamp ).getTime();
         }
     }
 

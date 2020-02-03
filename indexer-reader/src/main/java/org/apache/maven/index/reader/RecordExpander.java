@@ -84,7 +84,7 @@ public class RecordExpander
 
     private static Record expandDescriptor( final Map<String, String> raw )
     {
-        final Record result = new Record( Type.DESCRIPTOR, new HashMap<EntryKey, Object>() );
+        final Record result = new Record( Type.DESCRIPTOR, new HashMap<>() );
         String[] r = FS_PATTERN.split( raw.get( "IDXINFO" ) );
         result.put( Record.REPOSITORY_ID, r[1] );
         return result;
@@ -92,21 +92,21 @@ public class RecordExpander
 
     private static Record expandAllGroups( final Map<String, String> raw )
     {
-        final Record result = new Record( Type.ALL_GROUPS, new HashMap<EntryKey, Object>() );
+        final Record result = new Record( Type.ALL_GROUPS, new HashMap<>() );
         putIfNotNullAsStringArray( raw, "allGroupsList", result, Record.ALL_GROUPS );
         return result;
     }
 
     private static Record expandRootGroups( final Map<String, String> raw )
     {
-        final Record result = new Record( Type.ROOT_GROUPS, new HashMap<EntryKey, Object>() );
+        final Record result = new Record( Type.ROOT_GROUPS, new HashMap<>() );
         putIfNotNullAsStringArray( raw, "rootGroupsList", result, Record.ROOT_GROUPS );
         return result;
     }
 
     private static Record expandDeletedArtifact( final Map<String, String> raw )
     {
-        final Record result = new Record( Type.ARTIFACT_REMOVE, new HashMap<EntryKey, Object>() );
+        final Record result = new Record( Type.ARTIFACT_REMOVE, new HashMap<>() );
         putIfNotNullTS( raw, "m", result, Record.REC_MODIFIED );
         if ( raw.containsKey( "del" ) )
         {
@@ -120,7 +120,7 @@ public class RecordExpander
      */
     private static Record expandAddedArtifact( final Map<String, String> raw )
     {
-        final Record result = new Record( Type.ARTIFACT_ADD, new HashMap<EntryKey, Object>() );
+        final Record result = new Record( Type.ARTIFACT_ADD, new HashMap<>() );
 
         // Minimal
         expandUinfo( raw.get( UINFO ), result );

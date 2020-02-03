@@ -669,12 +669,11 @@ public class DefaultIndexingContext
         try
         {
             final IndexWriter w = getIndexWriter();
-            final IndexReader directoryReader = DirectoryReader.open( directory );
-            TopScoreDocCollector collector = null;
-            try
+            try ( IndexReader directoryReader = DirectoryReader.open( directory ) )
             {
+                TopScoreDocCollector collector = null;
                 int numDocs = directoryReader.maxDoc();
-                
+
                 Bits liveDocs = MultiFields.getLiveDocs( directoryReader );
                 for ( int i = 0; i < numDocs; i++ )
                 {
@@ -717,7 +716,6 @@ public class DefaultIndexingContext
             }
             finally
             {
-                directoryReader.close();
                 commit();
             }
 
@@ -776,8 +774,8 @@ public class DefaultIndexingContext
         {
             final IndexReader r = is.getIndexReader();
 
-            Set<String> rootGroups = new LinkedHashSet<String>();
-            Set<String> allGroups = new LinkedHashSet<String>();
+            Set<String> rootGroups = new LinkedHashSet<>();
+            Set<String> allGroups = new LinkedHashSet<>();
 
             int numDocs = r.maxDoc();
             Bits liveDocs = MultiFields.getLiveDocs( r );
@@ -847,7 +845,7 @@ public class DefaultIndexingContext
         {
             indexSearcher.search( new TermQuery( new Term( field, filedValue ) ), collector );
             TopDocs topDocs = collector.topDocs();
-            Set<String> groups = new LinkedHashSet<String>( Math.max( 10, topDocs.totalHits ) );
+            Set<String> groups = new LinkedHashSet<>( Math.max( 10, topDocs.totalHits ) );
             if ( topDocs.totalHits > 0 )
             {
                 Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );

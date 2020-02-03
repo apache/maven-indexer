@@ -191,7 +191,7 @@ public class DefaultIndexNexusIndexerTest
 
         assertEquals( 2, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         assertEquals( 2, list.size() );
 

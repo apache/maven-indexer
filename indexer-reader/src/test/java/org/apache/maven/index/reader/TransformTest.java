@@ -82,7 +82,7 @@ public class TransformTest
   }
 
   private Map<EntryKey, Object> artifactMap(final String groupId) {
-    final HashMap<EntryKey, Object> result = new HashMap<EntryKey, Object>();
+    final HashMap<EntryKey, Object> result = new HashMap<>();
     result.put(Record.GROUP_ID, groupId);
     result.put(Record.ARTIFACT_ID, "artifact");
     result.put(Record.VERSION, "1.0");

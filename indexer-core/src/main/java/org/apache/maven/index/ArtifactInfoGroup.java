@@ -43,7 +43,7 @@ public class ArtifactInfoGroup
     {
         this.groupKey = groupKey;
 
-        this.artifactInfos = new TreeSet<ArtifactInfo>( comparator );
+        this.artifactInfos = new TreeSet<>( comparator );
     }
 
     public String getGroupKey()

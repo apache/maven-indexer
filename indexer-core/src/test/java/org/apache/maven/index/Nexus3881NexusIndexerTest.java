@@ -71,6 +71,6 @@ public class Nexus3881NexusIndexerTest
 
         Assert.assertTrue(
             String.format( "The relevance span should be small! (%s)",
-                new Object[] { Float.valueOf( firstRel - lastRel ) } ), firstRel - lastRel < 0.35 );
+                new Object[] {firstRel - lastRel} ), firstRel - lastRel < 0.35 );
     }
 }

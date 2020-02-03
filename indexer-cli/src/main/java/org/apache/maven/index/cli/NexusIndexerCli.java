@@ -377,7 +377,7 @@ public class NexusIndexerCli
 
                 if ( chunkCount != null )
                 {
-                    request.setMaxIndexChunks( chunkCount.intValue() );
+                    request.setMaxIndexChunks( chunkCount );
                 }
 
                 packIndex( packer, request, debug, quiet );
@@ -450,7 +450,7 @@ public class NexusIndexerCli
             type = cli.getOptionValue( TYPE );
         }
 
-        List<IndexCreator> indexers = new ArrayList<IndexCreator>(); // NexusIndexer.DEFAULT_INDEX;
+        List<IndexCreator> indexers = new ArrayList<>(); // NexusIndexer.DEFAULT_INDEX;
 
         if ( "default".equals( type ) )
         {

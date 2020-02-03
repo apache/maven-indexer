@@ -101,7 +101,7 @@ public class MavenPluginArtifactInfoIndexCreator
 
                     ai.setPrefix( plexusConfig.getChild( "goalPrefix" ).getValue() );
 
-                    ai.setGoals( new ArrayList<String>() );
+                    ai.setGoals( new ArrayList<>() );
 
                     PlexusConfiguration[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
 

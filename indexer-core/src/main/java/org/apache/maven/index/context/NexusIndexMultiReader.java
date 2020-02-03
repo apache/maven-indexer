@@ -38,7 +38,7 @@ public class NexusIndexMultiReader
 
     public NexusIndexMultiReader( final Collection<IndexingContext> contexts )
     {
-        this.contexts = Collections.unmodifiableList( new ArrayList<IndexingContext>( contexts ) );
+        this.contexts = Collections.unmodifiableList( new ArrayList<>( contexts ) );
     }
 
     public synchronized IndexReader acquire()
@@ -49,8 +49,8 @@ public class NexusIndexMultiReader
             release();
             throw new IllegalStateException( "acquire() called 2nd time without release() in between!" );
         }
-        this.searchers = new ArrayList<IndexSearcher>();
-        final ArrayList<IndexReader> contextReaders = new ArrayList<IndexReader>( contexts.size() );
+        this.searchers = new ArrayList<>();
+        final ArrayList<IndexReader> contextReaders = new ArrayList<>( contexts.size() );
         for ( IndexingContext ctx : contexts )
         {
             final IndexSearcher indexSearcher = ctx.acquireIndexSearcher();

@@ -72,8 +72,8 @@ public final class TestUtils
   public static Iterable<Record> decorate(final Iterable<Record> iterable,
                                           final String repoId)
   {
-    final TreeSet<String> allGroupsSet = new TreeSet<String>();
-    final TreeSet<String> rootGroupsSet = new TreeSet<String>();
+    final TreeSet<String> allGroupsSet = new TreeSet<>();
+    final TreeSet<String> rootGroupsSet = new TreeSet<>();
     return transform(
         concat(
             singletonList(descriptor(repoId)),

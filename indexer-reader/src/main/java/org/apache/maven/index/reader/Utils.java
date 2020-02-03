@@ -138,7 +138,7 @@ public final class Utils
      */
     public static Record descriptor( final String repoId )
     {
-        HashMap<EntryKey, Object> entries = new HashMap<EntryKey, Object>();
+        HashMap<EntryKey, Object> entries = new HashMap<>();
         entries.put( Record.REPOSITORY_ID, repoId );
         return new Record( Type.DESCRIPTOR, entries );
     }
@@ -148,7 +148,7 @@ public final class Utils
      */
     public static Record allGroups( final Collection<String> allGroups )
     {
-        HashMap<EntryKey, Object> entries = new HashMap<EntryKey, Object>();
+        HashMap<EntryKey, Object> entries = new HashMap<>();
         entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[allGroups.size()] ) );
         return new Record( Type.ALL_GROUPS, entries );
     }
@@ -158,7 +158,7 @@ public final class Utils
      */
     public static Record rootGroups( final Collection<String> rootGroups )
     {
-        HashMap<EntryKey, Object> entries = new HashMap<EntryKey, Object>();
+        HashMap<EntryKey, Object> entries = new HashMap<>();
         entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[rootGroups.size()] ) );
         return new Record( Type.ROOT_GROUPS, entries );
     }

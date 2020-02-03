@@ -99,7 +99,7 @@ public class DefaultSearchEngine
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        final TreeSet<ArtifactInfo> result = new TreeSet<ArtifactInfo>( request.getArtifactInfoComparator() );
+        final TreeSet<ArtifactInfo> result = new TreeSet<>( request.getArtifactInfoComparator() );
         return new FlatSearchResponse( request.getQuery(), searchFlat( request, result, contexts, request.getQuery() ),
             result );
     }
@@ -126,8 +126,7 @@ public class DefaultSearchEngine
     {
         List<IndexingContext> contexts = getParticipatingContexts( indexingContexts, ignoreContext );
 
-        final TreeMap<String, ArtifactInfoGroup> result =
-            new TreeMap<String, ArtifactInfoGroup>( request.getGroupKeyComparator() );
+        final TreeMap<String, ArtifactInfoGroup> result = new TreeMap<>( request.getGroupKeyComparator() );
 
         return new GroupedSearchResponse( request.getQuery(), searchGrouped( request, result, request.getGrouping(),
             contexts, request.getQuery() ), result );
@@ -217,9 +216,9 @@ public class DefaultSearchEngine
 
                     hitCount += collector.getTotalHits();
 
-                    for ( int i = 0; i < scoreDocs.length; i++ )
+                    for ( ScoreDoc scoreDoc : scoreDocs )
                     {
-                        Document doc = indexSearcher.doc( scoreDocs[i].doc );
+                        Document doc = indexSearcher.doc( scoreDoc.doc );
 
                         ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo( doc, context );
 
@@ -293,19 +292,7 @@ public class DefaultSearchEngine
                                                new DefaultIteratorResultSet( request, indexSearcher, contexts,
                                                                              hits.topDocs() ) );
         }
-        catch ( IOException e )
-        {
-            try
-            {
-                indexSearcher.release();
-            }
-            catch ( Exception secondary )
-            {
-                // do not mask original exception
-            }
-            throw e;
-        }
-        catch ( RuntimeException e )
+        catch ( IOException | RuntimeException e )
         {
             try
             {
@@ -377,7 +364,7 @@ public class DefaultSearchEngine
     {
         // to not change the API all away, but we need stable ordering here
         // filter for those 1st, that take part in here
-        final ArrayList<IndexingContext> contexts = new ArrayList<IndexingContext>( indexingContexts.size() );
+        final ArrayList<IndexingContext> contexts = new ArrayList<>( indexingContexts.size() );
 
         for ( IndexingContext ctx : indexingContexts )
         {

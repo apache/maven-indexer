@@ -58,7 +58,7 @@ public class NexusAnalyzerTest
         Tokenizer ts = (Tokenizer) nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader( text ) );
         ts.reset();
 
-        ArrayList<String> tokenList = new ArrayList<String>();
+        ArrayList<String> tokenList = new ArrayList<>();
 
         if ( !indexerField.isKeyword() )
         {

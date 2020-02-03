@@ -19,6 +19,8 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
+import java.util.Objects;
+
 /**
  * An immutable value class representing unique artifact coordinates.
  * 
@@ -233,191 +235,30 @@ public class Gav
     }
 
     @Override
-    public int hashCode()
+    public boolean equals( Object o )
     {
-        int result = 1;
-        result = 31 * result + ( groupId == null ? 0 : groupId.hashCode() );
-        result = 31 * result + ( artifactId == null ? 0 : artifactId.hashCode() );
-        result = 31 * result + ( version == null ? 0 : version.hashCode() );
-        result = 31 * result + ( baseVersion == null ? 0 : baseVersion.hashCode() );
-        result = 31 * result + ( classifier == null ? 0 : classifier.hashCode() );
-        result = 31 * result + ( extension == null ? 0 : extension.hashCode() );
-        result = 31 * result + ( name == null ? 0 : name.hashCode() );
-        result = 31 * result + ( snapshot ? 1231 : 1237 );
-        result = 31 * result + ( snapshotBuildNumber == null ? 0 : snapshotBuildNumber.hashCode() );
-        result = 31 * result + ( snapshotTimeStamp == null ? 0 : snapshotTimeStamp.hashCode() );
-        result = 31 * result + ( hash ? 1231 : 1237 );
-        result = 31 * result + ( hashType == null ? 0 : hashType.hashCode() );
-        result = 31 * result + ( signature ? 1231 : 1237 );
-        result = 31 * result + ( signatureType == null ? 0 : signatureType.hashCode() );
-        return result;
-    }
-
-    @Override
-    public boolean equals( Object obj )
-    {
-        if ( this == obj )
+        if ( this == o )
         {
             return true;
         }
-        if ( obj == null )
+        if ( o == null || getClass() != o.getClass() )
         {
             return false;
         }
-        if ( getClass() != obj.getClass() )
-        {
-            return false;
-        }
+        Gav gav = (Gav) o;
+        return snapshot == gav.snapshot && hash == gav.hash && signature == gav.signature && Objects.equals( groupId,
+                gav.groupId ) && Objects.equals( artifactId, gav.artifactId ) && Objects.equals( version,
+                gav.version ) && Objects.equals( baseVersion, gav.baseVersion ) && Objects.equals( classifier,
+                gav.classifier ) && Objects.equals( extension, gav.extension ) && Objects.equals( snapshotBuildNumber,
+                gav.snapshotBuildNumber ) && Objects.equals( snapshotTimeStamp,
+                gav.snapshotTimeStamp ) && Objects.equals( name,
+                gav.name ) && hashType == gav.hashType && signatureType == gav.signatureType;
+    }
 
-        Gav other = (Gav) obj;
-
-        if ( groupId == null )
-        {
-            if ( other.groupId != null )
-            {
-                return false;
-            }
-        }
-        else if ( !groupId.equals( other.groupId ) )
-        {
-            return false;
-        }
-
-        if ( artifactId == null )
-        {
-            if ( other.artifactId != null )
-            {
-                return false;
-            }
-        }
-        else if ( !artifactId.equals( other.artifactId ) )
-        {
-            return false;
-        }
-
-        if ( version == null )
-        {
-            if ( other.version != null )
-            {
-                return false;
-            }
-        }
-        else if ( !version.equals( other.version ) )
-        {
-            return false;
-        }
-
-        if ( baseVersion == null )
-        {
-            if ( other.baseVersion != null )
-            {
-                return false;
-            }
-        }
-        else if ( !baseVersion.equals( other.baseVersion ) )
-        {
-            return false;
-        }
-
-        if ( classifier == null )
-        {
-            if ( other.classifier != null )
-            {
-                return false;
-            }
-        }
-        else if ( !classifier.equals( other.classifier ) )
-        {
-            return false;
-        }
-
-        if ( extension == null )
-        {
-            if ( other.extension != null )
-            {
-                return false;
-            }
-        }
-        else if ( !extension.equals( other.extension ) )
-        {
-            return false;
-        }
-
-        if ( name == null )
-        {
-            if ( other.name != null )
-            {
-                return false;
-            }
-        }
-        else if ( !name.equals( other.name ) )
-        {
-            return false;
-        }
-
-        if ( snapshot != other.snapshot )
-        {
-            return false;
-        }
-
-        if ( snapshotBuildNumber == null )
-        {
-            if ( other.snapshotBuildNumber != null )
-            {
-                return false;
-            }
-        }
-        else if ( !snapshotBuildNumber.equals( other.snapshotBuildNumber ) )
-        {
-            return false;
-        }
-
-        if ( snapshotTimeStamp == null )
-        {
-            if ( other.snapshotTimeStamp != null )
-            {
-                return false;
-            }
-        }
-        else if ( !snapshotTimeStamp.equals( other.snapshotTimeStamp ) )
-        {
-            return false;
-        }
-
-        if ( hash != other.hash )
-        {
-            return false;
-        }
-
-        if ( hashType == null )
-        {
-            if ( other.hashType != null )
-            {
-                return false;
-            }
-        }
-        else if ( !hashType.equals( other.hashType ) )
-        {
-            return false;
-        }
-
-        if ( signature != other.signature )
-        {
-            return false;
-        }
-
-        if ( signatureType == null )
-        {
-            if ( other.signatureType != null )
-            {
-                return false;
-            }
-        }
-        else if ( !signatureType.equals( other.signatureType ) )
-        {
-            return false;
-        }
-
-        return true;
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash( groupId, artifactId, version, baseVersion, classifier, extension, snapshotBuildNumber,
+                snapshotTimeStamp, name, snapshot, hash, hashType, signature, signatureType );
     }
 }

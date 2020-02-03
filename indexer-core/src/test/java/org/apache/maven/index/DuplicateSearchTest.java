@@ -180,8 +180,8 @@ public class DuplicateSearchTest
         IteratorSearchRequest isReq = new IteratorSearchRequest( query );
 
         // so, how many different GA combinations exists, this is almost equal to SQLs group by "groupId, artifactId"
-        isReq.setArtifactInfoFilter( new UniqueArtifactFilterPostprocessor( new HashSet<Field>( Arrays.asList(
-            MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) ) ) );
+        isReq.setArtifactInfoFilter( new UniqueArtifactFilterPostprocessor(
+                new HashSet<>( Arrays.asList( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) ) ) );
         isReq.getContexts().add( context );
         isReq.getContexts().add( context1 );
         isReq.getContexts().add( context2 );

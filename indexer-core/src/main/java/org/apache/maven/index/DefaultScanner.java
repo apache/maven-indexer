@@ -75,7 +75,7 @@ public class DefaultScanner
 
         if ( fileArray != null )
         {
-            Set<File> files = new TreeSet<File>( new ScannerFileComparator() );
+            Set<File> files = new TreeSet<>( new ScannerFileComparator() );
 
             files.addAll( Arrays.asList( fileArray ) );
 

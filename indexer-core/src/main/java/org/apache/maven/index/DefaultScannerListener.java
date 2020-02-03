@@ -52,13 +52,13 @@ public class DefaultScannerListener
 
     private final ArtifactScanningListener listener;
 
-    private final Set<String> uinfos = new HashSet<String>();
+    private final Set<String> uinfos = new HashSet<>();
 
-    private final Set<String> processedUinfos = new HashSet<String>();
+    private final Set<String> processedUinfos = new HashSet<>();
 
-    private final Set<String> allGroups = new HashSet<String>();
+    private final Set<String> allGroups = new HashSet<>();
 
-    private final Set<String> groups = new HashSet<String>();
+    private final Set<String> groups = new HashSet<>();
 
     private final List<Exception> exceptions = new ArrayList<>();
 

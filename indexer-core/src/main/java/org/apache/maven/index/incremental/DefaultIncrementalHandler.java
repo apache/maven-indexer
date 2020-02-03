@@ -247,15 +247,15 @@ public class DefaultIncrementalHandler
             }
         } );
 
-        for ( int i = 0; i < files.length; i++ )
+        for ( File file : files )
         {
-            String[] parts = files[i].getName().split( "\\." );
+            String[] parts = file.getName().split( "\\." );
 
             boolean found = false;
             for ( Entry<Object, Object> entry : properties.entrySet() )
             {
-                if ( entry.getKey().toString().startsWith( IndexingContext.INDEX_CHUNK_PREFIX )
-                    && entry.getValue().equals( parts[1] ) )
+                if ( entry.getKey().toString().startsWith(
+                        IndexingContext.INDEX_CHUNK_PREFIX ) && entry.getValue().equals( parts[1] ) )
                 {
                     found = true;
                     break;
@@ -264,7 +264,7 @@ public class DefaultIncrementalHandler
 
             if ( !found )
             {
-                files[i].delete();
+                file.delete();
             }
         }
     }

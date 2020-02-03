@@ -146,7 +146,7 @@ public class Nexus13NexusIndexerTest
 
         assertEquals( 10, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         assertEquals( 10, list.size() );
 
@@ -181,7 +181,7 @@ public class Nexus13NexusIndexerTest
         Collection<ArtifactInfo> r = response.getResults();
         assertEquals( r.toString(), 10, r.size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( r );
+        List<ArtifactInfo> list = new ArrayList<>( r );
 
         assertEquals( 10, list.size() );
 
@@ -214,7 +214,7 @@ public class Nexus13NexusIndexerTest
 
         assertEquals( 1, ig.getArtifactInfos().size() );
 
-        List<ArtifactInfo> list = new ArrayList<ArtifactInfo>( ig.getArtifactInfos() );
+        List<ArtifactInfo> list = new ArrayList<>( ig.getArtifactInfos() );
 
         assertEquals( 1, list.size() );
 

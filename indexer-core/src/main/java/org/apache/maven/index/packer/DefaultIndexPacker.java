@@ -194,19 +194,9 @@ public class DefaultIndexPacker
 
         Properties properties = new Properties();
 
-        FileInputStream fos = null;
-
-        try
+        try ( FileInputStream fos = new FileInputStream( file ) )
         {
-            fos = new FileInputStream( file );
             properties.load( fos );
-        }
-        finally
-        {
-            if ( fos != null )
-            {
-                fos.close();
-            }
         }
 
         return properties;

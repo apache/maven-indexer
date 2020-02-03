@@ -151,7 +151,7 @@ public class IndexDataTest
     private Map<String, ArtifactInfo> readIndex( IndexReader r1 )
         throws CorruptIndexException, IOException
     {
-        Map<String, ArtifactInfo> map = new HashMap<String, ArtifactInfo>();
+        Map<String, ArtifactInfo> map = new HashMap<>();
 
         for ( int i = 0; i < r1.maxDoc(); i++ )
         {

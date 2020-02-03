@@ -567,9 +567,7 @@ public abstract class AbstractRepoNexusIndexerTest
         // org.terracotta.forge:forge-parent:1.0.5
         // org.terracotta.forge:archetype-parent:1.0.1
 
-        IteratorSearchResponse response = nexusIndexer.searchIterator( request );
-
-        try
+        try ( IteratorSearchResponse response = nexusIndexer.searchIterator( request ) )
         {
             assertEquals( response.getResults().toString(), 2, response.getTotalHitsCount() );
 
@@ -577,10 +575,6 @@ public abstract class AbstractRepoNexusIndexerTest
             {
                 assertEquals( ai.getGroupId(), "org.terracotta.forge" );
             }
-        }
-        finally
-        {
-            response.close();
         }
     }
 

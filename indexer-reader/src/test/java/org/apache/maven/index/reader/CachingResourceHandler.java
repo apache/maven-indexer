@@ -102,9 +102,9 @@ public class CachingResourceHandler
             throws IOException
         {
             final Resource remoteResource = remote.locate( name );
-            final WritableResource localResource = local.locate( name );
-            try (final InputStream inputStream = remoteResource.read(); //
-                 final OutputStream outputStream = localResource.write())
+            try ( WritableResource localResource = local.locate( name );
+                  final InputStream inputStream = remoteResource.read();
+                  final OutputStream outputStream = localResource.write() )
             {
                 if ( inputStream != null )
                 {
@@ -118,10 +118,6 @@ public class CachingResourceHandler
                     return true;
                 }
                 return false;
-            }
-            finally
-            {
-                localResource.close();
             }
         }
     }

@@ -48,7 +48,7 @@ public class M2ArtifactRecognizer
      */
     public static boolean isSnapshot( String path )
     {
-        return path.indexOf( "SNAPSHOT" ) != -1;
+        return path.contains( "SNAPSHOT" );
     }
 
     /**

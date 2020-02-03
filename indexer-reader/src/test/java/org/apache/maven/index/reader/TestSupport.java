@@ -126,7 +126,7 @@ public class TestSupport
     protected Map<Type, List<Record>> loadRecordsByType( final ChunkReader chunkReader )
         throws IOException
     {
-        HashMap<Type, List<Record>> stat = new HashMap<Type, List<Record>>();
+        HashMap<Type, List<Record>> stat = new HashMap<>();
         try
         {
             assertThat( chunkReader.getVersion(), equalTo( 1 ) );
@@ -136,7 +136,7 @@ public class TestSupport
                 final Record record = recordExpander.apply( rec );
                 if ( !stat.containsKey( record.getType() ) )
                 {
-                    stat.put( record.getType(), new ArrayList<Record>() );
+                    stat.put( record.getType(), new ArrayList<>() );
                 }
                 stat.get( record.getType() ).add( record );
             }
@@ -155,7 +155,7 @@ public class TestSupport
     protected Map<Type, Integer> countRecordsByType( final ChunkReader chunkReader )
         throws IOException
     {
-        HashMap<Type, Integer> stat = new HashMap<Type, Integer>();
+        HashMap<Type, Integer> stat = new HashMap<>();
         try
         {
             assertThat( chunkReader.getVersion(), equalTo( 1 ) );
@@ -195,9 +195,9 @@ public class TestSupport
             String[] list = file.list();
             if ( list != null )
             {
-                for ( int i = 0; i < list.length; i++ )
+                for ( String s : list )
                 {
-                    File entry = new File( file, list[i] );
+                    File entry = new File( file, s );
                     if ( !delete( entry ) )
                     {
                         return false;
