@@ -212,11 +212,8 @@ public class IndexDataReader
         }
         catch ( OutOfMemoryError e )
         {
-            final IOException ex =
-                new IOException( "Index data content is inappropriate (is junk?), leads to OutOfMemoryError!"
-                    + " See MINDEXER-28 for more information!" );
-            ex.initCause( e );
-            throw ex;
+            throw new IOException( "Index data content is inappropriate (is junk?), leads to OutOfMemoryError!"
+                + " See MINDEXER-28 for more information!", e );
         }
 
         int c, char2, char3;
@@ -284,7 +281,7 @@ public class IndexDataReader
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
                     chararr[chararrCount++] =
-                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) << 0 ) );
+                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) ) );
                     break;
 
                 default:

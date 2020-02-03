@@ -33,14 +33,7 @@ import java.util.Set;
 public class CachingResourceHandler
     implements ResourceHandler
 {
-    private static final Resource NOT_EXISTING_RESOURCE = new Resource()
-    {
-        public InputStream read()
-            throws IOException
-        {
-            return null;
-        }
-    };
+    private static final Resource NOT_EXISTING_RESOURCE = () -> null;
 
     private final WritableResourceHandler local;
 

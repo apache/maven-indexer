@@ -326,7 +326,6 @@ public class DefaultIndexingContext
                 {
                     // eh? this is buggy index it seems, just iron it out then
                     storeDescriptor();
-                    return;
                 }
                 else
                 {
@@ -671,7 +670,7 @@ public class DefaultIndexingContext
             final IndexWriter w = getIndexWriter();
             try ( IndexReader directoryReader = DirectoryReader.open( directory ) )
             {
-                TopScoreDocCollector collector = null;
+                TopScoreDocCollector collector;
                 int numDocs = directoryReader.maxDoc();
 
                 Bits liveDocs = MultiFields.getLiveDocs( directoryReader );
@@ -761,7 +760,7 @@ public class DefaultIndexingContext
 
     public List<IndexCreator> getIndexCreators()
     {
-        return Collections.<IndexCreator>unmodifiableList( indexCreators );
+        return Collections.unmodifiableList( indexCreators );
     }
 
     // groups

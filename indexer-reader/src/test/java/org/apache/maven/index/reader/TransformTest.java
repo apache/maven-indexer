@@ -19,19 +19,21 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
+import org.apache.maven.index.reader.Record.EntryKey;
+import org.apache.maven.index.reader.Record.Type;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import org.apache.maven.index.reader.Record.EntryKey;
-import org.apache.maven.index.reader.Record.Type;
-import org.junit.Test;
-
-import static org.apache.maven.index.reader.TestUtils.decorate;
-import static org.apache.maven.index.reader.TestUtils.compactFunction;
 import static com.google.common.collect.Iterables.transform;
+import static org.apache.maven.index.reader.TestUtils.compactFunction;
+import static org.apache.maven.index.reader.TestUtils.decorate;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
@@ -48,10 +50,11 @@ public class TransformTest
     final Record r1 = new Record(Type.ARTIFACT_ADD, artifactMap("org.apache"));
     final Record r2 = new Record(Type.ARTIFACT_ADD, artifactMap("org.foo"));
     final Record r3 = new Record(Type.ARTIFACT_ADD, artifactMap("com.bar"));
-    Iterable<Map<String, String>> iterable = transform(
-        decorate(Arrays.asList(r1, r2, r3), indexId),
-        compactFunction
-    );
+
+    Iterable<Map<String, String>> iterable = StreamSupport.stream(
+            decorate( Arrays.asList( r1, r2, r3 ), indexId ).spliterator(), false )
+            .map( compactFunction )
+            .collect( Collectors.toList() );
 
     WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
     try {

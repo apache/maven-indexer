@@ -27,7 +27,7 @@ public interface TreeNode
     enum Type
     {
         G, A, V, artifact
-    };
+    }
 
     Type getType();
 

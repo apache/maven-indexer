@@ -623,12 +623,12 @@ public class OsgiArtifactIndexCreator
 
             try ( DigestInputStream in = new DigestInputStream( new FileInputStream( f ), digest ) )
             {
-                byte buf[] = new byte[8192];
+                byte[] buf = new byte[8192];
                 while ( in.read( buf ) >= 0 )
                 {
                     // nop
                 }
-                byte digestBytes[] = digest.digest();
+                byte[] digestBytes = digest.digest();
                 StringBuilder builder = new StringBuilder( 64 );
                 for ( int b : digestBytes )
                 {

@@ -158,14 +158,7 @@ public class DefaultArtifactPackagingMapper
             return "jar";
         }
 
-        if ( getPackaging2extensionMapping().containsKey( packaging ) )
-        {
-            return getPackaging2extensionMapping().get( packaging );
-        }
-        else
-        {
-            // default's to packaging name, ie. "jar", "war", "pom", etc.
-            return packaging;
-        }
+        // default's to packaging name, ie. "jar", "war", "pom", etc.
+        return getPackaging2extensionMapping().getOrDefault( packaging, packaging );
     }
 }

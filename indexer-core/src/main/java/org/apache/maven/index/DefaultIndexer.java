@@ -156,7 +156,7 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new FlatSearchResponse( request.getQuery(), 0, Collections.<ArtifactInfo>emptySet() );
+            return new FlatSearchResponse( request.getQuery(), 0, Collections.emptySet() );
         }
         else
         {
@@ -182,8 +182,7 @@ public class DefaultIndexer
     {
         if ( request.getContexts().isEmpty() )
         {
-            return new GroupedSearchResponse( request.getQuery(), 0,
-                                              Collections.<String, ArtifactInfoGroup>emptyMap() );
+            return new GroupedSearchResponse( request.getQuery(), 0, Collections.emptyMap() );
         }
         else
         {
@@ -213,9 +212,7 @@ public class DefaultIndexer
         }
         catch ( NoSuchAlgorithmException ex )
         {
-            IOException ioe = new IOException( "Unable to calculate digest" );
-            ioe.initCause( ex );
-            throw ioe;
+            throw new IOException( "Unable to calculate digest", ex );
         }
     }
 

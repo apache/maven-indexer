@@ -56,7 +56,7 @@ public class GroupedSearchRequest
     public GroupedSearchRequest( Query query, Grouping grouping, Comparator<String> groupKeyComparator,
                                  IndexingContext context )
     {
-        super( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null );
+        super( query, context != null ? Arrays.asList( context ) : null );
 
         this.grouping = grouping;
 

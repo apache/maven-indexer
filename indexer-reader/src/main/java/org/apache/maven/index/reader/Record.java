@@ -50,7 +50,7 @@ public final class Record
 
         public T coerce( final Object object )
         {
-            return (T) proto.cast( object );
+            return proto.cast( object );
         }
 
         public String getName()
@@ -199,7 +199,8 @@ public final class Record
      * Key of OSGi "Bundle-SymbolicName" manifest entry, that contains {@link String}. Extracted by {@code
      * OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_BUNDLE_SYMBOLIC_NAME = new EntryKey<>( "Bundle-SymbolicName", String.class );
+    public static final EntryKey<String> OSGI_BUNDLE_SYMBOLIC_NAME = new EntryKey<>( "Bundle-SymbolicName",
+            String.class );
 
     /**
      * Key of OSGi "Bundle-Version" manifest entry, that contains {@link String}. Extracted by {@code
@@ -277,7 +278,8 @@ public final class Record
      * Key of deprecated OSGi "Bundle-RequiredExecutionEnvironment" manifest entry, that contains {@link String}.
      * Extracted by {@code OsgiArtifactIndexCreator}.
      */
-    public static final EntryKey<String> OSGI_BREE = new EntryKey<>( "Bundle-RequiredExecutionEnvironment", String.class );
+    public static final EntryKey<String> OSGI_BREE = new EntryKey<>( "Bundle-RequiredExecutionEnvironment",
+            String.class );
 
     /**
      * Key for SHA-256 checksum  needed for OSGI content capability that contains {@link String}. Extracted by {@code

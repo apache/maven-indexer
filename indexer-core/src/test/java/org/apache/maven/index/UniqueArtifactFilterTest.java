@@ -90,7 +90,7 @@ public class UniqueArtifactFilterTest
         NexusIndexer indexer = lookup( NexusIndexer.class );
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = new File( getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+        File indexDir = new File( getBasedir(), "target/index/test-" + System.currentTimeMillis() );
         FileUtils.deleteDirectory( indexDir );
 
         File repo = new File( getBasedir(), "src/test/repo" );

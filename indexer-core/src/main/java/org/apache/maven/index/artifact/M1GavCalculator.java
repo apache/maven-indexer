@@ -159,8 +159,6 @@ public class M1GavCalculator
         if ( gav.getClassifier() == null )
         {
             path.append( gav.getExtension() );
-
-            path.append( "s" );
         }
         else
         {
@@ -176,8 +174,8 @@ public class M1GavCalculator
             {
                 path.append( gav.getClassifier() );
             }
-            path.append( "s" );
         }
+        path.append( "s" );
 
         path.append( "/" );
 

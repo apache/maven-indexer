@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class NexusIndexerCliTest
     {
         @SuppressWarnings( "unchecked" )
         List<Option> optList = new ArrayList<Option>( new NexusIndexerCli().buildDefaultCliOptions().getOptions() );
-        Collections.sort( optList, new OptionComparator() );
+        optList.sort( new OptionComparator() );
 
         StringBuilder sb = new StringBuilder();
         boolean a = true;

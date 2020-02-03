@@ -20,8 +20,6 @@ package org.apache.maven.index.updater;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,7 +39,6 @@ import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.FileUtils;
 import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Response;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.DefaultHandler;
 import org.mortbay.jetty.handler.HandlerList;
@@ -135,13 +132,7 @@ public class DownloadRemoteIndexerManagerTest
             new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
         // just a dummy filter to invoke filtering! -- this is what I broke unnoticing it
-        iur.setDocumentFilter( new DocumentFilter()
-        {
-            public boolean accept( Document doc )
-            {
-                return true;
-            }
-        });
+        iur.setDocumentFilter( doc -> true );
 
         updater.fetchAndUpdateIndex( iur );
 

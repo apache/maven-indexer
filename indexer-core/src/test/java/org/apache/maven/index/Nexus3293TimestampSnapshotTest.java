@@ -41,7 +41,7 @@ public class Nexus3293TimestampSnapshotTest
     {
         NexusIndexer indexer = lookup( NexusIndexer.class );
 
-        File indexDir = new File( getBasedir(), "target/index/test-" + Long.toString( System.currentTimeMillis() ) );
+        File indexDir = new File( getBasedir(), "target/index/test-" + System.currentTimeMillis() );
         FileUtils.deleteDirectory( indexDir );
 
         File repo = new File( getBasedir(), "src/test/nexus-3293" );

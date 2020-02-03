@@ -745,7 +745,7 @@ public class M2GavCalculatorTest
         assertEquals( "nexus-3148", gav.getArtifactId() );
         assertEquals( null, gav.getClassifier() );
         assertEquals( "pom", gav.getExtension() );
-        assertEquals( new Integer( 1 ), gav.getSnapshotBuildNumber() );
+        assertEquals( Integer.valueOf( 1 ), gav.getSnapshotBuildNumber() );
         // the timestamp is UTC, not EST timezoned!
         // also, the Gav is it seems TZ sensitive!!!
         assertEquals( parseTimestamp( "20100111.064938" ), gav.getSnapshotTimeStamp() );

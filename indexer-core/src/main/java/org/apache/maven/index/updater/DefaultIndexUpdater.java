@@ -197,10 +197,10 @@ public class DefaultIndexUpdater
         try ( BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
                         Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ) )
         {
-            Date timestamp = null;
+            Date timestamp;
 
-            Set<String> rootGroups = null;
-            Set<String> allGroups = null;
+            Set<String> rootGroups;
+            Set<String> allGroups;
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
                 IndexDataReadResult result = unpackIndexData( is, directory, updateRequest.getIndexingContext() );
@@ -732,7 +732,7 @@ public class DefaultIndexUpdater
 
         if ( !updateRequest.isIncrementalOnly() )
         {
-            Date timestamp = null;
+            Date timestamp;
             try
             {
                 timestamp = target.setIndexFile( source, IndexingContext.INDEX_FILE_PREFIX + ".gz" );

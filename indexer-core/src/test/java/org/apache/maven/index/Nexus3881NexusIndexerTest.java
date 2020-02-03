@@ -69,8 +69,6 @@ public class Nexus3881NexusIndexerTest
             lastRel = ai.getLuceneScore();
         }
 
-        Assert.assertTrue(
-            String.format( "The relevance span should be small! (%s)",
-                new Object[] {firstRel - lastRel} ), firstRel - lastRel < 0.35 );
+        assertTrue( String.format( "The relevance span should be small! (%s)", firstRel - lastRel ), firstRel - lastRel < 0.35 );
     }
 }

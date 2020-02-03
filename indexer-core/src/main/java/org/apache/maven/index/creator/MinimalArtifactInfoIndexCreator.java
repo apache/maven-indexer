@@ -255,14 +255,11 @@ public class MinimalArtifactInfoIndexCreator
 
     public void updateDocument( ArtifactInfo ai, Document doc )
     {
-        String info =
-            new StringBuilder().append( ArtifactInfo.nvl( ai.getPackaging() ) )
-                .append( ArtifactInfo.FS ).append( Long.toString( ai.getLastModified() ) )
-                .append( ArtifactInfo.FS ).append( Long.toString( ai.getSize() ) )
-                .append( ArtifactInfo.FS ).append( ai.getSourcesExists().toString() )
-                .append( ArtifactInfo.FS ).append( ai.getJavadocExists().toString() )
-                .append( ArtifactInfo.FS ).append( ai.getSignatureExists().toString() )
-                .append( ArtifactInfo.FS ).append( ai.getFileExtension() ).toString();
+        String info = ArtifactInfo.nvl(
+                ai.getPackaging() ) + ArtifactInfo.FS + ai.getLastModified() + ArtifactInfo.FS + ai.getSize()
+                 + ArtifactInfo.FS + ai.getSourcesExists().toString() + ArtifactInfo.FS
+                  + ai.getJavadocExists().toString() + ArtifactInfo.FS + ai.getSignatureExists().toString()
+                   + ArtifactInfo.FS + ai.getFileExtension();
 
         doc.add( FLD_INFO.toField( info ) );
 

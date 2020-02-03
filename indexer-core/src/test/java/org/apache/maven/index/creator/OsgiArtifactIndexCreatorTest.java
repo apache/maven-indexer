@@ -173,7 +173,7 @@ public class OsgiArtifactIndexCreatorTest
         repoIndexDir.mkdirs();
 
         List<IndexCreator> indexCreators =
-            Arrays.<IndexCreator>asList( new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
+            Arrays.asList( new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
                                          new MavenPluginArtifactInfoIndexCreator(), new OsgiArtifactIndexCreator() );
 
         IndexingContext indexingContext =

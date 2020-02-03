@@ -303,8 +303,7 @@ public class DefaultNexusIndexer
         }
         catch ( Exception ex )
         {
-            throw (IOException) new IOException( "Error scanning context " + context.getId() + ": " + ex ).initCause(
-                ex );
+            throw new IOException( "Error scanning context " + context.getId() + ": " + ex, ex );
         }
         finally
         {

@@ -107,7 +107,7 @@ public class IteratorSearchResponse
         }
     };
 
-    public static final IteratorSearchResponse empty( final Query q )
+    public static IteratorSearchResponse empty( final Query q )
     {
         return new IteratorSearchResponse( q, 0, EMPTY_ITERATOR_RESULT_SET );
     }

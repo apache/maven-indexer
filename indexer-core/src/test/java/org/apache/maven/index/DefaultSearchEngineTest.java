@@ -62,7 +62,7 @@ public class DefaultSearchEngineTest
             {
                 count++;
             }
-        };
+        }
 
         @Override
         public void releaseIndexSearcher( IndexSearcher is )
@@ -115,19 +115,13 @@ public class DefaultSearchEngineTest
     {
         Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT );
         IteratorSearchRequest request = new IteratorSearchRequest( q );
-        request.setArtifactInfoFilter( new ArtifactInfoFilter()
+        request.setArtifactInfoFilter( ( ctx, ai ) ->
         {
-            public boolean accepts( IndexingContext ctx, ArtifactInfo ai )
-            {
-                throw new RuntimeException();
-            }
+            throw new RuntimeException();
         } );
-        request.setArtifactInfoPostprocessor( new ArtifactInfoPostprocessor()
+        request.setArtifactInfoPostprocessor( ( ctx, ai ) ->
         {
-            public void postprocess( IndexingContext ctx, ArtifactInfo ai )
-            {
-                throw new RuntimeException();
-            }
+            throw new RuntimeException();
         } );
 
         try

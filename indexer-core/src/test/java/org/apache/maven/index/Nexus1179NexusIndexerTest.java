@@ -60,7 +60,7 @@ public class Nexus1179NexusIndexerTest
 
         List<ArtifactInfo> list = new ArrayList<>( r );
 
-        ArtifactInfo ai = null;
+        ArtifactInfo ai;
 
         // g a v p c #1
         ai = list.get( 0 );

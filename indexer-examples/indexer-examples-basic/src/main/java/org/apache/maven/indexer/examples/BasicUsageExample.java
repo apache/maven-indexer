@@ -246,21 +246,18 @@ public class BasicUsageExample
             .build();
 
         // construct the filter to express "V greater than"
-        final ArtifactInfoFilter versionFilter = new ArtifactInfoFilter()
+        final ArtifactInfoFilter versionFilter = ( ctx, ai ) ->
         {
-            public boolean accepts( final IndexingContext ctx, final ArtifactInfo ai )
+            try
             {
-                try
-                {
-                    final Version aiV = versionScheme.parseVersion( ai.getVersion() );
-                    // Use ">=" if you are INCLUSIVE
-                    return aiV.compareTo( version ) > 0;
-                }
-                catch ( InvalidVersionSpecificationException e )
-                {
-                    // do something here? be safe and include?
-                    return true;
-                }
+                final Version aiV = versionScheme.parseVersion( ai.getVersion() );
+                // Use ">=" if you are INCLUSIVE
+                return aiV.compareTo( version ) > 0;
+            }
+            catch ( InvalidVersionSpecificationException e )
+            {
+                // do something here? be safe and include?
+                return true;
             }
         };
 

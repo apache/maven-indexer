@@ -110,21 +110,13 @@ public class RecordCompactor
         // Minimal
         result.put( UINFO, compactUinfo( record ) );
 
-        StringBuilder info = new StringBuilder();
-        info.append( nvl( record.get( Record.PACKAGING ) ) );
-        info.append( FIELD_SEPARATOR );
-        info.append( record.get( Record.FILE_MODIFIED ) );
-        info.append( FIELD_SEPARATOR );
-        info.append( record.get( Record.FILE_SIZE ) );
-        info.append( FIELD_SEPARATOR );
-        info.append( record.get( Record.HAS_SOURCES ) ? "1" : "0" );
-        info.append( FIELD_SEPARATOR );
-        info.append( record.get( Record.HAS_JAVADOC ) ? "1" : "0" );
-        info.append( FIELD_SEPARATOR );
-        info.append( record.get( Record.HAS_SIGNATURE ) ? "1" : "0" );
-        info.append( FIELD_SEPARATOR );
-        info.append( nvl( record.get( Record.FILE_EXTENSION ) ) );
-        result.put( INFO, info.toString() );
+        String info = nvl( record.get( Record.PACKAGING ) ) + FIELD_SEPARATOR + record.get(
+                Record.FILE_MODIFIED ) + FIELD_SEPARATOR + record.get(
+                Record.FILE_SIZE ) + FIELD_SEPARATOR + ( record.get(
+                Record.HAS_SOURCES ) ? "1" : "0" ) + FIELD_SEPARATOR + ( record.get(
+                Record.HAS_JAVADOC ) ? "1" : "0" ) + FIELD_SEPARATOR + ( record.get(
+                Record.HAS_SIGNATURE ) ? "1" : "0" ) + FIELD_SEPARATOR + nvl( record.get( Record.FILE_EXTENSION ) );
+        result.put( INFO, info );
 
         putIfNotNullTS( record.get( Record.REC_MODIFIED ), result, "m" );
         putIfNotNull( record.get( Record.NAME ), result, "n" );

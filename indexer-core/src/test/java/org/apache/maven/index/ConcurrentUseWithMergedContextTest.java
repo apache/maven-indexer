@@ -23,7 +23,6 @@ import java.util.Arrays;
 
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 
 /**

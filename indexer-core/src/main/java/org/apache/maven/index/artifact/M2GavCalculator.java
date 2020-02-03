@@ -159,9 +159,9 @@ public class M2GavCalculator
 
         String vSnapshot = s.substring( vSnapshotStart, vSnapshotStart + 8 );
 
-        String classifier = null;
+        String classifier;
 
-        String ext = null;
+        String ext;
 
         if ( "SNAPSHOT".equals( vSnapshot ) )
         {
@@ -184,7 +184,7 @@ public class M2GavCalculator
         else
         {
             StringBuilder sb = new StringBuilder( vSnapshot );
-            sb.append( s.substring( vSnapshotStart + sb.length(), vSnapshotStart + sb.length() + 8 ) );
+            sb.append( s, vSnapshotStart + sb.length(), vSnapshotStart + sb.length() + 8 );
 
             try
             {
@@ -231,23 +231,10 @@ public class M2GavCalculator
 
     public String gavToPath( Gav gav )
     {
-        StringBuilder path = new StringBuilder( "/" );
 
-        path.append( gav.getGroupId().replaceAll( "(?m)(.)\\.", "$1/" ) ); // replace all '.' except the first char
-
-        path.append( "/" );
-
-        path.append( gav.getArtifactId() );
-
-        path.append( "/" );
-
-        path.append( gav.getBaseVersion() );
-
-        path.append( "/" );
-
-        path.append( calculateArtifactName( gav ) );
-
-        return path.toString();
+        return "/" + gav.getGroupId().replaceAll( "(?m)(.)\\.",
+                "$1/" ) + // replace all '.' except the first char
+                "/" + gav.getArtifactId() + "/" + gav.getBaseVersion() + "/" + calculateArtifactName( gav );
     }
 
     public String calculateArtifactName( Gav gav )

@@ -25,7 +25,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -47,7 +47,7 @@ public class DigesterUtils
     private static String getDigest( String alg, InputStream is )
         throws NoSuchAlgorithmException
     {
-        String result = null;
+        String result;
 
         try
         {
@@ -98,11 +98,11 @@ public class DigesterUtils
     {
         try
         {
-            InputStream fis = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
+            InputStream fis = new ByteArrayInputStream( content.getBytes( StandardCharsets.UTF_8 ) );
 
             return getDigest( "SHA1", fis );
         }
-        catch ( NoSuchAlgorithmException | UnsupportedEncodingException e )
+        catch ( NoSuchAlgorithmException e )
         {
             // will not happen
             return null;
@@ -160,11 +160,11 @@ public class DigesterUtils
     {
         try
         {
-            InputStream fis = new ByteArrayInputStream( content.getBytes( "UTF-8" ) );
+            InputStream fis = new ByteArrayInputStream( content.getBytes( StandardCharsets.UTF_8 ) );
 
             return getDigest( "MD5", fis );
         }
-        catch ( NoSuchAlgorithmException | UnsupportedEncodingException e )
+        catch ( NoSuchAlgorithmException e )
         {
             // will not happen
             return null;

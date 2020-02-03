@@ -386,14 +386,9 @@ public class ArtifactInfo
 
     public String getUinfo()
     {
-        return new StringBuilder() //
-        .append( groupId ).append( FS ) //
-        .append( artifactId ).append( FS ) //
-        .append( version ).append( FS ) //
-        .append( nvl( classifier ) ).append( FS ) //
-        .append( fileExtension )
+        return groupId + FS + artifactId + FS + version + FS + nvl( classifier ) + FS + fileExtension;
+        // extension is stored in the packaging field when classifier is not used
         // .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS + packaging ) //
-        .toString(); // extension is stored in the packaging field when classifier is not used
     }
 
     public String getRootGroup()

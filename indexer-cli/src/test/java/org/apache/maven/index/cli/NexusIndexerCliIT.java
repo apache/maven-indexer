@@ -38,19 +38,16 @@ public class NexusIndexerCliIT
     {
         super.setUp();
 
-        sout = new StreamConsumer()
+        sout = line ->
         {
-            public void consumeLine( String line )
+            try
             {
-                try
-                {
-                    out.write( line.getBytes() );
-                    out.write( "\n".getBytes() );
-                }
-                catch ( IOException e )
-                {
-                    throw new RuntimeException( e.getMessage(), e );
-                }
+                out.write( line.getBytes() );
+                out.write( "\n".getBytes() );
+            }
+            catch ( IOException e )
+            {
+                throw new RuntimeException( e.getMessage(), e );
             }
         };
     }

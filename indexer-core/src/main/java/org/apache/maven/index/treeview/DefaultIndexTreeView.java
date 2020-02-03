@@ -65,7 +65,7 @@ public class DefaultIndexTreeView
         throws IOException
     {
         // get the last path elem
-        String name = null;
+        String name;
 
         if ( !"/".equals( request.getPath() ) )
         {
@@ -79,7 +79,7 @@ public class DefaultIndexTreeView
                 name = request.getPath();
             }
 
-            name = name.substring( name.lastIndexOf( '/' ) + 1, name.length() );
+            name = name.substring( name.lastIndexOf( '/' ) + 1 );
 
             // root is "/"
             if ( !name.equals( "/" ) && name.endsWith( "/" ) )
@@ -163,7 +163,7 @@ public class DefaultIndexTreeView
                     {
                         TreeNode groupParentResource = root;
 
-                        TreeNode groupResource = root;
+                        TreeNode groupResource;
 
                         // here comes the twist: we have to search for parent G node
                         String partialGroupId = null;
@@ -190,8 +190,7 @@ public class DefaultIndexTreeView
                                     MAVEN.GROUP_ID ).length() )
                             {
                                 String gNodeName = partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
-                                        partialGroupId.lastIndexOf( '.' ) + 1,
-                                        partialGroupId.length() ) : partialGroupId;
+                                        partialGroupId.lastIndexOf( '.' ) + 1 ) : partialGroupId;
 
                                 groupResource = request.getFactory().createGNode( this, request,
                                         "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
@@ -331,7 +330,7 @@ public class DefaultIndexTreeView
                     group = group.substring( 0, nextDot );
                 }
 
-                if ( group.length() > 0 && !result.contains( group ) )
+                if ( group.length() > 0 )
                 {
                     result.add( group );
                 }
@@ -351,16 +350,16 @@ public class DefaultIndexTreeView
 
         String path = root.getPath();
 
-        IteratorSearchResponse result = null;
+        IteratorSearchResponse result;
 
-        String g = null;
+        String g;
 
-        String a = null;
+        String a;
 
-        String v = null;
+        String v;
 
         // "working copy" of path
-        String wp = null;
+        String wp;
 
         // remove last / from path
         if ( path.endsWith( "/" ) )
@@ -393,7 +392,7 @@ public class DefaultIndexTreeView
             // reset wp
             wp = path;
 
-            a = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
+            a = wp.substring( wp.lastIndexOf( '/' ) + 1 );
 
             g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
 
@@ -415,11 +414,11 @@ public class DefaultIndexTreeView
                 // reset wp
                 wp = path;
 
-                v = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
+                v = wp.substring( wp.lastIndexOf( '/' ) + 1 );
 
                 wp = wp.substring( 0, wp.lastIndexOf( '/' ) );
 
-                a = wp.substring( wp.lastIndexOf( '/' ) + 1, wp.length() );
+                a = wp.substring( wp.lastIndexOf( '/' ) + 1 );
 
                 g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
 
@@ -492,7 +491,7 @@ public class DefaultIndexTreeView
     {
         assert g != null;
 
-        Query groupIdQ = null;
+        Query groupIdQ;
         Query artifactIdQ = null;
         Query versionQ = null;
 

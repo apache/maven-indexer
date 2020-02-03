@@ -20,8 +20,6 @@ package org.apache.maven.index;
  */
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -78,7 +76,7 @@ public class NexusIndexerTest
         context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
         indexer.scan( context );
 
-        Query q = null;
+        Query q;
         
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
@@ -90,7 +88,7 @@ public class NexusIndexerTest
     {
         NexusIndexer indexer = prepare();
 
-        Query q = null;
+        Query q;
 
         // exact search against field stored in both ways (tokenized/untokenized)
         q = indexer.constructQuery( MAVEN.GROUP_ID, "commons-loggin*", SearchType.EXACT );
@@ -141,12 +139,12 @@ public class NexusIndexerTest
     public void performQueryCreatorNGSearch( NexusIndexer indexer, IndexingContext context )
         throws Exception
     {
-        String qstr = null;
-        Query q = null;
+        String qstr;
+        Query q;
 
-        IteratorSearchRequest req = null;
+        IteratorSearchRequest req;
 
-        IteratorSearchResponse res = null;
+        IteratorSearchResponse res;
 
         // case01: "the most usual" case:
         // explanation: commons-logging should top the results, but commons-cli will be at the end too (lower score but
@@ -292,7 +290,7 @@ public class NexusIndexerTest
 
         PrintWriter pw = new PrintWriter( sw );
 
-        String line = null;
+        String line;
 
         line =
             "### Searched for field " + field.toString() + " using query \"" + query + "\" (QC create LQL \""
@@ -336,7 +334,7 @@ public class NexusIndexerTest
         PrintWriter respw = new PrintWriter( ressw );
 
         BufferedReader reader = new BufferedReader( new FileReader( expectedResults ) );
-        String currentline = null;
+        String currentline;
 
         while ( ( currentline = reader.readLine() ) != null )
         {
@@ -376,13 +374,10 @@ public class NexusIndexerTest
 
         Query q = indexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
 
-        IteratorSearchRequest request = new IteratorSearchRequest( q, new ArtifactInfoFilter()
+        IteratorSearchRequest request = new IteratorSearchRequest( q, ( ctx, ai ) ->
         {
-            public boolean accepts( IndexingContext ctx, ArtifactInfo ai )
-            {
-                // we reject version "1.5" for fun
-                return !StringUtils.equals( ai.getVersion(), "1.5" );
-            }
+            // we reject version "1.5" for fun
+            return !StringUtils.equals( ai.getVersion(), "1.5" );
         } );
 
         IteratorSearchResponse response = indexer.searchIterator( request );

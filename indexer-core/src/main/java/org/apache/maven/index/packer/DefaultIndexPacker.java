@@ -102,7 +102,7 @@ public class DefaultIndexPacker
         // These are all of the files we'll be dealing with (except for the incremental chunks of course)
         File v1File = new File( request.getTargetDir(), IndexingContext.INDEX_FILE_PREFIX + ".gz" );
 
-        Properties info = null;
+        Properties info;
 
         try
         {
@@ -180,7 +180,7 @@ public class DefaultIndexPacker
     private Properties readIndexProperties( IndexPackingRequest request )
         throws IOException
     {
-        File file = null;
+        File file;
 
         if ( request.isUseTargetProperties() || request.getContext().getIndexDirectoryFile() == null )
         {

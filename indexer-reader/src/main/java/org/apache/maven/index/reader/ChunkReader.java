@@ -205,9 +205,7 @@ public class ChunkReader
         }
         catch ( OutOfMemoryError e )
         {
-            IOException ioex = new IOException( "Index data content is corrupt" );
-            ioex.initCause( e );
-            throw ioex;
+            throw new IOException( "Index data content is corrupt", e );
         }
 
         int c, char2, char3;

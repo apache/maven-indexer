@@ -129,7 +129,7 @@ public class DefaultQueryCreator
     @Deprecated
     public Query constructQuery( String field, String query )
     {
-        Query result = null;
+        Query result;
 
         if ( MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW.getKey().equals( field )
             || MinimalArtifactInfoIndexCreator.FLD_ARTIFACT_ID_KW.getKey().equals( field )

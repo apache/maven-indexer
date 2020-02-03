@@ -47,18 +47,11 @@ public class Gav
         @Override
         public String toString()
         {
-            switch ( this )
+            if ( this == SignatureType.gpg )
             {
-                case gpg:
-                {
-                    return "asc";
-                }
-
-                default:
-                {
-                    return "unknown-signature-type";
-                }
+                return "asc";
             }
+            return "unknown-signature-type";
         }
     }
 

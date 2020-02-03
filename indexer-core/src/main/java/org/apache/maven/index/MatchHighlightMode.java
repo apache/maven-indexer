@@ -21,5 +21,5 @@ package org.apache.maven.index;
 
 public enum MatchHighlightMode
 {
-    HTML;
+    HTML
 }

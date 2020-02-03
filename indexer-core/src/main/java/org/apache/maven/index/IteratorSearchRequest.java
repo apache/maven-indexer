@@ -46,7 +46,7 @@ public class IteratorSearchRequest
 
     public IteratorSearchRequest( Query query, IndexingContext context )
     {
-        this( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null, null );
+        this( query, context != null ? Arrays.asList( context ) : null, null );
     }
 
     public IteratorSearchRequest( Query query, List<IndexingContext> contexts )

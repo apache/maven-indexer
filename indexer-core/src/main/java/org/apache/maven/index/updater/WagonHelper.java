@@ -162,17 +162,13 @@ public class WagonHelper
             {
                 String msg = "Authentication exception connecting to " + repository;
                 logError( msg, ex );
-                IOException ioException = new IOException( msg );
-                ioException.initCause( ex );
-                throw ioException;
+                throw new IOException( msg, ex );
             }
             catch ( WagonException ex )
             {
                 String msg = "Wagon exception connecting to " + repository;
                 logError( msg, ex );
-                IOException ioException = new IOException( msg );
-                ioException.initCause( ex );
-                throw ioException;
+                throw new IOException( msg, ex );
             }
         }
 
@@ -187,9 +183,7 @@ public class WagonHelper
                 }
                 catch ( ConnectionException ex )
                 {
-                    IOException ioe = new IOException( ex.toString() );
-                    ioe.initCause( ex );
-                    throw ioe;
+                    throw new IOException( ex.toString(), ex );
                 }
             }
         }
@@ -224,9 +218,7 @@ public class WagonHelper
                 targetFile.delete();
                 String msg = "Authorization exception retrieving " + name;
                 logError( msg, e );
-                IOException ioException = new IOException( msg );
-                ioException.initCause( e );
-                throw ioException;
+                throw new IOException( msg, e );
             }
             catch ( ResourceDoesNotExistException e )
             {
@@ -242,9 +234,7 @@ public class WagonHelper
                 targetFile.delete();
                 String msg = "Transfer for " + name + " failed";
                 logError( msg, e );
-                IOException ioException = new IOException( msg + "; " + e.getMessage() );
-                ioException.initCause( e );
-                throw ioException;
+                throw new IOException( msg + "; " + e.getMessage(), e );
             }
         }
 

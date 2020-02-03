@@ -53,14 +53,14 @@ public class DirectoryResourceHandler
   }
 
   public WritableResource locate(final String name) throws IOException {
-    return new FileResource(new File(rootDirectory, name));
+    return new FileResource( new File( rootDirectory, name ) );
   }
 
   public void close() throws IOException {
     // nop
   }
 
-  private class FileResource
+  private static class FileResource
       implements WritableResource
   {
     private final File file;

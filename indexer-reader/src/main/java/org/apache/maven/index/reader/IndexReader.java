@@ -82,7 +82,7 @@ public class IndexReader
                     this.localIndexProperties = localProperties;
                     String remoteIndexId = remoteIndexProperties.getProperty( "nexus.index.id" );
                     String localIndexId = localIndexProperties.getProperty( "nexus.index.id" );
-                    if ( remoteIndexId == null || localIndexId == null || !remoteIndexId.equals( localIndexId ) )
+                    if ( remoteIndexId == null || !remoteIndexId.equals( localIndexId ) )
                     {
                         throw new IllegalArgumentException(
                             "local and remote index IDs does not match or is null: " + localIndexId + ", "
@@ -110,9 +110,7 @@ public class IndexReader
         }
         catch ( ParseException e )
         {
-            IOException ex = new IOException( "Index properties corrupted" );
-            ex.initCause( e );
-            throw ex;
+            throw new IOException( "Index properties corrupted", e );
         }
     }
 
@@ -228,7 +226,7 @@ public class IndexReader
         String remoteChainId = remoteIndexProperties.getProperty( "nexus.index.chain-id" );
 
         // If no chain id, or not the same, do full update
-        if ( localChainId == null || remoteChainId == null || !localChainId.equals( remoteChainId ) )
+        if ( localChainId == null || !localChainId.equals( remoteChainId ) )
         {
             return false;
         }

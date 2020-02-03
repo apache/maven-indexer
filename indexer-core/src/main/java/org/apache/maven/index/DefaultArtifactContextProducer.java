@@ -143,18 +143,13 @@ public class DefaultArtifactContextProducer
 
         String filename = file.getName();
 
-        if ( filename.equals( "maven-metadata.xml" )
-        // || filename.endsWith( "-javadoc.jar" )
-        // || filename.endsWith( "-javadocs.jar" )
-        // || filename.endsWith( "-sources.jar" )
-            || filename.endsWith( ".properties" )
-            // || filename.endsWith( ".xml" ) // NEXUS-3029
-            || filename.endsWith( ".asc" ) || filename.endsWith( ".md5" ) || filename.endsWith( ".sha1" ) )
-        {
-            return false;
-        }
-
-        return true;
+        return !filename.equals( "maven-metadata.xml" )
+                // || filename.endsWith( "-javadoc.jar" )
+                // || filename.endsWith( "-javadocs.jar" )
+                // || filename.endsWith( "-sources.jar" )
+                && !filename.endsWith( ".properties" )
+                // || filename.endsWith( ".xml" ) // NEXUS-3029
+                && !filename.endsWith( ".asc" ) && !filename.endsWith( ".md5" ) && !filename.endsWith( ".sha1" );
     }
 
     protected Gav getGavFromPath( IndexingContext context, String repositoryPath, String artifactPath )

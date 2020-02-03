@@ -146,6 +146,6 @@ public class IndexPackingRequest
      */
     public enum IndexFormat
     {
-        FORMAT_V1;
+        FORMAT_V1
     }
 }

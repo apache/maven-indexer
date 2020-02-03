@@ -43,7 +43,6 @@ import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.util.IOUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
@@ -950,7 +949,7 @@ public class DefaultIndexUpdaterTest
     private static class IndexDirectoryFileAction
         extends VoidAction
     {
-        File file = null;
+        File file;
 
         public IndexDirectoryFileAction( Properties properties, File basedir )
             throws Exception

@@ -300,11 +300,11 @@ public class DefaultIteratorResultSet
     protected void calculateHighlights( IndexingContext context, Document d, ArtifactInfo ai )
         throws IOException
     {
-        IndexerField field = null;
+        IndexerField field;
 
-        String text = null;
+        String text;
 
-        List<String> highlightFragment = null;
+        List<String> highlightFragment;
 
         for ( MatchHighlightRequest hr : matchHighlightRequests )
         {
@@ -373,7 +373,7 @@ public class DefaultIteratorResultSet
         
         CachingTokenFilter tokenStream = new CachingTokenFilter( baseTokenStream );
 
-        Formatter formatter = null;
+        Formatter formatter;
 
         if ( MatchHighlightMode.HTML.equals( hr.getHighlightMode() ) )
         {

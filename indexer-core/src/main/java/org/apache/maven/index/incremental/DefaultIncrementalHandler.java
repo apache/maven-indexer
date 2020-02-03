@@ -20,7 +20,6 @@ package org.apache.maven.index.incremental;
  */
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -229,22 +228,11 @@ public class DefaultIncrementalHandler
     }
 
     private void cleanUpIncrementalChunks( IndexPackingRequest request, Properties properties )
-        throws IOException
     {
-        File[] files = request.getTargetDir().listFiles( new FilenameFilter()
+        File[] files = request.getTargetDir().listFiles( ( dir, name ) ->
         {
-            public boolean accept( File dir, String name )
-            {
-                String[] parts = name.split( "\\." );
-
-                if ( parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals(
-                    "gz" ) )
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            String[] parts = name.split( "\\." );
+            return parts.length == 3 && parts[0].equals( IndexingContext.INDEX_FILE_PREFIX ) && parts[2].equals( "gz" );
         } );
 
         for ( File file : files )

@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import junit.framework.Assert;
 
 import org.apache.lucene.search.Query;
-import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.UserInputSearchExpression;
 
@@ -115,7 +114,7 @@ public class ConcurrentUseTest
     {
         final ArtifactInfo artifactInfo =
             new ArtifactInfo( "test-default", "org.apache.maven.indexer", "index-concurrent-artifact", "1."
-                + String.valueOf( versionSource.getAndIncrement() ), null , "jar");
+                + versionSource.getAndIncrement(), null , "jar");
 
         final ArtifactContext ac = new ArtifactContext( null, null, null, artifactInfo, artifactInfo.calculateGav() );
 

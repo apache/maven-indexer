@@ -156,7 +156,7 @@ public class ServerTestFixture
             {
                 OutputStream out = resp.getOutputStream();
 
-                int read = -1;
+                int read;
                 byte[] buf = new byte[64];
                 while ( ( read = in.read( buf ) ) > -1 )
                 {

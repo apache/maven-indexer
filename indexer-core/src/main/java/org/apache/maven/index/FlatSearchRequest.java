@@ -52,7 +52,7 @@ public class FlatSearchRequest
 
     public FlatSearchRequest( Query query, Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext context )
     {
-        super( query, context != null ? Arrays.asList( new IndexingContext[] { context } ) : null );
+        super( query, context != null ? Arrays.asList( context ) : null );
 
         this.artifactInfoComparator = artifactInfoComparator;
     }

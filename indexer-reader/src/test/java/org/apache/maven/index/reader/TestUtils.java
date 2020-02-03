@@ -19,19 +19,17 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import java.util.Map;
-import java.util.TreeSet;
-
-import com.google.common.base.Function;
 import org.apache.maven.index.reader.Record.Type;
 
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Iterables.transform;
 import static java.util.Collections.singletonList;
-import static org.apache.maven.index.reader.Utils.allGroups;
-import static org.apache.maven.index.reader.Utils.descriptor;
-import static org.apache.maven.index.reader.Utils.rootGroup;
-import static org.apache.maven.index.reader.Utils.rootGroups;
+import static org.apache.maven.index.reader.Utils.*;
 
 /**
  * Helpers to transform records from one to another representation, and, some helpers for publishing using Guava.
@@ -46,21 +44,9 @@ public final class TestUtils
 
   private static final RecordExpander RECORD_EXPANDER = new RecordExpander();
 
-  public static Function<Record, Map<String, String>> compactFunction =
-      new Function<Record, Map<String, String>>()
-      {
-        public Map<String, String> apply(final Record input) {
-          return RECORD_COMPACTOR.apply(input);
-        }
-      };
+  public static Function<Record, Map<String, String>> compactFunction = RECORD_COMPACTOR::apply;
 
-  public static Function<Map<String, String>, Record> expandFunction =
-      new Function<Map<String, String>, Record>()
-      {
-        public Record apply(final Map<String, String> input) {
-          return RECORD_EXPANDER.apply(input);
-        }
-      };
+  public static Function<Map<String, String>, Record> expandFunction = RECORD_EXPANDER::apply;
 
   /**
    * Helper method, that "decorates" the stream of records to be written out with "special" Maven Indexer records, so
@@ -74,35 +60,35 @@ public final class TestUtils
   {
     final TreeSet<String> allGroupsSet = new TreeSet<>();
     final TreeSet<String> rootGroupsSet = new TreeSet<>();
-    return transform(
-        concat(
-            singletonList(descriptor(repoId)),
-            iterable,
-            singletonList(allGroups(allGroupsSet)), // placeholder, will be recreated at the end with proper content
-            singletonList(rootGroups(rootGroupsSet)) // placeholder, will be recreated at the end with proper content
-        ),
-        new Function<Record, Record>()
+    return StreamSupport.stream(
+            concat( singletonList( descriptor( repoId ) ), iterable, singletonList( allGroups( allGroupsSet ) ),
+                    // placeholder, will be recreated at the end with proper content
+                    singletonList( rootGroups( rootGroupsSet ) )
+                    // placeholder, will be recreated at the end with proper content
+            ).spliterator(), false ).map( rec ->
+    {
+      if ( Type.DESCRIPTOR == rec.getType() )
+      {
+        return rec;
+      }
+      else if ( Type.ALL_GROUPS == rec.getType() )
+      {
+        return allGroups( allGroupsSet );
+      }
+      else if ( Type.ROOT_GROUPS == rec.getType() )
+      {
+        return rootGroups( rootGroupsSet );
+      }
+      else
+      {
+        final String groupId = rec.get( Record.GROUP_ID );
+        if ( groupId != null )
         {
-          public Record apply(final Record rec) {
-            if (Type.DESCRIPTOR == rec.getType()) {
-              return rec;
-            }
-            else if (Type.ALL_GROUPS == rec.getType()) {
-              return allGroups(allGroupsSet);
-            }
-            else if (Type.ROOT_GROUPS == rec.getType()) {
-              return rootGroups(rootGroupsSet);
-            }
-            else {
-              final String groupId = rec.get(Record.GROUP_ID);
-              if (groupId != null) {
-                allGroupsSet.add(groupId);
-                rootGroupsSet.add(rootGroup(groupId));
-              }
-              return rec;
-            }
-          }
+          allGroupsSet.add( groupId );
+          rootGroupsSet.add( rootGroup( groupId ) );
         }
-    );
+        return rec;
+      }
+    } ).collect( Collectors.toList() );
   }
 }

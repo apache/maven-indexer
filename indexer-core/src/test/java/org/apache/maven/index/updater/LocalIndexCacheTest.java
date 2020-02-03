@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
@@ -263,7 +262,7 @@ public class LocalIndexCacheTest
                     throw new IOException();
                 }
                 return super.retrieve( name );
-            };
+            }
         };
         updateRequest = new IndexUpdateRequest( getNewTempContext(), fetcher );
         updateRequest.setLocalIndexCacheDir( localCacheDir );

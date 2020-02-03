@@ -185,13 +185,13 @@ public class JarFileContentsIndexCreator
                         if ( StringUtils.isBlank( strippedPrefix ) )
                         {
                             // class name without ".class"
-                            sb.append( name.substring( 0, name.length() - 6 ) ).append( '\n' );
+                            sb.append( name, 0, name.length() - 6 ).append( '\n' );
                         }
                         else if ( name.startsWith( strippedPrefix )
                             && ( name.length() > ( strippedPrefix.length() + 6 ) ) )
                         {
                             // class name without ".class" and stripped prefix
-                            sb.append( name.substring( strippedPrefix.length(), name.length() - 6 ) ).append( '\n' );
+                            sb.append( name, strippedPrefix.length(), name.length() - 6 ).append( '\n' );
                         }
                     }
                 }
