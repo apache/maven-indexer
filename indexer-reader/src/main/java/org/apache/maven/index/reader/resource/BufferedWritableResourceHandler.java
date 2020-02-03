@@ -3,6 +3,7 @@ package org.apache.maven.index.reader.resource;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 import org.apache.maven.index.reader.WritableResourceHandler;
 
 /**
@@ -13,6 +14,7 @@ public class BufferedWritableResourceHandler implements WritableResourceHandler 
   private final WritableResourceHandler writableResourceHandler;
 
   public BufferedWritableResourceHandler(WritableResourceHandler writableResourceHandler) {
+    Objects.requireNonNull(writableResourceHandler, "writableResourceHandler cannot be null");
     this.writableResourceHandler = writableResourceHandler;
   }
 

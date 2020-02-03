@@ -2,6 +2,7 @@ package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 import org.apache.maven.index.reader.WritableResourceHandler;
 
 /**
@@ -11,6 +12,7 @@ public class PathWritableResourceHandler implements WritableResourceHandler {
   private final Path path;
 
   public PathWritableResourceHandler(Path path) {
+    Objects.requireNonNull(path, "path cannot be null");
     this.path = path;
   }
 

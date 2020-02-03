@@ -2,6 +2,7 @@ package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.Objects;
 import org.apache.maven.index.reader.ResourceHandler;
 
 /**
@@ -12,6 +13,7 @@ public class BufferedResourceHandler implements ResourceHandler {
   private final ResourceHandler resourceHandler;
 
   public BufferedResourceHandler(ResourceHandler resourceHandler) {
+    Objects.requireNonNull(resourceHandler, "resourceHandler cannot be null");
     this.resourceHandler = resourceHandler;
   }
 

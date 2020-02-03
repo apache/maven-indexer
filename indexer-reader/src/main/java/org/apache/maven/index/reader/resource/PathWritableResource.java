@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.Objects;
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
 /**
@@ -15,6 +16,7 @@ public class PathWritableResource implements WritableResource {
   private final Path path;
 
   public PathWritableResource(Path path) {
+    Objects.requireNonNull(path, "path cannot be null");
     this.path = path;
   }
 
