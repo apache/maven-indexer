@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.maven.index.reader.WritableResourceHandler;
 
+/**
+ * A {@link WritableResourceHandler} that represents the base of a {@link Path} hierarchy.
+ */
 public class PathWritableResourceHandler implements WritableResourceHandler {
   private final Path path;
 

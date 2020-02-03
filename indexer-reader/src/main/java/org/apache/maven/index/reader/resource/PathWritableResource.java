@@ -8,6 +8,9 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
+/**
+ * A {@link WritableResource} that represents a {@link Path}.
+ */
 public class PathWritableResource implements WritableResource {
   private final Path path;
 

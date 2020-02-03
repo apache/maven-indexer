@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.URI;
 import org.apache.maven.index.reader.ResourceHandler;
 
+/**
+ * A {@link ResourceHandler} that represents the base of a {@link URI} hierarchy.
+ */
 public class UriResourceHandler implements ResourceHandler {
   private final URI uri;
 

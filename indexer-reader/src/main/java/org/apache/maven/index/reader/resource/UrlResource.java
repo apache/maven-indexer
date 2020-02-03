@@ -6,6 +6,9 @@ import java.io.InputStream;
 import java.net.URL;
 import org.apache.maven.index.reader.ResourceHandler.Resource;
 
+/**
+ * A {@link Resource} that represents a {@link URL}.
+ */
 public class UrlResource implements Resource {
   private final URL url;
 
