@@ -619,7 +619,7 @@ public class OsgiArtifactIndexCreator
         String sha256 = null;
         try
         {
-            MessageDigest digest = MessageDigest.getInstance( "SHA-256" );
+            MessageDigest digest = MessageDigest.getInstance( "SHA-512" );
             DigestInputStream in = new DigestInputStream( new FileInputStream( f ), digest );
 
             try
