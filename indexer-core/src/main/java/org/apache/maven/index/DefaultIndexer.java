@@ -201,7 +201,7 @@ public class DefaultIndexer
     {
         try ( FileInputStream is = new FileInputStream( artifact ) )
         {
-            final MessageDigest sha1 = MessageDigest.getInstance( "SHA-1" );
+            final MessageDigest sha1 = MessageDigest.getInstance( "SHA-512" );
             final byte[] buff = new byte[4096];
             int n;
             while ( ( n = is.read( buff ) ) > -1 )
