@@ -134,7 +134,7 @@ public class BasicUsageExample
         // Create context for central repository index
         centralContext =
             indexer.createIndexingContext( "central-context", "central", centralLocalCache, centralIndexDir,
-                                           "http://repo1.maven.org/maven2", null, true, true, indexers );
+                                           "https://repo1.maven.org/maven2", null, true, true, indexers );
 
         // Update the index (incremental update will happen if this is not 1st run and files are not deleted)
         // This whole block below should not be executed on every app start, but rather controlled by some configuration
