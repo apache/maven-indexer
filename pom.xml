@@ -311,6 +311,17 @@ under the License.
     <module>indexer-examples</module>
   </modules>
 
+  <repositories>
+    <repository><!-- useful to resolve maven-shade-plugin 3.2.3-SNAPSHOT -->
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>https://repository.apache.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
   <build>
     <plugins>
       <plugin>
@@ -382,6 +393,11 @@ under the License.
     </plugins>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.2.3-SNAPSHOT</version>
+        </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>animal-sniffer-maven-plugin</artifactId>
