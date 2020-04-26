@@ -311,17 +311,6 @@ under the License.
     <module>indexer-examples</module>
   </modules>
 
-  <repositories>
-    <repository><!-- useful to resolve maven-shade-plugin 3.2.3-SNAPSHOT -->
-      <id>apache.snapshots</id>
-      <name>Apache Snapshot Repository</name>
-      <url>https://repository.apache.org/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories>
-
   <build>
     <plugins>
       <plugin>
@@ -393,7 +382,7 @@ under the License.
     </plugins>
     <pluginManagement>
       <plugins>
-        <plugin>
+        <plugin><!-- TODO remove when upgrading parnet POM to 35 -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
           <version>3.2.3</version>
