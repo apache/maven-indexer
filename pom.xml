@@ -167,7 +167,7 @@ under the License.
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>4.1.0</version>
+        <version>4.2.3</version>
       </dependency>
 
       <dependency>
