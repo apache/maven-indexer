@@ -31,7 +31,7 @@ public class DefaultTreeNode
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation.
      * 
      * @param tview
-     * @param factory
+     * @param request
      */
     public DefaultTreeNode( IndexTreeView tview, TreeViewRequest request )
     {

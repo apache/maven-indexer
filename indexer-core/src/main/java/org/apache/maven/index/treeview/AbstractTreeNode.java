@@ -82,7 +82,7 @@ public abstract class AbstractTreeNode
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation;
      * 
      * @param tview
-     * @param factory
+     * @param request
      */
     public AbstractTreeNode( IndexTreeView tview, TreeViewRequest request )
     {
@@ -104,7 +104,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the type of node.
      * 
-     * @param Type
+     * @param type
      */
     public void setType( Type type )
     {
@@ -124,7 +124,7 @@ public abstract class AbstractTreeNode
     /**
      * Set flag that determines if the node is a leaf.
      * 
-     * @param boolean
+     * @param leaf
      */
     public void setLeaf( boolean leaf )
     {
@@ -144,7 +144,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the name of the node.
      * 
-     * @param String
+     * @param nodeName
      */
     public void setNodeName( String nodeName )
     {
@@ -164,7 +164,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the path of the node.
      * 
-     * @param String
+     * @param path
      */
     public void setPath( String path )
     {
@@ -184,7 +184,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the group id of this node.
      * 
-     * @param String
+     * @param groupId
      */
     public void setGroupId( String groupId )
     {
@@ -204,7 +204,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the artifact id of this node.
      * 
-     * @param String
+     * @param artifactId
      */
     public void setArtifactId( String artifactId )
     {
@@ -244,7 +244,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the repository id that this node is stored in.
      * 
-     * @param String
+     * @param repositoryId
      */
     public void setRepositoryId( String repositoryId )
     {
