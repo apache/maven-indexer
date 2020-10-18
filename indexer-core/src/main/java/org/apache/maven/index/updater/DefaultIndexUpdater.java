@@ -373,11 +373,9 @@ public class DefaultIndexUpdater
     }
 
     /**
-     * Unpack index data using specified Lucene Index writer
-     * 
      * @param is an input stream to unpack index data from
-     * @param w a writer to save index data
-     * @param ics a collection of index creators for updating unpacked documents.
+     * @param d
+     * @param context
      */
     public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d,
                                                        final IndexingContext context )
