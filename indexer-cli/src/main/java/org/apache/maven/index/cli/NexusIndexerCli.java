@@ -484,7 +484,7 @@ public class NexusIndexerCli
         {
             if ( !quiet )
             {
-                System.err.printf( "Cannot zip index; \n", e.getMessage() );
+                System.err.printf( "Cannot zip index: %s\n", e.getMessage() );
 
                 if ( debug )
                 {
