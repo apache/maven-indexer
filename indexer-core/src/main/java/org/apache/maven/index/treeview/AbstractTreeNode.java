@@ -224,7 +224,7 @@ public abstract class AbstractTreeNode
     /**
      * Set the version of this node.
      * 
-     * @param String
+     * @param version
      */
     public void setVersion( String version )
     {
