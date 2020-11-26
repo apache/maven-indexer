@@ -21,7 +21,7 @@ package org.apache.maven.indexer.examples;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -202,7 +202,7 @@ public class BasicUsageExample
             try
             {
                 final IndexReader ir = searcher.getIndexReader();
-                Bits liveDocs = MultiFields.getLiveDocs( ir );
+                Bits liveDocs = MultiBits.getLiveDocs( ir );
                 for ( int i = 0; i < ir.maxDoc(); i++ )
                 {
                     if ( liveDocs == null || liveDocs.get( i ) )

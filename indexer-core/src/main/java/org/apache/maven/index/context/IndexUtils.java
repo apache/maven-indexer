@@ -44,8 +44,6 @@ public class IndexUtils
 {
     public static final String TIMESTAMP_FILE = "timestamp";
 
-    private static final int BUFFER_SIZE = 16384;
-
     // Directory
 
     public static void copyDirectory( Directory source, Directory target )

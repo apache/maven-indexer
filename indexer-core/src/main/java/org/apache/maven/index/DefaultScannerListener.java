@@ -28,7 +28,7 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -212,7 +212,7 @@ public class DefaultScannerListener
         try
         {
             final IndexReader r = indexSearcher.getIndexReader();
-            Bits liveDocs = MultiFields.getLiveDocs( r );
+            Bits liveDocs = MultiBits.getLiveDocs( r );
 
             for ( int i = 0; i < r.maxDoc(); i++ )
             {
@@ -261,7 +261,7 @@ public class DefaultScannerListener
         {
             for ( String uinfo : uinfos )
             {
-                TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
+                TopScoreDocCollector collector = TopScoreDocCollector.create( 1, Integer.MAX_VALUE );
 
                 indexSearcher.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
 

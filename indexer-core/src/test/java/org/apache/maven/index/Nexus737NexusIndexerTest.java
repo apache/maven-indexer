@@ -23,7 +23,7 @@ import java.io.File;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.util.Bits;
 
 /** http://issues.sonatype.org/browse/NEXUS-737 */
@@ -45,7 +45,7 @@ public class Nexus737NexusIndexerTest
         throws Exception
     {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
-        Bits liveDocs = MultiFields.getLiveDocs(reader);
+        Bits liveDocs = MultiBits.getLiveDocs(reader);
 
         int foundCount = 0;
 

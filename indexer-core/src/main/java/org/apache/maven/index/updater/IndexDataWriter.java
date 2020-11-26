@@ -35,7 +35,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
@@ -143,7 +143,7 @@ public class IndexDataWriter
         throws IOException
     {
         int n = 0;
-        Bits liveDocs = MultiFields.getLiveDocs( r );
+        Bits liveDocs = MultiBits.getLiveDocs( r );
 
         if ( docIndexes == null )
         {
