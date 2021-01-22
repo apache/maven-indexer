@@ -1,5 +1,7 @@
 package org.apache.maven.index.packer;
 
+import static java.util.Objects.requireNonNull;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,8 +28,6 @@ import java.util.Collection;
 import org.apache.lucene.index.IndexReader;
 import org.apache.maven.index.context.IndexingContext;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * An index packing request.
  */
@@ -53,11 +53,11 @@ public class IndexPackingRequest
 
     public IndexPackingRequest( final IndexingContext context, final IndexReader indexReader, final File targetDir )
     {
-        this.context = checkNotNull( context );
+        this.context = requireNonNull( context );
 
-        this.indexReader = checkNotNull( indexReader );
+        this.indexReader = requireNonNull( indexReader );
 
-        this.targetDir = checkNotNull( targetDir );
+        this.targetDir = requireNonNull( targetDir );
 
         this.createIncrementalChunks = true;
 

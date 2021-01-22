@@ -37,8 +37,6 @@ import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionScheme;
 
-import com.google.common.base.Strings;
-
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
  * Phasing out.
@@ -431,9 +429,10 @@ public class ArtifactInfo
     public String toString()
     {
         final StringBuilder result = new StringBuilder( getUinfo() );
-        if ( !Strings.isNullOrEmpty( getPackaging() ) )
+        String packaging = getPackaging();
+        if (packaging != null && !packaging.isEmpty())
         {
-            result.append( "[" ).append( getPackaging() ).append( "]" );
+            result.append( "[" ).append( packaging ).append( "]" );
         }
         return result.toString();
     }

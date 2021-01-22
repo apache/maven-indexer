@@ -27,11 +27,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
 import java.util.Date;
-import java.util.zip.GZIPInputStream;
-
-import com.google.common.base.Strings;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
@@ -159,7 +158,7 @@ public class IndexDataReader
         // Fix up UINFO field wrt MINDEXER-41
         final Field uinfoField = (Field) doc.getField( ArtifactInfo.UINFO );
         final String info =  doc.get( ArtifactInfo.INFO );
-        if ( uinfoField != null && !Strings.isNullOrEmpty( info ) )
+        if ( uinfoField != null && info != null && !info.isEmpty() )
         {
             final String[] splitInfo = ArtifactInfo.FS_PATTERN.split( info );
             if ( splitInfo.length > 6 )

@@ -1,5 +1,7 @@
 package org.apache.maven.index.context;
 
+import static java.util.Objects.requireNonNull;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,13 +23,13 @@ package org.apache.maven.index.context;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.LockFactory;
-import static com.google.common.base.Preconditions.checkNotNull;
-import java.util.HashSet;
 
 /**
  *
@@ -43,7 +45,7 @@ final class TrackingLockFactory
 
     TrackingLockFactory( final LockFactory delegate )
     {
-        this.delegate = checkNotNull( delegate );
+        this.delegate = requireNonNull( delegate );
         this.emittedLocks = Collections.newSetFromMap( new ConcurrentHashMap<TrackingLock, Boolean>() );
     }
 
@@ -78,8 +80,8 @@ final class TrackingLockFactory
 
         TrackingLock( final Lock delegate, final String name )
         {
-            this.delegate = checkNotNull( delegate );
-            this.name = checkNotNull( name );
+            this.delegate = requireNonNull( delegate );
+            this.name = requireNonNull( name );
         }
 
         String getName()
