@@ -26,7 +26,7 @@ import java.util.Collection;
 import org.apache.lucene.index.IndexReader;
 import org.apache.maven.index.context.IndexingContext;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Objects.requireNonNull;
 
 /**
  * An index packing request.
@@ -53,11 +53,11 @@ public class IndexPackingRequest
 
     public IndexPackingRequest( final IndexingContext context, final IndexReader indexReader, final File targetDir )
     {
-        this.context = checkNotNull( context );
+        this.context = requireNonNull( context );
 
-        this.indexReader = checkNotNull( indexReader );
+        this.indexReader = requireNonNull( indexReader );
 
-        this.targetDir = checkNotNull( targetDir );
+        this.targetDir = requireNonNull( targetDir );
 
         this.createIncrementalChunks = true;
 
