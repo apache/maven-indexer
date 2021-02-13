@@ -918,8 +918,8 @@ public class DefaultIndexingContext
                     // Not locked
                     return;
                 }
-                try ( final FileChannel fc =
-                    FileChannel.open( lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE ) )
+                try ( FileChannel fc = FileChannel.open( lockPath, StandardOpenOption.CREATE,
+                        StandardOpenOption.WRITE ) )
                 {
                     final FileLock lck = fc.tryLock();
                     if ( lck == null )
