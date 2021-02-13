@@ -110,7 +110,7 @@ under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.25</version>
+        <version>1.7.30</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -277,7 +277,7 @@ under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.30</version>
         <scope>test</scope>
       </dependency>
 
@@ -291,7 +291,7 @@ under the License.
       <dependency>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty</artifactId>
-        <version>6.1.19</version>
+        <version>6.1.26</version>
         <scope>test</scope>
       </dependency>
 
