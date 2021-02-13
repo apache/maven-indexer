@@ -84,7 +84,7 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>7</javaVersion>
+    <javaVersion>8</javaVersion>
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>

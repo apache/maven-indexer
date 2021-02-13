@@ -17,4 +17,4 @@
  * under the License.
  */
 
-asfMavenTlpStdBuild()
+asfMavenTlpStdBuild(jdk:['8','11','16'])
