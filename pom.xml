@@ -24,7 +24,7 @@ under the License.
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
     <version>34</version>
-    <relativePath />
+    <relativePath/>
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
@@ -89,7 +89,7 @@ under the License.
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
-    <eclipse-sisu.version>0.3.3</eclipse-sisu.version>
+    <eclipse-sisu.version>0.3.4</eclipse-sisu.version>
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.5.2</maven.version>
     <resolver.version>1.1.0</resolver.version>
@@ -129,7 +129,7 @@ under the License.
              as it would otherwise use commons-logging and do it's own other thing. -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.25</version>
+        <version>1.7.30</version>
         <optional>true</optional>
       </dependency>
 
@@ -385,7 +385,7 @@ under the License.
         <plugin><!-- TODO remove when upgrading parnet POM to 35 -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-shade-plugin</artifactId>
-          <version>3.2.3</version>
+          <version>3.2.4</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
