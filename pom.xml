@@ -93,7 +93,7 @@ under the License.
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.5.2</maven.version>
     <resolver.version>1.1.0</resolver.version>
-    <archetype.version>2.4</archetype.version>
+    <archetype.version>3.2.0</archetype.version>
     <wagon.version>2.12</wagon.version>
     <surefire.version>2.22.2</surefire.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
