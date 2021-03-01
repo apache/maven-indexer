@@ -179,7 +179,7 @@ under the License.
       <dependency>
         <groupId>com.google.inject.extensions</groupId>
         <artifactId>guice-assistedinject</artifactId>
-        <version>4.1.0</version>
+        <version>5.0.1</version>
       </dependency>
 
       <dependency>
