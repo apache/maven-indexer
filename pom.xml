@@ -90,7 +90,7 @@ under the License.
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
     <eclipse-sisu.version>0.3.4</eclipse-sisu.version>
-    <lucene.version>5.5.5</lucene.version>
+    <lucene.version>8.8.1</lucene.version>
     <maven.version>3.8.1</maven.version>
     <resolver.version>1.6.2</resolver.version>
     <archetype.version>3.2.0</archetype.version>
