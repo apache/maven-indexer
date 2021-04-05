@@ -58,9 +58,7 @@ public class IndexerConfiguration
 
     public List<IndexCreator> getIndexersAsList()
     {
-        return indexers == null ? //
-                new ArrayList<>( 0 ) //
-            : new ArrayList<>( indexers.values() );
+        return indexers == null ? new ArrayList<>( 0 ) : new ArrayList<>( indexers.values() );
     }
 
     public Indexer getIndexer()
