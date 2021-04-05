@@ -90,6 +90,7 @@ under the License.
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
     <eclipse-sisu.version>0.3.4</eclipse-sisu.version>
+    <guice.version>5.0.1</guice.version>
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.8.1</maven.version>
     <resolver.version>1.6.2</resolver.version>
@@ -167,19 +168,7 @@ under the License.
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject.extensions</groupId>
-        <artifactId>guice-multibindings</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.google.inject.extensions</groupId>
-        <artifactId>guice-assistedinject</artifactId>
-        <version>4.1.0</version>
+        <version>${guice.version}</version>
       </dependency>
 
       <dependency>
