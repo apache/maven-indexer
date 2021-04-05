@@ -233,8 +233,8 @@ public class M2GavCalculator
     {
 
         return "/" + gav.getGroupId().replaceAll( "(?m)(.)\\.",
-                "$1/" ) + // replace all '.' except the first char
-                "/" + gav.getArtifactId() + "/" + gav.getBaseVersion() + "/" + calculateArtifactName( gav );
+                "$1/" ) // replace all '.' except the first char
+                + "/" + gav.getArtifactId() + "/" + gav.getBaseVersion() + "/" + calculateArtifactName( gav );
     }
 
     public String calculateArtifactName( Gav gav )
