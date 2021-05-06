@@ -607,7 +607,6 @@ public class DefaultIndexingContext
     {
         closeReaders();
         deleteIndexFiles( true );
-        openAndWarmup();
         try
         {
             prepareIndex( true );
