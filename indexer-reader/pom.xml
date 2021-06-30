@@ -36,6 +36,10 @@ under the License.
     maven-indexer-core and its transitive dependencies.
   </description>
 
+  <properties>
+    <javaVersion>8</javaVersion>
+  </properties>
+
   <dependencies>
     <!-- Test -->
     <dependency>
