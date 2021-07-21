@@ -130,7 +130,7 @@ under the License.
              as it would otherwise use commons-logging and do it's own other thing. -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <version>1.7.30</version>
+        <version>1.7.32</version>
         <optional>true</optional>
       </dependency>
 
