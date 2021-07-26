@@ -122,7 +122,7 @@ under the License.
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
-        <version>1.2.3</version>
+        <version>1.2.4-groovyless</version>
         <optional>true</optional>
       </dependency>
       <dependency>
