@@ -93,7 +93,7 @@ under the License.
     <guice.version>5.0.1</guice.version>
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.8.2</maven.version>
-    <resolver.version>1.6.2</resolver.version>
+    <resolver.version>1.7.1</resolver.version>
     <archetype.version>3.2.0</archetype.version>
     <wagon.version>3.4.3</wagon.version>
     <surefire.version>2.22.2</surefire.version>
