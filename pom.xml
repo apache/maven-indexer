@@ -92,7 +92,7 @@ under the License.
     <eclipse-sisu.version>0.3.4</eclipse-sisu.version>
     <guice.version>5.0.1</guice.version>
     <lucene.version>5.5.5</lucene.version>
-    <maven.version>3.8.1</maven.version>
+    <maven.version>3.8.2</maven.version>
     <resolver.version>1.6.2</resolver.version>
     <archetype.version>3.2.0</archetype.version>
     <wagon.version>3.4.3</wagon.version>
