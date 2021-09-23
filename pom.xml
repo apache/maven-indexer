@@ -89,7 +89,7 @@ under the License.
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
-    <eclipse-sisu.version>0.3.4</eclipse-sisu.version>
+    <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.0.1</guice.version>
     <lucene.version>5.5.5</lucene.version>
     <maven.version>3.8.2</maven.version>
