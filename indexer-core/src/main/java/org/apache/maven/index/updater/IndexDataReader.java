@@ -65,7 +65,7 @@ public class IndexDataReader
         else
         {
             BufferedInputStream bis = new BufferedInputStream( is, 1024 * 8 );
-            bis.reset();
+            is.reset();
             data = bis;
         }
 
