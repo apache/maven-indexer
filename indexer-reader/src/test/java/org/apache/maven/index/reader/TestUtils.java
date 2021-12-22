@@ -21,14 +21,13 @@ package org.apache.maven.index.reader;
 
 import org.apache.maven.index.reader.Record.Type;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
-import static com.google.common.collect.Iterables.concat;
-import static java.util.Collections.singletonList;
 import static org.apache.maven.index.reader.Utils.*;
 
 /**
@@ -55,40 +54,44 @@ public final class TestUtils
    * stream, by adding the {@link Type#DESCRIPTOR}, {@link Type#ROOT_GROUPS} and {@link Type#ALL_GROUPS} special
    * records.
    */
-  public static Iterable<Record> decorate(final Iterable<Record> iterable,
+  public static Iterable<Record> decorate(final List<Record> iterable,
                                           final String repoId)
   {
     final TreeSet<String> allGroupsSet = new TreeSet<>();
     final TreeSet<String> rootGroupsSet = new TreeSet<>();
-    return StreamSupport.stream(
-            concat( singletonList( descriptor( repoId ) ), iterable, singletonList( allGroups( allGroupsSet ) ),
-                    // placeholder, will be recreated at the end with proper content
-                    singletonList( rootGroups( rootGroupsSet ) )
-                    // placeholder, will be recreated at the end with proper content
-            ).spliterator(), false ).map( rec ->
+    List<Record> records = new ArrayList<>();
+    records.add( getRecord( allGroupsSet, rootGroupsSet, descriptor( repoId ) ) );
+    iterable.stream().map( rec -> getRecord( allGroupsSet, rootGroupsSet, rec ) ).forEach( records::add );
+    records.add( getRecord( allGroupsSet, rootGroupsSet, allGroups( allGroupsSet ) ) );
+    records.add( getRecord( allGroupsSet, rootGroupsSet, rootGroups( rootGroupsSet ) ) );
+    return records;
+  }
+
+  private static Record getRecord( Set<String> allGroupsSet, Set<String> rootGroupsSet, Record rec )
+  {
+    Record result;
+    if ( Type.DESCRIPTOR == rec.getType() )
     {
-      if ( Type.DESCRIPTOR == rec.getType() )
+      result = rec;
+    }
+    else if ( Type.ALL_GROUPS == rec.getType() )
+    {
+      result = allGroups( allGroupsSet );
+    }
+    else if ( Type.ROOT_GROUPS == rec.getType() )
+    {
+      result = rootGroups( rootGroupsSet );
+    }
+    else
+    {
+      final String groupId = rec.get( Record.GROUP_ID );
+      if ( groupId != null )
       {
-        return rec;
+        allGroupsSet.add( groupId );
+        rootGroupsSet.add( rootGroup( groupId ) );
       }
-      else if ( Type.ALL_GROUPS == rec.getType() )
-      {
-        return allGroups( allGroupsSet );
-      }
-      else if ( Type.ROOT_GROUPS == rec.getType() )
-      {
-        return rootGroups( rootGroupsSet );
-      }
-      else
-      {
-        final String groupId = rec.get( Record.GROUP_ID );
-        if ( groupId != null )
-        {
-          allGroupsSet.add( groupId );
-          rootGroupsSet.add( rootGroup( groupId ) );
-        }
-        return rec;
-      }
-    } ).collect( Collectors.toList() );
+      result = rec;
+    }
+    return result;
   }
 }

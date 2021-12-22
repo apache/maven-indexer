@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.google.common.collect.Iterables.transform;
 import static org.apache.maven.index.reader.TestUtils.compactFunction;
 import static org.apache.maven.index.reader.TestUtils.decorate;
 import static org.hamcrest.CoreMatchers.nullValue;

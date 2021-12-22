@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.google.common.collect.Iterables.transform;
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
