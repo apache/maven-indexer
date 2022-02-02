@@ -20,7 +20,6 @@ package org.apache.maven.index.updater;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -69,7 +68,6 @@ public class DownloadRemoteIndexerManagerTest
         handlers.setHandlers( new Handler[] {resource_handler, new DefaultHandler() } );
         server.setHandler( handlers );
 
-//        System.out.print( "JETTY Started on port: " + port );
         server.start();
 
         // make context "fake central"
