@@ -27,24 +27,15 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.checkerframework.checker.units.qual.A;
-import org.eclipse.jetty.security.Authenticator;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.SecurityHandler;
-import org.eclipse.jetty.security.ServerAuthException;
 import org.eclipse.jetty.security.UserStore;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.Authentication;
-import org.eclipse.jetty.server.Authentication.User;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -52,7 +43,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.security.Password;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -145,7 +135,7 @@ public class ServerTestFixture
 
         @Override
         protected void doGet( final HttpServletRequest req, final HttpServletResponse resp )
-            throws ServletException, IOException
+            throws IOException
         {
             String basePath = req.getServletPath();
             String subPath = req.getRequestURI().substring( basePath.length() );
@@ -178,6 +168,7 @@ public class ServerTestFixture
                     }
                     catch ( InterruptedException e )
                     {
+                        throw new RuntimeException( e );
                     }
 
                     out.write( buf, 0, read );
@@ -186,11 +177,6 @@ public class ServerTestFixture
                 out.flush();
             }
         }
-    }
-
-    public int getPort()
-    {
-        return ((ServerConnector)server.getConnectors()[0]).getLocalPort();
     }
 
     public static final class InfiniteRedirectionServlet
@@ -202,7 +188,7 @@ public class ServerTestFixture
 
         @Override
         protected void doGet( final HttpServletRequest req, final HttpServletResponse resp )
-            throws ServletException, IOException
+            throws IOException
         {
             String path = req.getServletPath();
             String subPath = req.getRequestURI().substring( path.length() );
