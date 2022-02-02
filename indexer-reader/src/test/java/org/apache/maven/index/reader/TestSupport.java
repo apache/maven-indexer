@@ -27,6 +27,8 @@ import org.junit.rules.TestName;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,9 +56,7 @@ public class TestSupport
     public void setup()
         throws IOException
     {
-        this.tempDir = new File( "target/tmp-" + getClass().getSimpleName() );
-        this.tempDir.delete();
-        this.tempDir.mkdirs();
+        this.tempDir = Files.createTempDirectory( getClass().getSimpleName() + ".temp" ).toFile();
         this.directoryResourceHandlers = new ArrayList<>();
     }
 
@@ -91,10 +91,7 @@ public class TestSupport
     protected File createTempDirectory()
         throws IOException
     {
-        File result = File.createTempFile( testName.getMethodName() + "-dir", "", tempDir );
-        result.delete();
-        result.mkdirs();
-        return result;
+        return Files.createTempDirectory( tempDir.toPath(), testName.getMethodName() + "-dir" ).toFile();
     }
 
     /**

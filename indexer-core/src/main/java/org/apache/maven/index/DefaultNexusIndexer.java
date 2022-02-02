@@ -24,6 +24,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -269,14 +270,7 @@ public class DefaultNexusIndexer
         }
 
         // always use temporary context when reindexing
-        final File tmpFile = File.createTempFile( context.getId() + "-tmp", "" );
-        tmpFile.deleteOnExit();
-        final File tmpDir = new File( tmpFile.getParentFile(), tmpFile.getName() + ".dir" );
-        if ( !tmpDir.mkdirs() )
-        {
-            throw new IOException( "Cannot create temporary directory: " + tmpDir );
-        }
-
+        final File tmpDir = Files.createTempDirectory( context.getId() + "-tmp" ).toFile();
         IndexingContext tmpContext = null;
         try
         {
@@ -310,11 +304,6 @@ public class DefaultNexusIndexer
             if ( tmpContext != null )
             {
                 tmpContext.close( true );
-            }
-
-            if ( tmpFile.exists() )
-            {
-                tmpFile.delete();
             }
 
             FileUtils.deleteDirectory( tmpDir );

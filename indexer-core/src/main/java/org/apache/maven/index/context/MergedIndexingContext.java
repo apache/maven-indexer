@@ -309,10 +309,9 @@ public class MergedIndexingContext
     {
         if ( dir == null )
         {
-            // best effort, to have a directory thru the life of a ctx
-            File tmpFile = Files.createTempDirectory( "mindexer-ctx" + id ).toFile();
-            tmpFile.deleteOnExit();
-            this.directoryFile = tmpFile;
+            // best effort, to have a directory through the life of a ctx
+            this.directoryFile = Files.createTempDirectory( "mindexer-ctx" + id ).toFile();
+            this.directoryFile.deleteOnExit();
         }
         else
         {

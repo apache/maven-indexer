@@ -187,12 +187,17 @@ public class DefaultIndexUpdater
                                      final boolean merge, final String remoteIndexFile )
         throws IOException
     {
+        File indexDir;
         if ( updateRequest.getIndexTempDir() != null )
         {
             updateRequest.getIndexTempDir().mkdirs();
+            indexDir = Files.createTempDirectory( updateRequest.getIndexTempDir().toPath(),
+                remoteIndexFile + ".dir" ).toFile();
         }
-        File indexDir = Files.createTempDirectory( updateRequest.getIndexTempDir().toPath(), remoteIndexFile ).toFile();
-
+        else
+        {
+            indexDir = Files.createTempDirectory( remoteIndexFile + ".dir" ).toFile();
+        }
         try ( BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
                         Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ) )
         {

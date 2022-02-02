@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 /**
  * This is a helper for obtaining Wagon based ResourceFetchers. Some Indexer integrations does have access to Wagon
@@ -191,7 +192,7 @@ public class WagonHelper
         public InputStream retrieve( String name )
             throws IOException, FileNotFoundException
         {
-            final File target = File.createTempFile( name, "" );
+            final File target = Files.createTempFile( name, "tmp" ).toFile();
             target.deleteOnExit();
             retrieve( name, target );
             return new FileInputStream( target )
