@@ -176,7 +176,7 @@ public class NexusIndexerCli
     @Override
     public String getPomPropertiesPath()
     {
-        return "META-INF/maven/org.sonatype.nexus/nexus-indexer/pom.properties";
+        return "META-INF/maven/org.apache.maven.indexer/indexer-core/pom.properties";
     }
 
     @Override
