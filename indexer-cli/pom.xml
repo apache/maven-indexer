@@ -113,7 +113,6 @@ under the License.
         <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
-            <id>jdk7</id>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>
