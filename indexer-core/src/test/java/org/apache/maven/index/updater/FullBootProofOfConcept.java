@@ -21,6 +21,7 @@ package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class FullBootProofOfConcept
     {
         for ( int i = 0; i < 1; i++ )
         {
-            File basedir = File.createTempFile( "nexus-indexer.", ".dir" );
+            File basedir = Files.createTempDirectory("nexus-indexer..dir" ).toFile();
             basedir.deleteOnExit();
 
             try
