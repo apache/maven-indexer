@@ -217,10 +217,8 @@ public class DefaultIndexingContext
         if ( dir == null )
         {
             // best effort, to have a directory thru the life of a ctx
-            File tmpFile = File.createTempFile( "mindexer-ctx" + id, "tmp" );
+            File tmpFile = Files.createTempDirectory( "mindexer-ctx" + id ).toFile();
             tmpFile.deleteOnExit();
-            tmpFile.delete();
-            tmpFile.mkdirs();
             this.indexDirectoryFile = tmpFile;
         }
         else

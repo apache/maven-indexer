@@ -21,6 +21,7 @@ package org.apache.maven.index.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -309,10 +310,8 @@ public class MergedIndexingContext
         if ( dir == null )
         {
             // best effort, to have a directory thru the life of a ctx
-            File tmpFile = File.createTempFile( "mindexer-ctx" + id, "tmp" );
+            File tmpFile = Files.createTempDirectory( "mindexer-ctx" + id ).toFile();
             tmpFile.deleteOnExit();
-            tmpFile.delete();
-            tmpFile.mkdirs();
             this.directoryFile = tmpFile;
         }
         else

@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -190,9 +191,7 @@ public class DefaultIndexUpdater
         {
             updateRequest.getIndexTempDir().mkdirs();
         }
-        File indexDir = File.createTempFile( remoteIndexFile, ".dir" , updateRequest.getIndexTempDir() );
-        indexDir.delete();
-        indexDir.mkdirs();
+        File indexDir = Files.createTempDirectory( updateRequest.getIndexTempDir().toPath(), remoteIndexFile ).toFile();
 
         try ( BufferedInputStream is = new BufferedInputStream( fetcher.retrieve( remoteIndexFile ) ); //
                         Directory directory = updateRequest.getFSDirectoryFactory().open( indexDir ) )
