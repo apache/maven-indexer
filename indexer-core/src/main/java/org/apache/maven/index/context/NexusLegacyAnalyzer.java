@@ -21,6 +21,8 @@ package org.apache.maven.index.context;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.AnalyzerWrapper;
+import org.apache.lucene.analysis.LowerCaseFilter;
+import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.maven.index.ArtifactInfo;
@@ -42,20 +44,16 @@ public final class NexusLegacyAnalyzer
         @Override
         protected TokenStreamComponents createComponents( final String fieldName )
         {
-            return new TokenStreamComponents( new CharTokenizer()
+            final Tokenizer tokenizer = new CharTokenizer()
             {
                 @Override
                 protected boolean isTokenChar( int c )
                 {
                     return Character.isLetterOrDigit( c );
                 }
+            };
 
-                @Override
-                protected int normalize( int c )
-                {
-                    return Character.toLowerCase( c );
-                }
-            } );
+            return new TokenStreamComponents( tokenizer, new LowerCaseFilter( tokenizer ) );
         }
     };
 

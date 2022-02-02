@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
@@ -55,7 +55,7 @@ public class NexusAnalyzerTest
     protected void runAndCompare( IndexerField indexerField, String text, String[] expected )
         throws IOException
     {
-        Tokenizer ts = (Tokenizer) nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader( text ) );
+        TokenStream ts = nexusAnalyzer.tokenStream(indexerField.getKey(), new StringReader( text ) );
         ts.reset();
 
         ArrayList<String> tokenList = new ArrayList<>();

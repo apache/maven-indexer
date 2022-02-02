@@ -39,7 +39,7 @@ import javax.inject.Singleton;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
@@ -157,7 +157,7 @@ public class DefaultIncrementalHandler
     {
         final List<Integer> chunk = new ArrayList<>();
         final IndexReader r = request.getIndexReader();
-        Bits liveDocs = MultiFields.getLiveDocs( r );
+        Bits liveDocs = MultiBits.getLiveDocs( r );
         for ( int i = 0; i < r.maxDoc(); i++ )
         {
             if ( liveDocs == null || liveDocs.get( i ) )

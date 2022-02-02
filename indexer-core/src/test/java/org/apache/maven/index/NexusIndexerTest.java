@@ -80,7 +80,7 @@ public class NexusIndexerTest
         
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
-        assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:pom*) n:\"some artifact name from pom\""));
+        assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\""));
     }
     
     public void testQueryCreatorNG()
@@ -116,19 +116,19 @@ public class NexusIndexerTest
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.PACKAGING, "maven-archetype", SearchType.SCORED );
 
-        assertEquals( "p:maven-archetype p:maven-archetype*^0.8", q.toString() );
+        assertEquals( "p:maven-archetype (p:maven-archetype*)^0.8", q.toString() );
 
         // scored search against field having untokenized indexerField only
         q = indexer.constructQuery( MAVEN.ARTIFACT_ID, "commons-logging", SearchType.SCORED );
 
         assertEquals(
-            "(a:commons-logging a:commons-logging*^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
+            "(a:commons-logging (a:commons-logging*)^0.8) ((+artifactId:commons +artifactId:logging*) artifactId:\"commons logging\")",
             q.toString() );
 
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
 
-        assertEquals( "(+n:some +n:artifact +n:name +n:from +n:pom*) n:\"some artifact name from pom\"", q.toString() );
+        assertEquals( "(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\"", q.toString() );
 
         // keyword search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery( MAVEN.NAME, "some artifact name from Pom", SearchType.EXACT );
@@ -439,7 +439,6 @@ public class NexusIndexerTest
 
         {
             BooleanQuery bq = new BooleanQuery.Builder()
-                .setDisableCoord( true )
                 .add( new WildcardQuery( new Term( ArtifactInfo.GROUP_ID, "testng*" ) ), Occur.SHOULD )
                 .add( new WildcardQuery( new Term( ArtifactInfo.ARTIFACT_ID, "testng*" ) ), Occur.SHOULD )
                 .setMinimumNumberShouldMatch( 1 )
