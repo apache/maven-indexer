@@ -19,20 +19,6 @@ package org.apache.maven.index.updater.fixtures;
  * under the License.
  */
 
-import org.mortbay.jetty.Connector;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerCollection;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.security.Constraint;
-import org.mortbay.jetty.security.ConstraintMapping;
-import org.mortbay.jetty.security.HashUserRealm;
-import org.mortbay.jetty.security.SecurityHandler;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
-import org.mortbay.jetty.servlet.SessionHandler;
-import org.mortbay.jetty.webapp.WebAppContext;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,9 +28,34 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.checkerframework.checker.units.qual.A;
+import org.eclipse.jetty.security.Authenticator;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.SecurityHandler;
+import org.eclipse.jetty.security.ServerAuthException;
+import org.eclipse.jetty.security.UserStore;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
+import org.eclipse.jetty.server.Authentication;
+import org.eclipse.jetty.server.Authentication.User;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.security.Password;
+import org.eclipse.jetty.webapp.WebAppContext;
 
 public class ServerTestFixture
 {
@@ -62,7 +73,7 @@ public class ServerTestFixture
     {
         server = new Server();
 
-        Connector connector = new SelectChannelConnector();
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort( port );
 
         server.setConnectors( new Connector[]{ connector } );
@@ -77,15 +88,15 @@ public class ServerTestFixture
         cm.setConstraint( constraint );
         cm.setPathSpec( "/protected/*" );
 
-        SecurityHandler sh = new SecurityHandler();
+        UserStore userStore = new UserStore();
+        userStore.addUser("user", new Password("password"), new String[] {"allowed"});
+        userStore.addUser("longuser", new Password(LONG_PASSWORD), new String[] {"allowed"});
+        HashLoginService hls = new HashLoginService( "POC Server" );
+        hls.setUserStore(userStore);
 
-        HashUserRealm realm = new HashUserRealm( "POC Server" );
-        realm.put( "user", "password" );
-        realm.put( "longuser", LONG_PASSWORD );
-        realm.addUserToRole( "user", "allowed" );
-        realm.addUserToRole( "longuser", "allowed" );
-
-        sh.setUserRealm( realm );
+        ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
+        sh.setAuthenticator(new BasicAuthenticator());
+        sh.setLoginService(hls);
         sh.setConstraintMappings( new ConstraintMapping[]{ cm } );
 
         WebAppContext ctx = new WebAppContext();
@@ -93,13 +104,13 @@ public class ServerTestFixture
 
         File base = getBase();
         ctx.setWar( base.getAbsolutePath() );
-        ctx.addHandler( sh );
+        ctx.setSecurityHandler( sh );
 
         ctx.getServletHandler().addServletWithMapping( TimingServlet.class, "/slow/*" );
         ctx.getServletHandler().addServletWithMapping( InfiniteRedirectionServlet.class, "/redirect-trap/*" );
 
         SessionHandler sessionHandler = ctx.getSessionHandler();
-        ( (AbstractSessionManager) sessionHandler.getSessionManager() ).setUsingCookies( false );
+        sessionHandler.setUsingCookies( true );
 
         HandlerCollection handlers = new HandlerCollection();
         handlers.setHandlers( new Handler[]{ ctx, new DefaultHandler() } );
@@ -179,7 +190,7 @@ public class ServerTestFixture
 
     public int getPort()
     {
-        return server.getConnectors()[0].getLocalPort();
+        return ((ServerConnector)server.getConnectors()[0]).getLocalPort();
     }
 
     public static final class InfiniteRedirectionServlet

@@ -30,19 +30,13 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.lucene.document.Document;
-import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.FileUtils;
-import org.mortbay.jetty.Handler;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.handler.DefaultHandler;
-import org.mortbay.jetty.handler.HandlerList;
-import org.mortbay.jetty.handler.ResourceHandler;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
 
 public class DownloadRemoteIndexerManagerTest
     extends AbstractIndexUpdaterTest
@@ -69,20 +63,10 @@ public class DownloadRemoteIndexerManagerTest
 
         server = new Server( port );
 
-        ResourceHandler resource_handler = new ResourceHandler()
-        {
-            @Override
-            public void handle( String target, HttpServletRequest request, HttpServletResponse response, int dispatch )
-                throws IOException, ServletException
-            {
-//                System.out.print( "JETTY: " + target );
-                super.handle( target, request, response, dispatch );
-//                System.out.println( "  ::  " + ( (Response) response ).getStatus() );
-            }
-        };
+        ResourceHandler resource_handler = new ResourceHandler();
         resource_handler.setResourceBase( fakeCentral.getAbsolutePath() );
         HandlerList handlers = new HandlerList();
-        handlers.setHandlers( new Handler[] { resource_handler, new DefaultHandler() } );
+        handlers.setHandlers( new Handler[] {resource_handler, new DefaultHandler() } );
         server.setHandler( handlers );
 
 //        System.out.print( "JETTY Started on port: " + port );
