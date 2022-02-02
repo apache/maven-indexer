@@ -211,22 +211,9 @@ under the License.
                 </relocation>
               </relocations>
               <artifactSet>
-                <excludes>
-                  <exclude>org.slf4j:*</exclude>
-                  <exclude>com.google.*:*</exclude>
-                  <exclude>javax.*:*</exclude>
-                  <exclude>javax.*:*</exclude>
-                  <exclude>org.eclipse.*:*</exclude>
-                  <exclude>org.sonatype.*:*</exclude>
-                  <exclude>org.apache.maven.archetype:*</exclude>
-                  <exclude>org.apache.maven.wagon:*</exclude>
-                  <exclude>org.codehaus.*:*</exclude>
-                  <exclude>org.apache.maven.resolver:*</exclude>
-                  <exclude>org.apache.maven:maven-model</exclude>
-                  <exclude>org.apache.commons:*</exclude>
-                  <exclude>org.bouncycastle:*</exclude>
-                  <exclude>aopalliance:*</exclude>
-                </excludes>
+                <includes>
+                  <include>org.apache.lucene:*</include>
+                </includes>
               </artifactSet>
               <filters>
                 <filter>
