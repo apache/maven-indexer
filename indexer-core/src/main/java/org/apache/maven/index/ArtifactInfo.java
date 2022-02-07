@@ -334,9 +334,6 @@ public class ArtifactInfo
 
     private final transient VersionScheme versionScheme;
 
-    private String uinfo = null;
-
-
     public ArtifactInfo()
     {
         versionScheme = new GenericVersionScheme();

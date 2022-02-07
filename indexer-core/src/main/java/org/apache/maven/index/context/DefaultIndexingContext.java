@@ -43,7 +43,7 @@ import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.MultiFields;
+import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
@@ -239,7 +239,11 @@ public class DefaultIndexingContext
             try
             {
                 // unlock the dir forcibly
-                if ( IndexWriter.isLocked( indexDirectory ) )
+                try
+                {
+                    indexDirectory.obtainLock( IndexWriter.WRITE_LOCK_NAME ).close();
+                }
+                catch ( LockObtainFailedException failed )
                 {
                     unlockForcibly( lockFactory, indexDirectory );
                 }
@@ -276,7 +280,11 @@ public class DefaultIndexingContext
             closeReaders();
 
             // unlock the dir forcibly
-            if ( IndexWriter.isLocked( indexDirectory ) )
+            try
+            {
+                indexDirectory.obtainLock( IndexWriter.WRITE_LOCK_NAME ).close();
+            }
+            catch ( LockObtainFailedException failed )
             {
                 unlockForcibly( lockFactory, indexDirectory );
             }
@@ -307,7 +315,7 @@ public class DefaultIndexingContext
         // check for descriptor if this is not a "virgin" index
         if ( getSize() > 0 )
         {
-            final TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
+            final TopScoreDocCollector collector = TopScoreDocCollector.create( 1, Integer.MAX_VALUE );
             final IndexSearcher indexSearcher = acquireIndexSearcher();
             try
             {
@@ -528,7 +536,7 @@ public class DefaultIndexingContext
 
         this.indexWriter = new NexusIndexWriter( getIndexDirectory(), getWriterConfig() );
         this.indexWriter.commit(); // LUCENE-2386
-        this.searcherManager = new SearcherManager( indexWriter, false, new NexusIndexSearcherFactory( this ) );
+        this.searcherManager = new SearcherManager( indexWriter, false, false, new NexusIndexSearcherFactory( this ) );
     }
 
     /**
@@ -669,7 +677,7 @@ public class DefaultIndexingContext
                 TopScoreDocCollector collector;
                 int numDocs = directoryReader.maxDoc();
 
-                Bits liveDocs = MultiFields.getLiveDocs( directoryReader );
+                Bits liveDocs = MultiBits.getLiveDocs( directoryReader );
                 for ( int i = 0; i < numDocs; i++ )
                 {
                     if ( liveDocs != null && !liveDocs.get( i ) )
@@ -686,7 +694,7 @@ public class DefaultIndexingContext
                     String uinfo = d.get( ArtifactInfo.UINFO );
                     if ( uinfo != null )
                     {
-                        collector = TopScoreDocCollector.create( 1 );
+                        collector = TopScoreDocCollector.create( 1, Integer.MAX_VALUE );
                         s.search( new TermQuery( new Term( ArtifactInfo.UINFO, uinfo ) ), collector );
                         if ( collector.getTotalHits() == 0 )
                         {
@@ -773,7 +781,7 @@ public class DefaultIndexingContext
             Set<String> allGroups = new LinkedHashSet<>();
 
             int numDocs = r.maxDoc();
-            Bits liveDocs = MultiFields.getLiveDocs( r );
+            Bits liveDocs = MultiBits.getLiveDocs( r );
 
             for ( int i = 0; i < numDocs; i++ )
             {
@@ -834,14 +842,16 @@ public class DefaultIndexingContext
     protected Set<String> getGroups( String field, String filedValue, String listField )
         throws IOException, CorruptIndexException
     {
-        final TopScoreDocCollector collector = TopScoreDocCollector.create( 1 );
+        final TopScoreDocCollector collector = TopScoreDocCollector.create( 1, Integer.MAX_VALUE );
         final IndexSearcher indexSearcher = acquireIndexSearcher();
         try
         {
             indexSearcher.search( new TermQuery( new Term( field, filedValue ) ), collector );
             TopDocs topDocs = collector.topDocs();
-            Set<String> groups = new LinkedHashSet<>( Math.max( 10, topDocs.totalHits ) );
-            if ( topDocs.totalHits > 0 )
+            // In Lucene 7 topDocs.totalHits is now a long, but we can safely cast this to an int because
+            // indexes are still bound to at most 2 billion (Integer.MAX_VALUE) documents
+            Set<String> groups = new LinkedHashSet<String>( (int) Math.max( 10L, topDocs.totalHits.value ) );
+            if ( topDocs.totalHits.value > 0 )
             {
                 Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );
                 String groupList = doc.get( listField );
