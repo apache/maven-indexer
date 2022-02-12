@@ -97,7 +97,7 @@ under the License.
     <archetype.version>3.2.1</archetype.version>
     <wagon.version>3.5.1</wagon.version>
     <surefire.version>2.22.2</surefire.version>
-    <slf4j.version>1.7.35</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <logback.version>1.2.10</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2022-02-11T09:44:49Z</project.build.outputTimestamp>
@@ -279,7 +279,8 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.44.v20210927</version>
+        <version>9.4.45.v20220203</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
