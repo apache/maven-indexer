@@ -1,4 +1,4 @@
-package org.apache.maven.index.search.grouping;
+package org.apache.maven.index.search.support;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.index.search.grouping;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,33 +19,40 @@ package org.apache.maven.index.search.grouping;
  * under the License.
  */
 
-import java.util.Comparator;
+import org.apache.maven.index.search.SearchBackend;
 
-import org.apache.maven.index.ArtifactInfo;
+import static java.util.Objects.requireNonNull;
 
 /**
- * A GroupId : ArtifactId grouping implementation.
- * 
- * @author Tamas Cservenak
+ * A search backend support class.
  */
-public class GAGrouping
-    extends AbstractGrouping
+public abstract class SearchBackendSupport implements SearchBackend
 {
+    private final String backendId;
 
-    public GAGrouping()
-    {
-        super();
-    }
+    private final String repositoryId;
 
-    public GAGrouping( Comparator<ArtifactInfo> comparator )
+    protected SearchBackendSupport( String backendId, String repositoryId )
     {
-        super( comparator );
+        this.backendId = requireNonNull( backendId );
+        this.repositoryId = requireNonNull( repositoryId );
     }
 
     @Override
-    protected String getGroupKey( ArtifactInfo artifactInfo )
+    public String getBackendId()
     {
-        return artifactInfo.getGroupId() + " : " + artifactInfo.getArtifactId();
+        return backendId;
     }
 
+    @Override
+    public String getRepositoryId()
+    {
+        return repositoryId;
+    }
+
+    @Override
+    public void close()
+    {
+        // override if needed
+    }
 }

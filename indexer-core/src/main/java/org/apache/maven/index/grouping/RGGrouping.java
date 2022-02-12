@@ -1,4 +1,4 @@
-package org.apache.maven.index.search.grouping;
+package org.apache.maven.index.grouping;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -24,20 +24,20 @@ import java.util.Comparator;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
- * A Repository : GroupId : ArtifactId : Version grouping implementation.
+ * A Repository : GroupId grouping implementation.
  * 
  * @author Tamas Cservenak
  */
-public class RGAVGrouping
+public class RGGrouping
     extends AbstractGrouping
 {
 
-    public RGAVGrouping()
+    public RGGrouping()
     {
         super();
     }
 
-    public RGAVGrouping( Comparator<ArtifactInfo> comparator )
+    public RGGrouping( Comparator<ArtifactInfo> comparator )
     {
         super( comparator );
     }
@@ -45,8 +45,7 @@ public class RGAVGrouping
     @Override
     protected String getGroupKey( ArtifactInfo artifactInfo )
     {
-        return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId() + ":" + artifactInfo.getArtifactId() + ":"
-            + artifactInfo.getVersion() + ":" + artifactInfo.getClassifier();
+        return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId();
     }
 
 }

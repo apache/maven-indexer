@@ -1,4 +1,4 @@
-package org.apache.maven.index.search.grouping;
+package org.apache.maven.index.grouping;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

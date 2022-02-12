@@ -1,4 +1,4 @@
-package org.apache.maven.index.search.grouping;
+package org.apache.maven.index.search.backend.smo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -9,7 +9,7 @@ package org.apache.maven.index.search.grouping;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,33 +19,15 @@ package org.apache.maven.index.search.grouping;
  * under the License.
  */
 
-import java.util.Comparator;
-
-import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.search.SearchBackend;
 
 /**
- * A GroupId grouping implementation.
- * 
- * @author Tamas Cservenak
+ * The SMO search backend.
  */
-public class GGrouping
-    extends AbstractGrouping
+public interface SmoSearchBackend extends SearchBackend
 {
-
-    public GGrouping()
-    {
-        super();
-    }
-
-    public GGrouping( Comparator<ArtifactInfo> comparator )
-    {
-        super( comparator );
-    }
-
-    @Override
-    protected String getGroupKey( ArtifactInfo artifactInfo )
-    {
-        return artifactInfo.getGroupId();
-    }
-
+    /**
+     * Returns the base "service URI" that is used by this SMO backend. never {@code null}.
+     */
+    String getSmoUri();
 }
