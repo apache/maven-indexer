@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples.boot;
+package org.apache.maven.index.examples.boot;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,9 +19,9 @@ package org.apache.maven.indexer.examples.boot;
  * under the License.
  */
 
-import org.apache.maven.indexer.examples.indexing.RepositoryIndexManager;
-import org.apache.maven.indexer.examples.indexing.RepositoryIndexer;
-import org.apache.maven.indexer.examples.indexing.RepositoryIndexerFactory;
+import org.apache.maven.index.examples.indexing.RepositoryIndexManager;
+import org.apache.maven.index.examples.indexing.RepositoryIndexer;
+import org.apache.maven.index.examples.indexing.RepositoryIndexerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

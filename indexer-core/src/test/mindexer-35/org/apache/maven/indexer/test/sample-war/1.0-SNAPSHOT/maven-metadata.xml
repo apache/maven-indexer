@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
-  <groupId>org.apache.maven.indexer.test</groupId>
+  <groupId>org.apache.maven.index.test</groupId>
   <artifactId>sample-war</artifactId>
   <version>1.0-SNAPSHOT</version>
   <versioning>

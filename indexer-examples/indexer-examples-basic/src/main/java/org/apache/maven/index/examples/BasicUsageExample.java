@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples;
+package org.apache.maven.index.examples;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -82,8 +82,7 @@ public class BasicUsageExample
     public static void main( String[] args )
         throws Exception
     {
-        final BasicUsageExample basicUsageExample = new BasicUsageExample();
-        basicUsageExample.perform();
+        new BasicUsageExample().perform();
     }
 
     // ==
@@ -225,14 +224,14 @@ public class BasicUsageExample
         // Search for all GAVs with known G and A and having version greater than V
 
         final GenericVersionScheme versionScheme = new GenericVersionScheme();
-        final String versionString = "1.5.0";
+        final String versionString = "3.1.0";
         final Version version = versionScheme.parseVersion( versionString );
 
         // construct the query for known GA
         final Query groupIdQ =
-            indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.sonatype.nexus" ) );
+            indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.maven" ) );
         final Query artifactIdQ =
-            indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "nexus-api" ) );
+            indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "maven-plugin-api" ) );
 
         final BooleanQuery query = new BooleanQuery.Builder()
             .add( groupIdQ, Occur.MUST )
@@ -262,7 +261,7 @@ public class BasicUsageExample
         };
 
         System.out.println(
-            "Searching for all GAVs with G=org.sonatype.nexus and nexus-api and having V greater than 1.5.0" );
+            "Searching for all GAVs with org.apache.maven:maven-plugin-api having V greater than 3.1.0" );
         final IteratorSearchRequest request =
             new IteratorSearchRequest( query, Collections.singletonList( centralContext ), versionFilter );
         final IteratorSearchResponse response = indexer.searchIterator( request );
@@ -276,23 +275,23 @@ public class BasicUsageExample
         // Searching for some artifact
         Query gidQ =
             indexer.constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( "org.apache.maven.indexer" ) );
-        Query aidQ = indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "indexer-artifact" ) );
+        Query aidQ = indexer.constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( "indexer-core" ) );
 
         BooleanQuery bq = new BooleanQuery.Builder()
                 .add( gidQ, Occur.MUST )
                 .add( aidQ, Occur.MUST )
                 .build();
 
-        searchAndDump( indexer, "all artifacts under GA org.apache.maven.indexer:indexer-artifact", bq );
+        searchAndDump( indexer, "all artifacts under GA org.apache.maven.indexer:indexer-core", bq );
 
         // Searching for some main artifact
         bq = new BooleanQuery.Builder()
                 .add( gidQ, Occur.MUST )
                 .add( aidQ, Occur.MUST )
-//                .add( indexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( "*" ) ), Occur.MUST_NOT )
+                .add( indexer.constructQuery( MAVEN.CLASSIFIER, new SourcedSearchExpression( "*" ) ), Occur.MUST_NOT )
                 .build();
 
-        searchAndDump( indexer, "main artifacts under GA org.apache.maven.indexer:indexer-artifact", bq );
+        searchAndDump( indexer, "main artifacts under GA org.apache.maven.indexer:indexer-core", bq );
 
         // doing sha1 search
         searchAndDump( indexer, "SHA1 7ab67e6b20e5332a7fb4fdf2f019aec4275846c2",
@@ -316,7 +315,7 @@ public class BasicUsageExample
                     new SourcedSearchExpression( "org.apache.maven.plugins" ) ), Occur.MUST )
             .build();
 
-        searchGroupedAndDump( indexer, "all \"canonical\" maven plugins", bq, new GAGrouping() );
+        searchGroupedAndDumpFlat( indexer, "all \"canonical\" maven plugins", bq, new GAGrouping() );
 
         // doing search for all archetypes latest versions
         searchGroupedAndDump( indexer, "all maven archetypes (latest versions)",
@@ -346,6 +345,24 @@ public class BasicUsageExample
     }
 
     private static final int MAX_WIDTH = 60;
+
+    public void searchGroupedAndDumpFlat( Indexer nexusIndexer, String descr, Query q, Grouping g )
+            throws IOException
+    {
+        System.out.println( "Searching for " + descr );
+
+        GroupedSearchResponse response = nexusIndexer.searchGrouped( new GroupedSearchRequest( q, g, centralContext ) );
+
+        for ( Map.Entry<String, ArtifactInfoGroup> entry : response.getResults().entrySet() )
+        {
+            ArtifactInfo ai = entry.getValue().getArtifactInfos().iterator().next();
+            System.out.println( "* " + ai.getGroupId() + ":" + ai.getArtifactId() + ":" + ai.getVersion() );
+        }
+
+        System.out.println( "------" );
+        System.out.println( "Total record hits: " + response.getTotalHitsCount() );
+        System.out.println();
+    }
 
     public void searchGroupedAndDump( Indexer nexusIndexer, String descr, Query q, Grouping g )
         throws IOException

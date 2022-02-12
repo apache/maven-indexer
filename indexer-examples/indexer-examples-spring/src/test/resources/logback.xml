@@ -25,8 +25,8 @@
   </appender>
 
   <logger name="org.springframework" level="ERROR" />
-  <logger name="org.apache.maven.indexer.examples.indexing" level="DEBUG" />
-  <logger name="org.apache.maven.indexer.examples.boot" level="ERROR" />
+  <logger name="org.apache.maven.index.examples.indexing" level="DEBUG" />
+  <logger name="org.apache.maven.index.examples.boot" level="ERROR" />
 
   <root level="ERROR">
     <appender-ref ref="stdout" />
