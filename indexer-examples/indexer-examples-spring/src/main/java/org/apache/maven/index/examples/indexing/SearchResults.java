@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples;
+package org.apache.maven.index.examples.indexing;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,14 +19,40 @@ package org.apache.maven.indexer.examples;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import org.apache.maven.index.ArtifactInfo;
 
-public class BasicUsageExampleTest
-    extends TestCase
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+/**
+ * This is a convenience class for holding search results mapped by repository.
+ *
+ * @author mtodorov
+ */
+public class SearchResults
 {
-    public void testApp()
-        throws Exception
+
+    /**
+     * K: repositoryId
+     * V: artifactInfos
+     */
+    private Map<String, Collection<ArtifactInfo>> results = new LinkedHashMap<>();
+
+
+    public SearchResults()
     {
-        BasicUsageExample.main( null );
+        // no op
     }
+
+    public Map<String, Collection<ArtifactInfo>> getResults()
+    {
+        return results;
+    }
+
+    public void setResults( Map<String, Collection<ArtifactInfo>> results )
+    {
+        this.results = results;
+    }
+
 }

@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples.services;
+package org.apache.maven.index.examples.services;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,8 +20,8 @@ package org.apache.maven.indexer.examples.services;
  */
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.maven.indexer.examples.indexing.SearchRequest;
-import org.apache.maven.indexer.examples.indexing.SearchResults;
+import org.apache.maven.index.examples.indexing.SearchRequest;
+import org.apache.maven.index.examples.indexing.SearchResults;
 
 import java.io.File;
 import java.io.IOException;

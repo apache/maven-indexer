@@ -436,7 +436,7 @@ under the License.
             </group>
             <group>
               <title>Indexer Examples</title>
-              <packages>org.apache.maven.indexer.examples*</packages>
+              <packages>org.apache.maven.index.examples*</packages>
             </group>
           </groups>
         </configuration>

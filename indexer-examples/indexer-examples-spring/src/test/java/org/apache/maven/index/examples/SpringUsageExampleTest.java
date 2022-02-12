@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples;
+package org.apache.maven.index.examples;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -26,9 +26,9 @@ import java.util.Collection;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.indexer.examples.indexing.SearchRequest;
-import org.apache.maven.indexer.examples.indexing.SearchResults;
-import org.apache.maven.indexer.examples.services.ArtifactIndexingService;
+import org.apache.maven.index.examples.indexing.SearchRequest;
+import org.apache.maven.index.examples.indexing.SearchResults;
+import org.apache.maven.index.examples.services.ArtifactIndexingService;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Before;
 import org.junit.Test;

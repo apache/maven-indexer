@@ -24,20 +24,20 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
                            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
-    <context:component-scan base-package="org.apache.maven.indexer.examples"/>
+    <context:component-scan base-package="org.apache.maven.index.examples"/>
 
-    <bean id="indexerConfiguration" class="org.apache.maven.indexer.examples.indexing.IndexerConfiguration">
+    <bean id="indexerConfiguration" class="org.apache.maven.index.examples.indexing.IndexerConfiguration">
         <constructor-arg name="indexer" ref="indexer"/>
         <constructor-arg name="indexers" ref="indexers"/>
         <constructor-arg name="scanner" ref="scanner"/>
     </bean>
 
-    <bean id="repositoryIndexerFactory" class="org.apache.maven.indexer.examples.indexing.RepositoryIndexerFactory"/>
+    <bean id="repositoryIndexerFactory" class="org.apache.maven.index.examples.indexing.RepositoryIndexerFactory"/>
 
-    <bean id="repositoryIndexManager" class="org.apache.maven.indexer.examples.indexing.RepositoryIndexManager"/>
+    <bean id="repositoryIndexManager" class="org.apache.maven.index.examples.indexing.RepositoryIndexManager"/>
 
-    <bean id="artifactIndexingService" class="org.apache.maven.indexer.examples.services.impl.ArtifactIndexingServiceImpl"/>
+    <bean id="artifactIndexingService" class="org.apache.maven.index.examples.services.impl.ArtifactIndexingServiceImpl"/>
 
-    <bean id="repositoryBooter" class="org.apache.maven.indexer.examples.boot.RepositoryBooter"/>
+    <bean id="repositoryBooter" class="org.apache.maven.index.examples.boot.RepositoryBooter"/>
 
 </beans>

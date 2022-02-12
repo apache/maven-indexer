@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples.services.impl;
+package org.apache.maven.index.examples.services.impl;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,11 +21,11 @@ package org.apache.maven.indexer.examples.services.impl;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.indexer.examples.indexing.RepositoryIndexManager;
-import org.apache.maven.indexer.examples.indexing.RepositoryIndexer;
-import org.apache.maven.indexer.examples.indexing.SearchRequest;
-import org.apache.maven.indexer.examples.indexing.SearchResults;
-import org.apache.maven.indexer.examples.services.ArtifactIndexingService;
+import org.apache.maven.index.examples.indexing.RepositoryIndexManager;
+import org.apache.maven.index.examples.indexing.RepositoryIndexer;
+import org.apache.maven.index.examples.indexing.SearchRequest;
+import org.apache.maven.index.examples.indexing.SearchResults;
+import org.apache.maven.index.examples.services.ArtifactIndexingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

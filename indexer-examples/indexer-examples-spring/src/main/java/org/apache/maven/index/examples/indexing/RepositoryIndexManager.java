@@ -1,4 +1,4 @@
-package org.apache.maven.indexer.examples.indexing;
+package org.apache.maven.index.examples.indexing;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
