@@ -19,6 +19,9 @@ package org.apache.maven.index.updater;
  * under the License.
  */
 
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -29,8 +32,6 @@ import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,15 +51,14 @@ import java.nio.file.Files;
  */
 public class WagonHelper
 {
-    private final PlexusContainer plexusContainer;
+    private final Injector injector;
 
-    public WagonHelper( final PlexusContainer plexusContainer )
+    public WagonHelper( final Injector injector )
     {
-        this.plexusContainer = plexusContainer;
+        this.injector = injector;
     }
 
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener )
-        throws ComponentLookupException
     {
         return getWagonResourceFetcher( listener, null, null );
     }
@@ -68,17 +68,15 @@ public class WagonHelper
      * @param authenticationInfo
      * @param proxyInfo
      * @return
-     * @throws ComponentLookupException
      * @deprecated use getWagonResourceFetcher with protocol argument
      */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
                                                  final AuthenticationInfo authenticationInfo,
                                                  final ProxyInfo proxyInfo )
-        throws ComponentLookupException
     {
         // we limit ourselves to HTTP only
-        return new WagonFetcher( plexusContainer.lookup( Wagon.class, "http" ), listener, authenticationInfo,
-                                 proxyInfo );
+        return new WagonFetcher( injector.getInstance( Key.get( Wagon.class, Names.named( "http" ) ) ),
+                listener, authenticationInfo, proxyInfo );
     }
 
     /**
@@ -87,16 +85,15 @@ public class WagonHelper
      * @param proxyInfo
      * @param protocol           protocol supported by wagon http/https
      * @return
-     * @throws ComponentLookupException
      * @since 4.1.3
      */
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
-                                                 final AuthenticationInfo authenticationInfo, final ProxyInfo proxyInfo,
-                                                 String protocol )
-        throws ComponentLookupException
+                                                 final AuthenticationInfo authenticationInfo,
+                                                 final ProxyInfo proxyInfo,
+                                                 final String protocol )
     {
-        return new WagonFetcher( plexusContainer.lookup( Wagon.class, protocol ), listener, authenticationInfo,
-                                 proxyInfo );
+        return new WagonFetcher( injector.getInstance( Key.get( Wagon.class, Names.named( protocol ) ) ),
+                listener, authenticationInfo, proxyInfo );
     }
 
     public static class WagonFetcher

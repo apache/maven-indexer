@@ -37,8 +37,7 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.codehaus.plexus.configuration.PlexusConfiguration;
-import org.codehaus.plexus.configuration.xml.XmlPlexusConfiguration;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
@@ -96,16 +95,16 @@ public class MavenPluginArtifactInfoIndexCreator
                 try ( InputStream is = new BufferedInputStream( zipFile.getInputStream( zipEntry ) ) )
                 {
                     // here the reader is closed
-                    PlexusConfiguration plexusConfig =
-                        new XmlPlexusConfiguration( Xpp3DomBuilder.build( new InputStreamReader( is ) ) );
+                    Xpp3Dom plexusConfig =
+                        Xpp3DomBuilder.build( new InputStreamReader( is ) );
 
                     ai.setPrefix( plexusConfig.getChild( "goalPrefix" ).getValue() );
 
                     ai.setGoals( new ArrayList<>() );
 
-                    PlexusConfiguration[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
+                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
 
-                    for ( PlexusConfiguration mojoConfig : mojoConfigs )
+                    for ( Xpp3Dom mojoConfig : mojoConfigs )
                     {
                         ai.getGoals().add( mojoConfig.getChild( "goal" ).getValue() );
                     }

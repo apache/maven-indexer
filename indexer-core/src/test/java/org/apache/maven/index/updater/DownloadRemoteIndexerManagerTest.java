@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import com.google.inject.Injector;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jetty.server.Handler;
@@ -100,7 +101,7 @@ public class DownloadRemoteIndexerManagerTest
         overwriteIndex( index2, centralIndex );
 
         iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
@@ -111,7 +112,7 @@ public class DownloadRemoteIndexerManagerTest
         overwriteIndex( index1, centralIndex );
 
         iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
         // just a dummy filter to invoke filtering! -- this is what I broke unnoticing it
         iur.setDocumentFilter( doc -> true );
@@ -124,7 +125,7 @@ public class DownloadRemoteIndexerManagerTest
         overwriteIndex( index2, centralIndex );
 
         iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer() ).getWagonResourceFetcher( null ) );
+            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
