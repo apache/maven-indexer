@@ -65,7 +65,7 @@ public class RepositoryIndexerFactory
     private IndexingContext createIndexingContext( String repositoryId, File repositoryBasedir, File indexDir )
         throws IOException
     {
-        return getIndexer().createIndexingContext( repositoryId + "/ctx", repositoryId, repositoryBasedir, indexDir,
+        return getIndexer().createIndexingContext( repositoryId + "-ctx", repositoryId, repositoryBasedir, indexDir,
                                                    null, null, true,
                                                    // if context should be searched in non-targeted mode.
                                                    true, // if indexDirectory is known to contain (or should contain)
