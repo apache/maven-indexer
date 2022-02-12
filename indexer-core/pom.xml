@@ -195,19 +195,11 @@ under the License.
               <relocations>
                 <relocation>
                   <pattern>org.apache.lucene</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.lucene.search</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene.search</shadedPattern>
+                  <shadedPattern>org.apache.maven.index.shaded.org.apache.lucene</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.tartarus</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
-                </relocation>
-                <relocation>
-                  <pattern>org.apache.commons.compress</pattern>
-                  <shadedPattern>org.apache.maven.index_shaded.lucene</shadedPattern>
+                  <shadedPattern>org.apache.maven.index.shaded.org.tartarus</shadedPattern>
                 </relocation>
               </relocations>
               <artifactSet>
