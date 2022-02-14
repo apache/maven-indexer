@@ -24,7 +24,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.indexer</groupId>
     <artifactId>maven-indexer-examples</artifactId>
-    <version>6.1.1-SNAPSHOT</version>
+    <version>6.1.1</version>
   </parent>
 
   <artifactId>indexer-examples-spring</artifactId>
@@ -158,4 +158,8 @@ under the License.
     </profile>
   </profiles>
 
+
+  <scm>
+    <tag>maven-indexer-6.1.1</tag>
+  </scm>
 </project>
