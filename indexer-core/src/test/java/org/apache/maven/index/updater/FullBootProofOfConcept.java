@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Injector;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -168,7 +169,7 @@ public class FullBootProofOfConcept
             }
         };
 
-        WagonHelper wh = new WagonHelper( container );
+        WagonHelper wh = new WagonHelper( container.lookup( Injector.class ) );
 
         WagonFetcher wf = wh.getWagonResourceFetcher( tl, null, null );
 

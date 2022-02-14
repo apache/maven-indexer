@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Injector;
 import junit.framework.TestCase;
 
 import org.apache.maven.index.context.DefaultIndexingContext;
@@ -76,7 +77,7 @@ public class DefaultIndexUpdaterEmbeddingIT
 
         updater = container.lookup( IndexUpdater.class, "default" );
 
-        wagonHelper = new WagonHelper( container );
+        wagonHelper = new WagonHelper( container.lookup( Injector.class ) );
     }
 
     @Override
