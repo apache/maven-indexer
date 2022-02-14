@@ -125,7 +125,8 @@ public class DefaultIndexingContext
                                     String repositoryUrl, String indexUpdateUrl,
                                     List<? extends IndexCreator> indexCreators, Directory indexDirectory,
                                     TrackingLockFactory lockFactory,
-                                    boolean reclaimIndex )
+                                    boolean reclaimIndex,
+                                    File indexDirectoryFile )
         throws ExistingLuceneIndexMismatchException, IOException
     {
 
@@ -164,7 +165,7 @@ public class DefaultIndexingContext
 
         prepareIndex( reclaimIndex );
 
-        setIndexDirectoryFile( null );
+        setIndexDirectoryFile( indexDirectoryFile );
     }
 
     private DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -173,9 +174,8 @@ public class DefaultIndexingContext
         throws IOException, ExistingLuceneIndexMismatchException
     {
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators,
-            FSDirectory.open( indexDirectoryFile.toPath(), lockFactory ), lockFactory, reclaimIndex );
-
-        setIndexDirectoryFile( indexDirectoryFile );
+            FSDirectory.open( indexDirectoryFile.toPath(), lockFactory ), lockFactory, reclaimIndex,
+                indexDirectoryFile );
     }
 
     public DefaultIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
@@ -194,12 +194,9 @@ public class DefaultIndexingContext
         throws IOException, ExistingLuceneIndexMismatchException
     {
         this( id, repositoryId, repository, repositoryUrl, indexUpdateUrl, indexCreators, indexDirectory, null,
-              reclaimIndex ); // Lock factory already installed - pass null
-
-        if ( indexDirectory instanceof FSDirectory )
-        {
-            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory().toFile() );
-        }
+              reclaimIndex, indexDirectory instanceof FSDirectory
+                        ? ( (FSDirectory) indexDirectory ).getDirectory().toFile() : null
+        ); // Lock factory already installed - pass null
     }
 
     public Directory getIndexDirectory()
