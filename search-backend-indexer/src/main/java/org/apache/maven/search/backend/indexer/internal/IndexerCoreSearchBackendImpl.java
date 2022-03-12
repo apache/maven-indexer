@@ -41,7 +41,7 @@ import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.apache.maven.index.grouping.GAGrouping;
+import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.search.MAVEN;
 import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
