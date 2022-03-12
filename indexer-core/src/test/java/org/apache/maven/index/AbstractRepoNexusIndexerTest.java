@@ -32,7 +32,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Bits;
-import org.apache.maven.index.grouping.GAGrouping;
+import org.apache.maven.index.search.grouping.GAGrouping;
 
 public abstract class AbstractRepoNexusIndexerTest
     extends AbstractNexusIndexerTest

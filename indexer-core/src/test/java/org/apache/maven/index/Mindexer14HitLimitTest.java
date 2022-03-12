@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.apache.maven.index.grouping.GAGrouping;
+import org.apache.maven.index.search.grouping.GAGrouping;
 import org.codehaus.plexus.logging.Logger;
 import org.codehaus.plexus.logging.LoggerManager;
 
