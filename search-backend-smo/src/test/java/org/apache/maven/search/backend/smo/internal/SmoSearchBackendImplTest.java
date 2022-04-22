@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.maven.search.MAVEN;
 import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.SearchResponse;
+import org.apache.maven.search.backend.smo.SmoSearchResponse;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.FieldQuery;
 import org.apache.maven.search.request.Query;
@@ -83,13 +83,15 @@ public class SmoSearchBackendImplTest
         }
     }
 
-    private void dumpPage( SearchResponse searchResponse ) throws IOException
+    private void dumpPage( SmoSearchResponse searchResponse ) throws IOException
     {
         AtomicInteger counter = new AtomicInteger( 0 );
         System.out.println( "QUERY: " + searchResponse.getSearchRequest().getQuery().toString() );
+        System.out.println( "URL: " + searchResponse.getSearchUri() );
         dumpSingle( counter, searchResponse.getPage() );
-        while ( searchResponse.getCurrentHits() > 0 )
+        while ( searchResponse.getTotalHits() > searchResponse.getCurrentHits() )
         {
+            System.out.println( "NEXT PAGE (size " + searchResponse.getSearchRequest().getPaging().getPageSize() + ")" );
             searchResponse = backend.search( searchResponse.getSearchRequest().nextPage() );
             dumpSingle( counter, searchResponse.getPage() );
             if ( counter.get() > 50 )
@@ -105,7 +107,7 @@ public class SmoSearchBackendImplTest
     public void smoke() throws IOException
     {
         SearchRequest searchRequest = new SearchRequest( Query.query( "smoke" ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -114,7 +116,7 @@ public class SmoSearchBackendImplTest
     public void g() throws IOException
     {
         SearchRequest searchRequest = new SearchRequest( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -124,7 +126,7 @@ public class SmoSearchBackendImplTest
     {
         SearchRequest searchRequest = new SearchRequest( BooleanQuery.and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
                 FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ) ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -134,7 +136,7 @@ public class SmoSearchBackendImplTest
     {
         SearchRequest searchRequest = new SearchRequest( BooleanQuery.and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
                 FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ), FieldQuery.fieldQuery( MAVEN.VERSION, "3.1.0" ) ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -144,7 +146,7 @@ public class SmoSearchBackendImplTest
     {
         SearchRequest searchRequest = new SearchRequest(
                 FieldQuery.fieldQuery( MAVEN.SHA1, "8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12" ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -153,7 +155,7 @@ public class SmoSearchBackendImplTest
     public void cn() throws IOException
     {
         SearchRequest searchRequest = new SearchRequest( FieldQuery.fieldQuery( MAVEN.CLASS_NAME, "MavenRepositorySystem" ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
@@ -163,7 +165,7 @@ public class SmoSearchBackendImplTest
     {
         SearchRequest searchRequest = new SearchRequest(
                 FieldQuery.fieldQuery( MAVEN.FQ_CLASS_NAME, "org.apache.maven.bridge.MavenRepositorySystem" ) );
-        SearchResponse searchResponse = backend.search( searchRequest );
+        SmoSearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
     }
