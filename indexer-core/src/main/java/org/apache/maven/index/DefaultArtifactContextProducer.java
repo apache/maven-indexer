@@ -144,6 +144,7 @@ public class DefaultArtifactContextProducer
         String filename = file.getName();
 
         return !filename.equals( "maven-metadata.xml" )
+                && !( filename.startsWith( "maven-metadata-" ) && filename.endsWith( ".xml" ) )
                 // || filename.endsWith( "-javadoc.jar" )
                 // || filename.endsWith( "-javadocs.jar" )
                 // || filename.endsWith( "-sources.jar" )
