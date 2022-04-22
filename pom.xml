@@ -108,6 +108,12 @@ under the License.
       <!-- Reactor -->
       <dependency>
         <groupId>org.apache.maven.indexer</groupId>
+        <artifactId>search-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.maven.indexer</groupId>
         <artifactId>indexer-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -285,10 +291,25 @@ under the License.
     <module>indexer-cli</module>
     <module>indexer-reader</module>
     <module>indexer-examples</module>
+    <module>search-api</module>
+    <module>search-backend-indexer</module>
+    <module>search-backend-smo</module>
   </modules>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.0.0</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>extra-enforcer-rules</artifactId>
+            <version>1.4</version>
+          </dependency>
+        </dependencies>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
