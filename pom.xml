@@ -29,7 +29,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>6.1.2-SNAPSHOT</version>
+  <version>6.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
@@ -100,7 +100,7 @@ under the License.
     <slf4j.version>1.7.36</slf4j.version>
     <logback.version>1.2.11</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-    <project.build.outputTimestamp>2022-02-14T10:26:38Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2022-04-22T08:37:12Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
