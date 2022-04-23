@@ -91,7 +91,8 @@ public class M2GavCalculator
                 s = s.substring( 0, s.length() - 4 );
             }
 
-            if ( s.endsWith( "maven-metadata.xml" ) )
+            if ( s.endsWith( "maven-metadata.xml" )
+                    || ( fileName.startsWith( "maven-metadata-" ) && fileName.contains( ".xml" ) ) )
             {
                 return null;
             }

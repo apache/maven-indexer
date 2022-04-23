@@ -565,6 +565,26 @@ public class M2GavCalculatorTest
 
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path );
+
+        gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/1.0-SNAPSHOT/hintmod-1.0-SNAPSHOT.pom" );
+        assertEquals( "dev.mbien", gav.getGroupId() );
+        assertEquals( "hintmod", gav.getArtifactId() );
+        assertEquals( "1.0-SNAPSHOT", gav.getVersion() );
+        assertEquals( "1.0-SNAPSHOT", gav.getBaseVersion() );
+        assertEquals( null, gav.getClassifier() );
+        assertEquals( "pom", gav.getExtension() );
+        assertEquals( "hintmod-1.0-SNAPSHOT.pom", gav.getName() );
+        assertEquals( true, gav.isSnapshot() );
+        assertEquals( false, gav.isHash() );
+        assertEquals( null, gav.getHashType() );
+
+        path = gavCalculator.gavToPath( gav );
+        assertEquals( "/dev/mbien/hintmod/1.0-SNAPSHOT/hintmod-1.0-SNAPSHOT.pom", path );
+
+        gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/1.0-SNAPSHOT/maven-metadata-local.xml" ); // causes MINDEXER-144
+        assertNull( gav );
+        gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/maven-metadata-local.xml" );
+        assertNull( gav );
     }
 
     public void testNegGav()
