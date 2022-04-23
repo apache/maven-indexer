@@ -23,27 +23,32 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+
 import org.apache.maven.index.reader.WritableResourceHandler;
 
 /**
  * Wraps {@link WritableResourceHandler}s so that they return {@link WritableResource}s that return
  * {@link BufferedInputStream}s and {@link BufferedOutputStream}s.
  */
-public class BufferedWritableResourceHandler implements WritableResourceHandler {
-  private final WritableResourceHandler writableResourceHandler;
+public class BufferedWritableResourceHandler implements WritableResourceHandler
+{
+    private final WritableResourceHandler writableResourceHandler;
 
-  public BufferedWritableResourceHandler(WritableResourceHandler writableResourceHandler) {
-    Objects.requireNonNull(writableResourceHandler, "writableResourceHandler cannot be null");
-    this.writableResourceHandler = writableResourceHandler;
-  }
+    public BufferedWritableResourceHandler( WritableResourceHandler writableResourceHandler )
+    {
+        Objects.requireNonNull( writableResourceHandler, "writableResourceHandler cannot be null" );
+        this.writableResourceHandler = writableResourceHandler;
+    }
 
-  @Override
-  public WritableResource locate(String name) throws IOException {
-    return new BufferedWritableResource(writableResourceHandler.locate(name));
-  }
+    @Override
+    public WritableResource locate( String name ) throws IOException
+    {
+        return new BufferedWritableResource( writableResourceHandler.locate( name ) );
+    }
 
-  @Override
-  public void close() throws IOException {
-    writableResourceHandler.close();
-  }
+    @Override
+    public void close() throws IOException
+    {
+        writableResourceHandler.close();
+    }
 }
