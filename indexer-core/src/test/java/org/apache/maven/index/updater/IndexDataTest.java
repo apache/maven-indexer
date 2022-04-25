@@ -32,14 +32,12 @@ import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.AbstractRepoNexusIndexerTest;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexUtils;
-import org.apache.maven.index.updater.DefaultIndexUpdater;
-import org.apache.maven.index.updater.IndexDataWriter;
 
 /**
  * @author Eugene Kuleshov
@@ -53,7 +51,7 @@ public class IndexDataTest
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
         throws Exception
     {
-        indexDir = new RAMDirectory();
+        indexDir = new ByteBuffersDirectory();
 
         context =
             nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
@@ -82,7 +80,7 @@ public class IndexDataTest
 
         ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
 
-        newDir = new RAMDirectory();
+        newDir = new ByteBuffersDirectory();
 
         Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
 
@@ -94,7 +92,7 @@ public class IndexDataTest
     public void testEmptyContext()
         throws Exception
     {
-        indexDir = new RAMDirectory();
+        indexDir = new ByteBuffersDirectory();
 
         context =
             nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
@@ -119,7 +117,7 @@ public class IndexDataTest
 
         ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
 
-        newDir = new RAMDirectory();
+        newDir = new ByteBuffersDirectory();
 
         Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
 

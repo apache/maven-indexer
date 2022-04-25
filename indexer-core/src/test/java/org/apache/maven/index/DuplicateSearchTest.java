@@ -27,8 +27,8 @@ import java.util.HashSet;
 import junit.framework.Assert;
 
 import org.apache.lucene.search.Query;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 
@@ -39,11 +39,11 @@ public class DuplicateSearchTest
 
     protected IndexingContext context1;
 
-    protected Directory contextDir1 = new RAMDirectory();
+    protected Directory contextDir1 = new ByteBuffersDirectory();
 
     protected IndexingContext context2;
 
-    protected Directory contextDir2 = new RAMDirectory();
+    protected Directory contextDir2 = new ByteBuffersDirectory();
 
     @Override
     protected void prepareNexusIndexer( NexusIndexer nexusIndexer )

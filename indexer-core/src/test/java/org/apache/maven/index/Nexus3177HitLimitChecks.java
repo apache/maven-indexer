@@ -24,8 +24,8 @@ import java.util.Set;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 
 public class Nexus3177HitLimitChecks
@@ -33,7 +33,7 @@ public class Nexus3177HitLimitChecks
 {
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
-    protected Directory secondIndexDir = new RAMDirectory();
+    protected Directory secondIndexDir = new ByteBuffersDirectory();
 
     protected IndexingContext secondContext;
 

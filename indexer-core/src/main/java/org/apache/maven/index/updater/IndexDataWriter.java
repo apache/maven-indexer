@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexableField;
@@ -124,7 +125,7 @@ public class IndexDataWriter
             List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
             allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE,
                                             IndexerField.KEYWORD_STORED ) );
-            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
+            allGroupsFields.add( new StoredField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
                                             IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( allGroupsFields );
         }
@@ -133,7 +134,7 @@ public class IndexDataWriter
             List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
             rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE,
                                              IndexerField.KEYWORD_STORED ) );
-            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
+            rootGroupsFields.add( new StoredField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
                                              IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( rootGroupsFields );
         }

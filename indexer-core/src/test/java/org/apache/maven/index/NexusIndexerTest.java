@@ -40,7 +40,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.store.ByteBuffersDirectory;
+import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.MergedIndexingContext;
@@ -582,7 +583,7 @@ public class NexusIndexerTest
 
         indexer.removeIndexingContext( context, false );
 
-        RAMDirectory newDirectory = new RAMDirectory();
+        Directory newDirectory = new ByteBuffersDirectory();
 
         IndexingContext newContext = indexer.addIndexingContext( indexId, //
             repositoryId, repository, newDirectory, repositoryUrl, null, indexCreators );
