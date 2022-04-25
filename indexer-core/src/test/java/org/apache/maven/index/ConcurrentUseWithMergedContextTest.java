@@ -21,8 +21,8 @@ package org.apache.maven.index;
 
 import java.util.Arrays;
 
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 
 /**
@@ -34,11 +34,11 @@ import org.apache.maven.index.context.IndexingContext;
 public class ConcurrentUseWithMergedContextTest
     extends ConcurrentUseTest
 {
-    protected Directory indexDir1 = new RAMDirectory();
+    protected Directory indexDir1 = new ByteBuffersDirectory();
 
     protected IndexingContext context1;
 
-    protected Directory indexDir2 = new RAMDirectory();
+    protected Directory indexDir2 = new ByteBuffersDirectory();
 
     protected IndexingContext context2;
 

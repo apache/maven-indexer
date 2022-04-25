@@ -33,9 +33,9 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.IOContext;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
@@ -74,7 +74,7 @@ public class DefaultIndexUpdaterTest
 
         // updated index
 
-        Directory tempIndexDirectory = new RAMDirectory();
+        Directory tempIndexDirectory = new ByteBuffersDirectory();
 
         IndexingContext tempContext =
             indexer.addIndexingContext( repositoryId + "temp", repositoryId, null, tempIndexDirectory, repositoryUrl,
@@ -95,7 +95,7 @@ public class DefaultIndexUpdaterTest
 
         // A change in RAMDirectory and Directory behavior in general: it will copy the Index files ONLY
         // So we must make sure that timestamp file is transferred correctly.
-        RAMDirectory tempDir2 = new RAMDirectory();
+        ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
         IndexUtils.copyDirectory( tempContext.getIndexDirectory(), tempDir2 );
 
         Date newIndexTimestamp = tempContext.getTimestamp();
@@ -129,7 +129,7 @@ public class DefaultIndexUpdaterTest
         // updated index
 
         {
-            Directory tempIndexDirectory = new RAMDirectory();
+            Directory tempIndexDirectory = new ByteBuffersDirectory();
 
             IndexingContext tempContext =
                 indexer.addIndexingContext( repositoryId + "temp", repositoryId, null, tempIndexDirectory,
@@ -149,7 +149,7 @@ public class DefaultIndexUpdaterTest
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
             assertEquals( tempContent.toString(), 3, tempContent.size() );
 
-            RAMDirectory tempDir2 = new RAMDirectory();
+            ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
             for (String file : tempContext.getIndexDirectory().listAll())
             {
                 tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
@@ -178,7 +178,7 @@ public class DefaultIndexUpdaterTest
             context );
 
         {
-            Directory tempIndexDirectory = new RAMDirectory();
+            Directory tempIndexDirectory = new ByteBuffersDirectory();
 
             IndexingContext tempContext =
                 indexer.addIndexingContext( repositoryId + "temp", repositoryId, null, tempIndexDirectory,
@@ -196,7 +196,7 @@ public class DefaultIndexUpdaterTest
             indexer.deleteArtifactFromIndex(
                 createArtifactContext( repositoryId, "commons-lang", "commons-lang", "2.4", null ), tempContext );
 
-            RAMDirectory tempDir2 = new RAMDirectory();
+            ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
             for (String file : tempContext.getIndexDirectory().listAll())
             {
                 tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
@@ -219,14 +219,14 @@ public class DefaultIndexUpdaterTest
         throws Exception
     {
         File repo1 = new File( getBasedir(), "src/test/nexus-658" );
-        Directory indexDir1 = new RAMDirectory();
+        Directory indexDir1 = new ByteBuffersDirectory();
 
         IndexingContext context1 =
             indexer.addIndexingContext( "nexus-658", "nexus-658", repo1, indexDir1, null, null, DEFAULT_CREATORS );
         indexer.scan( context1 );
 
         File repo2 = new File( getBasedir(), "src/test/nexus-13" );
-        Directory indexDir2 = new RAMDirectory();
+        Directory indexDir2 = new ByteBuffersDirectory();
 
         IndexingContext context2 =
             indexer.addIndexingContext( "nexus-13", "nexus-13", repo2, indexDir2, null, null, DEFAULT_CREATORS );
@@ -259,7 +259,7 @@ public class DefaultIndexUpdaterTest
             context );
 
         {
-            Directory tempIndexDirectory = new RAMDirectory();
+            Directory tempIndexDirectory = new ByteBuffersDirectory();
 
             IndexingContext tempContext =
                 indexer.addIndexingContext( repositoryId + "temp", repositoryId, null, tempIndexDirectory,
@@ -274,7 +274,7 @@ public class DefaultIndexUpdaterTest
             indexer.addArtifactToIndex(
                 createArtifactContext( repositoryId, "org.slf4j.foo", "jcl104-over-slf4j", "1.4.2", null ), context );
 
-            RAMDirectory tempDir2 = new RAMDirectory();
+            ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
             for (String file : tempContext.getIndexDirectory().listAll())
             {
                 tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
