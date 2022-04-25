@@ -31,8 +31,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
@@ -121,7 +121,7 @@ public class Nexus13NexusIndexerTest
 
         Thread.sleep( 1000L );
 
-        Directory indexDir = new RAMDirectory();
+        Directory indexDir = new ByteBuffersDirectory();
 
         IndexingContext newContext =
             nexusIndexer.addIndexingContext( "test-new", "nexus-13", null, indexDir, null, null, DEFAULT_CREATORS );

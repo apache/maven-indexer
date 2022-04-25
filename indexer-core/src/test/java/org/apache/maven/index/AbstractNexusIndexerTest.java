@@ -23,12 +23,8 @@ import java.io.IOException;
 import java.util.Collection;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.RAMDirectory;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.FlatSearchRequest;
-import org.apache.maven.index.FlatSearchResponse;
-import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexingContext;
 
 public abstract class AbstractNexusIndexerTest
@@ -36,7 +32,7 @@ public abstract class AbstractNexusIndexerTest
 {
     protected NexusIndexer nexusIndexer;
 
-    protected Directory indexDir = new RAMDirectory();
+    protected Directory indexDir = new ByteBuffersDirectory();
 
     protected IndexingContext context;
 

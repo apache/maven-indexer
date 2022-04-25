@@ -369,7 +369,8 @@ public class DefaultIndexingContext
 
         hdr.add( new Field( FLD_DESCRIPTOR, FLD_DESCRIPTOR_CONTENTS, IndexerField.KEYWORD_STORED ) );
 
-        hdr.add( new StoredField( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId() ) );
+        hdr.add( new StoredField( FLD_IDXINFO, VERSION + ArtifactInfo.FS + getRepositoryId(),
+                IndexerField.KEYWORD_STORED  ) );
 
         IndexWriter w = getIndexWriter();
 
@@ -879,7 +880,7 @@ public class DefaultIndexingContext
     {
         final Document groupDoc = new Document();
         groupDoc.add( new Field( field, fieldValue, IndexerField.KEYWORD_STORED ) );
-        groupDoc.add( new StoredField( listField, ArtifactInfo.lst2str( groups ) ) );
+        groupDoc.add( new StoredField( listField, ArtifactInfo.lst2str( groups ), IndexerField.KEYWORD_STORED ) );
         return groupDoc;
     }
 

@@ -20,9 +20,10 @@ package org.apache.maven.index.context;
 
 import java.io.IOException;
 import java.util.Set;
+
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Lock;
 import org.apache.lucene.store.LockObtainFailedException;
-import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SingleInstanceLockFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,7 +40,7 @@ public class TrackingLockFactoryTest {
     @Test
     public void testLockUnlock() throws IOException {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
-        final RAMDirectory ram = new RAMDirectory(lf);
+        final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock foo = ram.obtainLock("foo");
         final Lock bar = ram.obtainLock("bar");
         bar.close();
@@ -50,7 +51,7 @@ public class TrackingLockFactoryTest {
     @Test
     public void testLockLocked() throws IOException {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
-        final RAMDirectory ram = new RAMDirectory(lf);
+        final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock foo = ram.obtainLock("foo");
         boolean thrownLOFE = false;
         try {
@@ -68,7 +69,7 @@ public class TrackingLockFactoryTest {
     @Test
     public void testEmmittedLocks() throws IOException {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
-        final RAMDirectory ram = new RAMDirectory(lf);
+        final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock l1 = ram.obtainLock("l1");
         final Lock l2 = ram.obtainLock("l2");
         final Lock l3 = ram.obtainLock("l3");
