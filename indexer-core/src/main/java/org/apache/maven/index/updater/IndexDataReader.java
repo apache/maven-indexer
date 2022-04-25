@@ -184,9 +184,8 @@ public class IndexDataReader
         {
             boolean tokenized = ( flags & IndexDataWriter.F_TOKENIZED ) > 0;
             fieldType.setTokenized( tokenized );
-            fieldType.setOmitNorms( !tokenized );
-            fieldType.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
         }
+        fieldType.setIndexOptions( IndexOptions.DOCS_AND_FREQS_AND_POSITIONS );
         fieldType.setStored( ( flags & IndexDataWriter.F_STORED ) > 0 );
 
         String name = dis.readUTF();
