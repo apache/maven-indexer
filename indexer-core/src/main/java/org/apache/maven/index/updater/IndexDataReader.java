@@ -100,7 +100,11 @@ public class IndexDataReader
 
                 rootGroups.add( ai.getRootGroup() );
                 allGroups.add( ai.getGroupId() );
-
+            }
+            else if ( doc.getField( ArtifactInfo.ALL_GROUPS ) != null
+                    || doc.getField( ArtifactInfo.ROOT_GROUPS ) != null )
+            {
+                // skip it
             }
             else
             {

@@ -115,10 +115,13 @@ public class NEXUS4149TransferFormatTest
 
         for ( IndexingContext member : mctx.getMembers() )
         {
-            Assert.assertEquals( "Members should have one root group!", 1, member.getRootGroups().size() );
+            if ( !"repo4".equals( member.getId() ) ) // repo4 is empty
+            {
+                Assert.assertEquals( "Members should have one root group!", 1, member.getRootGroups().size() );
+            }
         }
 
-        Assert.assertEquals( "Merged should have one root multiply members count!", mctx.getMembers().size(),
+        Assert.assertEquals( "Merged should have one root multiply members count (sans repo4)!", 3,
             mctx.getRootGroups().size() );
     }
 
