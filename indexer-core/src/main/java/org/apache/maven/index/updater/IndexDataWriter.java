@@ -26,9 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -66,10 +64,6 @@ public class IndexDataWriter
 
     private final BufferedOutputStream bos;
 
-    private final Set<String> allGroups;
-
-    private final Set<String> rootGroups;
-
     private boolean descriptorWritten;
 
     public IndexDataWriter( OutputStream os )
@@ -79,8 +73,6 @@ public class IndexDataWriter
         gos = new GZIPOutputStream( bos, 1024 * 2 );
         dos = new DataOutputStream( gos );
 
-        this.allGroups = new HashSet<>();
-        this.rootGroups = new HashSet<>();
         this.descriptorWritten = false;
     }
 
@@ -91,7 +83,7 @@ public class IndexDataWriter
 
         int n = writeDocuments( indexReader, docIndexes );
 
-        writeGroupFields();
+        writeGroupFields( context );
 
         close();
 
@@ -118,15 +110,15 @@ public class IndexDataWriter
         dos.writeLong( timestamp == null ? -1 : timestamp.getTime() );
     }
 
-    public void writeGroupFields()
+    public void writeGroupFields( IndexingContext context )
         throws IOException
     {
         {
             List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
             allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE,
                                             IndexerField.KEYWORD_STORED ) );
-            allGroupsFields.add( new StoredField( ArtifactInfo.ALL_GROUPS_LIST, ArtifactInfo.lst2str( allGroups ),
-                                            IndexerField.KEYWORD_STORED ) );
+            allGroupsFields.add( new StoredField( ArtifactInfo.ALL_GROUPS_LIST,
+                    ArtifactInfo.lst2str( context.getAllGroups() ), IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( allGroupsFields );
         }
 
@@ -134,8 +126,8 @@ public class IndexDataWriter
             List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
             rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE,
                                              IndexerField.KEYWORD_STORED ) );
-            rootGroupsFields.add( new StoredField( ArtifactInfo.ROOT_GROUPS_LIST, ArtifactInfo.lst2str( rootGroups ),
-                                             IndexerField.KEYWORD_STORED ) );
+            rootGroupsFields.add( new StoredField( ArtifactInfo.ROOT_GROUPS_LIST,
+                    ArtifactInfo.lst2str( context.getRootGroups() ), IndexerField.KEYWORD_STORED ) );
             writeDocumentFields( rootGroupsFields );
         }
     }
@@ -195,30 +187,6 @@ public class IndexDataWriter
                 {
                     descriptorWritten = true;
                 }
-            }
-
-            if ( ArtifactInfo.ALL_GROUPS.equals( field.name() ) )
-            {
-                final String groupList = document.get( ArtifactInfo.ALL_GROUPS_LIST );
-
-                if ( groupList != null && groupList.trim().length() > 0 )
-                {
-                    allGroups.addAll( ArtifactInfo.str2lst( groupList ) );
-                }
-
-                return false;
-            }
-
-            if ( ArtifactInfo.ROOT_GROUPS.equals( field.name() ) )
-            {
-                final String groupList = document.get( ArtifactInfo.ROOT_GROUPS_LIST );
-
-                if ( groupList != null && groupList.trim().length() > 0 )
-                {
-                    rootGroups.addAll( ArtifactInfo.str2lst( groupList ) );
-                }
-
-                return false;
             }
 
             if ( field.fieldType().stored() )

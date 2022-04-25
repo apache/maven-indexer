@@ -26,13 +26,14 @@ import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -48,7 +49,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -812,77 +812,29 @@ public class DefaultIndexingContext
     }
 
     public Set<String> getAllGroups()
-        throws IOException
     {
-        return getGroups( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
+        return allGroups.get();
     }
 
     public synchronized void setAllGroups( Collection<String> groups )
-        throws IOException
     {
-        setGroups( groups, ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, ArtifactInfo.ALL_GROUPS_LIST );
-        commit();
+        allGroups.set( new HashSet<>( groups ) );
     }
 
     public Set<String> getRootGroups()
         throws IOException
     {
-        return getGroups( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
+        return rootGroups.get();
     }
 
     public synchronized void setRootGroups( Collection<String> groups )
-        throws IOException
     {
-        setGroups( groups, ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, ArtifactInfo.ROOT_GROUPS_LIST );
-        commit();
+        rootGroups.set( new HashSet<>( groups ) );
     }
 
-    protected Set<String> getGroups( String field, String filedValue, String listField )
-        throws IOException, CorruptIndexException
-    {
-        final TopScoreDocCollector collector = TopScoreDocCollector.create( 1, Integer.MAX_VALUE );
-        final IndexSearcher indexSearcher = acquireIndexSearcher();
-        try
-        {
-            indexSearcher.search( new TermQuery( new Term( field, filedValue ) ), collector );
-            TopDocs topDocs = collector.topDocs();
-            // In Lucene 7 topDocs.totalHits is now a long, but we can safely cast this to an int because
-            // indexes are still bound to at most 2 billion (Integer.MAX_VALUE) documents
-            Set<String> groups = new LinkedHashSet<String>( (int) Math.max( 10L, topDocs.totalHits.value ) );
-            if ( topDocs.totalHits.value > 0 )
-            {
-                Document doc = indexSearcher.doc( topDocs.scoreDocs[0].doc );
-                String groupList = doc.get( listField );
-                if ( groupList != null )
-                {
-                    groups.addAll( Arrays.asList( groupList.split( "\\|" ) ) );
-                }
-            }
-            return groups;
-        }
-        finally
-        {
-            releaseIndexSearcher( indexSearcher );
-        }
-    }
+    private final AtomicReference<HashSet<String>> rootGroups = new AtomicReference<>( new HashSet<>() );
 
-    protected void setGroups( Collection<String> groups, String groupField, String groupFieldValue,
-                              String groupListField )
-        throws IOException, CorruptIndexException
-    {
-        final IndexWriter w = getIndexWriter();
-        w.updateDocument( new Term( groupField, groupFieldValue ),
-            createGroupsDocument( groups, groupField, groupFieldValue, groupListField ) );
-    }
-
-    protected Document createGroupsDocument( Collection<String> groups, String field, String fieldValue,
-                                             String listField )
-    {
-        final Document groupDoc = new Document();
-        groupDoc.add( new Field( field, fieldValue, IndexerField.KEYWORD_STORED ) );
-        groupDoc.add( new StoredField( listField, ArtifactInfo.lst2str( groups ), IndexerField.KEYWORD_STORED ) );
-        return groupDoc;
-    }
+    private final AtomicReference<HashSet<String>> allGroups = new AtomicReference<>( new HashSet<>() );
 
     @Override
     public String toString()
