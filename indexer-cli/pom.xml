@@ -36,6 +36,10 @@ under the License.
   <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
     UNWORKABLE! -->
 
+  <properties>
+    <shadedClassifier>shaded</shadedClassifier>
+  </properties>
+
   <dependencies>
     <!-- The indexer -->
     <dependency>
@@ -118,7 +122,8 @@ under the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <shadedClassifierName>${shadedClassifier}</shadedClassifierName>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <filters>
                 <filter>
@@ -161,7 +166,7 @@ under the License.
               <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</indexerJar>
+                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-${shadedClassifier}.jar</indexerJar>
               </systemPropertyVariables>
             </configuration>
           </execution>
