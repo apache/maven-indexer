@@ -26,9 +26,18 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
+import java.nio.file.Files;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.document.Document;
@@ -36,9 +45,15 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.context.NexusAnalyzer;
+import org.apache.maven.index.context.NexusIndexWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An index data reader used to parse transfer index format.
@@ -47,11 +62,26 @@ import org.apache.maven.index.context.IndexingContext;
  */
 public class IndexDataReader
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( IndexDataReader.class );
+
     private final DataInputStream dis;
 
+    private final int threads;
+
     public IndexDataReader( final InputStream is )
-        throws IOException
+            throws IOException
     {
+        this( is, 1 );
+    }
+
+    public IndexDataReader( final InputStream is, final int threads )
+            throws IOException
+    {
+        if ( threads < 1 || threads > 16 )
+        {
+            throw new IllegalArgumentException( "Threads allowed between 1-16, we got: " + threads );
+        }
+        this.threads = threads;
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
@@ -72,8 +102,23 @@ public class IndexDataReader
     }
 
     public IndexDataReadResult readIndex( IndexWriter w, IndexingContext context )
-        throws IOException
+            throws IOException
     {
+        if ( threads == 1 )
+        {
+            return readIndexST( w, context );
+        }
+        else
+        {
+            return readIndexMT( w, context );
+        }
+    }
+
+    private IndexDataReadResult readIndexST( IndexWriter w, IndexingContext context )
+            throws IOException
+    {
+        LOGGER.debug( "Reading ST index..." );
+        Instant start = Instant.now();
         long timestamp = readHeader();
 
         Date date = null;
@@ -88,28 +133,12 @@ public class IndexDataReader
         int n = 0;
 
         Document doc;
-        Set<String> rootGroups = new LinkedHashSet<>();
-        Set<String> allGroups = new LinkedHashSet<>();
+        ConcurrentMap<String, Boolean> rootGroups = new ConcurrentHashMap<>();
+        ConcurrentMap<String, Boolean> allGroups = new ConcurrentHashMap<>();
 
         while ( ( doc = readDocument() ) != null )
         {
-            ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
-            if ( ai != null )
-            {
-                w.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
-
-                rootGroups.add( ai.getRootGroup() );
-                allGroups.add( ai.getGroupId() );
-            }
-            else if ( doc.getField( ArtifactInfo.ALL_GROUPS ) != null
-                    || doc.getField( ArtifactInfo.ROOT_GROUPS ) != null )
-            {
-                // skip it
-            }
-            else
-            {
-                w.addDocument( doc );
-            }
+            addToIndex( doc, context, w, rootGroups, allGroups );
             n++;
         }
 
@@ -118,14 +147,161 @@ public class IndexDataReader
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
         result.setTimestamp( date );
-        result.setRootGroups( rootGroups );
-        result.setAllGroups( allGroups );
+        result.setRootGroups( rootGroups.keySet() );
+        result.setAllGroups( allGroups.keySet() );
 
+        LOGGER.debug( "Reading ST index done in {} sec", Duration.between( start, Instant.now() ).getSeconds() );
         return result;
     }
 
+    private IndexDataReadResult readIndexMT( IndexWriter w, IndexingContext context )
+            throws IOException
+    {
+        LOGGER.debug( "Reading MT index..." );
+        Instant start = Instant.now();
+        long timestamp = readHeader();
+
+        int n = 0;
+
+        final Document theEnd = new Document();
+
+        ConcurrentMap<String, Boolean> rootGroups = new ConcurrentHashMap<>();
+        ConcurrentMap<String, Boolean> allGroups = new ConcurrentHashMap<>();
+        ArrayBlockingQueue<Document> queue = new ArrayBlockingQueue<>( 10000 );
+
+        ExecutorService executorService = Executors.newFixedThreadPool( threads );
+        ArrayList<Exception> errors = new ArrayList<>();
+        ArrayList<IndexWriter> silos = new ArrayList<>( threads );
+        for ( int i = 0; i < threads; i++ )
+        {
+            final int silo = i;
+            silos.add( tempWriter( "silo" + i ) );
+            executorService.execute( () ->
+            {
+                LOGGER.debug( "Starting thread {}", Thread.currentThread().getName() );
+                try
+                {
+                    while ( true )
+                    {
+                        try
+                        {
+                            Document doc = queue.take();
+                            if ( doc == theEnd )
+                            {
+                                break;
+                            }
+                            addToIndex( doc, context, silos.get( silo ), rootGroups, allGroups );
+                        }
+                        catch ( InterruptedException | IOException e )
+                        {
+                            errors.add( e );
+                            break;
+                        }
+                    }
+                }
+                finally
+                {
+                    LOGGER.debug( "Done thread {}", Thread.currentThread().getName() );
+                }
+            } );
+        }
+
+        try
+        {
+            Document doc;
+            while ( ( doc = readDocument() ) != null )
+            {
+                queue.put( doc );
+                n++;
+            }
+            LOGGER.debug( "Signalling END" );
+            for ( int i = 0; i < threads; i++ )
+            {
+                queue.put( theEnd );
+            }
+
+            LOGGER.debug( "Shutting down threads" );
+            executorService.shutdown();
+            executorService.awaitTermination( 5L, TimeUnit.MINUTES );
+        }
+        catch ( InterruptedException e )
+        {
+            throw new IOException( "Interrupted", e );
+        }
+
+        if ( !errors.isEmpty() )
+        {
+            IOException exception = new IOException( "Error during load of index" );
+            errors.forEach( exception::addSuppressed );
+            throw exception;
+        }
+
+        LOGGER.debug( "Silos loaded..." );
+        Date date = null;
+        if ( timestamp != -1 )
+        {
+            date = new Date( timestamp );
+            IndexUtils.updateTimestamp( w.getDirectory(), date );
+        }
+
+        LOGGER.debug( "Merging silos..." );
+        for ( IndexWriter silo : silos )
+        {
+            IndexUtils.close( silo );
+            w.addIndexes( silo.getDirectory() );
+        }
+
+        LOGGER.debug( "Merged silos..." );
+        w.commit();
+
+        IndexDataReadResult result = new IndexDataReadResult();
+        result.setDocumentCount( n );
+        result.setTimestamp( date );
+        result.setRootGroups( rootGroups.keySet() );
+        result.setAllGroups( allGroups.keySet() );
+
+        LOGGER.debug( "Reading MT index done in {} sec", Duration.between( start, Instant.now() ).getSeconds() );
+        return result;
+    }
+
+    private FSDirectory tempDirectory( final String name ) throws IOException
+    {
+        return FSDirectory.open( Files.createTempDirectory( name + ".dir" ) );
+    }
+
+    private IndexWriter tempWriter( final String name ) throws IOException
+    {
+        IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
+        config.setUseCompoundFile( false );
+        return new NexusIndexWriter( tempDirectory( name ), config );
+    }
+
+    private void addToIndex( final Document doc, final IndexingContext context, final IndexWriter indexWriter,
+                             final ConcurrentMap<String, Boolean> rootGroups,
+                             final ConcurrentMap<String, Boolean> allGroups )
+            throws IOException
+    {
+        ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
+        if ( ai != null )
+        {
+            indexWriter.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
+
+            rootGroups.putIfAbsent( ai.getRootGroup(), Boolean.TRUE );
+            allGroups.putIfAbsent( ai.getGroupId(), Boolean.TRUE );
+        }
+        else
+        {
+            // these two fields are automatically handled in code above
+            if ( doc.getField( ArtifactInfo.ALL_GROUPS ) == null
+                    && doc.getField( ArtifactInfo.ROOT_GROUPS ) == null )
+            {
+                indexWriter.addDocument( doc );
+            }
+        }
+    }
+
     public long readHeader()
-        throws IOException
+            throws IOException
     {
         final byte hdrbyte = (byte) ( ( IndexDataWriter.VERSION << 24 ) >> 24 );
 
@@ -139,7 +315,7 @@ public class IndexDataReader
     }
 
     public Document readDocument()
-        throws IOException
+            throws IOException
     {
         int fieldCount;
         try
@@ -160,7 +336,7 @@ public class IndexDataReader
 
         // Fix up UINFO field wrt MINDEXER-41
         final Field uinfoField = (Field) doc.getField( ArtifactInfo.UINFO );
-        final String info =  doc.get( ArtifactInfo.INFO );
+        final String info = doc.get( ArtifactInfo.INFO );
         if ( uinfoField != null && info != null && !info.isEmpty() )
         {
             final String[] splitInfo = ArtifactInfo.FS_PATTERN.split( info );
@@ -179,7 +355,7 @@ public class IndexDataReader
     }
 
     private Field readField()
-        throws IOException
+            throws IOException
     {
         int flags = dis.read();
 
@@ -199,7 +375,7 @@ public class IndexDataReader
     }
 
     private static String readUTF( DataInput in )
-        throws IOException
+            throws IOException
     {
         int utflen = in.readInt();
 
@@ -214,7 +390,7 @@ public class IndexDataReader
         catch ( OutOfMemoryError e )
         {
             throw new IOException( "Index data content is inappropriate (is junk?), leads to OutOfMemoryError!"
-                + " See MINDEXER-28 for more information!", e );
+                    + " See MINDEXER-28 for more information!", e );
         }
 
         int c, char2, char3;
@@ -282,7 +458,7 @@ public class IndexDataReader
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
                     chararr[chararrCount++] =
-                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) ) );
+                            (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( ( char3 & 0x3F ) ) );
                     break;
 
                 default:
@@ -360,7 +536,7 @@ public class IndexDataReader
      * @throws IOException in case of an IO exception during index file access
      */
     public IndexDataReadResult readIndex( final IndexDataReadVisitor visitor, final IndexingContext context )
-        throws IOException
+            throws IOException
     {
         dis.readByte(); // data format version
 

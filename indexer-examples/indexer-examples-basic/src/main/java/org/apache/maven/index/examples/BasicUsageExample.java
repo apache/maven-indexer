@@ -129,6 +129,7 @@ public class BasicUsageExample
             Instant updateStart = Instant.now();
             System.out.println( "Updating Index..." );
             System.out.println( "This might take a while on first run, so please be patient!" );
+
             Date centralContextCurrentTimestamp = centralContext.getTimestamp();
             IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
             IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex( updateRequest );
