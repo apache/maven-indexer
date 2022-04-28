@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Maven 2 Index record.
+ * Maven Index record.
  *
  * @since 5.1.2
  */

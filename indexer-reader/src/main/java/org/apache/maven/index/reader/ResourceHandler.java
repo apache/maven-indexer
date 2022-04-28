@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Maven 2 Index resource abstraction, that should be handled as a resource (is {@link Closeable}. That means, that
+ * Maven Index resource abstraction, that should be handled as a resource (is {@link Closeable}. That means, that
  * implementations could perform any extra activity as FS locking or so (if uses FS as backing store). Is used by single
  * thread only.
  *

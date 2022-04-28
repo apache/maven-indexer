@@ -34,56 +34,64 @@ import java.io.OutputStream;
  * by name from specified existing directory.
  */
 public class DirectoryResourceHandler
-    implements WritableResourceHandler
+        implements WritableResourceHandler
 {
-  private final File rootDirectory;
+    private final File rootDirectory;
 
-  public DirectoryResourceHandler(final File rootDirectory) {
-    if (rootDirectory == null) {
-      throw new NullPointerException("null rootDirectory");
-    }
-    if (!rootDirectory.isDirectory()) {
-      throw new IllegalArgumentException("rootDirectory exists and is not a directory");
-    }
-    this.rootDirectory = rootDirectory;
-  }
-
-  public File getRootDirectory() {
-    return rootDirectory;
-  }
-
-  public WritableResource locate(final String name) throws IOException {
-    return new FileResource( new File( rootDirectory, name ) );
-  }
-
-  public void close() throws IOException {
-    // nop
-  }
-
-  private static class FileResource
-      implements WritableResource
-  {
-    private final File file;
-
-    private FileResource(final File file) {
-      this.file = file;
+    public DirectoryResourceHandler( final File rootDirectory )
+    {
+        if ( rootDirectory == null )
+        {
+            throw new NullPointerException( "null rootDirectory" );
+        }
+        if ( !rootDirectory.isDirectory() )
+        {
+            throw new IllegalArgumentException( "rootDirectory exists and is not a directory" );
+        }
+        this.rootDirectory = rootDirectory;
     }
 
-    public InputStream read() throws IOException {
-      try {
-        return new BufferedInputStream(new FileInputStream(file));
-      } catch (FileNotFoundException e) {
-        return null;
-      }
+    public WritableResource locate( final String name )
+    {
+        return new FileResource( new File( rootDirectory, name ) );
     }
 
-    public OutputStream write() throws IOException {
-      return new BufferedOutputStream(new FileOutputStream(file));
+    public void close() throws IOException
+    {
+        // nop
     }
 
-    public void close() throws IOException {
-      // nop
+    private static class FileResource
+            implements WritableResource
+    {
+        private final File file;
+
+        private FileResource( final File file )
+        {
+            this.file = file;
+        }
+
+        public InputStream read() throws IOException
+        {
+            try
+            {
+                return new BufferedInputStream( new FileInputStream( file ) );
+            }
+            catch ( FileNotFoundException e )
+            {
+                return null;
+            }
+        }
+
+        public OutputStream write() throws IOException
+        {
+            return new BufferedOutputStream( new FileOutputStream( file ) );
+        }
+
+        public void close() throws IOException
+        {
+            // nop
+        }
     }
-  }
 
 }

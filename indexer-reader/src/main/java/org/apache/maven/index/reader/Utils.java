@@ -19,11 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.Record.EntryKey;
-import org.apache.maven.index.reader.Record.Type;
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +29,11 @@ import java.util.HashMap;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
+
+import org.apache.maven.index.reader.Record.EntryKey;
+import org.apache.maven.index.reader.Record.Type;
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
 /**
  * Reusable code snippets and constants.
@@ -68,68 +68,34 @@ public final class Utils
     public static final Pattern FS_PATTERN = Pattern.compile( Pattern.quote( FIELD_SEPARATOR ) );
 
     /**
-     * Creates and loads {@link Properties} from provided {@link InputStream} and closes the stream.
-     */
-    public static Properties loadProperties( final InputStream inputStream )
-        throws IOException
-    {
-        try
-        {
-            final Properties properties = new Properties();
-            properties.load( inputStream );
-            return properties;
-        }
-        finally
-        {
-            inputStream.close();
-        }
-    }
-
-    /**
      * Creates and loads {@link Properties} from provided {@link Resource} if exists, and closes the resource. If not
      * exists, returns {@code null}.
      */
     public static Properties loadProperties( final Resource resource )
-        throws IOException
+            throws IOException
     {
         final InputStream inputStream = resource.read();
         if ( inputStream == null )
         {
             return null;
         }
-        return loadProperties( inputStream );
-    }
-
-    /**
-     * Saves {@link Properties} to provided {@link OutputStream} and closes the stream.
-     */
-    public static void storeProperties( final OutputStream outputStream, final Properties properties )
-        throws IOException
-    {
-        try
+        try ( InputStream is = inputStream )
         {
-            properties.store( outputStream, "Maven Indexer Writer" );
-        }
-        finally
-        {
-            outputStream.close();
+            final Properties properties = new Properties();
+            properties.load( is );
+            return properties;
         }
     }
-
 
     /**
      * Saves {@link Properties} to provided {@link WritableResource} and closes the resource.
      */
     public static void storeProperties( final WritableResource writableResource, final Properties properties )
-        throws IOException
+            throws IOException
     {
-        try
+        try ( OutputStream outputStream = writableResource.write() )
         {
-            storeProperties( writableResource.write(), properties );
-        }
-        finally
-        {
-            writableResource.close();
+            properties.store( outputStream, "Maven Indexer Writer" );
         }
     }
 

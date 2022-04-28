@@ -19,8 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.ParseException;
@@ -31,19 +29,24 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.maven.index.reader.ResourceHandler.Resource;
 
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven 2 Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
+ * Maven Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
  * read all the required records.
  *
  * @since 5.1.2
  */
 public class IndexReader
-    implements Iterable<ChunkReader>, Closeable
+        implements Iterable<ChunkReader>, Closeable
 {
+    private final AtomicBoolean closed;
+
     private final WritableResourceHandler local;
 
     private final ResourceHandler remote;
@@ -61,9 +64,10 @@ public class IndexReader
     private final List<String> chunkNames;
 
     public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
-        throws IOException
+            throws IOException
     {
         Objects.requireNonNull( remote, "remote resource handler null" );
+        this.closed = new AtomicBoolean( false );
         this.local = local;
         this.remote = remote;
         remoteIndexProperties = loadProperties( remote.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
@@ -85,8 +89,8 @@ public class IndexReader
                     if ( remoteIndexId == null || !remoteIndexId.equals( localIndexId ) )
                     {
                         throw new IllegalArgumentException(
-                            "local and remote index IDs does not match or is null: " + localIndexId + ", "
-                                + remoteIndexId );
+                                "local and remote index IDs does not match or is null: " + localIndexId + ", "
+                                        + remoteIndexId );
                     }
                     this.indexId = localIndexId;
                     this.incremental = canRetrieveAllChunks();
@@ -105,7 +109,7 @@ public class IndexReader
                 this.incremental = false;
             }
             this.publishedTimestamp =
-                Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
+                    Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
             this.chunkNames = calculateChunkNames();
         }
         catch ( ParseException e )
@@ -155,29 +159,32 @@ public class IndexReader
      * consumed all the iterator and integrated it, hence, it will update the {@link WritableResourceHandler} contents
      * to prepare it for future incremental update. If this is not desired (ie. due to aborted update), then this
      * method should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
-     * this class should be closed manually.
+     * this class should be closed manually. This method acts only of first call, all the possible subsequent calls
+     * end up doing nothing.
      */
     public void close()
-        throws IOException
+            throws IOException
     {
-        remote.close();
-        if ( local != null )
+        if ( closed.compareAndSet( false, true ) )
         {
-            try
+            remote.close();
+            if ( local != null )
             {
-                syncLocalWithRemote();
-            }
-            finally
-            {
-                local.close();
+                try
+                {
+                    syncLocalWithRemote();
+                }
+                finally
+                {
+                    local.close();
+                }
             }
         }
     }
 
     /**
      * Returns an {@link Iterator} of {@link ChunkReader}s, that if read in sequence, provide all the (incremental)
-     * updates from the index. It is caller responsibility to either consume fully this iterator, or to close current
-     * {@link ChunkReader} if aborting.
+     * updates from the index. It is caller responsibility to close each returned {@link ChunkReader}!
      */
     public Iterator<ChunkReader> iterator()
     {
@@ -189,7 +196,7 @@ public class IndexReader
      * for future incremental updates.
      */
     private void syncLocalWithRemote()
-        throws IOException
+            throws IOException
     {
         storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), remoteIndexProperties );
     }
@@ -234,7 +241,7 @@ public class IndexReader
         try
         {
             int localLastIncremental =
-                Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
+                    Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
             String currentLocalCounter = String.valueOf( localLastIncremental );
             String nextLocalCounter = String.valueOf( localLastIncremental + 1 );
             // check remote props for existence of current or next chunk after local
@@ -263,15 +270,11 @@ public class IndexReader
      * is being consumed.
      */
     private static class ChunkReaderIterator
-        implements Iterator<ChunkReader>
+            implements Iterator<ChunkReader>
     {
         private final ResourceHandler resourceHandler;
 
         private final Iterator<String> chunkNamesIterator;
-
-        private Resource currentResource;
-
-        private ChunkReader currentChunkReader;
 
         private ChunkReaderIterator( final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator )
         {
@@ -289,13 +292,8 @@ public class IndexReader
             String chunkName = chunkNamesIterator.next();
             try
             {
-                if ( currentChunkReader != null )
-                {
-                    currentChunkReader.close();
-                }
-                currentResource = resourceHandler.locate( chunkName );
-                currentChunkReader = new ChunkReader( chunkName, currentResource.read() );
-                return currentChunkReader;
+                Resource currentResource = resourceHandler.locate( chunkName );
+                return new ChunkReader( chunkName, currentResource.read() );
             }
             catch ( IOException e )
             {

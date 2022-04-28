@@ -34,7 +34,7 @@ import static org.apache.maven.index.reader.Utils.renvl;
 
 
 /**
- * Maven 2 Index record transformer, that transforms "native" Maven Indexer records into {@link Record}s.
+ * Maven Index record transformer, that transforms "native" Maven Indexer records into {@link Record}s.
  *
  * @since 5.1.2
  */

@@ -30,7 +30,9 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Maven 2 Index published binary chunk writer, it writes raw Maven Indexer records to the transport binary format.
+ * Maven Index published binary chunk writer, it writes raw Maven Indexer records to the transport binary format.
+ * Instances of this class MUST BE handled as resources (have them closed once done with them), it is user
+ * responsibility to close them, ideally in try-with-resource block.
  *
  * @since 5.1.2
  */

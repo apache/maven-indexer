@@ -30,7 +30,7 @@ import static org.apache.maven.index.reader.Utils.UINFO;
 import static org.apache.maven.index.reader.Utils.nvl;
 
 /**
- * Maven 2 Index record transformer, that transforms {@link Record}s into "native" Maven Indexer records.
+ * Maven Index record transformer, that transforms {@link Record}s into "native" Maven Indexer records.
  *
  * @since 5.1.2
  */

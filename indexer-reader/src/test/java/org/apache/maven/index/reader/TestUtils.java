@@ -19,76 +19,80 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.Record.Type;
-
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.maven.index.reader.Record.Type;
+
 import static com.google.common.collect.Iterables.concat;
 import static java.util.Collections.singletonList;
-import static org.apache.maven.index.reader.Utils.*;
+import static org.apache.maven.index.reader.Utils.allGroups;
+import static org.apache.maven.index.reader.Utils.descriptor;
+import static org.apache.maven.index.reader.Utils.rootGroup;
+import static org.apache.maven.index.reader.Utils.rootGroups;
 
 /**
  * Helpers to transform records from one to another representation, and, some helpers for publishing using Guava.
  */
 public final class TestUtils
 {
-  private TestUtils() {
-    // nothing
-  }
-
-  private static final RecordCompactor RECORD_COMPACTOR = new RecordCompactor();
-
-  private static final RecordExpander RECORD_EXPANDER = new RecordExpander();
-
-  public static Function<Record, Map<String, String>> compactFunction = RECORD_COMPACTOR::apply;
-
-  public static Function<Map<String, String>, Record> expandFunction = RECORD_EXPANDER::apply;
-
-  /**
-   * Helper method, that "decorates" the stream of records to be written out with "special" Maven Indexer records, so
-   * all the caller is needed to provide {@link Iterable} or {@link Record}s <strong>to be</strong> on the index, with
-   * record type {@link Type#ARTIFACT_ADD}. This method will create the output as "proper" Maven Indexer record
-   * stream, by adding the {@link Type#DESCRIPTOR}, {@link Type#ROOT_GROUPS} and {@link Type#ALL_GROUPS} special
-   * records.
-   */
-  public static Iterable<Record> decorate(final Iterable<Record> iterable,
-                                          final String repoId)
-  {
-    final TreeSet<String> allGroupsSet = new TreeSet<>();
-    final TreeSet<String> rootGroupsSet = new TreeSet<>();
-    return StreamSupport.stream(
-            concat( singletonList( descriptor( repoId ) ), iterable, singletonList( allGroups( allGroupsSet ) ),
-                    // placeholder, will be recreated at the end with proper content
-                    singletonList( rootGroups( rootGroupsSet ) )
-                    // placeholder, will be recreated at the end with proper content
-            ).spliterator(), false ).map( rec ->
+    private TestUtils()
     {
-      if ( Type.DESCRIPTOR == rec.getType() )
-      {
-        return rec;
-      }
-      else if ( Type.ALL_GROUPS == rec.getType() )
-      {
-        return allGroups( allGroupsSet );
-      }
-      else if ( Type.ROOT_GROUPS == rec.getType() )
-      {
-        return rootGroups( rootGroupsSet );
-      }
-      else
-      {
-        final String groupId = rec.get( Record.GROUP_ID );
-        if ( groupId != null )
+        // nothing
+    }
+
+    private static final RecordCompactor RECORD_COMPACTOR = new RecordCompactor();
+
+    private static final RecordExpander RECORD_EXPANDER = new RecordExpander();
+
+    public static Function<Record, Map<String, String>> compactFunction = RECORD_COMPACTOR::apply;
+
+    public static Function<Map<String, String>, Record> expandFunction = RECORD_EXPANDER::apply;
+
+    /**
+     * Helper method, that "decorates" the stream of records to be written out with "special" Maven Indexer records, so
+     * all the caller is needed to provide {@link Iterable} or {@link Record}s <strong>to be</strong> on the index, with
+     * record type {@link Type#ARTIFACT_ADD}. This method will create the output as "proper" Maven Indexer record
+     * stream, by adding the {@link Type#DESCRIPTOR}, {@link Type#ROOT_GROUPS} and {@link Type#ALL_GROUPS} special
+     * records.
+     */
+    public static Iterable<Record> decorate( final Iterable<Record> iterable,
+                                             final String repoId )
+    {
+        final TreeSet<String> allGroupsSet = new TreeSet<>();
+        final TreeSet<String> rootGroupsSet = new TreeSet<>();
+        return StreamSupport.stream(
+                concat( singletonList( descriptor( repoId ) ), iterable, singletonList( allGroups( allGroupsSet ) ),
+                        // placeholder, will be recreated at the end with proper content
+                        singletonList( rootGroups( rootGroupsSet ) )
+                        // placeholder, will be recreated at the end with proper content
+                ).spliterator(), false ).map( rec ->
         {
-          allGroupsSet.add( groupId );
-          rootGroupsSet.add( rootGroup( groupId ) );
-        }
-        return rec;
-      }
-    } ).collect( Collectors.toList() );
-  }
+            if ( Type.DESCRIPTOR == rec.getType() )
+            {
+                return rec;
+            }
+            else if ( Type.ALL_GROUPS == rec.getType() )
+            {
+                return allGroups( allGroupsSet );
+            }
+            else if ( Type.ROOT_GROUPS == rec.getType() )
+            {
+                return rootGroups( rootGroupsSet );
+            }
+            else
+            {
+                final String groupId = rec.get( Record.GROUP_ID );
+                if ( groupId != null )
+                {
+                    allGroupsSet.add( groupId );
+                    rootGroupsSet.add( rootGroup( groupId ) );
+                }
+                return rec;
+            }
+        } ).collect( Collectors.toList() );
+    }
 }

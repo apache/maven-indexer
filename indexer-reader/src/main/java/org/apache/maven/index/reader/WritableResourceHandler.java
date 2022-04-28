@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Maven 2 Index writable {@link ResourceHandler}, is capable of saving resources too. Needed only if incremental index
+ * Maven Index writable {@link ResourceHandler}, is capable of saving resources too. Needed only if incremental index
  * updates are wanted, to store the index state locally, and be able to calculate incremental diffs on next {@link
  * IndexReader} invocation. Is used by single thread only.
  *

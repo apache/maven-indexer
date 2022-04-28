@@ -19,8 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.ParseException;
@@ -30,12 +28,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven 2 Index writer that writes chunk and maintains published property file.
+ * Maven Index writer that writes chunk and maintains published property file.
  * <p/>
  * <strong>Currently no incremental update is supported, as the deleteion states should be maintained by
  * caller</strong>. Hence, this writer will always produce the "main" chunk only.
@@ -43,9 +44,11 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  * @since 5.1.2
  */
 public class IndexWriter
-    implements Closeable
+        implements Closeable
 {
     private static final int INDEX_V1 = 1;
+
+    private final AtomicBoolean closed;
 
     private final WritableResourceHandler local;
 
@@ -58,10 +61,11 @@ public class IndexWriter
     private final String nextChunkName;
 
     public IndexWriter( final WritableResourceHandler local, final String indexId, final boolean incrementalSupported )
-        throws IOException
+            throws IOException
     {
         Objects.requireNonNull( local, "local resource handler null" );
         Objects.requireNonNull( indexId, "indexId null" );
+        this.closed = new AtomicBoolean( false );
         this.local = local;
         Properties indexProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
         if ( incrementalSupported && indexProperties != null )
@@ -72,7 +76,7 @@ public class IndexWriter
             if ( localIndexId == null || !localIndexId.equals( indexId ) )
             {
                 throw new IllegalArgumentException(
-                    "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
+                        "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
             }
             this.incremental = true;
             this.nextChunkCounter = calculateNextChunkCounter();
@@ -149,7 +153,7 @@ public class IndexWriter
      * Writes out the record iterator and returns the written record count.
      */
     public int writeChunk( final Iterator<Map<String, String>> iterator )
-        throws IOException
+            throws IOException
     {
         int written;
 
@@ -172,23 +176,28 @@ public class IndexWriter
      * Closes the underlying {@link ResourceHandler} and synchronizes published index properties, so remote clients
      * becomes able to consume newly published index. If sync is not desired (ie. due to aborted publish), then this
      * method should NOT be invoked, but rather the {@link ResourceHandler} that caller provided in constructor of
-     * this class should be closed manually.
+     * this class should be closed manually. This method acts only of first call, all the possible subsequent calls
+     * end up doing nothing.
      */
     public void close()
-        throws IOException
+            throws IOException
     {
-        try
+        if ( closed.compareAndSet( false, true ) )
         {
-            if ( incremental )
+            try
             {
-                localIndexProperties.setProperty( "nexus.index.last-incremental", nextChunkCounter );
+                if ( incremental )
+                {
+                    localIndexProperties.setProperty( "nexus.index.last-incremental", nextChunkCounter );
+                }
+                localIndexProperties.setProperty( "nexus.index.timestamp",
+                        Utils.INDEX_DATE_FORMAT.format( new Date() ) );
+                storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), localIndexProperties );
             }
-            localIndexProperties.setProperty( "nexus.index.timestamp", Utils.INDEX_DATE_FORMAT.format( new Date() ) );
-            storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), localIndexProperties );
-        }
-        finally
-        {
-            local.close();
+            finally
+            {
+                local.close();
+            }
         }
     }
 

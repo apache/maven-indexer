@@ -34,7 +34,21 @@ import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Maven 2 Index published binary chunk reader, it reads raw Maven Indexer records from the transport binary format.
+ * Maven Index published binary chunk reader, it reads raw Maven Indexer records from the transport binary format.
+ * Instances of this class MUST BE handled as resources (have them closed once done with them), it is user
+ * responsibility to close them, ideally in try-with-resource block.
+ *
+ * Example:
+ * <pre>
+ * Iterator&lt;ChunkReader&gt; chunkReaders = indexReader.iterator();
+ * while ( chunkReaders.hasNext() )
+ * {
+ *   try ( ChunkReader chunkReader = chunkReaders.next() )
+ *   {
+ *       ... use chunk reader
+ *   }
+ * }
+ * </pre>
  *
  * @since 5.1.2
  */
