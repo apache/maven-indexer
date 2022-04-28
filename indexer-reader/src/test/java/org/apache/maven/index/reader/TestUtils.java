@@ -23,12 +23,11 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.apache.maven.index.reader.Record.Type;
 
-import static com.google.common.collect.Iterables.concat;
-import static java.util.Collections.singletonList;
 import static org.apache.maven.index.reader.Utils.allGroups;
 import static org.apache.maven.index.reader.Utils.descriptor;
 import static org.apache.maven.index.reader.Utils.rootGroup;
@@ -64,12 +63,15 @@ public final class TestUtils
     {
         final TreeSet<String> allGroupsSet = new TreeSet<>();
         final TreeSet<String> rootGroupsSet = new TreeSet<>();
-        return StreamSupport.stream(
-                concat( singletonList( descriptor( repoId ) ), iterable, singletonList( allGroups( allGroupsSet ) ),
-                        // placeholder, will be recreated at the end with proper content
-                        singletonList( rootGroups( rootGroupsSet ) )
-                        // placeholder, will be recreated at the end with proper content
-                ).spliterator(), false ).map( rec ->
+        return Stream.concat(
+                Stream.of( descriptor( repoId ) ),
+                Stream.concat(
+                        StreamSupport.stream( iterable.spliterator(), false ),
+                        Stream.concat(
+                                Stream.of( allGroups( allGroupsSet ) ),
+                                Stream.of( rootGroups( rootGroupsSet ) )
+                        )
+                ) ).map( rec ->
         {
             if ( Type.DESCRIPTOR == rec.getType() )
             {
