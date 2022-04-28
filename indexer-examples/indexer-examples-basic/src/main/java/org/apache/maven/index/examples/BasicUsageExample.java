@@ -164,7 +164,8 @@ public class BasicUsageExample
 
                 public void transferCompleted( TransferEvent transferEvent )
                 {
-                    System.out.println( " - Done in " + Duration.between( start, Instant.now() ).getSeconds() + " sec" );
+                    System.out.println( " - Done in "
+                            + Duration.between( start, Instant.now() ).getSeconds() + " sec" );
                 }
             };
             ResourceFetcher resourceFetcher = new WagonHelper.WagonFetcher( httpWagon, listener, null, null );
