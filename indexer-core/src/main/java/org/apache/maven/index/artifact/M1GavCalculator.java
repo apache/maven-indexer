@@ -29,9 +29,11 @@ import java.util.regex.Pattern;
  * 
  * @author Jason van Zyl
  * @author Tamas Cservenak
+ * @deprecated Maven1 support to be dropped.
  */
 @Singleton
 @Named( "maven1" )
+@Deprecated
 public class M1GavCalculator
     implements GavCalculator
 {
@@ -144,9 +146,6 @@ public class M1GavCalculator
 
     /**
      * // XXX this is not accurate, m1 is using packaging as an artifact folder name.
-     * 
-     * @see org.apache.maven.artifact.repository.layout.LegacyRepositoryLayout#pathOf(org.apache.maven.artifact.Artifact)
-     * @see org.apache.maven.artifact.handler.DefaultArtifactHandler#getDirectory()
      */
     public String gavToPath( Gav gav )
     {

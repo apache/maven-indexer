@@ -21,7 +21,10 @@ package org.apache.maven.index.artifact;
 
 /**
  * Utility methods for basic "detection" of artifact kind in M1 repository.
+ *
+ * @deprecated Maven1 support to be dropped.
  */
+@Deprecated
 public class M1ArtifactRecognizer
 {
     /**
