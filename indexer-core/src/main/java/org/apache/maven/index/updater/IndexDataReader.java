@@ -102,7 +102,7 @@ public class IndexDataReader
 
         int n = 0;
 
-        final Document END = new Document();
+        final Document theEnd = new Document();
 
         ConcurrentMap<String, Boolean> rootGroups = new ConcurrentHashMap<>();
         ConcurrentMap<String, Boolean> allGroups = new ConcurrentHashMap<>();
@@ -113,7 +113,8 @@ public class IndexDataReader
 
         for ( int i = 0; i < threads; i++ )
         {
-            executorService.execute( () -> {
+            executorService.execute( () ->
+            {
                 LOGGER.info( "Starting thread {}", Thread.currentThread().getName() );
                 try
                 {
@@ -122,7 +123,7 @@ public class IndexDataReader
                         try
                         {
                             Document doc = queue.take();
-                            if ( doc == END )
+                            if ( doc == theEnd )
                             {
                                 break;
                             }
@@ -153,7 +154,7 @@ public class IndexDataReader
             LOGGER.info( "Signalling END" );
             for ( int i = 0; i < threads; i++ )
             {
-                queue.put( END );
+                queue.put( theEnd );
             }
 
             LOGGER.info( "Shutting down threads" );
