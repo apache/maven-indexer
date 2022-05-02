@@ -58,7 +58,7 @@ under the License.
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
-        <scope>test</scope>
+        <scope>runtime</scope>
       </dependency>
 
       <dependency>
