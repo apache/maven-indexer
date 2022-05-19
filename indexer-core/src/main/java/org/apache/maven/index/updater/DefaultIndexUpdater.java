@@ -231,7 +231,7 @@ public class DefaultIndexUpdater
             }
             else
             {
-                updateRequest.getIndexingContext().replace( directory, rootGroups, allGroups );
+                updateRequest.getIndexingContext().replace( directory, allGroups, rootGroups );
             }
             if ( sideEffects != null && sideEffects.size() > 0 )
             {
