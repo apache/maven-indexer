@@ -24,10 +24,9 @@ on:
 jobs:
   build:
     name: Verify
-    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v2
+    uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@ff-flags
     with:
-      ff-jdk: '17'
-      ff-site-goal: '-v'
+      ff-run: false
       maven_version: 3.8.5
       jdk-matrix: '[ "17" ]'
 
