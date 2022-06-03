@@ -153,9 +153,9 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return encodeQueryParameterValue( query.getValue() );
     }
 
-    private String encodeQueryParameterValue( String parameterValue ) throws UnsupportedEncodingException
+    private String encodeQueryParameterValue( String parameterValue )
     {
-        return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8.name() )
+        return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8 )
                 .replace( "+", "%20" );
     }
 

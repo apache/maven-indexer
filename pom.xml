@@ -324,7 +324,6 @@ under the License.
           </executions>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
-            <failOnViolations>false</failOnViolations> <!-- TODO: enable this once cleaned up -->
           </configuration>
         </plugin>
         <plugin>

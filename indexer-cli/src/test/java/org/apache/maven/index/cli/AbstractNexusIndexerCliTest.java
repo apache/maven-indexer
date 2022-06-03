@@ -80,7 +80,7 @@ public abstract class AbstractNexusIndexerCliTest
         out = new OutputStream()
         {
 
-            private StringBuffer buf = new StringBuffer();
+            private StringBuilder buf = new StringBuilder();
 
             @Override
             public void write( int b )
@@ -95,7 +95,7 @@ public abstract class AbstractNexusIndexerCliTest
             public String toString()
             {
                 String string = buf.toString();
-                buf = new StringBuffer();
+                buf = new StringBuilder();
                 return string;
             }
         };

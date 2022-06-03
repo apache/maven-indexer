@@ -45,7 +45,7 @@ public class UrlConnectionSmoSearchTransport extends SmoSearchTransportSupport
         {
             try ( InputStream inputStream = httpConnection.getInputStream() )
             {
-                try ( Scanner scanner = new Scanner( inputStream, StandardCharsets.UTF_8.name() ) )
+                try ( Scanner scanner = new Scanner( inputStream, StandardCharsets.UTF_8 ) )
                 {
                     return scanner.useDelimiter( "\\A" ).next();
                 }

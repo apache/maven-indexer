@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -334,7 +335,7 @@ public class NexusIndexerTest
         StringWriter ressw = new StringWriter();
         PrintWriter respw = new PrintWriter( ressw );
 
-        BufferedReader reader = new BufferedReader( new FileReader( expectedResults ) );
+        BufferedReader reader = new BufferedReader( new FileReader( expectedResults, StandardCharsets.UTF_8 ) );
         String currentline;
 
         while ( ( currentline = reader.readLine() ) != null )
