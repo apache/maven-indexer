@@ -29,7 +29,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>6.2.1-SNAPSHOT</version>
+  <version>7.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
@@ -74,7 +74,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-indexer/</url>
+    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-indexer/</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -105,7 +105,7 @@ under the License.
     <slf4j.version>1.7.36</slf4j.version>
     <logback.version>1.2.11</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-    <project.build.outputTimestamp>2022-05-02T13:04:00Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2022-06-03T08:51:57Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
@@ -233,6 +233,11 @@ under the License.
       </dependency>
 
       <!-- Maven -->
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.4.2</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
