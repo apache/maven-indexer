@@ -82,7 +82,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
      */
     public SmoSearchBackendImpl()
     {
-        this( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new UrlConnectionSmoSearchTransport() );
+        this( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new Java11HttpClientSmoSearchTransport() );
     }
 
     /**
