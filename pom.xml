@@ -97,8 +97,8 @@ under the License.
     <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
     <lucene.version>8.11.1</lucene.version>
-    <maven.version>3.8.5</maven.version>
-    <resolver.version>1.8.0</resolver.version>
+    <maven.version>3.8.6</maven.version>
+    <resolver.version>1.8.1</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <wagon.version>3.5.1</wagon.version>
     <surefire.version>3.0.0-M6</surefire.version>
