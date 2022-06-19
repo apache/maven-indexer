@@ -82,7 +82,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
      */
     public SmoSearchBackendImpl()
     {
-        this( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new UrlConnectionSmoSearchTransport() );
+        this( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new Java11HttpClientSmoSearchTransport() );
     }
 
     /**
@@ -153,9 +153,9 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return encodeQueryParameterValue( query.getValue() );
     }
 
-    private String encodeQueryParameterValue( String parameterValue ) throws UnsupportedEncodingException
+    private String encodeQueryParameterValue( String parameterValue )
     {
-        return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8.name() )
+        return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8 )
                 .replace( "+", "%20" );
     }
 

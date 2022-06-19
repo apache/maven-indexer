@@ -84,7 +84,12 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
+    <javaVersion>11</javaVersion>
+    <maven.compiler.source>${javaVersion}</maven.compiler.source>
+    <maven.compiler.target>${javaVersion}</maven.compiler.target>
+    <minimalMavenBuildVersion>3.8.5</minimalMavenBuildVersion>
+    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
+
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
@@ -302,80 +307,31 @@ under the License.
   </modules>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
-          <systemPropertyVariables>
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <signature>
-            <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java1${javaVersion}</artifactId>
-            <version>1.0</version>
-          </signature>
-        </configuration>
-        <executions>
-          <execution>
-            <id>check-java-compat</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>rat-check</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <excludes combine.children="append">
-                <exclude>README.md</exclude>
-                <exclude>.gitignore</exclude>
-                <exclude>NOTICE</exclude>
-                <exclude>**/packageinfo</exclude>
-                <exclude>.git/**</exclude>
-                <exclude>.idea/**</exclude>
-                <exclude>**/*.iml</exclude>
-                <!-- exlude some test resources from rat analysis -->
-                <exclude>src/test/**/*.sha1</exclude>
-                <exclude>src/test/**/*.md5</exclude>
-                <exclude>src/test/**/*.xml</exclude>
-                <exclude>src/test/**/*.pom</exclude>
-                <exclude>src/test/**/*.asc</exclude>
-                <exclude>src/test/**/*.properties</exclude>
-                <exclude>src/test/**/*.swc</exclude>
-                <exclude>src/test/**/*.txt</exclude>
-                <exclude>src/test/**/*.filename</exclude>
-                <exclude>src/test/**/.placeholder</exclude>
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.21</version>
+          <groupId>org.gaul</groupId>
+          <artifactId>modernizer-maven-plugin</artifactId>
+          <version>2.4.0</version>
+          <executions>
+            <execution>
+              <id>modernizer</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>modernizer</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <javaVersion>${javaVersion}</javaVersion>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <release>${javaVersion}</release>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -385,7 +341,7 @@ under the License.
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>9.3</version>
+              <version>10.3</version>
             </dependency>
             <dependency>
               <groupId>org.apache.maven.shared</groupId>
@@ -410,6 +366,59 @@ under the License.
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.gaul</groupId>
+        <artifactId>modernizer-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+          <systemPropertyVariables>
+            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>rat-check</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <excludes combine.children="append">
+                <exclude>*.md</exclude>
+                <exclude>.gitignore</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>**/packageinfo</exclude>
+                <exclude>.git/**</exclude>
+                <exclude>.idea/**</exclude>
+                <exclude>**/*.iml</exclude>
+                <!-- exlude some test resources from rat analysis -->
+                <exclude>src/test/**/*.sha1</exclude>
+                <exclude>src/test/**/*.md5</exclude>
+                <exclude>src/test/**/*.xml</exclude>
+                <exclude>src/test/**/*.pom</exclude>
+                <exclude>src/test/**/*.asc</exclude>
+                <exclude>src/test/**/*.properties</exclude>
+                <exclude>src/test/**/*.swc</exclude>
+                <exclude>src/test/**/*.txt</exclude>
+                <exclude>src/test/**/*.filename</exclude>
+                <exclude>src/test/**/.placeholder</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <reporting>

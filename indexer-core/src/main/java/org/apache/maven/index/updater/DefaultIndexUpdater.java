@@ -35,6 +35,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -540,8 +541,6 @@ public class DefaultIndexUpdater
     {
         private static final String CHUNKS_FILENAME = "chunks.lst";
 
-        private static final String CHUNKS_FILE_ENCODING = "UTF-8";
-
         private final IndexUpdateResult result;
 
         private final ArrayList<String> newChunks = new ArrayList<>();
@@ -612,7 +611,7 @@ public class DefaultIndexUpdater
         {
             File chunksFile = new File( dir, CHUNKS_FILENAME );
             try ( BufferedOutputStream os = new BufferedOutputStream( new FileOutputStream( chunksFile, true ) ); //
-                            Writer w = new OutputStreamWriter( os, CHUNKS_FILE_ENCODING ) )
+                            Writer w = new OutputStreamWriter( os, StandardCharsets.UTF_8 ) )
             {
                 for ( String filename : newChunks )
                 {
@@ -630,7 +629,8 @@ public class DefaultIndexUpdater
 
             File chunksFile = new File( dir, CHUNKS_FILENAME );
             try ( BufferedReader r =
-                new BufferedReader( new InputStreamReader( new FileInputStream( chunksFile ), CHUNKS_FILE_ENCODING ) ) )
+                new BufferedReader( new InputStreamReader(
+                        new FileInputStream( chunksFile ), StandardCharsets.UTF_8 ) ) )
             {
                 String str;
                 while ( ( str = r.readLine() ) != null )
