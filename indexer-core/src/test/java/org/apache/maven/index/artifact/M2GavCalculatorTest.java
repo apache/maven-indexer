@@ -585,6 +585,10 @@ public class M2GavCalculatorTest
         assertNull( gav );
         gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/maven-metadata-local.xml" );
         assertNull( gav );
+        gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/1.0-SNAPSHOT/_remote.repositories" ); // causes MINDEXER-164
+        assertNull( gav );
+        gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/1.0-SNAPSHOT/_maven.repositories" );
+        assertNull( gav );
     }
 
     public void testNegGav()
