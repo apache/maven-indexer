@@ -37,7 +37,7 @@ under the License.
     UNWORKABLE! -->
 
   <properties>
-    <shadedClassifier>shaded</shadedClassifier>
+    <cliClassifier>cli</cliClassifier>
   </properties>
 
   <dependencies>
@@ -122,7 +122,7 @@ under the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <shadedClassifierName>${shadedClassifier}</shadedClassifierName>
+              <shadedClassifierName>${cliClassifier}</shadedClassifierName>
               <shadedArtifactAttached>true</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <filters>
@@ -167,7 +167,7 @@ under the License.
               <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-${shadedClassifier}.jar</indexerJar>
+                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-${cliClassifier}.jar</indexerJar>
               </systemPropertyVariables>
             </configuration>
           </execution>
