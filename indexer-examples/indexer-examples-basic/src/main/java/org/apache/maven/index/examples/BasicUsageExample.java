@@ -68,6 +68,8 @@ import org.eclipse.aether.version.Version;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -142,14 +144,17 @@ public class BasicUsageExample
         // Preferred frequency is once a week.
         if ( true )
         {
+            Instant updateStart = Instant.now();
             System.out.println( "Updating Index..." );
             System.out.println( "This might take a while on first run, so please be patient!" );
             // Create ResourceFetcher implementation to be used with IndexUpdateRequest
             // Here, we use Wagon based one as shorthand, but all we need is a ResourceFetcher implementation
             TransferListener listener = new AbstractTransferListener()
             {
+                Instant start;
                 public void transferStarted( TransferEvent transferEvent )
                 {
+                    start = Instant.now();
                     System.out.print( "  Downloading " + transferEvent.getResource().getName() );
                 }
 
@@ -159,7 +164,8 @@ public class BasicUsageExample
 
                 public void transferCompleted( TransferEvent transferEvent )
                 {
-                    System.out.println( " - Done" );
+                    System.out.println( " - Done in "
+                            + Duration.between( start, Instant.now() ).getSeconds() + " sec" );
                 }
             };
             ResourceFetcher resourceFetcher = new WagonHelper.WagonFetcher( httpWagon, listener, null, null );
@@ -182,6 +188,7 @@ public class BasicUsageExample
                         + updateResult.getTimestamp() + " period." );
             }
 
+            System.out.println( "Finished in " + Duration.between( updateStart, Instant.now() ).getSeconds() + " sec" );
             System.out.println();
         }
 

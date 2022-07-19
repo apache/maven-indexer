@@ -1,4 +1,7 @@
-/**
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,5 +19,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+ -->
 
-asfMavenTlpStdBuild( 'jdks' : [ "17" ] )
+<project xmlns="http://maven.apache.org/DECORATION/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/DECORATION/1.1.0 http://maven.apache.org/xsd/decoration-1.1.0.xsd">
+
+  <body>
+
+    <menu ref="parent"/>
+
+    <menu name="Overview">
+      <item name="Introduction" href="index.html"/>
+      <item name="JavaDocs" href="apidocs/index.html"/>
+      <item name="Source Xref" href="xref/index.html"/>
+      <!--item name="FAQ" href="faq.html"/-->
+    </menu>
+
+    <menu ref="reports"/>
+
+  </body>
+
+</project>

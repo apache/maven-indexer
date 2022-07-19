@@ -269,18 +269,28 @@ public class IndexReader
 
         private final Iterator<String> chunkNamesIterator;
 
-        private Resource currentResource;
-
         private ChunkReader currentChunkReader;
 
         private ChunkReaderIterator( final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator )
         {
             this.resourceHandler = resourceHandler;
             this.chunkNamesIterator = chunkNamesIterator;
+            this.currentChunkReader = null;
         }
 
         public boolean hasNext()
         {
+            try
+            {
+                if ( currentChunkReader != null )
+                {
+                    currentChunkReader.close();
+                }
+            }
+            catch ( IOException e )
+            {
+                throw new RuntimeException( "IO problem while closing chunk readers", e );
+            }
             return chunkNamesIterator.hasNext();
         }
 
@@ -289,17 +299,13 @@ public class IndexReader
             String chunkName = chunkNamesIterator.next();
             try
             {
-                if ( currentChunkReader != null )
-                {
-                    currentChunkReader.close();
-                }
-                currentResource = resourceHandler.locate( chunkName );
+                Resource currentResource = resourceHandler.locate( chunkName );
                 currentChunkReader = new ChunkReader( chunkName, currentResource.read() );
                 return currentChunkReader;
             }
             catch ( IOException e )
             {
-                throw new RuntimeException( "IO problem while switching chunk readers", e );
+                throw new RuntimeException( "IO problem while opening chunk readers", e );
             }
         }
 

@@ -20,40 +20,46 @@ package org.apache.maven.search.backend.smo.internal;
  */
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 import org.apache.maven.search.SearchRequest;
 
 /**
- * {@link java.net.HttpURLConnection} backed transport.
+ * Java 11 {@link HttpClient} backed transport.
  */
-public class UrlConnectionSmoSearchTransport extends SmoSearchTransportSupport
+public class Java11HttpClientSmoSearchTransport extends SmoSearchTransportSupport
 {
+    private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
+
     @Override
     public String fetch( SearchRequest searchRequest, String serviceUri ) throws IOException
     {
-        HttpURLConnection httpConnection = (HttpURLConnection) new URL( serviceUri ).openConnection();
-        httpConnection.setInstanceFollowRedirects( false );
-        httpConnection.setRequestProperty( "User-Agent", getUserAgent() );
-        httpConnection.setRequestProperty( "Accept", "application/json" );
-        int httpCode = httpConnection.getResponseCode();
-        if ( httpCode == HttpURLConnection.HTTP_OK )
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri( URI.create( serviceUri ) )
+                .header( "User-Agent", getUserAgent() )
+                .header( "Accept", "application/json" )
+                .GET()
+                .build();
+        try
         {
-            try ( InputStream inputStream = httpConnection.getInputStream() )
+            HttpResponse<String> response = client.send( request, HttpResponse.BodyHandlers.ofString() );
+            if ( response.statusCode() == HttpURLConnection.HTTP_OK )
             {
-                try ( Scanner scanner = new Scanner( inputStream, StandardCharsets.UTF_8.name() ) )
-                {
-                    return scanner.useDelimiter( "\\A" ).next();
-                }
+                return response.body();
+            }
+            else
+            {
+                throw new IOException( "Unexpected response: " + response );
             }
         }
-        else
+        catch ( InterruptedException e )
         {
-            throw new IOException( "Unexpected response code: " + httpCode );
+            Thread.currentThread().interrupt();
+            throw new IOException( e );
         }
     }
 }
