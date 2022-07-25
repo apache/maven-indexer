@@ -20,6 +20,7 @@ package org.apache.maven.index.reader.resource;
  */
 
 import java.io.FileNotFoundException;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -45,11 +46,65 @@ public class UrlResource implements Resource
     {
         try
         {
-            return url.openStream();
+            return new RetryInputStream(url);
         }
         catch ( FileNotFoundException e )
         {
             return null;
+        }
+    }
+
+    private class RetryInputStream extends FilterInputStream {
+        private long count;
+
+        @SuppressWarnings("UnstableApiUsage")
+        protected RetryInputStream(URL url) throws IOException {
+            super(new CountingInputStream(url.openStream()));
+        }
+
+        @Override
+        public int read() throws IOException {
+            try {
+                return super.read();
+            } catch (Exception e) {
+                tryReconnect(e);
+                return super.read();
+            }
+        }
+
+        @Override
+        public int read(byte[] b) throws IOException {
+            try {
+                return super.read(b);
+            } catch (Exception e) {
+                tryReconnect(e);
+                return super.read(b);
+            }
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            try {
+                return super.read(b, off, len);
+            } catch (Exception e) {
+                tryReconnect(e);
+                return super.read(b, off, len);
+            }
+        }
+
+        @SuppressWarnings("UnstableApiUsage")
+        private void tryReconnect(Exception se) throws IOException {
+            in.close();
+            count += ((CountingInputStream) in).getCount();
+            try {
+                var conn = url.openConnection();
+                conn.addRequestProperty("Range", "bytes=" + count + "-");
+                in = new CountingInputStream(conn.getInputStream());
+                log.info("Handled disconnect at {} bytes; Content-Range: {}", count, conn.getHeaderField("Content-Range"), se);
+            } catch (Exception e) {
+                e.addSuppressed(se);
+                throw e;
+            }
         }
     }
 }
