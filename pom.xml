@@ -103,7 +103,7 @@ under the License.
     <wagon.version>3.5.2</wagon.version>
     <surefire.version>3.0.0-M7</surefire.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <logback.version>1.2.11</logback.version>
+    <logback.version>1.4.1</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2022-06-03T08:51:57Z</project.build.outputTimestamp>
   </properties>
