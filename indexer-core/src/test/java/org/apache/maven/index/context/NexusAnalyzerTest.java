@@ -24,26 +24,19 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class NexusAnalyzerTest
-    extends TestCase
 {
-    protected NexusAnalyzer nexusAnalyzer;
+    protected NexusAnalyzer nexusAnalyzer = new NexusAnalyzer();
 
-    protected void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        nexusAnalyzer = new NexusAnalyzer();
-    }
-
+    @Test
     public void testGroupIdTokenization()
         throws IOException
     {

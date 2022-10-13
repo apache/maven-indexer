@@ -28,6 +28,9 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.M2GavCalculator;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class ArtifactLocatorTest
     extends AbstractNexusIndexerTest
@@ -51,6 +54,7 @@ public class ArtifactLocatorTest
         artifactPackagingMapper = lookup( ArtifactPackagingMapper.class );
     }
 
+    @Test
     public void testContextProducer()
     {
         final File pomFile =
@@ -62,6 +66,7 @@ public class ArtifactLocatorTest
         assertTrue( "Artifact file was not found!", ac.getArtifact().exists() );
     }
 
+    @Test
     public void testArtifactLocator()
     {
         ArtifactLocator al = new ArtifactLocator( artifactPackagingMapper );

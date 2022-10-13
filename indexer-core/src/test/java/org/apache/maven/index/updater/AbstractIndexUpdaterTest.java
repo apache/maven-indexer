@@ -39,6 +39,8 @@ import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
 
+import static org.junit.Assert.assertEquals;
+
 public abstract class AbstractIndexUpdaterTest
     extends AbstractIndexCreatorHelper
 {
@@ -61,7 +63,7 @@ public abstract class AbstractIndexUpdaterTest
     IndexingContext context;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -87,7 +89,7 @@ public abstract class AbstractIndexUpdaterTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         super.tearDown();

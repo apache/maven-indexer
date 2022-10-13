@@ -32,6 +32,9 @@ import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.codehaus.plexus.util.FileUtils;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+
 public class AbstractIndexCreatorHelper
     extends AbstractTestSupport
 {
@@ -44,7 +47,7 @@ public class AbstractIndexCreatorHelper
     Random rand = new Random();
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -95,6 +98,6 @@ public class AbstractIndexCreatorHelper
         assertFalse( dir.exists() );
 
         File dir2 = this.getDirectory( "foo" );
-        assertFalse( "Directories aren't unique", dir.getCanonicalPath().equals( dir2.getCanonicalPath() ) );
+        assertNotEquals( "Directories aren't unique", dir.getCanonicalPath(), dir2.getCanonicalPath() );
     }
 }

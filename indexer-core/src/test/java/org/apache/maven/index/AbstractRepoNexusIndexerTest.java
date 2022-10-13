@@ -33,6 +33,12 @@ import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.search.grouping.GAGrouping;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public abstract class AbstractRepoNexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -40,6 +46,7 @@ public abstract class AbstractRepoNexusIndexerTest
 
     protected File repo = new File( getBasedir(), "src/test/repo" );
 
+    @Test
     public void testRootGroups()
         throws Exception
     {
@@ -77,6 +84,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertGroup( 0, "org.apache.maven.plugins.maven-core-it-plugin", context );
     }
 
+    @Test
     public void testSearchFlatPaged()
         throws Exception
     {
@@ -94,6 +102,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( response.getResults().toString(), 22, response.getTotalHits() );
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {
@@ -120,6 +129,7 @@ public abstract class AbstractRepoNexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchGrouped()
         throws Exception
     {
@@ -155,6 +165,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( "test", ai.getRepository() );
     }
 
+    @Test
     public void testSearchGroupedProblematicNames()
         throws Exception
     {
@@ -383,6 +394,7 @@ public abstract class AbstractRepoNexusIndexerTest
     //
     // }
 
+    @Test
     public void testIdentify()
         throws Exception
     {
@@ -473,6 +485,7 @@ public abstract class AbstractRepoNexusIndexerTest
 //        assertTrue( resultsAreEqual( onePageList, constructedPageList ) );
 //    }
 
+    @Test
     public void testPurge()
         throws Exception
     {
@@ -493,6 +506,7 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( 0, p2.size() );
     }
 
+    @Test
     protected boolean resultsAreEqual( List<ArtifactInfo> left, List<ArtifactInfo> right )
     {
         assertEquals( left.size(), right.size() );
@@ -509,6 +523,7 @@ public abstract class AbstractRepoNexusIndexerTest
         return true;
     }
 
+    @Test
     public void testPackaging()
         throws Exception
     {
@@ -556,6 +571,7 @@ public abstract class AbstractRepoNexusIndexerTest
         }
     }
 
+    @Test
     public void testPrefixWildcard()
         throws Exception
     {

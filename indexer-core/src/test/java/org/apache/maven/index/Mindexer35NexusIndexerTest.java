@@ -25,7 +25,10 @@ import java.util.Collection;
 import java.util.List;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.UserInputSearchExpression;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class Mindexer35NexusIndexerTest
@@ -42,6 +45,7 @@ public class Mindexer35NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testSearchWar()
         throws Exception
     {

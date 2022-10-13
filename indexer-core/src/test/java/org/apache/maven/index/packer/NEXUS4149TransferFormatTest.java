@@ -39,6 +39,7 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.IndexDataReader;
 import org.codehaus.plexus.util.StringUtils;
+import org.junit.Test;
 
 public class NEXUS4149TransferFormatTest
     extends AbstractNexusIndexerTest
@@ -48,7 +49,7 @@ public class NEXUS4149TransferFormatTest
     protected File idxsBase = new File( getBasedir(), "target/index/nexus-4149" );
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -108,6 +109,7 @@ public class NEXUS4149TransferFormatTest
         // we use no directory
     }
 
+    @Test
     public void testMembersAndMergedRootGroups()
         throws Exception
     {
@@ -125,6 +127,7 @@ public class NEXUS4149TransferFormatTest
             mctx.getRootGroups().size() );
     }
 
+    @Test
     public void testTransportFile()
         throws Exception
     {

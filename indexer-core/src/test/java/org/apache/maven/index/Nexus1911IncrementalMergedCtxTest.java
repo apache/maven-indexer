@@ -32,7 +32,7 @@ public class Nexus1911IncrementalMergedCtxTest
     File indexMergedDir;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -48,7 +48,7 @@ public class Nexus1911IncrementalMergedCtxTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         indexer.removeIndexingContext( context, true );

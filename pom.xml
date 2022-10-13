@@ -100,7 +100,6 @@ under the License.
     <maven.version>3.8.6</maven.version>
     <resolver.version>1.8.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
-    <wagon.version>3.5.2</wagon.version>
     <surefire.version>3.0.0-M7</surefire.version>
     <slf4j.version>1.7.36</slf4j.version>
     <logback.version>1.4.4</logback.version>
@@ -175,18 +174,6 @@ under the License.
         <version>${eclipse-sisu.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>${eclipse-sisu.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
       <!-- Lucene -->
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -244,13 +231,6 @@ under the License.
         <version>${maven.version}</version>
       </dependency>
 
-      <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-provider-api</artifactId>
-        <version>${wagon.version}</version>
-      </dependency>
-
       <!-- For org.apache.maven.archetype.source.ArchetypeDataSource helper -->
       <dependency>
         <groupId>org.apache.maven.archetype</groupId>
@@ -259,6 +239,20 @@ under the License.
       </dependency>
 
       <!-- Test -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -287,10 +281,23 @@ under the License.
         <scope>test</scope>
       </dependency>
 
+      <!-- Used in tests for "transport" (and below updated deps) -->
       <dependency>
         <groupId>org.apache.maven.wagon</groupId>
         <artifactId>wagon-http</artifactId>
-        <version>${wagon.version}</version>
+        <version>3.5.2</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.15</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>2.11.0</version>
         <scope>test</scope>
       </dependency>
     </dependencies>

@@ -25,6 +25,12 @@ import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.AbstractTestSupport;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Alin Dreghiciu
@@ -59,6 +65,7 @@ public class JarFileContentsIndexCreatorTest
         assertNotNull( "Classes should not be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
+    @Test
     public void test_nexus_2318_indexZipWithClasses()
             throws Exception
     {
@@ -97,6 +104,7 @@ public class JarFileContentsIndexCreatorTest
         assertEquals("MethodInvocation class was expected", "/org/aopalliance/intercept/MethodInvocation", classNames[8] );
     }
 
+    @Test
     public void test_nexus_2318_indexJarWithSources()
         throws Exception
     {
@@ -114,6 +122,7 @@ public class JarFileContentsIndexCreatorTest
         assertNull( "Classes should be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
+    @Test
     public void test_nexus_2318_indexZipWithSources()
             throws Exception
     {
@@ -131,6 +140,7 @@ public class JarFileContentsIndexCreatorTest
         assertNull( "Classes should be null", artifactContext.getArtifactInfo().getClassNames() );
     }
 
+    @Test
     public void testMindexer35ScanWar()
         throws Exception
     {

@@ -26,8 +26,8 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
 import com.google.inject.Injector;
-import junit.framework.TestCase;
 
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
@@ -37,19 +37,21 @@ import org.apache.maven.index.updater.fixtures.ServerTestFixture;
 import org.apache.maven.index.updater.fixtures.TransferListenerFixture;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.events.TransferEvent;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.FileUtils;
+import org.eclipse.sisu.launch.InjectedTest;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DefaultIndexUpdaterEmbeddingIT
-    extends TestCase
+        extends InjectedTest
 {
     private String baseUrl;
 
-    private PlexusContainer container;
+    private Injector container;
 
     private ServerTestFixture server;
 
@@ -84,13 +86,12 @@ public class DefaultIndexUpdaterEmbeddingIT
     public void tearDown()
         throws Exception
     {
-        container.release( updater );
-        container.dispose();
         server.stop();
     }
 
+    @Test
     public void testBasicIndexRetrieval()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
         basedir.delete();
@@ -120,8 +121,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testIndexTempDirB()
-            throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+            throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
         basedir.delete();
@@ -160,8 +162,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testBasicAuthenticatedIndexRetrieval()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -197,8 +200,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testAuthenticatedIndexRetrieval_LongAuthorizationHeader()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -235,8 +239,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testBasicHighLatencyIndexRetrieval()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -273,8 +278,10 @@ public class DefaultIndexUpdaterEmbeddingIT
     }
 
     // Disabled, since with Wagon you cannot set timeout as it was possible with Jetty client
+    @Test
+    @Ignore("with Wagon you cannot set timeout")
     public void OFFtestHighLatencyIndexRetrieval_LowConnectionTimeout()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -328,8 +335,10 @@ public class DefaultIndexUpdaterEmbeddingIT
     }
 
     // Disabled, since with Wagon you cannot set timeout as it was possible with Jetty client
+    @Test
+    @Ignore("with Wagon you cannot set timeout")
     public void OFFtestHighLatencyIndexRetrieval_LowTransactionTimeout()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -382,8 +391,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testIndexRetrieval_InfiniteRedirection()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -424,8 +434,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
     }
 
+    @Test
     public void testIndexRetrieval_BadHostname()
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
         File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
 
@@ -475,10 +486,10 @@ public class DefaultIndexUpdaterEmbeddingIT
     }
 
     private IndexingContext newTestContext( final File basedir, final String baseUrl )
-        throws IOException, UnsupportedExistingLuceneIndexException, ComponentLookupException
+        throws IOException, UnsupportedExistingLuceneIndexException
     {
-        IndexCreator min = container.lookup( IndexCreator.class, "min" );
-        IndexCreator jar = container.lookup( IndexCreator.class, "jarContent" );
+        IndexCreator min = lookup( IndexCreator.class, "min" );
+        IndexCreator jar = lookup( IndexCreator.class, "jarContent" );
 
         List<IndexCreator> creators = new ArrayList<>();
         creators.add( min );

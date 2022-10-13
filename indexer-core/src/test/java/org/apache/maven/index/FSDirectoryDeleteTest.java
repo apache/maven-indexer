@@ -25,6 +25,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
+import org.junit.Test;
 
 public class FSDirectoryDeleteTest
     extends AbstractIndexCreatorHelper
@@ -46,7 +47,7 @@ public class FSDirectoryDeleteTest
     protected Directory otherIndexDir;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -68,7 +69,7 @@ public class FSDirectoryDeleteTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -82,6 +83,7 @@ public class FSDirectoryDeleteTest
         super.deleteDirectory( otherIndexDirFile );
     }
 
+    @Test
     public void testIndexAndDelete()
         throws Exception
     {

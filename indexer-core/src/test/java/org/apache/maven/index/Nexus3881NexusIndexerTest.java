@@ -25,6 +25,9 @@ import junit.framework.Assert;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class Nexus3881NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -40,6 +43,7 @@ public class Nexus3881NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testRelevances()
         throws Exception
     {

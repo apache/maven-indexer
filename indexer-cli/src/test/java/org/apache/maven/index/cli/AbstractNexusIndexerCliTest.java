@@ -32,14 +32,17 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.codehaus.plexus.ContainerConfiguration;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusTestCase;
 import org.codehaus.plexus.util.FileUtils;
+import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractNexusIndexerCliTest
-    extends PlexusTestCase
+        extends InjectedTest
 {
 
     private static final long rand = new Random().nextLong();
@@ -51,28 +54,21 @@ public abstract class AbstractNexusIndexerCliTest
      * getBasedir(), "target/tests/clitest/unpack-"+rand ).getAbsolutePath(); private static final String TEST_REPO =
      * new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
      */
-    private static final String DEST_DIR =
+    private final String DEST_DIR =
         new File( getBasedir(), "target/tests/clitest-" + rand + "/output" ).getAbsolutePath();
 
-    private static final String INDEX_DIR =
+    private final String INDEX_DIR =
         new File( getBasedir(), "target/tests/clitest-" + rand + "/index" ).getAbsolutePath();
 
-    private static final String UNPACK_DIR =
+    private final String UNPACK_DIR =
         new File( getBasedir(), "target/tests/clitest-" + rand + "/unpack" ).getAbsolutePath();
 
-    private static final String TEST_REPO = new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
+    private final String TEST_REPO = new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
 
     protected OutputStream out;
 
     @Override
-    protected void customizeContainerConfiguration( final ContainerConfiguration containerConfiguration )
-    {
-        super.customizeContainerConfiguration( containerConfiguration );
-        containerConfiguration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
-    }
-
-    @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -107,13 +103,19 @@ public abstract class AbstractNexusIndexerCliTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
 
     }
 
+    protected File getTestFile( String path )
+    {
+        return new File( new File( getBasedir() ), path );
+    }
+
+    @Test
     public void testNoArgs()
     {
         int code = execute();
@@ -122,6 +124,7 @@ public abstract class AbstractNexusIndexerCliTest
         assertTrue( "Should print usage", output.contains( "usage: nexus-indexer [options]" ) );
     }
 
+    @Test
     public void testRequiredArgs()
         throws Exception
     {
@@ -131,6 +134,7 @@ public abstract class AbstractNexusIndexerCliTest
         assertIndexFiles();
     }
 
+    @Test
     public void testUnpack()
         throws Exception
     {
@@ -145,6 +149,7 @@ public abstract class AbstractNexusIndexerCliTest
         //assertIndexFiles( UNPACK_DIR );
     }
 
+    @Test
     public void testMissingArgs()
         throws IOException
     {
@@ -173,6 +178,7 @@ public abstract class AbstractNexusIndexerCliTest
         assertFalse( "Index file was generated", new File( INDEX_DIR ).exists() );
     }
 
+    @Test
     public void testAbrvsRequiredArgs()
         throws Exception
     {
@@ -182,6 +188,7 @@ public abstract class AbstractNexusIndexerCliTest
         assertIndexFiles();
     }
 
+    @Test
     public void testLoggingLevel()
         throws Exception
     {
@@ -215,6 +222,7 @@ public abstract class AbstractNexusIndexerCliTest
         assertIndexFiles();
     }
 
+    @Test
     public void testInvalidRepo()
         throws Exception
     {
@@ -232,15 +240,16 @@ public abstract class AbstractNexusIndexerCliTest
         //assertIndexFiles( INDEX_DIR );
     }
 
+    @Test
     @Ignore("Old lucene format not supported")
-    private void ignoreAssertIndexFiles( final String indexDir )
+    public void ignoreAssertIndexFiles( final String indexDir )
         throws Exception
     {
         IndexingContext context = null;
         NexusIndexer indexer = lookup( NexusIndexer.class );
         try
         {
-            List<IndexCreator> indexCreators = getContainer().lookupList( IndexCreator.class );
+            List<IndexCreator> indexCreators = null; /*lookup( List<IndexCreator>.class );*/
 
             context =
                 indexer.addIndexingContext( "index", "index", new File( TEST_REPO ), new File( indexDir ), null, null,

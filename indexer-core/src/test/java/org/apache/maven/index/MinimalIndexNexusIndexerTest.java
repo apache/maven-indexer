@@ -26,6 +26,10 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.NexusIndexer;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Jason van Zyl
@@ -43,6 +47,7 @@ public class MinimalIndexNexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testNEXUS2712()
         throws Exception
     {
@@ -59,7 +64,7 @@ public class MinimalIndexNexusIndexerTest
         assertEquals( "com.adobe.flexunit", ai.getGroupId() );
         assertEquals( "flexunit", ai.getArtifactId() );
         assertEquals( "0.90", ai.getVersion() );
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getClassifier() );
         assertEquals( "swc", ai.getPackaging() );
 
         assertEquals( "swc", ai.getFileExtension() );

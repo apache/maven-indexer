@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 import org.apache.maven.index.cli.NexusIndexerCli;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
 
 public class NexusIndexerCliTest
     extends AbstractNexusIndexerCliTest
@@ -37,7 +38,7 @@ public class NexusIndexerCliTest
     protected NexusIndexerCli cli;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -106,6 +107,7 @@ public class NexusIndexerCliTest
         return sb.toString();
     }
 
+    @Test
     public void testOptionsAsHtml()
         throws IOException
     {

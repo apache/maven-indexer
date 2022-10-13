@@ -26,14 +26,16 @@ import java.util.List;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.AbstractTestSupport;
 import org.junit.Assert;
+import org.junit.Test;
 
 public class IndexCreatorSorterTest
     extends AbstractTestSupport
 {
+    @Test
     public void testLookupList()
         throws Exception
     {
-        final List<IndexCreator> creators = getContainer().lookupList( IndexCreator.class );
+        final List<IndexCreator> creators = lookupList( IndexCreator.class );
 
         final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( creators );
 
@@ -56,16 +58,17 @@ public class IndexCreatorSorterTest
             sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-plugin" ) );
     }
 
+    @Test
     public void testLookupListWithSpoofedCreator()
         throws Exception
     {
         final List<IndexCreator> creators =
-            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
+            new ArrayList<>( lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on ALL creators. Note: we add it as 1st intentionally
         creators.add( 0,
             new SpoofIndexCreator( "depend-on-all", new ArrayList<>(
-                getContainer().lookupMap( IndexCreator.class ).keySet() ) ) );
+                lookupMap( IndexCreator.class ).keySet() ) ) );
 
         // now we add spoofs to it, this one depends on only one, the "depend-on-all" creator Note: we add it as 1st
         // intentionally
@@ -98,7 +101,7 @@ public class IndexCreatorSorterTest
         throws Exception
     {
         final List<IndexCreator> creators =
-            new ArrayList<>( getContainer().lookupList( IndexCreator.class ) );
+            new ArrayList<>( lookupList( IndexCreator.class ) );
 
         // now we add spoofs to it, this one depends on non existent creator. Note: we add it as 1st intentionally
         creators.add( 0,

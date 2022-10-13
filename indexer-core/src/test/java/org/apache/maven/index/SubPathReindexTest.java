@@ -23,6 +23,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class SubPathReindexTest
     extends AbstractNexusIndexerTest
 {
@@ -37,6 +42,7 @@ public class SubPathReindexTest
         nexusIndexer.scan( context, "/org/slf4j/slf4j-api", null, false );
     }
 
+    @Test
     public void testRootGroups()
         throws Exception
     {
@@ -74,6 +80,7 @@ public class SubPathReindexTest
         assertGroup( 0, "org.apache.maven.plugins.maven-core-it-plugin", context );
     }
 
+    @Test
     public void testIdentify()
         throws Exception
     {

@@ -28,6 +28,10 @@ import junit.framework.Assert;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.UserInputSearchExpression;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ConcurrentUseTest
     extends AbstractNexusIndexerTest
@@ -56,6 +60,7 @@ public class ConcurrentUseTest
         return new IndexUserThread( this, nexusIndexer, context, context, ai );
     }
 
+    @Test
     public void testConcurrency()
         throws Exception
     {

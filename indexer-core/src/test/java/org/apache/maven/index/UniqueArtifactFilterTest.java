@@ -26,12 +26,17 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class UniqueArtifactFilterTest
     extends AbstractIndexCreatorHelper
 {
     private IndexingContext context;
 
+    @Test
     public void testSearchIterator()
         throws Exception
     {
@@ -51,6 +56,7 @@ public class UniqueArtifactFilterTest
         }
     }
 
+    @Test
     public void testSearchIteratorWithFilter()
         throws Exception
     {

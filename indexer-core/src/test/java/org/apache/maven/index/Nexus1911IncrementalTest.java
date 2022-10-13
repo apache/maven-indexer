@@ -24,13 +24,19 @@ import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import junit.framework.Assert;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 //FIXME - hardcoded assumptions in test that break with lucene 4, or bugs?
 //@Ignore("Segment merge may work differently in Lucene 4")
@@ -52,7 +58,7 @@ public class Nexus1911IncrementalTest
     File reposTargetDir;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -76,7 +82,7 @@ public class Nexus1911IncrementalTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         indexer.removeIndexingContext( context, true );
@@ -86,6 +92,7 @@ public class Nexus1911IncrementalTest
         super.tearDown();
     }
 
+    @Test
     public void testNoIncremental()
         throws Exception
     {
@@ -105,22 +112,23 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
-        Assert.assertNotNull( props );
+        assertNotNull( props );
 
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "0" );
-        Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "0" );
+        assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
+    @Test
     public void test1Incremental()
         throws Exception
     {
@@ -142,22 +150,23 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 
-        Assert.assertNotNull( props );
+        assertNotNull( props );
 
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "1" );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "1" );
-        Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "1" );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "1" );
+        assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
+    @Test
     public void test2Incremental()
         throws Exception
     {
@@ -180,24 +189,25 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
         //1 is missing with updated Lucene 4 implementation
 //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
+        assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
-        Assert.assertNotNull( props );
+        assertNotNull( props );
 
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "2" );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "1" );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "2" );
-        Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "2" );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "1" );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "2" );
+        assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
+    @Test
     public void test3Incremental()
         throws Exception
     {
@@ -221,24 +231,25 @@ public class Nexus1911IncrementalTest
         Set<String> filenames = getFilenamesFromFiles( indexPackDir.listFiles() );
         Properties props = getPropertiesFromFiles( indexPackDir.listFiles() );
 
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
         //1,2 are missing with updated Lucene 4 implementation
 //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
 //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
-        Assert.assertNotNull( props );
+        assertNotNull( props );
 
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "3" );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "2" );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ), "1" );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "3" );
-        Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "3" );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "2" );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ), "1" );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "3" );
+        assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
+    @Test
     public void testMaxChunks()
         throws Exception
     {
@@ -266,24 +277,24 @@ public class Nexus1911IncrementalTest
         
         System.out.println( filenames );
         
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
-        Assert.assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".properties" ) );
+        assertFalse( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".1.gz" ) );
         
     //2,3 are missing with updated Lucene 4 implementation
 //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
 //        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
-        Assert.assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".4.gz" ) );
+        assertTrue( filenames.contains( IndexingContext.INDEX_FILE_PREFIX + ".4.gz" ) );
 
-        Assert.assertNotNull( props );
+        assertNotNull( props );
 
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "4" );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "3" );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ), "2" );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
-        Assert.assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
-        Assert.assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "4" );
-        Assert.assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "0" ), "4" );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "1" ), "3" );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "2" ), "2" );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "3" ) );
+        assertNull( props.getProperty( IndexingContext.INDEX_CHUNK_PREFIX + "4" ) );
+        assertEquals( props.getProperty( IndexingContext.INDEX_CHUNK_COUNTER ), "4" );
+        assertNotNull( props.getProperty( IndexingContext.INDEX_CHAIN_ID ) );
     }
 
     private void copyRepoContentsAndReindex( File src, int maxIndexChunks )

@@ -27,6 +27,9 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class Nexus3177HitLimitChecks
     extends AbstractNexusIndexerTest
@@ -69,6 +72,7 @@ public class Nexus3177HitLimitChecks
     // Hence, some of the tests, that can keep still original semantics were updated and left in place
     // but the two test explicitly testing LIMIT_EXCEEDED were just removed/commented out.
 
+    @Test
     public void testHitLimitNotReachedSingleContext()
         throws Exception
     {
@@ -85,6 +89,7 @@ public class Nexus3177HitLimitChecks
         assertEquals( r.toString(), 4, response.getTotalHitsCount() );
     }
 
+    @Test
     public void testHitLimitEqualSingleContext()
         throws Exception
     {
@@ -117,6 +122,7 @@ public class Nexus3177HitLimitChecks
     // assertEquals( r.toString(), AbstractSearchResponse.LIMIT_EXCEEDED, response.getTotalHits() );
     // }
 
+    @Test
     public void testHitLimitNotReachedMultipleContexts()
         throws Exception
     {
@@ -135,6 +141,7 @@ public class Nexus3177HitLimitChecks
         assertEquals( r.toString(), 8, response.getTotalHitsCount() );
     }
 
+    @Test
     public void testHitLimitEqualMultipleContexts()
         throws Exception
     {
