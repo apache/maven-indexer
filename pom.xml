@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>36</version>
+    <version>37</version>
     <relativePath />
   </parent>
 
@@ -87,7 +87,7 @@ under the License.
     <javaVersion>11</javaVersion>
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
-    <minimalMavenBuildVersion>3.8.5</minimalMavenBuildVersion>
+    <minimalMavenBuildVersion>3.8.6</minimalMavenBuildVersion>
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
@@ -96,14 +96,14 @@ under the License.
 
     <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
-    <lucene.version>9.2.0</lucene.version>
+    <lucene.version>9.4.0</lucene.version>
     <maven.version>3.8.6</maven.version>
-    <resolver.version>1.8.1</resolver.version>
+    <resolver.version>1.8.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <wagon.version>3.5.2</wagon.version>
     <surefire.version>3.0.0-M7</surefire.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <logback.version>1.2.11</logback.version>
+    <logback.version>1.4.4</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2022-06-03T08:51:57Z</project.build.outputTimestamp>
   </properties>
@@ -283,7 +283,7 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.45.v20220203</version>
+        <version>9.4.49.v20220914</version>
         <scope>test</scope>
       </dependency>
 
@@ -341,7 +341,7 @@ under the License.
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>10.3.3</version>
+              <version>10.3.4</version>
             </dependency>
             <dependency>
               <groupId>org.apache.maven.shared</groupId>

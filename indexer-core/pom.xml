@@ -215,6 +215,7 @@ under the License.
                     <exclude>META-INF/MANIFEST.MF</exclude>
                     <exclude>META-INF/LICENSE.txt</exclude>
                     <exclude>META-INF/NOTICE.txt</exclude>
+                    <exclude>META-INF/versions/19/**</exclude> <!-- MSHADE-426 -->
                   </excludes>
                 </filter>
               </filters>
