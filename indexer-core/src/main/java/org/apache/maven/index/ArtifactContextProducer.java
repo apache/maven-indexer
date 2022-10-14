@@ -30,7 +30,5 @@ import org.apache.maven.index.context.IndexingContext;
  */
 public interface ArtifactContextProducer
 {
-    String ROLE = ArtifactContextProducer.class.getName();
-
     ArtifactContext getArtifactContext( IndexingContext context, File file );
 }

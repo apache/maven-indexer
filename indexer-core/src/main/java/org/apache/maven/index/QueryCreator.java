@@ -31,8 +31,6 @@ import org.apache.maven.index.expr.SearchExpression;
  */
 public interface QueryCreator
 {
-    String ROLE = QueryCreator.class.getName();
-
     /**
      * Performs a selection of the appropriate IndexerField belonging to proper Field.
      * 

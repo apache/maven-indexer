@@ -29,8 +29,6 @@ import java.io.IOException;
  */
 public interface IndexPacker
 {
-    String ROLE = IndexPacker.class.getName();
-
     /**
      * Pack a context into a target directory. If the directory does not exists, it will be created. If the directory
      * exists, it should be writable.

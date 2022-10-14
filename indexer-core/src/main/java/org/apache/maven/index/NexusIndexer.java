@@ -89,8 +89,6 @@ import org.apache.maven.index.expr.SearchExpression;
 @Deprecated
 public interface NexusIndexer
 {
-    String ROLE = NexusIndexer.class.getName();
-
     /**
      * Adds an indexing context to Nexus indexer.
      * 
