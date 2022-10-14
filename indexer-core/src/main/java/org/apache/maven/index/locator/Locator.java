@@ -28,7 +28,5 @@ import java.io.File;
  */
 public interface Locator
 {
-    String ROLE = Locator.class.getName();
-
     File locate( File source );
 }

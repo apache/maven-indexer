@@ -29,7 +29,5 @@ import org.apache.maven.index.artifact.GavCalculator;
  */
 public interface GavHelpedLocator
 {
-    String ROLE = GavHelpedLocator.class.getName();
-
     File locate( File source, GavCalculator gavCalculator, Gav gav );
 }
