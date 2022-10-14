@@ -19,8 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -33,6 +31,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
@@ -44,7 +44,7 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  * @since 5.1.2
  */
 public class IndexReader
-    implements Iterable<ChunkReader>, Closeable
+        implements Iterable<ChunkReader>, Closeable
 {
     private final AtomicBoolean closed;
 
@@ -64,8 +64,9 @@ public class IndexReader
 
     private final List<String> chunkNames;
 
-    public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
-        throws IOException
+    public IndexReader( final WritableResourceHandler local,
+                        final ResourceHandler remote )
+            throws IOException
     {
         requireNonNull( remote, "remote resource handler null" );
         this.closed = new AtomicBoolean( false );
@@ -90,8 +91,8 @@ public class IndexReader
                     if ( remoteIndexId == null || !remoteIndexId.equals( localIndexId ) )
                     {
                         throw new IllegalArgumentException(
-                            "local and remote index IDs does not match or is null: " + localIndexId + ", "
-                                + remoteIndexId );
+                                "local and remote index IDs does not match or is null: " + localIndexId + ", "
+                                        + remoteIndexId );
                     }
                     this.indexId = localIndexId;
                     this.incremental = canRetrieveAllChunks();
@@ -110,7 +111,7 @@ public class IndexReader
                 this.incremental = false;
             }
             this.publishedTimestamp =
-                Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
+                    Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
             this.chunkNames = calculateChunkNames();
         }
         catch ( ParseException e )
@@ -162,8 +163,9 @@ public class IndexReader
      * method should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
      * this class should be closed manually.
      */
+    @Override
     public void close()
-        throws IOException
+            throws IOException
     {
         if ( closed.compareAndSet( false, true ) )
         {
@@ -187,6 +189,8 @@ public class IndexReader
      * updates from the index. It is caller responsibility to either consume fully this iterator, or to close current
      * {@link ChunkReader} if aborting.
      */
+
+    @Override
     public Iterator<ChunkReader> iterator()
     {
         return new ChunkReaderIterator( remote, chunkNames.iterator() );
@@ -197,7 +201,7 @@ public class IndexReader
      * for future incremental updates.
      */
     private void syncLocalWithRemote()
-        throws IOException
+            throws IOException
     {
         storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), remoteIndexProperties );
     }
@@ -242,7 +246,7 @@ public class IndexReader
         try
         {
             int localLastIncremental =
-                Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
+                    Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
             String currentLocalCounter = String.valueOf( localLastIncremental );
             String nextLocalCounter = String.valueOf( localLastIncremental + 1 );
             // check remote props for existence of current or next chunk after local
@@ -271,23 +275,26 @@ public class IndexReader
      * is being consumed.
      */
     private static class ChunkReaderIterator
-        implements Iterator<ChunkReader>
+            implements Iterator<ChunkReader>
     {
         private final ResourceHandler resourceHandler;
 
         private final Iterator<String> chunkNamesIterator;
 
-        private ChunkReaderIterator( final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator )
+        private ChunkReaderIterator( final ResourceHandler resourceHandler,
+                                     final Iterator<String> chunkNamesIterator )
         {
             this.resourceHandler = resourceHandler;
             this.chunkNamesIterator = chunkNamesIterator;
         }
 
+        @Override
         public boolean hasNext()
         {
             return chunkNamesIterator.hasNext();
         }
 
+        @Override
         public ChunkReader next()
         {
             String chunkName = chunkNamesIterator.next();
@@ -302,6 +309,7 @@ public class IndexReader
             }
         }
 
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException( "remove" );

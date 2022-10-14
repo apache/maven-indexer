@@ -19,8 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.ParseException;
@@ -30,6 +28,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
@@ -44,7 +44,7 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  * @since 5.1.2
  */
 public class IndexWriter
-    implements Closeable
+        implements Closeable
 {
     private static final int INDEX_V1 = 1;
 
@@ -60,8 +60,10 @@ public class IndexWriter
 
     private final String nextChunkName;
 
-    public IndexWriter( final WritableResourceHandler local, final String indexId, final boolean incrementalSupported )
-        throws IOException
+    public IndexWriter( final WritableResourceHandler local,
+                        final String indexId,
+                        final boolean incrementalSupported )
+            throws IOException
     {
         requireNonNull( local, "local resource handler null" );
         requireNonNull( indexId, "indexId null" );
@@ -76,7 +78,7 @@ public class IndexWriter
             if ( localIndexId == null || !localIndexId.equals( indexId ) )
             {
                 throw new IllegalArgumentException(
-                    "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
+                        "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
             }
             this.incremental = true;
             this.nextChunkCounter = calculateNextChunkCounter();
@@ -153,7 +155,7 @@ public class IndexWriter
      * Writes out the record iterator and returns the written record count.
      */
     public int writeChunk( final Iterator<Map<String, String>> iterator )
-        throws IOException
+            throws IOException
     {
         int written;
 
@@ -178,8 +180,9 @@ public class IndexWriter
      * method should NOT be invoked, but rather the {@link ResourceHandler} that caller provided in constructor of
      * this class should be closed manually.
      */
+    @Override
     public void close()
-        throws IOException
+            throws IOException
     {
         if ( closed.compareAndSet( false, true ) )
         {

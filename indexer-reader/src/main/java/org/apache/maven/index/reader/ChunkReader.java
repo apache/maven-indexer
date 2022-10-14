@@ -53,7 +53,7 @@ import java.util.zip.GZIPInputStream;
  * @since 5.1.2
  */
 public class ChunkReader
-    implements Closeable, Iterable<Map<String, String>>
+        implements Closeable, Iterable<Map<String, String>>
 {
     private final String chunkName;
 
@@ -63,8 +63,9 @@ public class ChunkReader
 
     private final Date timestamp;
 
-    public ChunkReader( final String chunkName, final InputStream inputStream )
-        throws IOException
+    public ChunkReader( final String chunkName,
+                        final InputStream inputStream )
+            throws IOException
     {
         this.chunkName = chunkName.trim();
         this.dataInputStream = new DataInputStream( new GZIPInputStream( inputStream, 2 * 1024 ) );
@@ -99,6 +100,7 @@ public class ChunkReader
     /**
      * Returns the {@link Record} iterator.
      */
+    @Override
     public Iterator<Map<String, String>> iterator()
     {
         try
@@ -114,8 +116,9 @@ public class ChunkReader
     /**
      * Closes this reader and it's underlying input.
      */
+    @Override
     public void close()
-        throws IOException
+            throws IOException
     {
         dataInputStream.close();
     }
@@ -124,24 +127,26 @@ public class ChunkReader
      * Low memory footprint index iterator that incrementally parses the underlying stream.
      */
     private static class IndexIterator
-        implements Iterator<Map<String, String>>
+            implements Iterator<Map<String, String>>
     {
         private final DataInputStream dataInputStream;
 
         private Map<String, String> nextRecord;
 
         private IndexIterator( final DataInputStream dataInputStream )
-            throws IOException
+                throws IOException
         {
             this.dataInputStream = dataInputStream;
             this.nextRecord = nextRecord();
         }
 
+        @Override
         public boolean hasNext()
         {
             return nextRecord != null;
         }
 
+        @Override
         public Map<String, String> next()
         {
             if ( nextRecord == null )
@@ -153,6 +158,7 @@ public class ChunkReader
             return result;
         }
 
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException( "remove" );
@@ -175,7 +181,7 @@ public class ChunkReader
      * Reads and returns next record from the underlying stream, or {@code null} if no more records.
      */
     private static Map<String, String> readRecord( final DataInput dataInput )
-        throws IOException
+            throws IOException
     {
         int fieldCount;
         try
@@ -196,7 +202,7 @@ public class ChunkReader
     }
 
     private static void readField( final Map<String, String> record, final DataInput dataInput )
-        throws IOException
+            throws IOException
     {
         dataInput.readByte(); // flags: neglect them
         String name = dataInput.readUTF();
@@ -205,7 +211,7 @@ public class ChunkReader
     }
 
     private static String readUTF( final DataInput dataInput )
-        throws IOException
+            throws IOException
     {
         int utflen = dataInput.readInt();
 
@@ -287,7 +293,7 @@ public class ChunkReader
                         throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
                     }
                     chararr[chararrCount++] =
-                        (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( char3 & 0x3F ) );
+                            (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( char3 & 0x3F ) );
                     break;
 
                 default:

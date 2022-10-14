@@ -35,7 +35,7 @@ import java.util.zip.GZIPOutputStream;
  * @since 5.1.2
  */
 public class ChunkWriter
-    implements Closeable
+        implements Closeable
 {
     private static final int F_INDEXED = 1;
 
@@ -51,9 +51,11 @@ public class ChunkWriter
 
     private final Date timestamp;
 
-    public ChunkWriter( final String chunkName, final OutputStream outputStream, final int version,
+    public ChunkWriter( final String chunkName,
+                        final OutputStream outputStream,
+                        final int version,
                         final Date timestamp )
-        throws IOException
+            throws IOException
     {
         this.chunkName = chunkName.trim();
         this.dataOutputStream = new DataOutputStream( new GZIPOutputStream( outputStream, 2 * 1024 ) );
@@ -92,7 +94,7 @@ public class ChunkWriter
      * Writes out the record iterator and returns the written record count.
      */
     public int writeChunk( final Iterator<Map<String, String>> iterator )
-        throws IOException
+            throws IOException
     {
         int written = 0;
         while ( iterator.hasNext() )
@@ -106,14 +108,15 @@ public class ChunkWriter
     /**
      * Closes this reader and it's underlying input.
      */
+    @Override
     public void close()
-        throws IOException
+            throws IOException
     {
         dataOutputStream.close();
     }
 
     private static void writeRecord( final Map<String, String> record, final DataOutput dataOutput )
-        throws IOException
+            throws IOException
     {
         dataOutput.writeInt( record.size() );
         for ( Map.Entry<String, String> entry : record.entrySet() )
@@ -123,12 +126,12 @@ public class ChunkWriter
     }
 
     private static void writeField( final String fieldName, final String fieldValue, final DataOutput dataOutput )
-        throws IOException
+            throws IOException
     {
         boolean isIndexed = !( fieldName.equals( "i" ) || fieldName.equals( "m" ) );
         boolean isTokenized =
-            !( fieldName.equals( "i" ) || fieldName.equals( "m" ) || fieldName.equals( "1" ) || fieldName.equals(
-                "px" ) );
+                !( fieldName.equals( "i" ) || fieldName.equals( "m" ) || fieldName.equals( "1" ) || fieldName.equals(
+                        "px" ) );
         int flags = ( isIndexed ? F_INDEXED : 0 ) + ( isTokenized ? F_TOKENIZED : 0 ) + F_STORED;
         dataOutput.writeByte( flags );
         dataOutput.writeUTF( fieldName );
@@ -136,7 +139,7 @@ public class ChunkWriter
     }
 
     private static void writeUTF( final String str, final DataOutput dataOutput )
-        throws IOException
+            throws IOException
     {
         int strlen = str.length();
         int utflen = 0;
