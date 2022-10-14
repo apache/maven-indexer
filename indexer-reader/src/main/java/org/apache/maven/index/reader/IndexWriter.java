@@ -29,6 +29,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
@@ -47,6 +48,8 @@ public class IndexWriter
 {
     private static final int INDEX_V1 = 1;
 
+    private final AtomicBoolean closed;
+
     private final WritableResourceHandler local;
 
     private final Properties localIndexProperties;
@@ -62,6 +65,7 @@ public class IndexWriter
     {
         requireNonNull( local, "local resource handler null" );
         requireNonNull( indexId, "indexId null" );
+        this.closed = new AtomicBoolean( false );
         this.local = local;
         Properties indexProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
         if ( incrementalSupported && indexProperties != null )
@@ -177,18 +181,22 @@ public class IndexWriter
     public void close()
         throws IOException
     {
-        try
+        if ( closed.compareAndSet( false, true ) )
         {
-            if ( incremental )
+            try
             {
-                localIndexProperties.setProperty( "nexus.index.last-incremental", nextChunkCounter );
+                if ( incremental )
+                {
+                    localIndexProperties.setProperty( "nexus.index.last-incremental", nextChunkCounter );
+                }
+                localIndexProperties.setProperty( "nexus.index.timestamp",
+                        Utils.INDEX_DATE_FORMAT.format( new Date() ) );
+                storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), localIndexProperties );
             }
-            localIndexProperties.setProperty( "nexus.index.timestamp", Utils.INDEX_DATE_FORMAT.format( new Date() ) );
-            storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), localIndexProperties );
-        }
-        finally
-        {
-            local.close();
+            finally
+            {
+                local.close();
+            }
         }
     }
 

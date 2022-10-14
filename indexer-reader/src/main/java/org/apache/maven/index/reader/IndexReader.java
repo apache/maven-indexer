@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
@@ -44,6 +45,8 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
 public class IndexReader
     implements Iterable<ChunkReader>, Closeable
 {
+    private final AtomicBoolean closed;
+
     private final WritableResourceHandler local;
 
     private final ResourceHandler remote;
@@ -64,6 +67,7 @@ public class IndexReader
         throws IOException
     {
         requireNonNull( remote, "remote resource handler null" );
+        this.closed = new AtomicBoolean( false );
         this.local = local;
         this.remote = remote;
         remoteIndexProperties = loadProperties( remote.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
@@ -160,16 +164,19 @@ public class IndexReader
     public void close()
         throws IOException
     {
-        remote.close();
-        if ( local != null )
+        if ( closed.compareAndSet( false, true ) )
         {
-            try
+            remote.close();
+            if ( local != null )
             {
-                syncLocalWithRemote();
-            }
-            finally
-            {
-                local.close();
+                try
+                {
+                    syncLocalWithRemote();
+                }
+                finally
+                {
+                    local.close();
+                }
             }
         }
     }
@@ -269,28 +276,14 @@ public class IndexReader
 
         private final Iterator<String> chunkNamesIterator;
 
-        private ChunkReader currentChunkReader;
-
         private ChunkReaderIterator( final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator )
         {
             this.resourceHandler = resourceHandler;
             this.chunkNamesIterator = chunkNamesIterator;
-            this.currentChunkReader = null;
         }
 
         public boolean hasNext()
         {
-            try
-            {
-                if ( currentChunkReader != null )
-                {
-                    currentChunkReader.close();
-                }
-            }
-            catch ( IOException e )
-            {
-                throw new RuntimeException( "IO problem while closing chunk readers", e );
-            }
             return chunkNamesIterator.hasNext();
         }
 
@@ -300,8 +293,7 @@ public class IndexReader
             try
             {
                 Resource currentResource = resourceHandler.locate( chunkName );
-                currentChunkReader = new ChunkReader( chunkName, currentResource.read() );
-                return currentChunkReader;
+                return new ChunkReader( chunkName, currentResource.read() );
             }
             catch ( IOException e )
             {

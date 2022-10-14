@@ -19,12 +19,6 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.Record.Type;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,6 +26,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.maven.index.reader.Record.Type;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -53,7 +53,7 @@ public class TestSupport
      */
     @Before
     public void setup()
-        throws IOException
+            throws IOException
     {
         this.tempDir = Files.createTempDirectory( getClass().getSimpleName() + ".temp" ).toFile();
         this.directoryResourceHandlers = new ArrayList<>();
@@ -64,7 +64,7 @@ public class TestSupport
      */
     @After
     public void cleanup()
-        throws IOException
+            throws IOException
     {
         for ( DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers )
         {
@@ -77,7 +77,7 @@ public class TestSupport
      * Creates a temp file within {@link #tempDir} with given name.
      */
     protected File createTempFile( final String name )
-        throws IOException
+            throws IOException
     {
         File file = new File( tempDir, name );
         file.deleteOnExit();
@@ -88,7 +88,7 @@ public class TestSupport
      * Creates a temp directory within {@link #tempDir}.
      */
     protected File createTempDirectory()
-        throws IOException
+            throws IOException
     {
         return Files.createTempDirectory( tempDir.toPath(), testName.getMethodName() + "-dir" ).toFile();
     }
@@ -97,7 +97,7 @@ public class TestSupport
      * Creates an empty {@link DirectoryResourceHandler}.
      */
     protected WritableResourceHandler createWritableResourceHandler()
-        throws IOException
+            throws IOException
     {
         DirectoryResourceHandler result = new DirectoryResourceHandler( createTempDirectory() );
         directoryResourceHandlers.add( result );
@@ -108,8 +108,8 @@ public class TestSupport
      * Creates a "test" {@link ResourceHandler} that contains predefined files, is mapped to test resources under given
      * name.
      */
-    protected ResourceHandler testResourceHandler( final String name )
-        throws IOException
+    protected DirectoryResourceHandler testResourceHandler( final String name )
+            throws IOException
     {
         DirectoryResourceHandler result = new DirectoryResourceHandler( new File( "src/test/resources/" + name ) );
         directoryResourceHandlers.add( result );
@@ -120,10 +120,10 @@ public class TestSupport
      * Consumes {@link ChunkReader} and creates a map "by type" with records.
      */
     protected Map<Type, List<Record>> loadRecordsByType( final ChunkReader chunkReader )
-        throws IOException
+            throws IOException
     {
         HashMap<Type, List<Record>> stat = new HashMap<>();
-        try
+        try ( chunkReader )
         {
             assertThat( chunkReader.getVersion(), equalTo( 1 ) );
             final RecordExpander recordExpander = new RecordExpander();
@@ -137,10 +137,6 @@ public class TestSupport
                 stat.get( record.getType() ).add( record );
             }
         }
-        finally
-        {
-            chunkReader.close();
-        }
         return stat;
     }
 
@@ -149,10 +145,10 @@ public class TestSupport
      * Consumes {@link ChunkReader} and creates a map "by type" with record type counts.
      */
     protected Map<Type, Integer> countRecordsByType( final ChunkReader chunkReader )
-        throws IOException
+            throws IOException
     {
         HashMap<Type, Integer> stat = new HashMap<>();
-        try
+        try ( chunkReader )
         {
             assertThat( chunkReader.getVersion(), equalTo( 1 ) );
             final RecordExpander recordExpander = new RecordExpander();
@@ -166,41 +162,6 @@ public class TestSupport
                 stat.put( record.getType(), stat.get( record.getType() ) + 1 );
             }
         }
-        finally
-        {
-            chunkReader.close();
-        }
         return stat;
-    }
-
-    /**
-     * Delete recursively.
-     */
-    private static boolean delete( final File file )
-    {
-        if ( file == null )
-        {
-            return false;
-        }
-        if ( !file.exists() )
-        {
-            return true;
-        }
-        if ( file.isDirectory() )
-        {
-            String[] list = file.list();
-            if ( list != null )
-            {
-                for ( String s : list )
-                {
-                    File entry = new File( file, s );
-                    if ( !delete( entry ) )
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-        return file.delete();
     }
 }
