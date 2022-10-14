@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.util.Random;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sisu.launch.InjectedTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -71,7 +70,6 @@ public abstract class AbstractNexusIndexerCliTest
 
             @Override
             public void write( int b )
-                throws IOException
             {
                 byte[] bytes = new byte[1];
                 bytes[0] = (byte) b;
@@ -175,37 +173,6 @@ public abstract class AbstractNexusIndexerCliTest
         int code = execute( "-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR );
         String output = out.toString();
         assertEquals( output, 0, code );
-    }
-
-    @Test
-    @Ignore(" Plexus is gone, hence are logging levels as well ")
-    public void testLoggingLevel()
-        throws Exception
-    {
-        int code = execute( "-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR );
-        String normal = out.toString();
-        assertEquals( normal, 0, code );
-
-        setUp();
-
-        code = execute( "-q", "-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR );
-        String quiet = out.toString();
-        assertEquals( quiet, 0, code );
-        assertFalse( "Expected an different output on quiet mode:\n" + normal, normal.equals( quiet ) );
-
-        setUp();
-
-        code = execute( "-X", "-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR );
-        String debug = out.toString();
-        assertEquals( debug, 0, code );
-        assertFalse( "Expected an different output on debug mode:\n" + normal, normal.equals( debug ) );
-
-        setUp();
-
-        code = execute( "-e", "-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR );
-        String error = out.toString();
-        assertEquals( error, 0, code );
-        assertFalse( "Expected an different output on error mode:\n" + normal, normal.equals( error ) );
     }
 
     @Test

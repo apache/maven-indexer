@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import com.google.inject.Guice;
 import com.google.inject.Module;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -129,7 +128,7 @@ public class NexusIndexerCli
 
         try
         {
-            cli = parse( args );
+            cli =  new DefaultParser().parse( buildCliOptions(), cleanArgs( args ) );
         }
         catch ( ParseException e )
         {
@@ -193,8 +192,11 @@ public class NexusIndexerCli
         }
         else
         {
-            displayHelp( "Use either unpack (\"" + UNPACK + "\") or index (\"" + INDEX + "\" and \"" + REPO
+            System.out.println();
+            System.out.println( "Use either unpack (\"" + UNPACK + "\") or index (\"" + INDEX + "\" and \"" + REPO
                     + "\") options, but none has been found!" );
+            System.out.println();
+            displayHelp();
             return 1;
         }
     }
@@ -247,15 +249,6 @@ public class NexusIndexerCli
                 .desc( "Unpack an index file" ).build() );
 
         return options;
-    }
-
-    private CommandLine parse( String[] args ) throws ParseException
-    {
-        String[] cleanArgs = cleanArgs( args );
-
-        CommandLineParser parser = new DefaultParser();
-
-        return parser.parse( buildCliOptions(), cleanArgs );
     }
 
     private String[] cleanArgs( String[] args )
@@ -366,17 +359,6 @@ public class NexusIndexerCli
         HelpFormatter formatter = new HelpFormatter();
 
         formatter.printHelp( "nexus-indexer [options]", "\nOptions:", options, "\n" );
-    }
-
-    private void displayHelp( String message )
-    {
-        System.out.println();
-
-        System.out.println( message );
-
-        System.out.println();
-
-        displayHelp();
     }
 
     private void showVersion()
