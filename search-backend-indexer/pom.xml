@@ -76,12 +76,6 @@ under the License.
       <artifactId>guice</artifactId>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>

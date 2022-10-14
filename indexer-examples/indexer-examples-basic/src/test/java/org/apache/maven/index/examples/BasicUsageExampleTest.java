@@ -19,14 +19,20 @@ package org.apache.maven.index.examples;
  * under the License.
  */
 
+import com.google.inject.Guice;
+import org.eclipse.sisu.launch.Main;
+import org.eclipse.sisu.space.BeanScanning;
 import org.junit.Test;
 
 public class BasicUsageExampleTest
 {
     @Test
     public void testApp()
-        throws Exception
+            throws Exception
     {
-        BasicUsageExample.main( null );
+        final com.google.inject.Module app = Main.wire(
+                BeanScanning.INDEX
+        );
+        Guice.createInjector( app ).getInstance( BasicUsageExample.class ).perform();
     }
 }

@@ -53,31 +53,26 @@ under the License.
   <dependencies>
       <!-- For search app in general -->
       <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <scope>compile</scope>
-      </dependency>
-      <dependency>
           <groupId>javax.annotation</groupId>
           <artifactId>javax.annotation-api</artifactId>
           <version>1.2</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <scope>test</scope>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <scope>compile</scope>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <scope>test</scope>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-simple</artifactId>
+          <scope>compile</scope>
       </dependency>
       <dependency>
         <!-- This dependency is required in order to intercept Spring logging and handle it through Logback + SLF4J,
              as it would otherwise use commons-logging and do it's own other thing. -->
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
-        <scope>test</scope>
+        <scope>compile</scope>
       </dependency>
 
       <dependency>
