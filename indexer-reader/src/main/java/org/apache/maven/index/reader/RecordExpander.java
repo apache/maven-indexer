@@ -24,6 +24,7 @@ import org.apache.maven.index.reader.Record.Type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.apache.maven.index.reader.Utils.FIELD_SEPARATOR;
 import static org.apache.maven.index.reader.Utils.FS_PATTERN;
@@ -39,10 +40,12 @@ import static org.apache.maven.index.reader.Utils.renvl;
  * @since 5.1.2
  */
 public class RecordExpander
+    implements Function<Map<String, String>, Record>
 {
     /**
      * Expands MI low level record into {@link Record}.
      */
+    @Override
     public Record apply( final Map<String, String> recordMap )
     {
         if ( recordMap.containsKey( "DESCRIPTOR" ) )

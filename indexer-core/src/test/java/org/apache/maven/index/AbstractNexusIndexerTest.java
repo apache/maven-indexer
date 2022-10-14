@@ -27,6 +27,8 @@ import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
 
+import static org.junit.Assert.assertEquals;
+
 public abstract class AbstractNexusIndexerTest
     extends AbstractIndexCreatorHelper
 {
@@ -37,7 +39,7 @@ public abstract class AbstractNexusIndexerTest
     protected IndexingContext context;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
 //        indexDir = new SimpleFSDirectory(new File("/tmp/nexus-test"));
@@ -48,7 +50,7 @@ public abstract class AbstractNexusIndexerTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         unprepareNexusIndexer( nexusIndexer );

@@ -22,6 +22,11 @@ package org.apache.maven.index;
 import java.io.File;
 import java.util.Collection;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
 public class Nexus3233NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -37,6 +42,7 @@ public class Nexus3233NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testIdentifyPomPackagingArtifacts()
         throws Exception
     {

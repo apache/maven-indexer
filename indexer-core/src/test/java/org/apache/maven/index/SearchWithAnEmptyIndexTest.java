@@ -19,6 +19,8 @@ package org.apache.maven.index;
  * under the License.
  */
 
+import javax.inject.Inject;
+
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexCreator;
@@ -27,6 +29,7 @@ import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.lucene.search.BooleanClause.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Lamy
@@ -43,21 +47,21 @@ public class SearchWithAnEmptyIndexTest
 {
     static final String INDEX_ID1 = "osgi-test1";
     static final String INDEX_ID2 = "empty-repo";
-    protected List<IndexCreator> indexCreators;
+
+    @Inject
     private NexusIndexer nexusIndexer;
+
+    @Inject
     private IndexPacker indexPacker;
+
+    @Inject
+    protected List<IndexCreator> indexCreators;
 
     @Override
     public void setUp()
         throws Exception
     {
         super.setUp();
-
-        indexCreators = this.getContainer().lookupList( IndexCreator.class );
-
-        nexusIndexer = this.lookup( NexusIndexer.class );
-
-        indexPacker = this.lookup( IndexPacker.class );
 
         if ( !nexusIndexer.getIndexingContexts().isEmpty() )
         {
@@ -68,6 +72,7 @@ public class SearchWithAnEmptyIndexTest
         }
     }
 
+    @Test
     public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat()
         throws Exception
     {
@@ -143,6 +148,7 @@ public class SearchWithAnEmptyIndexTest
     /**
      * both repos contains commons-cli so ensure we don't return duplicates
      */
+    @Test
     public void testSearchNoDuplicateArtifactInfo()
         throws Exception
     {

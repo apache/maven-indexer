@@ -29,6 +29,7 @@ import java.util.List;
 import org.apache.commons.cli.Option;
 import org.apache.maven.index.cli.NexusIndexerCli;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
 
 public class NexusIndexerCliTest
     extends AbstractNexusIndexerCliTest
@@ -37,7 +38,7 @@ public class NexusIndexerCliTest
     protected NexusIndexerCli cli;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -67,8 +68,7 @@ public class NexusIndexerCliTest
 
     public String getOptionsAsHtml()
     {
-        @SuppressWarnings( "unchecked" )
-        List<Option> optList = new ArrayList<Option>( new NexusIndexerCli().buildDefaultCliOptions().getOptions() );
+        List<Option> optList = new ArrayList<>( new NexusIndexerCli().buildCliOptions().getOptions() );
         optList.sort( new OptionComparator() );
 
         StringBuilder sb = new StringBuilder();
@@ -106,6 +106,7 @@ public class NexusIndexerCliTest
         return sb.toString();
     }
 
+    @Test
     public void testOptionsAsHtml()
         throws IOException
     {

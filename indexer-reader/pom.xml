@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.indexer</groupId>
     <artifactId>maven-indexer</artifactId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>indexer-reader</artifactId>
@@ -38,6 +38,16 @@ under the License.
 
   <dependencies>
     <!-- Test -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -60,13 +70,8 @@ under the License.
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>5.1.4</version>
+        <version>5.1.8</version>
         <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <_removeheaders>Bnd-LastModified</_removeheaders>
-          </instructions>
-        </configuration>
       </plugin>
     </plugins>
   </build>

@@ -44,7 +44,7 @@ public class ConcurrentUseWithMergedContextPublishingTest
     protected final AtomicInteger counter = new AtomicInteger();
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -53,7 +53,7 @@ public class ConcurrentUseWithMergedContextPublishingTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         File props = new File( IndexingContext.INDEX_PACKER_PROPERTIES_FILE );

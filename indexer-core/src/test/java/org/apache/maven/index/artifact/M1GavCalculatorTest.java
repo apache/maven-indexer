@@ -22,26 +22,16 @@ package org.apache.maven.index.artifact;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.M1GavCalculator;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 public class M1GavCalculatorTest
-    extends TestCase
 {
-    private M1GavCalculator gavCalculator;
+    private M1GavCalculator gavCalculator = new M1GavCalculator();
 
     private SimpleDateFormat formatter = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
 
-    @Override
-    public void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        gavCalculator = new M1GavCalculator();
-    }
 
     protected Long parseTimestamp( String timeStamp )
         throws ParseException
@@ -56,6 +46,7 @@ public class M1GavCalculatorTest
         }
     }
 
+    @Test
     public void testGav()
         throws Exception
     {
@@ -260,6 +251,7 @@ public class M1GavCalculatorTest
         assertEquals( "/xpp3/poms/xpp3_min-1.1.3.4.O.pom", path );
     }
 
+    @Test
     public void testNEXUS1336()
         throws Exception
     {
@@ -336,6 +328,7 @@ public class M1GavCalculatorTest
         assertEquals( "/castor/ejbs/castor-ejb-1.0.7-client.jar", path );
     }
 
+    @Test
     public void testGavExtreme()
         throws Exception
     {

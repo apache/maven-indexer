@@ -38,6 +38,12 @@ import org.apache.maven.index.AbstractRepoNexusIndexerTest;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Eugene Kuleshov
@@ -89,6 +95,7 @@ public class IndexDataTest
         context.replace( newDir );
     }
 
+    @Test
     public void testEmptyContext()
         throws Exception
     {
@@ -126,6 +133,7 @@ public class IndexDataTest
         context.replace( newDir );
     }
 
+    @Test
     public void testData()
         throws Exception
     {

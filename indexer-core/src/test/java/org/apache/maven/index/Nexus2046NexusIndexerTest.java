@@ -25,6 +25,10 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class Nexus2046NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -40,6 +44,7 @@ public class Nexus2046NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {
@@ -62,7 +67,7 @@ public class Nexus2046NexusIndexerTest
         assertEquals( "org.maven.ide.eclipse.feature", ai.getArtifactId() );
         assertEquals( "0.9.7", ai.getVersion() );
         assertEquals( "eclipse-feature", ai.getPackaging() );
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getClassifier() );
         assertEquals( "nexus-2046", ai.getRepository() );
         assertEquals( "jar", ai.getFileExtension() );
     }

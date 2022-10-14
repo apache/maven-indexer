@@ -46,10 +46,17 @@ import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
+import org.junit.Assert;
+import org.junit.Test;
 
 import static org.apache.lucene.search.BooleanClause.*;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FullIndexNexusIndexerTest
     extends DefaultIndexNexusIndexerTest
@@ -67,6 +74,7 @@ public class FullIndexNexusIndexerTest
         assertNotNull( context.getTimestamp() );
     }
 
+    @Test
     public void testSearchGroupedClasses()
         throws Exception
     {
@@ -116,7 +124,7 @@ public class FullIndexNexusIndexerTest
             GroupedSearchResponse response = nexusIndexer.searchGrouped( request );
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertThat(r.toString(), r.size(), is(2));
+            Assert.assertThat(r.toString(), r.size(), is(2));
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -288,6 +296,7 @@ public class FullIndexNexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchArchetypes()
         throws Exception
     {
@@ -324,6 +333,7 @@ public class FullIndexNexusIndexerTest
         }
     }
 
+    @Test
     public void testIndexTimestamp()
         throws Exception
     {
@@ -402,6 +412,7 @@ public class FullIndexNexusIndexerTest
         assertFalse( new File( newIndex, "timestamp" ).exists() );
     }
 
+    @Test
     public void testArchetype()
         throws Exception
     {
@@ -421,6 +432,7 @@ public class FullIndexNexusIndexerTest
         assertEquals( r.toString(), 1, r.size() );
     }
 
+    @Test
     public void testArchetypePackaging()
         throws Exception
     {
@@ -429,6 +441,7 @@ public class FullIndexNexusIndexerTest
         assertEquals( response.getResults().toString(), 4, response.getTotalHits() );
     }
 
+    @Test
     public void testBrokenJar()
         throws Exception
     {
@@ -450,6 +463,7 @@ public class FullIndexNexusIndexerTest
         assertEquals( null, ai.getClassNames() );
     }
 
+    @Test
     public void testMissingPom()
         throws Exception
     {
@@ -486,6 +500,7 @@ public class FullIndexNexusIndexerTest
         return request;
     }
 
+    @Test
     public void testClassnameSearchNgWithHighlighting()
         throws Exception
     {
@@ -514,6 +529,7 @@ public class FullIndexNexusIndexerTest
         assertEquals( "found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits() );
     }
 
+    @Test
     public void testGAVSearchNgWithHighlighting()
         throws Exception
     {

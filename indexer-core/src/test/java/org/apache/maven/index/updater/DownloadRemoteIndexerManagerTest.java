@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
-import com.google.inject.Injector;
+import org.apache.maven.index.Java11HttpClient;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jetty.server.Handler;
@@ -37,6 +37,9 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
 
 public class DownloadRemoteIndexerManagerTest
     extends AbstractIndexUpdaterTest
@@ -48,7 +51,7 @@ public class DownloadRemoteIndexerManagerTest
     private IndexingContext centralContext;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -78,7 +81,7 @@ public class DownloadRemoteIndexerManagerTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         server.stop();
@@ -88,6 +91,7 @@ public class DownloadRemoteIndexerManagerTest
         super.tearDown();
     }
 
+    @Test
     public void testRepoReindex()
         throws Exception
     {
@@ -100,8 +104,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
@@ -111,8 +114,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 01
         overwriteIndex( index1, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
         // just a dummy filter to invoke filtering! -- this is what I broke unnoticing it
         iur.setDocumentFilter( doc -> true );
@@ -124,8 +126,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper( getContainer().lookup( Injector.class ) ).getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );

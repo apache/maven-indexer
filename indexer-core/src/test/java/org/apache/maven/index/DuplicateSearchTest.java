@@ -24,13 +24,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import junit.framework.Assert;
-
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class DuplicateSearchTest
     extends AbstractNexusIndexerTest
@@ -123,6 +125,7 @@ public class DuplicateSearchTest
     //
     // ArtifactInfo, along with GAV carries contextId and repositoryId too!
 
+    @Test
     public void testProveSvnRev1158917IsWrong()
         throws IOException
     {
@@ -138,13 +141,14 @@ public class DuplicateSearchTest
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat( fsReq );
 
-        Assert.assertEquals( "We have 10 GAVs coming from three contextes", 10, fsResp.getResults().size() );
+        assertEquals( "We have 10 GAVs coming from three contextes", 10, fsResp.getResults().size() );
 
         // Why? Look at the FlatSearchRequest default comparator it uses, it is ArtifactInfo.VERSION_COMPARATOR
         // that neglects contextId and repositoryId and compares GAVs only, and the Collection fixed in SVN Rev1158917
         // is actually a Set<ArtifactInfo with proper comparator set.
     }
 
+    @Test
     public void testHowUniqueSearchShouldBeDone()
         throws IOException
     {
@@ -161,12 +165,13 @@ public class DuplicateSearchTest
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat( fsReq );
 
-        Assert.assertEquals( "We have 10 GAVs coming from three contextes, it is 30", 30, fsResp.getResults().size() );
+        assertEquals( "We have 10 GAVs coming from three contextes, it is 30", 30, fsResp.getResults().size() );
 
         // Why? We set explicitly the comparator to CONTEXT_VERSION_COMPARATOR, that compares GAV+contextId, hence,
         // will return all hits from all participating contexts.
     }
 
+    @Test
     public void testHowtoPerformAggregatedSearch()
         throws IOException
     {
@@ -213,12 +218,12 @@ public class DuplicateSearchTest
             }
         }
 
-        Assert.assertEquals( "Iterator delivered to us 3 results, since we have 3 GA combinations", 3,
+        assertEquals( "Iterator delivered to us 3 results, since we have 3 GA combinations", 3,
             actualResultCount );
-        Assert.assertEquals(
+        assertEquals(
             "IteratorSearch is strange beast, due to it's nature, it cannot say how many elements it (will) return in advance, due to filtering, postprocessing, etc",
             -1, isResp.getReturnedHitsCount() );
-        Assert.assertEquals(
+        assertEquals(
             "The processing/search tackled 10 GAVs coming from three contextes, it is 30. This is the record count that were hit by processing of this search, but IS NOT the count results (it depends on filtering, comparators, etc)!",
             30, isResp.getTotalHitsCount() );
     }

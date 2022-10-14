@@ -23,13 +23,13 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>36</version>
+    <version>37</version>
     <relativePath />
   </parent>
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>6.2.0-SNAPSHOT</version>
+  <version>7.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
@@ -74,7 +74,7 @@ under the License.
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
-    <url>https://ci-builds.apache.org/job/Maven/job/maven-box/job/maven-indexer/</url>
+    <url>https://ci-maven.apache.org/job/Maven/job/maven-box/job/maven-indexer/</url>
   </ciManagement>
   <distributionManagement>
     <site>
@@ -84,23 +84,26 @@ under the License.
   </distributionManagement>
 
   <properties>
-    <javaVersion>8</javaVersion>
+    <javaVersion>11</javaVersion>
+    <maven.compiler.source>${javaVersion}</maven.compiler.source>
+    <maven.compiler.target>${javaVersion}</maven.compiler.target>
+    <minimalMavenBuildVersion>3.8.6</minimalMavenBuildVersion>
+    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
+
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
     <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
-    <lucene.version>8.11.1</lucene.version>
-    <maven.version>3.8.5</maven.version>
-    <resolver.version>1.8.0</resolver.version>
+    <lucene.version>9.4.0</lucene.version>
+    <maven.version>3.8.6</maven.version>
+    <resolver.version>1.8.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
-    <wagon.version>3.5.1</wagon.version>
-    <surefire.version>3.0.0-M6</surefire.version>
+    <surefire.version>3.0.0-M7</surefire.version>
     <slf4j.version>1.7.36</slf4j.version>
-    <logback.version>1.2.11</logback.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-    <project.build.outputTimestamp>2022-04-22T08:37:12Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2022-06-03T08:51:57Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
@@ -123,18 +126,6 @@ under the License.
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.version}</version>
-        <optional>true</optional>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.version}</version>
-        <optional>true</optional>
       </dependency>
       <dependency>
         <!-- This dependency is required in order to intercept Spring logging and handle it through Logback + SLF4J,
@@ -170,18 +161,6 @@ under the License.
         <version>${eclipse-sisu.version}</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>${eclipse-sisu.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
       <!-- Lucene -->
       <dependency>
         <groupId>org.apache.lucene</groupId>
@@ -197,7 +176,7 @@ under the License.
 
       <dependency>
         <groupId>org.apache.lucene</groupId>
-        <artifactId>lucene-analyzers-common</artifactId>
+        <artifactId>lucene-analysis-common</artifactId>
         <version>${lucene.version}</version>
       </dependency>
 
@@ -229,16 +208,14 @@ under the License.
 
       <!-- Maven -->
       <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-utils</artifactId>
+        <version>3.4.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
         <version>${maven.version}</version>
-      </dependency>
-
-      <!-- Wagon, as optional for those want to use ResourceFetcher backed by Wagons -->
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-provider-api</artifactId>
-        <version>${wagon.version}</version>
       </dependency>
 
       <!-- For org.apache.maven.archetype.source.ArchetypeDataSource helper -->
@@ -249,6 +226,20 @@ under the License.
       </dependency>
 
       <!-- Test -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-library</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -273,14 +264,7 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.45.v20220203</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>${wagon.version}</version>
+        <version>9.4.49.v20220914</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
@@ -297,90 +281,46 @@ under the License.
   </modules>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
-          <systemPropertyVariables>
-            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <signature>
-            <groupId>org.codehaus.mojo.signature</groupId>
-            <artifactId>java1${javaVersion}</artifactId>
-            <version>1.0</version>
-          </signature>
-        </configuration>
-        <executions>
-          <execution>
-            <id>check-java-compat</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>rat-check</id>
-            <phase>validate</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <configuration>
-              <excludes combine.children="append">
-                <exclude>README.md</exclude>
-                <exclude>.gitignore</exclude>
-                <exclude>NOTICE</exclude>
-                <exclude>**/packageinfo</exclude>
-                <exclude>.git/**</exclude>
-                <exclude>.idea/**</exclude>
-                <exclude>**/*.iml</exclude>
-                <!-- exlude some test resources from rat analysis -->
-                <exclude>src/test/**/*.sha1</exclude>
-                <exclude>src/test/**/*.md5</exclude>
-                <exclude>src/test/**/*.xml</exclude>
-                <exclude>src/test/**/*.pom</exclude>
-                <exclude>src/test/**/*.asc</exclude>
-                <exclude>src/test/**/*.properties</exclude>
-                <exclude>src/test/**/*.swc</exclude>
-                <exclude>src/test/**/*.txt</exclude>
-                <exclude>src/test/**/*.filename</exclude>
-                <exclude>src/test/**/.placeholder</exclude>
-              </excludes>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>animal-sniffer-maven-plugin</artifactId>
-          <version>1.21</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>3.4.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.gaul</groupId>
+          <artifactId>modernizer-maven-plugin</artifactId>
+          <version>2.4.0</version>
+          <executions>
+            <execution>
+              <id>modernizer</id>
+              <phase>verify</phase>
+              <goals>
+                <goal>modernizer</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <javaVersion>${javaVersion}</javaVersion>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <release>${javaVersion}</release>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.1.2</version>
+          <version>3.2.0</version>
           <dependencies>
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>9.3</version>
+              <version>10.3.4</version>
             </dependency>
             <dependency>
               <groupId>org.apache.maven.shared</groupId>
@@ -405,6 +345,62 @@ under the License.
         </plugin>
       </plugins>
     </pluginManagement>
+    <plugins>
+      <plugin>
+        <groupId>org.eclipse.sisu</groupId>
+        <artifactId>sisu-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.gaul</groupId>
+        <artifactId>modernizer-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <redirectTestOutputToFile>${surefire.redirectTestOutputToFile}</redirectTestOutputToFile>
+          <systemPropertyVariables>
+            <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>rat-check</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <configuration>
+              <excludes combine.children="append">
+                <exclude>*.md</exclude>
+                <exclude>.gitignore</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>**/packageinfo</exclude>
+                <exclude>.git/**</exclude>
+                <exclude>.idea/**</exclude>
+                <exclude>**/*.iml</exclude>
+                <!-- exlude some test resources from rat analysis -->
+                <exclude>src/test/**/*.sha1</exclude>
+                <exclude>src/test/**/*.md5</exclude>
+                <exclude>src/test/**/*.xml</exclude>
+                <exclude>src/test/**/*.pom</exclude>
+                <exclude>src/test/**/*.asc</exclude>
+                <exclude>src/test/**/*.properties</exclude>
+                <exclude>src/test/**/*.swc</exclude>
+                <exclude>src/test/**/*.txt</exclude>
+                <exclude>src/test/**/*.filename</exclude>
+                <exclude>src/test/**/.placeholder</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
   </build>
 
   <reporting>

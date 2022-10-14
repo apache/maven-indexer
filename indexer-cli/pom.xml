@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.indexer</groupId>
     <artifactId>maven-indexer</artifactId>
-    <version>6.2.0-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>indexer-cli</artifactId>
@@ -35,6 +35,10 @@ under the License.
 
   <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
     UNWORKABLE! -->
+
+  <properties>
+    <cliClassifier>cli</cliClassifier>
+  </properties>
 
   <dependencies>
     <!-- The indexer -->
@@ -55,11 +59,6 @@ under the License.
     </dependency>
 
     <dependency>
-      <groupId>org.eclipse.sisu</groupId>
-      <artifactId>org.eclipse.sisu.plexus</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <scope>compile</scope> <!-- to make it into shaded CLI JAR -->
@@ -67,23 +66,22 @@ under the License.
 
     <!-- Needed for CLI assembly only, to make it work in "standalone" CLI mode -->
     <dependency>
-      <groupId>org.codehaus.plexus</groupId>
-      <artifactId>plexus-cli</artifactId>
-      <version>1.6</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-container-default</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <version>1.5.0</version>
     </dependency>
 
     <!-- Test -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -97,11 +95,6 @@ under the License.
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-webapp</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven.wagon</groupId>
-      <artifactId>wagon-http</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -118,12 +111,14 @@ under the License.
               <goal>shade</goal>
             </goals>
             <configuration>
-              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <shadedClassifierName>${cliClassifier}</shadedClassifierName>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
+                    <exclude>module-info.class</exclude>
                     <exclude>META-INF/*.SF</exclude>
                     <exclude>META-INF/*.DSA</exclude>
                     <exclude>META-INF/*.RSA</exclude>
@@ -138,10 +133,13 @@ under the License.
                 </filter>
               </filters>
               <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.SisuIndexResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>org.apache.maven.index.cli.NexusIndexerCli</mainClass>
+                  <manifestEntries>
+                    <Main-Class>org.apache.maven.index.cli.NexusIndexerCli</Main-Class>
+                    <Multi-Release>true</Multi-Release>
+                  </manifestEntries>
                 </transformer>
               </transformers>
             </configuration>
@@ -161,7 +159,7 @@ under the License.
               <redirectTestOutputToFile>${failsafe.redirectTestOutputToFile}</redirectTestOutputToFile>
               <systemPropertyVariables>
                 <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
-                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}.jar</indexerJar>
+                <indexerJar>${project.build.directory}/${project.artifactId}-${project.version}-${cliClassifier}.jar</indexerJar>
               </systemPropertyVariables>
             </configuration>
           </execution>

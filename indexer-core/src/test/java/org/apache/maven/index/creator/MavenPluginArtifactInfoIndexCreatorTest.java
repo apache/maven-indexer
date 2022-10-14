@@ -27,6 +27,9 @@ import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.AbstractTestSupport;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author juven
@@ -45,6 +48,7 @@ public class MavenPluginArtifactInfoIndexCreatorTest
         indexCreator = this.lookup( IndexCreator.class, MavenPluginArtifactInfoIndexCreator.ID );
     }
 
+    @Test
     public void testMavenPluginInfo()
         throws Exception
     {

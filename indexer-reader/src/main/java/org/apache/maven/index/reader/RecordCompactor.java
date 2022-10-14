@@ -23,6 +23,7 @@ import org.apache.maven.index.reader.Record.Type;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import static org.apache.maven.index.reader.Utils.FIELD_SEPARATOR;
 import static org.apache.maven.index.reader.Utils.INFO;
@@ -35,11 +36,13 @@ import static org.apache.maven.index.reader.Utils.nvl;
  * @since 5.1.2
  */
 public class RecordCompactor
+    implements Function<Record, Map<String, String>>
 {
     /**
      * Compacts {@link Record} into low level MI record with all the encoded fields as physically present in MI binary
      * chunk.
      */
+    @Override
     public Map<String, String> apply( final Record record )
     {
         if ( Type.DESCRIPTOR == record.getType() )
