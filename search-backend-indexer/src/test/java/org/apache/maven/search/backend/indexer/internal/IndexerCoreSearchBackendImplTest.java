@@ -52,12 +52,14 @@ import org.apache.maven.search.request.FieldQuery;
 import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.search.request.BooleanQuery.and;
 import static org.apache.maven.search.request.Query.query;
 
+@Ignore( "This is not a test, is more a showcase" )
 public class IndexerCoreSearchBackendImplTest extends InjectedTest
 {
     @Inject

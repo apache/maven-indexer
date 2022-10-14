@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import org.apache.maven.index.Java11HttpClient;
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jetty.server.Handler;
@@ -103,8 +104,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper().getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );
@@ -114,8 +114,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 01
         overwriteIndex( index1, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper().getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
         // just a dummy filter to invoke filtering! -- this is what I broke unnoticing it
         iur.setDocumentFilter( doc -> true );
@@ -127,8 +126,7 @@ public class DownloadRemoteIndexerManagerTest
         // copy index 02
         overwriteIndex( index2, centralIndex );
 
-        iur =
-            new IndexUpdateRequest( centralContext, new WagonHelper().getWagonResourceFetcher( null ) );
+        iur = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         iur.setForceFullUpdate( true );
 
         updater.fetchAndUpdateIndex( iur );

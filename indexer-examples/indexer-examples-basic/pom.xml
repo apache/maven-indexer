@@ -67,12 +67,6 @@ under the License.
         <scope>compile</scope>
       </dependency>
 
-      <dependency>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <scope>compile</scope>
-      </dependency>
-
       <!-- Runtime: DI -->
       <dependency>
         <groupId>org.eclipse.sisu</groupId>

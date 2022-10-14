@@ -27,19 +27,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
-import com.google.inject.Injector;
 
+import org.apache.maven.index.Java11HttpClient;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.updater.fixtures.ServerTestFixture;
-import org.apache.maven.index.updater.fixtures.TransferListenerFixture;
-import org.apache.maven.wagon.authentication.AuthenticationInfo;
-import org.apache.maven.wagon.events.TransferEvent;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sisu.launch.InjectedTest;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -53,8 +49,6 @@ public class DefaultIndexUpdaterEmbeddingIT
 
 
     private ServerTestFixture server;
-
-    private WagonHelper wagonHelper;
 
     @Inject
     private IndexUpdater updater;
@@ -75,8 +69,6 @@ public class DefaultIndexUpdaterEmbeddingIT
         server = new ServerTestFixture( port );
 
         super.setUp();
-
-        wagonHelper = new WagonHelper();
     }
 
     @Override
@@ -98,9 +90,7 @@ public class DefaultIndexUpdaterEmbeddingIT
         {
             IndexingContext ctx = newTestContext( basedir, baseUrl );
 
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(), null,
-                    null ) );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, new Java11HttpClient() );
 
             updater.fetchAndUpdateIndex( updateRequest );
             
@@ -135,9 +125,7 @@ public class DefaultIndexUpdaterEmbeddingIT
         {
             IndexingContext ctx = newTestContext( basedir, baseUrl );
 
-            IndexUpdateRequest updateRequest =
-                    new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(), null,
-                            null ) );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, new Java11HttpClient() );
             updateRequest.setIndexTempDir( indexTempDir );
 
             updater.fetchAndUpdateIndex( updateRequest );
@@ -145,83 +133,6 @@ public class DefaultIndexUpdaterEmbeddingIT
             // dir should still exists after retrival
             assertTrue( indexTempDir.exists() );
             indexTempDir.delete();
-            ctx.close( false );
-        }
-        finally
-        {
-            try
-            {
-                FileUtils.forceDelete( basedir );
-            }
-            catch ( IOException e )
-            {
-            }
-        }
-    }
-
-    @Test
-    public void testBasicAuthenticatedIndexRetrieval()
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
-
-        try
-        {
-            IndexingContext ctx = newTestContext( basedir, baseUrl + "protected/" );
-
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(),
-                    new AuthenticationInfo()
-                    {
-                        private static final long serialVersionUID = 1L;
-
-                        {
-                            setUserName( "user" );
-                            setPassword( "password" );
-                        }
-                    }, null ) );
-
-            updater.fetchAndUpdateIndex( updateRequest );
-            
-            ctx.close( false );
-        }
-        finally
-        {
-            try
-            {
-                FileUtils.forceDelete( basedir );
-            }
-            catch ( IOException e )
-            {
-            }
-        }
-    }
-
-    @Test
-    public void testAuthenticatedIndexRetrieval_LongAuthorizationHeader()
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
-
-
-        try
-        {
-            IndexingContext ctx = newTestContext( basedir, baseUrl + "protected/" );
-
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(),
-                    new AuthenticationInfo()
-                    {
-                        private static final long serialVersionUID = 1L;
-
-                        {
-                            setUserName( "longuser" );
-                            setPassword( ServerTestFixture.LONG_PASSWORD );
-                        }
-                    }, null ) );
-
-            updater.fetchAndUpdateIndex( updateRequest );
-            
             ctx.close( false );
         }
         finally
@@ -246,133 +157,9 @@ public class DefaultIndexUpdaterEmbeddingIT
         {
             IndexingContext ctx = newTestContext( basedir, baseUrl + "slow/" );
 
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture(),
-                    new AuthenticationInfo()
-                    {
-                        private static final long serialVersionUID = 1L;
-
-                        {
-                            setUserName( "user" );
-                            setPassword( "password" );
-                        }
-                    }, null ) );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, new Java11HttpClient() );
 
             updater.fetchAndUpdateIndex( updateRequest );
-            
-            ctx.close( false );
-        }
-        finally
-        {
-            try
-            {
-                FileUtils.forceDelete( basedir );
-            }
-            catch ( IOException e )
-            {
-            }
-        }
-    }
-
-    // Disabled, since with Wagon you cannot set timeout as it was possible with Jetty client
-    @Test
-    @Ignore("with Wagon you cannot set timeout")
-    public void OFFtestHighLatencyIndexRetrieval_LowConnectionTimeout()
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
-
-        try
-        {
-            IndexingContext ctx = newTestContext( basedir, baseUrl + "slow/" );
-
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture()
-                {
-                    @Override
-                    public void transferError( final TransferEvent transferEvent )
-                    {
-                    }
-                }, new AuthenticationInfo()
-                {
-                    private static final long serialVersionUID = 1L;
-
-                    {
-                        setUserName( "user" );
-                        setPassword( "password" );
-                    }
-                }, null ) );
-
-            // ResourceFetcher fetcher =
-            // new JettyResourceFetcher().setConnectionTimeoutMillis( 100 ).setAuthenticationInfo(
-            // updateRequest.getAuthenticationInfo() ).addTransferListener( updateRequest.getTransferListener() );
-
-            try
-            {
-                updater.fetchAndUpdateIndex( updateRequest );
-                fail( "Should timeout and throw IOException." );
-            }
-            catch ( IOException e )
-            {
-                System.out.println( "Operation timed out due to short connection timeout, as expected." );
-            }
-            
-            ctx.close( false );
-        }
-        finally
-        {
-            try
-            {
-                FileUtils.forceDelete( basedir );
-            }
-            catch ( IOException e )
-            {
-            }
-        }
-    }
-
-    // Disabled, since with Wagon you cannot set timeout as it was possible with Jetty client
-    @Test
-    @Ignore("with Wagon you cannot set timeout")
-    public void OFFtestHighLatencyIndexRetrieval_LowTransactionTimeout()
-        throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        File basedir = Files.createTempDirectory( "nexus-indexer." ).toFile();
-
-        try
-        {
-            IndexingContext ctx = newTestContext( basedir, baseUrl + "slow/" );
-
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture()
-                {
-                    @Override
-                    public void transferError( final TransferEvent transferEvent )
-                    {
-                    }
-                }, new AuthenticationInfo()
-                {
-                    private static final long serialVersionUID = 1L;
-
-                    {
-                        setUserName( "user" );
-                        setPassword( "password" );
-                    }
-                }, null ) );
-
-            // ResourceFetcher fetcher =
-            // new JettyResourceFetcher().setTransactionTimeoutMillis( 100 ).setAuthenticationInfo(
-            // updateRequest.getAuthenticationInfo() ).addTransferListener( updateRequest.getTransferListener() );
-
-            try
-            {
-                updater.fetchAndUpdateIndex( updateRequest );
-                fail( "Should timeout and throw IOException." );
-            }
-            catch ( IOException e )
-            {
-                System.out.println( "Operation timed out due to short transaction timeout, as expected." );
-            }
             
             ctx.close( false );
         }
@@ -398,14 +185,7 @@ public class DefaultIndexUpdaterEmbeddingIT
         {
             IndexingContext ctx = newTestContext( basedir, baseUrl + "redirect-trap/" );
 
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture()
-                {
-                    @Override
-                    public void transferError( final TransferEvent transferEvent )
-                    {
-                    }
-                }, null, null ) );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, new Java11HttpClient() );
 
             try
             {
@@ -441,22 +221,7 @@ public class DefaultIndexUpdaterEmbeddingIT
         {
             IndexingContext ctx = newTestContext( basedir, "http://dummy/" );
 
-            IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest( ctx, wagonHelper.getWagonResourceFetcher( new TransferListenerFixture()
-                {
-                    @Override
-                    public void transferError( final TransferEvent transferEvent )
-                    {
-                    }
-                }, new AuthenticationInfo()
-                {
-                    private static final long serialVersionUID = 1L;
-
-                    {
-                        setUserName( "user" );
-                        setPassword( "password" );
-                    }
-                }, null ) );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( ctx, new Java11HttpClient() );
 
             try
             {
