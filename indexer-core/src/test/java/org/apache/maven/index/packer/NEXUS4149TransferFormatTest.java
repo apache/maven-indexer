@@ -27,8 +27,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.AbstractNexusIndexerTest;
@@ -40,6 +38,9 @@ import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.IndexDataReader;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class NEXUS4149TransferFormatTest
     extends AbstractNexusIndexerTest
@@ -119,11 +120,11 @@ public class NEXUS4149TransferFormatTest
         {
             if ( !"repo4".equals( member.getId() ) ) // repo4 is empty
             {
-                Assert.assertEquals( "Members should have one root group!", 1, member.getRootGroups().size() );
+                assertEquals( "Members should have one root group!", 1, member.getRootGroups().size() );
             }
         }
 
-        Assert.assertEquals( "Merged should have one root multiply members count (sans repo4)!", 3,
+        assertEquals( "Merged should have one root multiply members count (sans repo4)!", 3,
             mctx.getRootGroups().size() );
     }
 
@@ -185,16 +186,16 @@ public class NEXUS4149TransferFormatTest
                 }
             }
 
-            Assert.assertNotNull( "Group transport file should contain allGroups!", allGroups );
-            Assert.assertNotNull( "Group transport file should contain rootGroups!", rootGroups );
+            assertNotNull( "Group transport file should contain allGroups!", allGroups );
+            assertNotNull( "Group transport file should contain rootGroups!", rootGroups );
             checkListOfStringDoesNotContainEmptyString( ArtifactInfo.str2lst( allGroups ) );
             checkListOfStringDoesNotContainEmptyString( ArtifactInfo.str2lst( rootGroups ) );
 
-            Assert.assertEquals( 15, totalDocs );
+            assertEquals( 15, totalDocs );
             // 1 descriptor + 1 allGroups + 1 rootGroups
-            Assert.assertEquals( 3, specialDocs );
+            assertEquals( 3, specialDocs );
             // repo1 has 1 artifact, repo2 has 1 artifact and repo3 has 10 artifact
-            Assert.assertEquals( 12, artifactDocs );
+            assertEquals( 12, artifactDocs );
 
         }
         finally

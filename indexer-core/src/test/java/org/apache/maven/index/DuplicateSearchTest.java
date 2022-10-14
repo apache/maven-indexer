@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import junit.framework.Assert;
-
 import org.apache.lucene.search.Query;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
@@ -143,7 +141,7 @@ public class DuplicateSearchTest
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat( fsReq );
 
-        Assert.assertEquals( "We have 10 GAVs coming from three contextes", 10, fsResp.getResults().size() );
+        assertEquals( "We have 10 GAVs coming from three contextes", 10, fsResp.getResults().size() );
 
         // Why? Look at the FlatSearchRequest default comparator it uses, it is ArtifactInfo.VERSION_COMPARATOR
         // that neglects contextId and repositoryId and compares GAVs only, and the Collection fixed in SVN Rev1158917
@@ -167,7 +165,7 @@ public class DuplicateSearchTest
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat( fsReq );
 
-        Assert.assertEquals( "We have 10 GAVs coming from three contextes, it is 30", 30, fsResp.getResults().size() );
+        assertEquals( "We have 10 GAVs coming from three contextes, it is 30", 30, fsResp.getResults().size() );
 
         // Why? We set explicitly the comparator to CONTEXT_VERSION_COMPARATOR, that compares GAV+contextId, hence,
         // will return all hits from all participating contexts.

@@ -21,12 +21,11 @@ package org.apache.maven.index;
 
 import java.io.File;
 
-import junit.framework.Assert;
-
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class Nexus3881NexusIndexerTest
@@ -56,7 +55,7 @@ public class Nexus3881NexusIndexerTest
         
         IteratorSearchResponse response = nexusIndexer.searchIterator( request );
 
-        Assert.assertEquals( "All artifacts has 'solution' in their GA!", 4, response.getTotalHits() );
+        assertEquals( "All artifacts has 'solution' in their GA!", 4, response.getTotalHits() );
         
 
         // for (ArtifactInfo ai : response) {
