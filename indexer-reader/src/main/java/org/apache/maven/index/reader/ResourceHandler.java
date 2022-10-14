@@ -37,6 +37,7 @@ public interface ResourceHandler
      * Handle of content.
      */
     interface Resource
+        extends Closeable
     {
         /**
          * Returns the {@link InputStream} stream of the resource, if exists, {@code null} otherwise. The stream should
@@ -44,6 +45,15 @@ public interface ResourceHandler
          */
         InputStream read()
             throws IOException;
+
+        /**
+         * Default close method is no-op, override if implementation requires.
+         */
+        @Override
+        default void close() throws IOException
+        {
+            // nothing
+        }
     }
 
     /**
@@ -51,6 +61,14 @@ public interface ResourceHandler
      *
      * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
      */
-    Resource locate( String name )
-        throws IOException;
+    Resource locate( String name ) throws IOException;
+
+    /**
+     * Default close method is no-op, override if implementation requires.
+     */
+    @Override
+    default void close() throws IOException
+    {
+        // nothing
+    }
 }

@@ -50,4 +50,10 @@ public class BufferedResource implements Resource
         }
         return new BufferedInputStream( in );
     }
+
+    @Override
+    public void close() throws IOException
+    {
+        resource.close();
+    }
 }

@@ -84,9 +84,4 @@ public class HttpResourceHandler
             }
         }
     }
-
-    public void close() throws IOException
-    {
-        // nop
-    }
 }

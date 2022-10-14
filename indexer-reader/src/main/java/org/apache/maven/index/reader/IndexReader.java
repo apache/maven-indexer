@@ -23,6 +23,7 @@ import org.apache.maven.index.reader.ResourceHandler.Resource;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -297,7 +298,7 @@ public class IndexReader
             }
             catch ( IOException e )
             {
-                throw new RuntimeException( "IO problem while opening chunk readers", e );
+                throw new UncheckedIOException( "IO problem while opening chunk readers", e );
             }
         }
 

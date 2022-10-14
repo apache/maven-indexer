@@ -44,9 +44,4 @@ public class UriResourceHandler implements ResourceHandler
     {
         return new UrlResource( uri.resolve( name ).toURL() );
     }
-
-    @Override
-    public void close() throws IOException
-    {
-    }
 }

@@ -19,7 +19,6 @@ package org.apache.maven.index.reader.resource;
  * under the License.
  */
 
-import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.maven.index.reader.WritableResourceHandler;
@@ -43,10 +42,5 @@ public class PathWritableResourceHandler implements WritableResourceHandler
     public WritableResource locate( String name )
     {
         return new PathWritableResource( path.resolve( name ) );
-    }
-
-    @Override
-    public void close() throws IOException
-    {
     }
 }
