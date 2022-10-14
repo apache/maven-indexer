@@ -83,6 +83,18 @@ public class M2GavCalculator
                 checksumType = Gav.HashType.sha1;
                 s = s.substring( 0, s.length() - 5 );
             }
+            else if ( s.endsWith( ".sha256" ) )
+            {
+                checksum = true;
+                checksumType = Gav.HashType.sha256;
+                s = s.substring( 0, s.length() - 7 );
+            }
+            else if ( s.endsWith( ".sha512" ) )
+            {
+                checksum = true;
+                checksumType = Gav.HashType.sha512;
+                s = s.substring( 0, s.length() - 7 );
+            }
 
             if ( s.endsWith( ".asc" ) )
             {

@@ -560,6 +560,41 @@ public class M2GavCalculatorTest
         path = gavCalculator.gavToPath( gav );
         assertEquals( "/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path );
 
+        gav = gavCalculator.pathToGav( "/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar.sha256" );
+
+        assertEquals( "org.jruby", gav.getGroupId() );
+        assertEquals( "jruby", gav.getArtifactId() );
+        assertEquals( "1.0", gav.getVersion() );
+        assertEquals( "1.0", gav.getBaseVersion() );
+        assertEquals( "javadoc", gav.getClassifier() );
+        assertEquals( "jar", gav.getExtension() );
+        assertEquals( null, gav.getSnapshotBuildNumber() );
+        assertEquals( null, gav.getSnapshotTimeStamp() );
+        assertEquals( "jruby-1.0-javadoc.jar.sha256", gav.getName() );
+        assertEquals( false, gav.isSnapshot() );
+        assertEquals( true, gav.isHash() );
+        assertEquals( Gav.HashType.sha256, gav.getHashType() );
+
+        path = gavCalculator.gavToPath( gav );
+        assertEquals( "/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar.sha256", path );
+
+        gav = gavCalculator.pathToGav( "/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar.sha512" );
+        assertEquals( "org.jruby", gav.getGroupId() );
+        assertEquals( "jruby", gav.getArtifactId() );
+        assertEquals( "1.0", gav.getVersion() );
+        assertEquals( "1.0", gav.getBaseVersion() );
+        assertEquals( "javadoc", gav.getClassifier() );
+        assertEquals( "jar", gav.getExtension() );
+        assertEquals( null, gav.getSnapshotBuildNumber() );
+        assertEquals( null, gav.getSnapshotTimeStamp() );
+        assertEquals( "jruby-1.0-javadoc.jar.sha512", gav.getName() );
+        assertEquals( false, gav.isSnapshot() );
+        assertEquals( true, gav.isHash() );
+        assertEquals( Gav.HashType.sha512, gav.getHashType() );
+
+        path = gavCalculator.gavToPath( gav );
+        assertEquals( "/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar.sha512", path );
+
         gav = gavCalculator.pathToGav( "/dev/mbien/hintmod/1.0-SNAPSHOT/hintmod-1.0-SNAPSHOT.pom" );
         assertEquals( "dev.mbien", gav.getGroupId() );
         assertEquals( "hintmod", gav.getArtifactId() );
