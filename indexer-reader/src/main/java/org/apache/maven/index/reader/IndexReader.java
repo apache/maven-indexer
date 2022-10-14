@@ -19,31 +19,39 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+
+import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven 2 Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
- * read all the required records.
+ * Maven Index reader that handles incremental updates, if possible, and provides one or more {@link ChunkReader}s, to
+ * read all the required records. Instances of this class MUST BE handled as resources (have them closed once done with
+ * them), it is user responsibility to close them, ideally in try-with-resource block.
+ * <p>
+ * Every involved instance, this {@link IndexReader}, provided {@link ChunkReader}, and used  {@link ResourceHandler}s
+ * are {@link Closeable}, and all have to be explicitly closed, best in try-with-resource.
  *
  * @since 5.1.2
  */
 public class IndexReader
-    implements Iterable<ChunkReader>, Closeable
+        implements Iterable<ChunkReader>, Closeable
 {
+    private final AtomicBoolean closed;
+
     private final WritableResourceHandler local;
 
     private final ResourceHandler remote;
@@ -60,10 +68,12 @@ public class IndexReader
 
     private final List<String> chunkNames;
 
-    public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
-        throws IOException
+    public IndexReader( final WritableResourceHandler local,
+                        final ResourceHandler remote )
+            throws IOException
     {
-        Objects.requireNonNull( remote, "remote resource handler null" );
+        requireNonNull( remote, "remote resource handler null" );
+        this.closed = new AtomicBoolean( false );
         this.local = local;
         this.remote = remote;
         remoteIndexProperties = loadProperties( remote.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
@@ -85,8 +95,8 @@ public class IndexReader
                     if ( remoteIndexId == null || !remoteIndexId.equals( localIndexId ) )
                     {
                         throw new IllegalArgumentException(
-                            "local and remote index IDs does not match or is null: " + localIndexId + ", "
-                                + remoteIndexId );
+                                "local and remote index IDs does not match or is null: " + localIndexId + ", "
+                                        + remoteIndexId );
                     }
                     this.indexId = localIndexId;
                     this.incremental = canRetrieveAllChunks();
@@ -105,7 +115,7 @@ public class IndexReader
                 this.incremental = false;
             }
             this.publishedTimestamp =
-                Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
+                    Utils.INDEX_DATE_FORMAT.parse( remoteIndexProperties.getProperty( "nexus.index.timestamp" ) );
             this.chunkNames = calculateChunkNames();
         }
         catch ( ParseException e )
@@ -157,19 +167,23 @@ public class IndexReader
      * method should NOT be invoked, but rather the {@link ResourceHandler}s that caller provided in constructor of
      * this class should be closed manually.
      */
+    @Override
     public void close()
-        throws IOException
+            throws IOException
     {
-        remote.close();
-        if ( local != null )
+        if ( closed.compareAndSet( false, true ) )
         {
-            try
+            remote.close();
+            if ( local != null )
             {
-                syncLocalWithRemote();
-            }
-            finally
-            {
-                local.close();
+                try
+                {
+                    syncLocalWithRemote();
+                }
+                finally
+                {
+                    local.close();
+                }
             }
         }
     }
@@ -179,6 +193,8 @@ public class IndexReader
      * updates from the index. It is caller responsibility to either consume fully this iterator, or to close current
      * {@link ChunkReader} if aborting.
      */
+
+    @Override
     public Iterator<ChunkReader> iterator()
     {
         return new ChunkReaderIterator( remote, chunkNames.iterator() );
@@ -189,7 +205,7 @@ public class IndexReader
      * for future incremental updates.
      */
     private void syncLocalWithRemote()
-        throws IOException
+            throws IOException
     {
         storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), remoteIndexProperties );
     }
@@ -234,7 +250,7 @@ public class IndexReader
         try
         {
             int localLastIncremental =
-                Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
+                    Integer.parseInt( localIndexProperties.getProperty( "nexus.index.last-incremental" ) );
             String currentLocalCounter = String.valueOf( localLastIncremental );
             String nextLocalCounter = String.valueOf( localLastIncremental + 1 );
             // check remote props for existence of current or next chunk after local
@@ -263,52 +279,41 @@ public class IndexReader
      * is being consumed.
      */
     private static class ChunkReaderIterator
-        implements Iterator<ChunkReader>
+            implements Iterator<ChunkReader>
     {
         private final ResourceHandler resourceHandler;
 
         private final Iterator<String> chunkNamesIterator;
 
-        private ChunkReader currentChunkReader;
-
-        private ChunkReaderIterator( final ResourceHandler resourceHandler, final Iterator<String> chunkNamesIterator )
+        private ChunkReaderIterator( final ResourceHandler resourceHandler,
+                                     final Iterator<String> chunkNamesIterator )
         {
             this.resourceHandler = resourceHandler;
             this.chunkNamesIterator = chunkNamesIterator;
-            this.currentChunkReader = null;
         }
 
+        @Override
         public boolean hasNext()
         {
-            try
-            {
-                if ( currentChunkReader != null )
-                {
-                    currentChunkReader.close();
-                }
-            }
-            catch ( IOException e )
-            {
-                throw new RuntimeException( "IO problem while closing chunk readers", e );
-            }
             return chunkNamesIterator.hasNext();
         }
 
+        @Override
         public ChunkReader next()
         {
             String chunkName = chunkNamesIterator.next();
             try
             {
                 Resource currentResource = resourceHandler.locate( chunkName );
-                currentChunkReader = new ChunkReader( chunkName, currentResource.read() );
-                return currentChunkReader;
+                return new ChunkReader( chunkName, currentResource.read() );
             }
             catch ( IOException e )
             {
-                throw new RuntimeException( "IO problem while opening chunk readers", e );
+                throw new UncheckedIOException( "IO problem while opening chunk readers", e );
             }
         }
 
+        @Override
         public void remove()
         {
             throw new UnsupportedOperationException( "remove" );

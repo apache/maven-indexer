@@ -19,12 +19,11 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Maven 2 Index writable {@link ResourceHandler}, is capable of saving resources too. Needed only if incremental index
+ * Maven Index writable {@link ResourceHandler}, is capable of saving resources too. Needed only if incremental index
  * updates are wanted, to store the index state locally, and be able to calculate incremental diffs on next {@link
  * IndexReader} invocation. Is used by single thread only.
  *
@@ -32,13 +31,13 @@ import java.io.OutputStream;
  * @since 5.1.2
  */
 public interface WritableResourceHandler
-    extends ResourceHandler
+        extends ResourceHandler
 {
     /**
      * Resource that is writable.
      */
     interface WritableResource
-        extends Resource, Closeable
+            extends Resource
     {
         /**
          * Returns the {@link OutputStream} stream of the resource, if exists, it will replace the existing content, or
@@ -48,16 +47,14 @@ public interface WritableResourceHandler
          * Implementation does not have to be "read consistent", in a way to worry what subsequent {@link #read()}
          * method will return, as mixed calls will not happen on same instance of resource.
          */
-        OutputStream write()
-            throws IOException;
+        OutputStream write() throws IOException;
     }
 
     /**
      * Returns the {@link WritableResource} with {@code name}. Returned locator should be handled as
-     * resource, is {@link Closeable}.
+     * resource.
      *
      * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
      */
-    WritableResource locate( String name )
-        throws IOException;
+    WritableResource locate( String name ) throws IOException;
 }

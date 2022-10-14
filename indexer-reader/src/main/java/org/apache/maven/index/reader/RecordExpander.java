@@ -35,7 +35,7 @@ import static org.apache.maven.index.reader.Utils.renvl;
 
 
 /**
- * Maven 2 Index record transformer, that transforms "native" Maven Indexer records into {@link Record}s.
+ * Maven Index record transformer, that transforms "native" Maven Indexer records into {@link Record}s.
  *
  * @since 5.1.2
  */
@@ -143,7 +143,7 @@ public class RecordExpander
             }
             else
             {
-                final String packaging = Record.PACKAGING.coerce( result.get( Record.PACKAGING ) );
+                final String packaging = result.getString( Record.PACKAGING );
                 if ( result.containsKey( Record.CLASSIFIER ) || "pom".equals( packaging ) || "war".equals( packaging )
                     || "ear".equals( packaging ) )
                 {

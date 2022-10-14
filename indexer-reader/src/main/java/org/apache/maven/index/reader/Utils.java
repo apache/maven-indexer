@@ -68,54 +68,23 @@ public final class Utils
     public static final Pattern FS_PATTERN = Pattern.compile( Pattern.quote( FIELD_SEPARATOR ) );
 
     /**
-     * Creates and loads {@link Properties} from provided {@link InputStream} and closes the stream.
-     */
-    public static Properties loadProperties( final InputStream inputStream )
-        throws IOException
-    {
-        try
-        {
-            final Properties properties = new Properties();
-            properties.load( inputStream );
-            return properties;
-        }
-        finally
-        {
-            inputStream.close();
-        }
-    }
-
-    /**
      * Creates and loads {@link Properties} from provided {@link Resource} if exists, and closes the resource. If not
      * exists, returns {@code null}.
      */
     public static Properties loadProperties( final Resource resource )
         throws IOException
     {
-        final InputStream inputStream = resource.read();
-        if ( inputStream == null )
+        try ( InputStream inputStream = resource.read() )
         {
-            return null;
-        }
-        return loadProperties( inputStream );
-    }
-
-    /**
-     * Saves {@link Properties} to provided {@link OutputStream} and closes the stream.
-     */
-    public static void storeProperties( final OutputStream outputStream, final Properties properties )
-        throws IOException
-    {
-        try
-        {
-            properties.store( outputStream, "Maven Indexer Writer" );
-        }
-        finally
-        {
-            outputStream.close();
+            if ( inputStream == null )
+            {
+                return null;
+            }
+            final Properties properties = new Properties();
+            properties.load( inputStream );
+            return properties;
         }
     }
-
 
     /**
      * Saves {@link Properties} to provided {@link WritableResource} and closes the resource.
@@ -123,13 +92,12 @@ public final class Utils
     public static void storeProperties( final WritableResource writableResource, final Properties properties )
         throws IOException
     {
-        try
+        try ( writableResource )
         {
-            storeProperties( writableResource.write(), properties );
-        }
-        finally
-        {
-            writableResource.close();
+            try ( OutputStream outputStream = writableResource.write() )
+            {
+                properties.store( outputStream, "Maven Indexer Writer" );
+            }
         }
     }
 
@@ -149,7 +117,7 @@ public final class Utils
     public static Record allGroups( final Collection<String> allGroups )
     {
         HashMap<EntryKey, Object> entries = new HashMap<>();
-        entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[allGroups.size()] ) );
+        entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[0] ) );
         return new Record( Type.ALL_GROUPS, entries );
     }
 
@@ -159,7 +127,7 @@ public final class Utils
     public static Record rootGroups( final Collection<String> rootGroups )
     {
         HashMap<EntryKey, Object> entries = new HashMap<>();
-        entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[rootGroups.size()] ) );
+        entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[0] ) );
         return new Record( Type.ROOT_GROUPS, entries );
     }
 

@@ -31,7 +31,7 @@ import static org.apache.maven.index.reader.Utils.UINFO;
 import static org.apache.maven.index.reader.Utils.nvl;
 
 /**
- * Maven 2 Index record transformer, that transforms {@link Record}s into "native" Maven Indexer records.
+ * Maven Index record transformer, that transforms {@link Record}s into "native" Maven Indexer records.
  *
  * @since 5.1.2
  */
@@ -75,7 +75,7 @@ public class RecordCompactor
     {
         final Map<String, String> result = new HashMap<>();
         result.put( "DESCRIPTOR", "NexusIndex" );
-        result.put( "IDXINFO", "1.0|" + record.get( Record.REPOSITORY_ID ) );
+        result.put( "IDXINFO", "1.0|" + record.getString( Record.REPOSITORY_ID ) );
         return result;
     }
 
@@ -83,7 +83,7 @@ public class RecordCompactor
     {
         final Map<String, String> result = new HashMap<>();
         result.put( "allGroups", "allGroups" );
-        putIfNotNullAsStringArray( record.get( Record.ALL_GROUPS ), result, "allGroupsList" );
+        putIfNotNullAsStringArray( record.getStringArray( Record.ALL_GROUPS ), result, "allGroupsList" );
         return result;
     }
 
@@ -91,14 +91,14 @@ public class RecordCompactor
     {
         final Map<String, String> result = new HashMap<>();
         result.put( "rootGroups", "allGroups" );
-        putIfNotNullAsStringArray( record.get( Record.ROOT_GROUPS ), result, "rootGroupsList" );
+        putIfNotNullAsStringArray( record.getStringArray( Record.ROOT_GROUPS ), result, "rootGroupsList" );
         return result;
     }
 
     private static Map<String, String> compactDeletedArtifact( final Record record )
     {
         final Map<String, String> result = new HashMap<>();
-        putIfNotNullTS( record.get( Record.REC_MODIFIED ), result, "m" );
+        putIfNotNullTS( record.getLong( Record.REC_MODIFIED ), result, "m" );
         result.put( "del", compactUinfo( record ) );
         return result;
     }
@@ -113,42 +113,43 @@ public class RecordCompactor
         // Minimal
         result.put( UINFO, compactUinfo( record ) );
 
-        String info = nvl( record.get( Record.PACKAGING ) ) + FIELD_SEPARATOR + record.get(
-                Record.FILE_MODIFIED ) + FIELD_SEPARATOR + record.get(
-                Record.FILE_SIZE ) + FIELD_SEPARATOR + ( record.get(
-                Record.HAS_SOURCES ) ? "1" : "0" ) + FIELD_SEPARATOR + ( record.get(
-                Record.HAS_JAVADOC ) ? "1" : "0" ) + FIELD_SEPARATOR + ( record.get(
-                Record.HAS_SIGNATURE ) ? "1" : "0" ) + FIELD_SEPARATOR + nvl( record.get( Record.FILE_EXTENSION ) );
+        String info = nvl( record.getString( Record.PACKAGING ) ) + FIELD_SEPARATOR
+                + record.getLong( Record.FILE_MODIFIED ) + FIELD_SEPARATOR
+                + record.getLong( Record.FILE_SIZE ) + FIELD_SEPARATOR
+                + ( record.getBoolean( Record.HAS_SOURCES ) ? "1" : "0" ) + FIELD_SEPARATOR
+                + ( record.getBoolean( Record.HAS_JAVADOC ) ? "1" : "0" ) + FIELD_SEPARATOR
+                + ( record.getBoolean( Record.HAS_SIGNATURE ) ? "1" : "0" ) + FIELD_SEPARATOR
+                + nvl( record.getString( Record.FILE_EXTENSION ) );
         result.put( INFO, info );
 
-        putIfNotNullTS( record.get( Record.REC_MODIFIED ), result, "m" );
-        putIfNotNull( record.get( Record.NAME ), result, "n" );
-        putIfNotNull( record.get( Record.DESCRIPTION ), result, "d" );
-        putIfNotNull( record.get( Record.SHA1 ), result, "1" );
+        putIfNotNullTS( record.getLong( Record.REC_MODIFIED ), result, "m" );
+        putIfNotNull( record.getString( Record.NAME ), result, "n" );
+        putIfNotNull( record.getString( Record.DESCRIPTION ), result, "d" );
+        putIfNotNull( record.getString( Record.SHA1 ), result, "1" );
 
         // Jar file contents (optional)
-        putIfNotNullAsStringArray( record.get( Record.CLASSNAMES ), result, "classnames" );
+        putIfNotNullAsStringArray( record.getStringArray( Record.CLASSNAMES ), result, "classnames" );
 
         // Maven Plugin (optional)
-        putIfNotNull( record.get( Record.PLUGIN_PREFIX ), result, "px" );
-        putIfNotNullAsStringArray( record.get( Record.PLUGIN_GOALS ), result, "gx" );
+        putIfNotNull( record.getString( Record.PLUGIN_PREFIX ), result, "px" );
+        putIfNotNullAsStringArray( record.getStringArray( Record.PLUGIN_GOALS ), result, "gx" );
 
         // OSGi (optional)
-        putIfNotNull( record.get( Record.OSGI_BUNDLE_SYMBOLIC_NAME ), result, "Bundle-SymbolicName" );
-        putIfNotNull( record.get( Record.OSGI_BUNDLE_VERSION ), result, "Bundle-Version" );
-        putIfNotNull( record.get( Record.OSGI_EXPORT_PACKAGE ), result, "Export-Package" );
-        putIfNotNull( record.get( Record.OSGI_EXPORT_SERVICE ), result, "Export-Service" );
-        putIfNotNull( record.get( Record.OSGI_BUNDLE_DESCRIPTION ), result, "Bundle-Description" );
-        putIfNotNull( record.get( Record.OSGI_BUNDLE_NAME ), result, "Bundle-Name" );
-        putIfNotNull( record.get( Record.OSGI_BUNDLE_LICENSE ), result, "Bundle-License" );
-        putIfNotNull( record.get( Record.OSGI_EXPORT_DOCURL ), result, "Bundle-DocURL" );
-        putIfNotNull( record.get( Record.OSGI_IMPORT_PACKAGE ), result, "Import-Package" );
-        putIfNotNull( record.get( Record.OSGI_REQUIRE_BUNDLE ), result, "Require-Bundle" );
-        putIfNotNull( record.get( Record.OSGI_PROVIDE_CAPABILITY ), result, "Provide-Capability" );
-        putIfNotNull( record.get( Record.OSGI_REQUIRE_CAPABILITY ), result, "Require-Capability" );
-        putIfNotNull( record.get( Record.OSGI_FRAGMENT_HOST ), result, "Fragment-Host" );
-        putIfNotNull( record.get( Record.OSGI_BREE ), result, "Bundle-RequiredExecutionEnvironment" );
-        putIfNotNull( record.get( Record.SHA_256 ), result, "sha256" );
+        putIfNotNull( record.getString( Record.OSGI_BUNDLE_SYMBOLIC_NAME ), result, "Bundle-SymbolicName" );
+        putIfNotNull( record.getString( Record.OSGI_BUNDLE_VERSION ), result, "Bundle-Version" );
+        putIfNotNull( record.getString( Record.OSGI_EXPORT_PACKAGE ), result, "Export-Package" );
+        putIfNotNull( record.getString( Record.OSGI_EXPORT_SERVICE ), result, "Export-Service" );
+        putIfNotNull( record.getString( Record.OSGI_BUNDLE_DESCRIPTION ), result, "Bundle-Description" );
+        putIfNotNull( record.getString( Record.OSGI_BUNDLE_NAME ), result, "Bundle-Name" );
+        putIfNotNull( record.getString( Record.OSGI_BUNDLE_LICENSE ), result, "Bundle-License" );
+        putIfNotNull( record.getString( Record.OSGI_EXPORT_DOCURL ), result, "Bundle-DocURL" );
+        putIfNotNull( record.getString( Record.OSGI_IMPORT_PACKAGE ), result, "Import-Package" );
+        putIfNotNull( record.getString( Record.OSGI_REQUIRE_BUNDLE ), result, "Require-Bundle" );
+        putIfNotNull( record.getString( Record.OSGI_PROVIDE_CAPABILITY ), result, "Provide-Capability" );
+        putIfNotNull( record.getString( Record.OSGI_REQUIRE_CAPABILITY ), result, "Require-Capability" );
+        putIfNotNull( record.getString( Record.OSGI_FRAGMENT_HOST ), result, "Fragment-Host" );
+        putIfNotNull( record.getString( Record.OSGI_BREE ), result, "Bundle-RequiredExecutionEnvironment" );
+        putIfNotNull( record.getString( Record.SHA_256 ), result, "sha256" );
 
         return result;
     }
@@ -158,11 +159,10 @@ public class RecordCompactor
      */
     private static String compactUinfo( final Record record )
     {
-        final String classifier = record.get( Record.CLASSIFIER );
-        StringBuilder sb = new StringBuilder();
-        sb.append( record.get( Record.GROUP_ID ) ).append( FIELD_SEPARATOR ).append(
-            record.get( Record.ARTIFACT_ID ) ).append( FIELD_SEPARATOR ).append( record.get( Record.VERSION ) ).append(
-            FIELD_SEPARATOR ).append( nvl( classifier ) );
+        final String classifier = record.getString( Record.CLASSIFIER );
+        StringBuilder sb = new StringBuilder().append( record.getString( Record.GROUP_ID ) ).append( FIELD_SEPARATOR )
+                .append( record.getString( Record.ARTIFACT_ID ) ).append( FIELD_SEPARATOR )
+                .append( record.getString( Record.VERSION ) ).append( FIELD_SEPARATOR ).append( nvl( classifier ) );
         if ( classifier != null )
         {
             sb.append( FIELD_SEPARATOR ).append( record.get( Record.FILE_EXTENSION ) );

@@ -19,12 +19,11 @@ package org.apache.maven.index.reader;
  * under the License.
  */
 
-import org.junit.Test;
-
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.StreamSupport;
+
+import org.junit.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,63 +33,49 @@ import static org.hamcrest.core.IsEqual.equalTo;
  * UT for {@link IndexWriter}
  */
 public class IndexWriterTest
-    extends TestSupport
+        extends TestSupport
 {
-  @Test
-  public void roundtrip() throws IOException {
-    IndexReader indexReader;
-    IndexWriter indexWriter;
-    WritableResourceHandler writableResourceHandler = createWritableResourceHandler();
+    @Test
+    public void roundtrip() throws IOException
+    {
+        try ( WritableResourceHandler writableResourceHandler = createWritableResourceHandler() )
+        {
+            try ( IndexReader indexReader = new IndexReader( null, testResourceHandler( "simple" ) );
+                  IndexWriter indexWriter = new IndexWriter( writableResourceHandler,
+                          indexReader.getIndexId(), false ) )
+            {
+                for ( ChunkReader chunkReader : indexReader )
+                {
+                    try ( chunkReader )
+                    {
+                        indexWriter.writeChunk( chunkReader.iterator() );
+                    }
+                }
+            }
 
-    // write it once
-    indexReader = new IndexReader(
-        null,
-        testResourceHandler("simple")
-    );
-    indexWriter = new IndexWriter(
-        writableResourceHandler,
-        indexReader.getIndexId(),
-        false
-    );
-    try {
-      for (ChunkReader chunkReader : indexReader) {
-        indexWriter.writeChunk(chunkReader.iterator());
-      }
-    }
-    finally {
-      indexWriter.close();
-      indexReader.close();
-    }
+            // read what we wrote out
+            try ( IndexReader indexReader = new IndexReader( null, writableResourceHandler ) )
+            {
+                assertThat( indexReader.getIndexId(), equalTo( "apache-snapshots-local" ) );
+                // assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(published.getTime()));
+                assertThat( indexReader.isIncremental(), equalTo( false ) );
+                assertThat( indexReader.getChunkNames(),
+                        equalTo( List.of( "nexus-maven-repository-index.gz" ) ) );
+                int chunks = 0;
+                int records = 0;
+                for ( ChunkReader chunkReader : indexReader )
+                {
+                    chunks++;
+                    assertThat( chunkReader.getName(), equalTo( "nexus-maven-repository-index.gz" ) );
+                    assertThat( chunkReader.getVersion(), equalTo( 1 ) );
+                    // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
+                    records = (int) StreamSupport.stream( chunkReader.spliterator(), false )
+                            .map( expandFunction ).count();
+                }
 
-    // read what we wrote out
-    indexReader = new IndexReader(
-        null,
-        writableResourceHandler
-    );
-    try {
-      assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
-      // assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(published.getTime()));
-      assertThat(indexReader.isIncremental(), equalTo(false));
-      assertThat(indexReader.getChunkNames(), equalTo(Arrays.asList("nexus-maven-repository-index.gz")));
-      int chunks = 0;
-      int records = 0;
-      for (ChunkReader chunkReader : indexReader) {
-        chunks++;
-        assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
-        assertThat(chunkReader.getVersion(), equalTo(1));
-        // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
-        for (Record record : StreamSupport.stream( chunkReader.spliterator(), false )
-            .map( expandFunction )
-            .collect( Collectors.toList() ) ) {
-          records++;
+                assertThat( chunks, equalTo( 1 ) );
+                assertThat( records, equalTo( 5 ) );
+            }
         }
-      }
-
-      assertThat(chunks, equalTo(1));
-      assertThat(records, equalTo(5));
     }
-    finally {
-      indexReader.close();
-    }
-  }
 }

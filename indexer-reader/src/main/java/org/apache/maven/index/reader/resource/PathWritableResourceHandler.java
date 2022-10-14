@@ -19,11 +19,11 @@ package org.apache.maven.index.reader.resource;
  * under the License.
  */
 
-import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import org.apache.maven.index.reader.WritableResourceHandler;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link WritableResourceHandler} that represents the base of a {@link Path} hierarchy.
@@ -34,7 +34,7 @@ public class PathWritableResourceHandler implements WritableResourceHandler
 
     public PathWritableResourceHandler( Path path )
     {
-        Objects.requireNonNull( path, "path cannot be null" );
+        requireNonNull( path, "path cannot be null" );
         this.path = path;
     }
 
@@ -42,10 +42,5 @@ public class PathWritableResourceHandler implements WritableResourceHandler
     public WritableResource locate( String name )
     {
         return new PathWritableResource( path.resolve( name ) );
-    }
-
-    @Override
-    public void close() throws IOException
-    {
     }
 }

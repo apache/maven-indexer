@@ -53,7 +53,6 @@ public class CachingResourceHandler
     }
 
     public Resource locate( final String name )
-        throws IOException
     {
         if ( notFoundResources.contains( name ) )
         {

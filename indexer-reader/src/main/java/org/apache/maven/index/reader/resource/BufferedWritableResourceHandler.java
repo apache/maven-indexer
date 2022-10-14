@@ -22,9 +22,10 @@ package org.apache.maven.index.reader.resource;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.util.Objects;
 
 import org.apache.maven.index.reader.WritableResourceHandler;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Wraps {@link WritableResourceHandler}s so that they return {@link WritableResource}s that return
@@ -36,7 +37,7 @@ public class BufferedWritableResourceHandler implements WritableResourceHandler
 
     public BufferedWritableResourceHandler( WritableResourceHandler writableResourceHandler )
     {
-        Objects.requireNonNull( writableResourceHandler, "writableResourceHandler cannot be null" );
+        requireNonNull( writableResourceHandler, "writableResourceHandler cannot be null" );
         this.writableResourceHandler = writableResourceHandler;
     }
 
