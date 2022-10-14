@@ -88,7 +88,7 @@ under the License.
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
     <minimalMavenBuildVersion>3.8.6</minimalMavenBuildVersion>
-    <minimalJavaBuildVersion>11</minimalJavaBuildVersion>
+    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
