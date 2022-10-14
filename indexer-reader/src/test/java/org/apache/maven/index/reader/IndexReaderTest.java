@@ -178,7 +178,7 @@ public class IndexReaderTest
         try ( WritableResourceHandler local = new DirectoryResourceHandler( indexDir );
               CachingResourceHandler remote = new CachingResourceHandler(
                 new DirectoryResourceHandler( cacheDir ),
-                new HttpResourceHandler( URI.create( "http://repo1.maven.org/maven2/.index/" ) ) );
+                new HttpResourceHandler( URI.create( "https://repo1.maven.org/maven2/.index/" ) ) );
               IndexReader indexReader = new IndexReader( local, remote ) )
         {
             writer.println( "indexRepoId=" + indexReader.getIndexId() );
