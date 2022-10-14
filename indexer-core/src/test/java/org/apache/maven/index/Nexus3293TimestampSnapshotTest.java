@@ -122,7 +122,6 @@ public class Nexus3293TimestampSnapshotTest
         validateIndexContents( indexer );
     }
 
-    @Test
     private void validateIndexContents( NexusIndexer indexer )
         throws Exception
     {

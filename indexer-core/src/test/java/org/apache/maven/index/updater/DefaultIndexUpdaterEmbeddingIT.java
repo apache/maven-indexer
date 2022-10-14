@@ -51,18 +51,19 @@ public class DefaultIndexUpdaterEmbeddingIT
 {
     private String baseUrl;
 
-    private Injector container;
 
     private ServerTestFixture server;
 
-    private IndexUpdater updater;
-
     private WagonHelper wagonHelper;
+
+    @Inject
+    private IndexUpdater updater;
 
     @Override
     public void setUp()
         throws Exception
     {
+
         int port;
         try ( final ServerSocket ss = new ServerSocket( 0 ) )
         {
@@ -71,15 +72,11 @@ public class DefaultIndexUpdaterEmbeddingIT
         }
 
         baseUrl = "http://127.0.0.1:" + port + "/";
-
         server = new ServerTestFixture( port );
-        final DefaultContainerConfiguration configuration = new DefaultContainerConfiguration();
-        configuration.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
-        container = new DefaultPlexusContainer(configuration);
 
-        updater = container.lookup( IndexUpdater.class, "default" );
+        super.setUp();
 
-        wagonHelper = new WagonHelper( container.lookup( Injector.class ) );
+        wagonHelper = new WagonHelper();
     }
 
     @Override

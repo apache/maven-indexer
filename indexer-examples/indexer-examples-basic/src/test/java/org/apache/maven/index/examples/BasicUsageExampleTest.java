@@ -19,11 +19,11 @@ package org.apache.maven.index.examples;
  * under the License.
  */
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
 public class BasicUsageExampleTest
-    extends TestCase
 {
+    @Test
     public void testApp()
         throws Exception
     {

@@ -22,6 +22,7 @@ package org.apache.maven.index.updater;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -429,7 +430,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
@@ -507,10 +508,10 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
                 oneOf( tempContext ).merge( with( any( Directory.class ) ) );
@@ -588,7 +589,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
@@ -832,7 +833,7 @@ public class DefaultIndexUpdaterTest
                     with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
                 oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -914,7 +915,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
 
-                will( returnValue( newInputStream( "/index-updater/server-root/legacy/nexus-maven-repository-index.zip" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/legacy/nexus-maven-repository-index.zip" ) ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -938,9 +939,14 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
-    protected InputStream newInputStream( String path )
+    protected InputStream newInputStream( String path ) throws IOException
     {
-        return getResourceAsStream( path );
+        File file = getTestFile( "src/test/resources/" + path );
+        if ( file.isFile() )
+        {
+            return new FileInputStream( file );
+        }
+        return null;
     }
 
     abstract static class PropertiesAction

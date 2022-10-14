@@ -26,9 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 import org.apache.maven.wagon.ConnectionException;
 import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
@@ -37,6 +34,7 @@ import org.apache.maven.wagon.authentication.AuthenticationException;
 import org.apache.maven.wagon.authentication.AuthenticationInfo;
 import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferListener;
+import org.apache.maven.wagon.providers.http.HttpWagon;
 import org.apache.maven.wagon.proxy.ProxyInfo;
 import org.apache.maven.wagon.repository.Repository;
 
@@ -49,15 +47,8 @@ import org.apache.maven.wagon.repository.Repository;
  *
  * @author cstamas
  */
-public class WagonHelper
+public final class WagonHelper
 {
-    private final Injector injector;
-
-    public WagonHelper( final Injector injector )
-    {
-        this.injector = injector;
-    }
-
     public WagonFetcher getWagonResourceFetcher( final TransferListener listener )
     {
         return getWagonResourceFetcher( listener, null, null );
@@ -75,25 +66,7 @@ public class WagonHelper
                                                  final ProxyInfo proxyInfo )
     {
         // we limit ourselves to HTTP only
-        return new WagonFetcher( injector.getInstance( Key.get( Wagon.class, Names.named( "http" ) ) ),
-                listener, authenticationInfo, proxyInfo );
-    }
-
-    /**
-     * @param listener
-     * @param authenticationInfo
-     * @param proxyInfo
-     * @param protocol           protocol supported by wagon http/https
-     * @return
-     * @since 4.1.3
-     */
-    public WagonFetcher getWagonResourceFetcher( final TransferListener listener,
-                                                 final AuthenticationInfo authenticationInfo,
-                                                 final ProxyInfo proxyInfo,
-                                                 final String protocol )
-    {
-        return new WagonFetcher( injector.getInstance( Key.get( Wagon.class, Names.named( protocol ) ) ),
-                listener, authenticationInfo, proxyInfo );
+        return new WagonFetcher(  new HttpWagon(), listener, authenticationInfo, proxyInfo );
     }
 
     public static class WagonFetcher

@@ -40,6 +40,9 @@ public class Mindexer14HitLimitTest
     {
         repo.mkdirs();
 
+        context =
+                nexusIndexer.addIndexingContext( "mindexer14", "mindexer14", repo, indexDir, null, null, MIN_CREATORS );
+
         nexusIndexer.scan( context, false );
     }
 

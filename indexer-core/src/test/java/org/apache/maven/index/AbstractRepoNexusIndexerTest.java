@@ -506,7 +506,6 @@ public abstract class AbstractRepoNexusIndexerTest
         assertEquals( 0, p2.size() );
     }
 
-    @Test
     protected boolean resultsAreEqual( List<ArtifactInfo> left, List<ArtifactInfo> right )
     {
         assertEquals( left.size(), right.size() );

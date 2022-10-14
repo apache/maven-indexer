@@ -585,6 +585,7 @@ public class M2GavCalculatorTest
         assertNull( gav );
     }
 
+    @Test
     public void testNegGav()
         throws Exception
     {
@@ -597,6 +598,7 @@ public class M2GavCalculatorTest
         // NEXUS-4132 END
     }
 
+    @Test
     public void testGavExtreme()
         throws Exception
     {

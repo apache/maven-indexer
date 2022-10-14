@@ -49,6 +49,7 @@ public class JarFileContentsIndexCreatorTest
         indexCreator = this.lookup( IndexCreator.class, "jarContent" );
     }
 
+    @Test
     public void test_nexus_2318_indexJarWithClasses()
         throws Exception
     {
