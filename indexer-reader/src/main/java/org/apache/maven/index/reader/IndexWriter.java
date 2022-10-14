@@ -36,7 +36,9 @@ import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven Index writer that writes chunk and maintains published property file.
+ * Maven Index writer that writes chunk and maintains published property file. Instances of this class MUST BE handled
+ * as resources (have them closed once done with them), it is user responsibility to close them, ideally in
+ * try-with-resource block.
  * <p/>
  * <strong>Currently no incremental update is supported, as the deletion states should be maintained by
  * caller</strong>. Hence, this writer will always produce the "main" chunk only.

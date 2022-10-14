@@ -39,7 +39,11 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
  * Maven Index reader that handles incremental updates, if possible, and provides one or more {@link ChunkReader}s, to
- * read all the required records.
+ * read all the required records. Instances of this class MUST BE handled as resources (have them closed once done with
+ * them), it is user responsibility to close them, ideally in try-with-resource block.
+ * <p>
+ * Every involved instance, this {@link IndexReader}, provided {@link ChunkReader}, and used  {@link ResourceHandler}s
+ * are {@link Closeable}, and all have to be explicitly closed, best in try-with-resource.
  *
  * @since 5.1.2
  */
