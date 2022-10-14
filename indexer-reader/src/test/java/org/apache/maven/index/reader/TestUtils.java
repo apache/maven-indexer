@@ -86,7 +86,7 @@ public final class TestUtils
       }
       else
       {
-        final String groupId = rec.get( Record.GROUP_ID );
+        final String groupId = rec.getString( Record.GROUP_ID );
         if ( groupId != null )
         {
           allGroupsSet.add( groupId );

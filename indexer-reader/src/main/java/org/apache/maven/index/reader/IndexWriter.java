@@ -27,17 +27,17 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven 2 Index writer that writes chunk and maintains published property file.
+ * Maven Index writer that writes chunk and maintains published property file.
  * <p/>
- * <strong>Currently no incremental update is supported, as the deleteion states should be maintained by
+ * <strong>Currently no incremental update is supported, as the deletion states should be maintained by
  * caller</strong>. Hence, this writer will always produce the "main" chunk only.
  *
  * @since 5.1.2
@@ -60,8 +60,8 @@ public class IndexWriter
     public IndexWriter( final WritableResourceHandler local, final String indexId, final boolean incrementalSupported )
         throws IOException
     {
-        Objects.requireNonNull( local, "local resource handler null" );
-        Objects.requireNonNull( indexId, "indexId null" );
+        requireNonNull( local, "local resource handler null" );
+        requireNonNull( indexId, "indexId null" );
         this.local = local;
         Properties indexProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
         if ( incrementalSupported && indexProperties != null )

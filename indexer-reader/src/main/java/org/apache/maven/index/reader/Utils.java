@@ -73,15 +73,11 @@ public final class Utils
     public static Properties loadProperties( final InputStream inputStream )
         throws IOException
     {
-        try
+        try ( inputStream )
         {
             final Properties properties = new Properties();
             properties.load( inputStream );
             return properties;
-        }
-        finally
-        {
-            inputStream.close();
         }
     }
 
@@ -106,13 +102,9 @@ public final class Utils
     public static void storeProperties( final OutputStream outputStream, final Properties properties )
         throws IOException
     {
-        try
+        try ( outputStream )
         {
             properties.store( outputStream, "Maven Indexer Writer" );
-        }
-        finally
-        {
-            outputStream.close();
         }
     }
 
@@ -123,13 +115,9 @@ public final class Utils
     public static void storeProperties( final WritableResource writableResource, final Properties properties )
         throws IOException
     {
-        try
+        try ( writableResource )
         {
             storeProperties( writableResource.write(), properties );
-        }
-        finally
-        {
-            writableResource.close();
         }
     }
 

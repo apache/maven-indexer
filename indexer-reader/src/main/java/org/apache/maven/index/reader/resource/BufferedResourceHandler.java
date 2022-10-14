@@ -21,9 +21,10 @@ package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.util.Objects;
 
 import org.apache.maven.index.reader.ResourceHandler;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Wraps {@link ResourceHandler}s so that they return {@link Resource}s that return {@link
@@ -35,7 +36,7 @@ public class BufferedResourceHandler implements ResourceHandler
 
     public BufferedResourceHandler( ResourceHandler resourceHandler )
     {
-        Objects.requireNonNull( resourceHandler, "resourceHandler cannot be null" );
+        requireNonNull( resourceHandler, "resourceHandler cannot be null" );
         this.resourceHandler = resourceHandler;
     }
 

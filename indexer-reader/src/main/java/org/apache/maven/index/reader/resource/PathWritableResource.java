@@ -25,9 +25,10 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A {@link WritableResource} that represents a {@link Path}.
@@ -38,7 +39,7 @@ public class PathWritableResource implements WritableResource
 
     public PathWritableResource( Path path )
     {
-        Objects.requireNonNull( path, "path cannot be null" );
+        requireNonNull( path, "path cannot be null" );
         this.path = path;
     }
 

@@ -34,7 +34,7 @@ import java.util.NoSuchElementException;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Maven 2 Index published binary chunk reader, it reads raw Maven Indexer records from the transport binary format.
+ * Maven Index published binary chunk reader, it reads raw Maven Indexer records from the transport binary format.
  *
  * @since 5.1.2
  */

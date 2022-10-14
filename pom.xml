@@ -136,12 +136,6 @@ under the License.
         <optional>true</optional>
       </dependency>
 
-      <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>31.1-jre</version>
-      </dependency>
-
       <!-- DI -->
       <dependency>
         <groupId>javax.inject</groupId>

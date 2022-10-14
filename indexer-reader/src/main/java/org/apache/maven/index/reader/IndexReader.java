@@ -29,14 +29,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Properties;
 
+import static java.util.Objects.requireNonNull;
 import static org.apache.maven.index.reader.Utils.loadProperties;
 import static org.apache.maven.index.reader.Utils.storeProperties;
 
 /**
- * Maven 2 Index reader that handles incremental updates if possible and provides one or more {@link ChunkReader}s, to
+ * Maven Index reader that handles incremental updates, if possible, and provides one or more {@link ChunkReader}s, to
  * read all the required records.
  *
  * @since 5.1.2
@@ -63,7 +63,7 @@ public class IndexReader
     public IndexReader( final WritableResourceHandler local, final ResourceHandler remote )
         throws IOException
     {
-        Objects.requireNonNull( remote, "remote resource handler null" );
+        requireNonNull( remote, "remote resource handler null" );
         this.local = local;
         this.remote = remote;
         remoteIndexProperties = loadProperties( remote.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
