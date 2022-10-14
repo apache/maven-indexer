@@ -33,7 +33,7 @@ public class NexusIndexerCliIT
     private StreamConsumer sout;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();

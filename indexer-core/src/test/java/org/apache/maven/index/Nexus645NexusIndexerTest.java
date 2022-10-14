@@ -25,6 +25,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus645NexusIndexerTest
@@ -41,6 +44,7 @@ public class Nexus645NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {

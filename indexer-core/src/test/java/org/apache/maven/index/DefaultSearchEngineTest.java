@@ -32,6 +32,9 @@ import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.util.IndexCreatorSorter;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class DefaultSearchEngineTest
     extends AbstractNexusIndexerTest
@@ -94,7 +97,7 @@ public class DefaultSearchEngineTest
     private SearchEngine searchEngine;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -103,13 +106,14 @@ public class DefaultSearchEngineTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         searchEngine = null;
         super.tearDown();
     }
 
+    @Test
     public void testExceptionInArtifactFilter()
         throws Exception
     {

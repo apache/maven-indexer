@@ -19,14 +19,14 @@ package org.apache.maven.index.artifact;
  * under the License.
  */
 
-import org.apache.maven.index.artifact.M2ArtifactRecognizer;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
 
 public class MavenArtifactRecognizerTest
-    extends TestCase
 {
 
+    @Test
     public void testIsPom()
     {
         assertEquals( true, M2ArtifactRecognizer.isPom( "aaa.pom" ) );
@@ -35,6 +35,7 @@ public class MavenArtifactRecognizerTest
         assertEquals( false, M2ArtifactRecognizer.isPom( "aaa.pom-a" ) );
     }
 
+    @Test
     public void testIsSnapshot1()
     {
         // NEXUS-3148
@@ -49,6 +50,7 @@ public class MavenArtifactRecognizerTest
         assertEquals( false, M2ArtifactRecognizer.isSnapshot( "/javax/mail/mail/1.4/mail-1.4.jar" ) );
     }
 
+    @Test
     public void testIsSnapshot2()
     {
         assertEquals(
@@ -59,6 +61,7 @@ public class MavenArtifactRecognizerTest
             M2ArtifactRecognizer.isSnapshot( "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom" ) );
     }
 
+    @Test
     public void testIsMetadata()
     {
         assertEquals( true, M2ArtifactRecognizer.isMetadata( "maven-metadata.xml" ) );

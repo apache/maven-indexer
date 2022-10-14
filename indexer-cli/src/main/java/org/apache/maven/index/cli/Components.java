@@ -1,4 +1,4 @@
-package org.apache.maven.index.examples;
+package org.apache.maven.index.cli;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,20 +19,26 @@ package org.apache.maven.index.examples;
  * under the License.
  */
 
-import com.google.inject.Guice;
-import org.eclipse.sisu.launch.Main;
-import org.eclipse.sisu.space.BeanScanning;
-import org.junit.Test;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-public class BasicUsageExampleTest
+import java.util.Map;
+
+import org.apache.maven.index.NexusIndexer;
+import org.apache.maven.index.context.IndexCreator;
+import org.apache.maven.index.packer.IndexPacker;
+
+@Named
+@Singleton
+public class Components
 {
-    @Test
-    public void testApp()
-            throws Exception
-    {
-        final com.google.inject.Module app = Main.wire(
-                BeanScanning.INDEX
-        );
-        Guice.createInjector( app ).getInstance( BasicUsageExample.class ).perform();
-    }
+    @Inject
+    Map<String, IndexCreator> allIndexCreators;
+
+    @Inject
+    NexusIndexer indexer;
+
+    @Inject
+    IndexPacker packer;
 }

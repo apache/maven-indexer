@@ -34,6 +34,12 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.fs.Locker;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class LocalIndexCacheTest
     extends AbstractIndexUpdaterTest
@@ -47,7 +53,7 @@ public class LocalIndexCacheTest
     private IndexingContext tempContext;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -66,7 +72,7 @@ public class LocalIndexCacheTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         removeTempContext();
@@ -97,6 +103,7 @@ public class LocalIndexCacheTest
         }
     }
 
+    @Test
     public void testBasic()
         throws Exception
     {
@@ -186,6 +193,7 @@ public class LocalIndexCacheTest
         assertEquals( expectedCount, response.getTotalHits() );
     }
 
+    @Test
     public void testForceIndexDownload()
         throws Exception
     {
@@ -218,6 +226,7 @@ public class LocalIndexCacheTest
         updater.fetchAndUpdateIndex( updateRequest );
     }
 
+    @Test
     public void testInitialForcedFullDownload()
         throws Exception
     {
@@ -239,6 +248,7 @@ public class LocalIndexCacheTest
         assertTrue( new File( localCacheDir, "nexus-maven-repository-index.properties" ).exists() );
     }
 
+    @Test
     public void testFailedIndexDownload()
         throws Exception
     {
@@ -285,6 +295,7 @@ public class LocalIndexCacheTest
         assertTrue( new File( localCacheDir, "nexus-maven-repository-index.properties" ).exists() );
     }
 
+    @Test
     public void testCleanCacheDirectory()
         throws Exception
     {
@@ -349,6 +360,7 @@ public class LocalIndexCacheTest
         assertFalse( unknownDirectory.isDirectory() );
     }
 
+    @Test
     public void testOffline()
         throws Exception
     {

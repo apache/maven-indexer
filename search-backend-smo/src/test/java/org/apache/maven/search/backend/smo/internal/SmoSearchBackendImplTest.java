@@ -35,7 +35,7 @@ import org.apache.maven.search.request.Query;
 import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore( "This is more a showcase" )
+@Ignore( "This is not a test, is more a showcase" )
 public class SmoSearchBackendImplTest
 {
     private final SmoSearchBackendImpl backend = new SmoSearchBackendImpl();

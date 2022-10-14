@@ -43,6 +43,12 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class DefaultIndexNexusIndexerTest
     extends MinimalIndexNexusIndexerTest
@@ -61,6 +67,7 @@ public class DefaultIndexNexusIndexerTest
         assertNotNull( context.getTimestamp() );
     }
 
+    @Test
     public void testPlugin()
         throws Exception
     {
@@ -99,6 +106,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( "tricky-params", goals.get( 13 ) );
     }
 
+    @Test
     public void testPluginPackaging()
         throws Exception
     {
@@ -108,6 +116,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( response.getResults().toString(), 2, response.getTotalHits() );
     }
 
+    @Test
     public void testSearchArchetypes()
         throws Exception
     {
@@ -144,6 +153,7 @@ public class DefaultIndexNexusIndexerTest
         }
     }
 
+    @Test
     public void testIndexTimestamp()
         throws Exception
     {
@@ -223,6 +233,7 @@ public class DefaultIndexNexusIndexerTest
         assertFalse( new File( newIndex, "timestamp" ).exists() );
     }
 
+    @Test
     public void testArchetype()
         throws Exception
     {
@@ -238,6 +249,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( r.toString(), 1, r.size() );
     }
 
+    @Test
     public void testArchetypePackaging()
         throws Exception
     {
@@ -246,6 +258,7 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( response.getResults().toString(), 4, response.getTotalHits() );
     }
 
+    @Test
     public void testBrokenJar()
         throws Exception
     {
@@ -264,9 +277,10 @@ public class DefaultIndexNexusIndexerTest
         assertEquals( "brokenjar", ai.getGroupId() );
         assertEquals( "brokenjar", ai.getArtifactId() );
         assertEquals( "1.0", ai.getVersion() );
-        assertEquals( null, ai.getClassNames() );
+        assertNull( ai.getClassNames() );
     }
 
+    @Test
     public void testMissingPom()
         throws Exception
     {

@@ -30,6 +30,9 @@ import org.apache.maven.index.artifact.M2GavCalculator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class Nexus3293TimestampSnapshotTest
     extends AbstractIndexCreatorHelper
@@ -60,6 +63,7 @@ public class Nexus3293TimestampSnapshotTest
         return indexer;
     }
 
+    @Test
     public void test_nexus_3293_releaseJar()
         throws Exception
     {
@@ -89,6 +93,7 @@ public class Nexus3293TimestampSnapshotTest
         validateIndexContents( indexer );
     }
 
+    @Test
     public void test_nexus_3293_indexTimestampedSnapshotJar()
         throws Exception
     {

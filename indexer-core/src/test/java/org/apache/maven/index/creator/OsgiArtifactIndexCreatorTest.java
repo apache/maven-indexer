@@ -35,7 +35,11 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index.AbstractTestSupport;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -63,12 +67,14 @@ public class OsgiArtifactIndexCreatorTest
         nexusIndexer = this.lookup( NexusIndexer.class );
     }
 
+    @Test
     public void testAssertIndexCreatorComponentExists()
         throws Exception
     {
         assertNotNull( indexCreator );
     }
 
+    @Test
     public void testPopulateArtifactInfo()
         throws Exception
     {
@@ -111,6 +117,7 @@ public class OsgiArtifactIndexCreatorTest
             ai.getBundleImportPackage() );
     }
 
+    @Test
     public void testPopulateFragmentHost() throws Exception {
         File artifact = new File(getBasedir(),
                 "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
@@ -126,6 +133,7 @@ public class OsgiArtifactIndexCreatorTest
 
     }
 
+    @Test
     public void testPopulateCapabilityAndSha256() throws Exception {
         File artifact = new File(getBasedir(),
                 "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar");
@@ -185,6 +193,7 @@ public class OsgiArtifactIndexCreatorTest
 
     }
 
+    @Test
     public void testIndexOSGIRepoThenSearch()
         throws Exception
     {
@@ -219,6 +228,7 @@ public class OsgiArtifactIndexCreatorTest
         }
     }
 
+    @Test
     public void testIndexOSGIRepoThenSearchWithVersion()
         throws Exception
     {
@@ -246,6 +256,7 @@ public class OsgiArtifactIndexCreatorTest
 
     }
 
+    @Test
     public void testIndexOSGIRepoThenSearchWithSha256()
             throws Exception {
 
@@ -272,6 +283,7 @@ public class OsgiArtifactIndexCreatorTest
 
     }
 
+    @Test
     public void testIndexOSGIRepoThenSearchWithExportPackage()
         throws Exception
     {
@@ -316,6 +328,7 @@ public class OsgiArtifactIndexCreatorTest
 
     }
 
+    @Test
     public void testIndexOSGIRepoThenSearchWithExportService()
         throws Exception
     {

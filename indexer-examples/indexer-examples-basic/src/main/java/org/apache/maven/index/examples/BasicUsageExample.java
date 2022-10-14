@@ -19,6 +19,10 @@ package org.apache.maven.index.examples;
  * under the License.
  */
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
@@ -50,24 +54,20 @@ import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdateResult;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
-import org.apache.maven.index.updater.WagonHelper;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.events.TransferEvent;
-import org.apache.maven.wagon.events.TransferListener;
-import org.apache.maven.wagon.observers.AbstractTransferListener;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.PlexusContainerException;
-import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.util.version.GenericVersionScheme;
 import org.eclipse.aether.version.InvalidVersionSpecificationException;
 import org.eclipse.aether.version.Version;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -76,51 +76,33 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * Collection of some use cases.
  */
+@Singleton
+@Named
 public class BasicUsageExample
 {
-    public static void main( String[] args )
-        throws Exception
-    {
-        new BasicUsageExample().perform();
-    }
-
-    // ==
-
-    private final PlexusContainer plexusContainer;
-
     private final Indexer indexer;
 
     private final IndexUpdater indexUpdater;
 
-    private final Wagon httpWagon;
+    private final Map<String, IndexCreator> indexCreators;
 
     private IndexingContext centralContext;
 
-    public BasicUsageExample()
-        throws PlexusContainerException, ComponentLookupException
+    @Inject
+    public BasicUsageExample( Indexer indexer, IndexUpdater indexUpdater, Map<String, IndexCreator> indexCreators )
     {
-        // here we create Plexus container, the Maven default IoC container
-        // Plexus falls outside of MI scope, just accept the fact that
-        // MI is a Plexus component ;)
-        // If needed more info, ask on Maven Users list or Plexus Users list
-        // google is your friend!
-        final DefaultContainerConfiguration config = new DefaultContainerConfiguration();
-        config.setClassPathScanning( PlexusConstants.SCANNING_INDEX );
-        this.plexusContainer = new DefaultPlexusContainer( config );
-
-        // lookup the indexer components from plexus
-        this.indexer = plexusContainer.lookup( Indexer.class );
-        this.indexUpdater = plexusContainer.lookup( IndexUpdater.class );
-        // lookup wagon used to remotely fetch index
-        this.httpWagon = plexusContainer.lookup( Wagon.class, "http" );
-
+        this.indexer = requireNonNull( indexer );
+        this.indexUpdater = requireNonNull( indexUpdater );
+        this.indexCreators = requireNonNull( indexCreators );
     }
 
     public void perform()
-        throws IOException, ComponentLookupException, InvalidVersionSpecificationException
+        throws IOException, InvalidVersionSpecificationException
     {
         // Files where local cache is (if any) and Lucene Index should be located
         File centralLocalCache = new File( "target/central-cache" );
@@ -128,9 +110,9 @@ public class BasicUsageExample
 
         // Creators we want to use (search for fields it defines)
         List<IndexCreator> indexers = new ArrayList<>();
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "min" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "jarContent" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "maven-plugin" ) );
+        indexers.add( requireNonNull( indexCreators.get( "min" ) ) );
+        indexers.add( requireNonNull( indexCreators.get( "jarContent" ) ) );
+        indexers.add( requireNonNull( indexCreators.get( "maven-plugin" ) ) );
 
         // Create context for central repository index
         centralContext =
@@ -147,31 +129,8 @@ public class BasicUsageExample
             Instant updateStart = Instant.now();
             System.out.println( "Updating Index..." );
             System.out.println( "This might take a while on first run, so please be patient!" );
-            // Create ResourceFetcher implementation to be used with IndexUpdateRequest
-            // Here, we use Wagon based one as shorthand, but all we need is a ResourceFetcher implementation
-            TransferListener listener = new AbstractTransferListener()
-            {
-                Instant start;
-                public void transferStarted( TransferEvent transferEvent )
-                {
-                    start = Instant.now();
-                    System.out.print( "  Downloading " + transferEvent.getResource().getName() );
-                }
-
-                public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
-                {
-                }
-
-                public void transferCompleted( TransferEvent transferEvent )
-                {
-                    System.out.println( " - Done in "
-                            + Duration.between( start, Instant.now() ).getSeconds() + " sec" );
-                }
-            };
-            ResourceFetcher resourceFetcher = new WagonHelper.WagonFetcher( httpWagon, listener, null, null );
-
             Date centralContextCurrentTimestamp = centralContext.getTimestamp();
-            IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, resourceFetcher );
+            IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
             IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex( updateRequest );
             if ( updateResult.isFullUpdate() )
             {
@@ -393,4 +352,50 @@ public class BasicUsageExample
         System.out.println( "Total record hits: " + response.getTotalHitsCount() );
         System.out.println();
     }
+
+    private static class Java11HttpClient implements ResourceFetcher
+    {
+        private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
+
+        private URI uri;
+
+        @Override
+        public void connect( String id, String url ) throws IOException
+        {
+            this.uri = URI.create( url + "/" );
+        }
+
+        @Override
+        public void disconnect() throws IOException
+        {
+
+        }
+
+        @Override
+        public InputStream retrieve( String name ) throws IOException, FileNotFoundException
+        {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri( uri.resolve( name ) )
+                    .GET()
+                    .build();
+            try
+            {
+                HttpResponse<InputStream> response = client.send( request, HttpResponse.BodyHandlers.ofInputStream() );
+                if ( response.statusCode() == HttpURLConnection.HTTP_OK )
+                {
+                    return response.body();
+                }
+                else
+                {
+                    throw new IOException( "Unexpected response: " + response );
+                }
+            }
+            catch ( InterruptedException e )
+            {
+                Thread.currentThread().interrupt();
+                throw new IOException( e );
+            }
+        }
+    }
+
 }

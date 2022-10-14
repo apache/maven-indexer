@@ -33,12 +33,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.google.common.collect.Iterables.transform;
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * UT for {@link IndexReader}

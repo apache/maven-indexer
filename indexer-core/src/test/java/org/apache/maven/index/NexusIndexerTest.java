@@ -56,9 +56,14 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
+import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /** @author Jason van Zyl */
 public class NexusIndexerTest
@@ -66,6 +71,7 @@ public class NexusIndexerTest
 {
     private IndexingContext context;
 
+    @Test
     public void testSingleQuery() throws Exception
     {
         NexusIndexer indexer = lookup(NexusIndexer.class);
@@ -84,7 +90,8 @@ public class NexusIndexerTest
         q = indexer.constructQuery( MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED );
         assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\""));
     }
-    
+
+    @Test
     public void testQueryCreatorNG()
         throws Exception
     {
@@ -256,6 +263,7 @@ public class NexusIndexerTest
         assertEquals( "commons-logging:commons-logging:1.0.4:null:jar", ai.getGroupId() + ":"  + ai.getArtifactId() + ":" + ai.getVersion() + ":" + ai.getClassifier() + ":" + ai.getPackaging() );
     }
 
+    @Test
     public void testQueryCreatorNGSearch()
         throws Exception
     {
@@ -264,6 +272,7 @@ public class NexusIndexerTest
         performQueryCreatorNGSearch( indexer, context );
     }
 
+    @Test
     public void testQueryCreatorNGSearchOnMergedContext()
         throws Exception
     {
@@ -350,6 +359,7 @@ public class NexusIndexerTest
         assertEquals( "Search results inconsistent!", shouldBe, whatWeHave );
     }
 
+    @Test
     public void testSearchIterator()
         throws Exception
     {
@@ -369,6 +379,7 @@ public class NexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchIteratorWithFilter()
         throws Exception
     {
@@ -393,6 +404,7 @@ public class NexusIndexerTest
         assertEquals( "1.5 is filtered out, so 1.6.1 must appear here!", "1.6.1", ai.getVersion() );
     }
 
+    @Test
     public void testSearchGrouped()
         throws Exception
     {
@@ -427,6 +439,7 @@ public class NexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {
@@ -453,6 +466,7 @@ public class NexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchPackaging()
         throws Exception
     {
@@ -464,6 +478,7 @@ public class NexusIndexerTest
         assertEquals( r.toString(), 2, r.size() );
     }
 
+    @Test
     public void testIdentity()
         throws Exception
     {
@@ -508,6 +523,7 @@ public class NexusIndexerTest
         assertEquals( "test", ai.getRepository() );
     }
 
+    @Test
     public void testUpdateArtifact()
         throws Exception
     {
@@ -554,6 +570,7 @@ public class NexusIndexerTest
         assertEquals( "bla bla bla", ai2.getName() );
     }
 
+    @Test
     public void testUnpack()
         throws Exception
     {

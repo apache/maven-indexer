@@ -40,6 +40,11 @@ import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus13NexusIndexerTest
@@ -55,6 +60,7 @@ public class Nexus13NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testSearchGroupedClasses()
         throws Exception
     {
@@ -85,6 +91,7 @@ public class Nexus13NexusIndexerTest
         }
     }
 
+    @Test
     public void testSearchArchetypes()
         throws Exception
     {
@@ -100,6 +107,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
+    @Test
     public void testIndexTimestamp()
         throws Exception
     {
@@ -160,6 +168,7 @@ public class Nexus13NexusIndexerTest
         newContext.close( true );
     }
 
+    @Test
     public void testRootGroups()
         throws Exception
     {
@@ -169,6 +178,7 @@ public class Nexus13NexusIndexerTest
         assertGroup( 10, "cisco", context );
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {
@@ -192,6 +202,7 @@ public class Nexus13NexusIndexerTest
 
     }
 
+    @Test
     public void testSearchGrouped()
         throws Exception
     {
@@ -220,6 +231,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
     }
 
+    @Test
     public void testSearchGroupedProblematicNames()
         throws Exception
     {
@@ -243,6 +255,7 @@ public class Nexus13NexusIndexerTest
         assertEquals( 1, ig.getArtifactInfos().size() );
     }
 
+    @Test
     public void testIdentify()
         throws Exception
     {

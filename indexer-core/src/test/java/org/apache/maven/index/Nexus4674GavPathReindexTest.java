@@ -23,6 +23,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 public class Nexus4674GavPathReindexTest
     extends AbstractNexusIndexerTest
 {
@@ -38,6 +43,7 @@ public class Nexus4674GavPathReindexTest
         nexusIndexer.scan( context, "/org/slf4j/slf4j-api/1.4.1", null, true );
     }
 
+    @Test
     public void testRootGroups()
         throws Exception
     {
@@ -49,6 +55,7 @@ public class Nexus4674GavPathReindexTest
         assertGroup( 4, "org.slf4j", context );
     }
 
+    @Test
     public void testIdentify()
         throws Exception
     {

@@ -22,6 +22,7 @@ package org.apache.maven.index.updater;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -49,6 +50,11 @@ import org.jmock.api.Invocation;
 import org.jmock.lib.action.ReturnValueAction;
 import org.jmock.lib.action.VoidAction;
 import org.junit.Ignore;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Eugene Kuleshov
@@ -59,6 +65,7 @@ public class DefaultIndexUpdaterTest
 
     SimpleDateFormat df = new SimpleDateFormat( "yyyyMMddHHmmss.SSS Z" );
 
+    @Test
     public void testReplaceIndex()
         throws Exception
     {
@@ -111,6 +118,7 @@ public class DefaultIndexUpdaterTest
         assertEquals( content2.toString(), 2, content2.size() );
     }
 
+    @Test
     public void testMergeIndex()
         throws Exception
     {
@@ -165,6 +173,7 @@ public class DefaultIndexUpdaterTest
         }
     }
 
+    @Test
     public void testMergeIndexDeletes()
         throws Exception
     {
@@ -215,6 +224,7 @@ public class DefaultIndexUpdaterTest
         assertEquals( content2.toString(), 1, content2.size() );
     }
 
+    @Test
     public void testMergeSearch()
         throws Exception
     {
@@ -243,6 +253,7 @@ public class DefaultIndexUpdaterTest
         assertEquals( artifactInfo.getArtifactId(), "dma.integration.tests" );
     }
 
+    @Test
     public void testMergeGroups()
         throws Exception
     {
@@ -294,6 +305,7 @@ public class DefaultIndexUpdaterTest
         assertEquals( allGroups.toString(), 5, allGroups.size() );
     }
 
+    @Test
     public void testNoIndexUpdate()
         throws Exception
     {
@@ -363,6 +375,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
+    @Test
     public void testFullIndexUpdate()
         throws Exception
     {
@@ -417,7 +430,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
 
@@ -435,6 +448,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
+    @Test
     public void testIncrementalIndexUpdate()
         throws Exception
     {
@@ -494,10 +508,10 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".2.gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
                 oneOf( tempContext ).merge( with( any( Directory.class ) ) );
@@ -519,6 +533,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
+    @Test
     public void testIncrementalIndexUpdateNoCounter()
         throws Exception
     {
@@ -574,7 +589,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( //
                     with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
                 // could create index archive there and verify that it is merged correctly
 
                 oneOf( tempContext ).replace( with( any( Directory.class ) ), with( any( Set.class ) ), with( any( Set.class ) ) );
@@ -597,7 +612,8 @@ public class DefaultIndexUpdaterTest
         mockery.assertIsSatisfied();
         assertIndexUpdateSucceeded(updateResult);
     }
-    
+
+    @Test
     public void testIncrementalOnlyIndexUpdateNoCounter()
         throws Exception
     {
@@ -662,6 +678,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateFailed(updateResult);
     }
 
+    @Test
     public void testIncrementalIndexUpdateNoUpdateNecessary()
         throws Exception
     {
@@ -750,6 +767,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
+    @Test
     public void testUpdateForceFullUpdate()
         throws Exception
     {
@@ -815,7 +833,7 @@ public class DefaultIndexUpdaterTest
                     with( IndexingContext.INDEX_FILE_PREFIX + ".3.gz" ) );
 
                 oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".gz" ) );
-                will( returnValue( newInputStream( "/index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/nexus-maven-repository-index.gz" ) ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -839,6 +857,7 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
+    @Test
     @Ignore("Legacy format no longer supported with Lucene 4")
     public void ignoreTestUpdateForceFullUpdateNoGZ()
         throws Exception
@@ -896,7 +915,7 @@ public class DefaultIndexUpdaterTest
 
                 oneOf( mockFetcher ).retrieve( with( IndexingContext.INDEX_FILE_PREFIX + ".zip" ) );
 
-                will( returnValue( newInputStream( "/index-updater/server-root/legacy/nexus-maven-repository-index.zip" ) ) );
+                will( returnValue( newInputStream( "index-updater/server-root/legacy/nexus-maven-repository-index.zip" ) ) );
 
                 never( tempContext ).merge( with( any( Directory.class ) ) );
 
@@ -920,9 +939,14 @@ public class DefaultIndexUpdaterTest
         assertIndexUpdateSucceeded(updateResult);
     }
 
-    protected InputStream newInputStream( String path )
+    protected InputStream newInputStream( String path ) throws IOException
     {
-        return getResourceAsStream( path );
+        File file = getTestFile( "src/test/resources/" + path );
+        if ( file.isFile() )
+        {
+            return new FileInputStream( file );
+        }
+        return null;
     }
 
     abstract static class PropertiesAction

@@ -29,6 +29,10 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.NexusIndexer;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class Nexus1179NexusIndexerTest
     extends AbstractNexusIndexerTest
@@ -44,6 +48,7 @@ public class Nexus1179NexusIndexerTest
         nexusIndexer.scan( context );
     }
 
+    @Test
     public void testSearchFlat()
         throws Exception
     {
@@ -68,8 +73,8 @@ public class Nexus1179NexusIndexerTest
         assertEquals( "ant", ai.getGroupId() );
         assertEquals( "ant", ai.getArtifactId() );
         assertEquals( "1.6.5", ai.getVersion() );
-        assertEquals( null, ai.getPackaging() ); // coz no POM present
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getPackaging() ); // coz no POM present
+        assertNull( ai.getClassifier() );
         assertEquals( "nexus-1179", ai.getRepository() );
         assertEquals( "jar", ai.getFileExtension() );
 
@@ -80,7 +85,7 @@ public class Nexus1179NexusIndexerTest
         assertEquals( "ant", ai.getArtifactId() );
         assertEquals( "1.5.1", ai.getVersion() );
         assertEquals( "jar", ai.getPackaging() ); // coz POM is present and says so
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getClassifier() );
         assertEquals( "nexus-1179", ai.getRepository() );
         assertEquals( "pom", ai.getFileExtension() );
 
@@ -91,7 +96,7 @@ public class Nexus1179NexusIndexerTest
         assertEquals( "asm-commons", ai.getArtifactId() );
         assertEquals( "3.1", ai.getVersion() );
         assertEquals( "jar", ai.getPackaging() );
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getClassifier() );
         assertEquals( "nexus-1179", ai.getRepository() );
         assertEquals( "pom", ai.getFileExtension() );
 
@@ -102,7 +107,7 @@ public class Nexus1179NexusIndexerTest
         assertEquals( "test", ai.getArtifactId() );
         assertEquals( "1.0", ai.getVersion() );
         assertEquals( "jar", ai.getPackaging() ); // coz POM is present and says so
-        assertEquals( null, ai.getClassifier() );
+        assertNull( ai.getClassifier() );
         assertEquals( "nexus-1179", ai.getRepository() );
         assertEquals( "pom", ai.getFileExtension() );
 

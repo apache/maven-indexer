@@ -23,11 +23,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.UserInputSearchExpression;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class ConcurrentUseTest
     extends AbstractNexusIndexerTest
@@ -56,6 +60,7 @@ public class ConcurrentUseTest
         return new IndexUserThread( this, nexusIndexer, context, context, ai );
     }
 
+    @Test
     public void testConcurrency()
         throws Exception
     {
@@ -88,7 +93,7 @@ public class ConcurrentUseTest
             totalAdded += threads[i].getAdded();
         }
 
-        Assert.assertFalse( "Not all thread did clean job!", thereWereProblems );
+        assertFalse( "Not all thread did clean job!", thereWereProblems );
 
         context.commit();
 
@@ -102,7 +107,7 @@ public class ConcurrentUseTest
 
         FlatSearchResponse result = nexusIndexer.searchFlat( new FlatSearchRequest( q, context ) );
 
-        Assert.assertEquals( "All added should be found after final commit!", totalAdded, result.getTotalHitsCount() );
+        assertEquals( "All added should be found after final commit!", totalAdded, result.getTotalHitsCount() );
     }
 
     // ==

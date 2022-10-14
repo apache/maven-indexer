@@ -19,53 +19,57 @@ package org.apache.maven.search.backend.indexer.internal;
  * under the License.
  */
 
+import javax.inject.Inject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.SearchResponse;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdateResult;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
-import org.apache.maven.index.updater.WagonHelper;
+import org.apache.maven.search.MAVEN;
+import org.apache.maven.search.Record;
+import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.SearchResponse;
 import org.apache.maven.search.request.FieldQuery;
-import org.apache.maven.wagon.Wagon;
-import org.apache.maven.wagon.events.TransferEvent;
-import org.apache.maven.wagon.events.TransferListener;
-import org.apache.maven.wagon.observers.AbstractTransferListener;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
+import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import static java.util.Objects.requireNonNull;
 import static org.apache.maven.search.request.BooleanQuery.and;
 import static org.apache.maven.search.request.Query.query;
 
-@Ignore("This is more a showcase")
-public class IndexerCoreSearchBackendImplTest
+@Ignore( "This is not a test, is more a showcase" )
+public class IndexerCoreSearchBackendImplTest extends InjectedTest
 {
-    private PlexusContainer plexusContainer;
-
+    @Inject
     private Indexer indexer;
 
+    @Inject
     private IndexUpdater indexUpdater;
 
-    private Wagon httpWagon;
+    @Inject
+    private Map<String, IndexCreator> indexCreators;
 
     private IndexingContext centralContext;
 
@@ -117,7 +121,7 @@ public class IndexerCoreSearchBackendImplTest
     private void dumpPage( SearchResponse searchResponse ) throws IOException
     {
         AtomicInteger counter = new AtomicInteger( 0 );
-        System.out.println("QUERY: " + searchResponse.getSearchRequest().getQuery().toString());
+        System.out.println( "QUERY: " + searchResponse.getSearchRequest().getQuery().toString() );
         dumpSingle( counter, searchResponse.getPage() );
         while ( searchResponse.getCurrentHits() > 0 )
         {
@@ -135,25 +139,15 @@ public class IndexerCoreSearchBackendImplTest
     @Before
     public void prepareAndUpdateBackend() throws Exception
     {
-        final DefaultContainerConfiguration config = new DefaultContainerConfiguration();
-        config.setClassPathScanning( PlexusConstants.SCANNING_CACHE );
-        this.plexusContainer = new DefaultPlexusContainer( config );
-
-        // lookup the indexer components from plexus
-        this.indexer = plexusContainer.lookup( Indexer.class );
-        this.indexUpdater = plexusContainer.lookup( IndexUpdater.class );
-        // lookup wagon used to remotely fetch index
-        this.httpWagon = plexusContainer.lookup( Wagon.class, "http" );
-
         // Files where local cache is (if any) and Lucene Index should be located
         File centralLocalCache = new File( "target/central-cache" );
         File centralIndexDir = new File( "target/central-index" );
 
         // Creators we want to use (search for fields it defines)
         List<IndexCreator> indexers = new ArrayList<>();
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "min" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "jarContent" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "maven-plugin" ) );
+        indexers.add( requireNonNull( indexCreators.get( "min" ) ) );
+        indexers.add( requireNonNull( indexCreators.get( "jarContent" ) ) );
+        indexers.add( requireNonNull( indexCreators.get( "maven-plugin" ) ) );
 
         // Create context for central repository index
         centralContext = indexer.createIndexingContext( "central-context", "central", centralLocalCache,
@@ -166,28 +160,9 @@ public class IndexerCoreSearchBackendImplTest
         // Preferred frequency is once a week.
         System.out.println( "Updating Index..." );
         System.out.println( "This might take a while on first run, so please be patient!" );
-        // Create ResourceFetcher implementation to be used with IndexUpdateRequest
-        // Here, we use Wagon based one as shorthand, but all we need is a ResourceFetcher implementation
-        TransferListener listener = new AbstractTransferListener()
-        {
-            public void transferStarted( TransferEvent transferEvent )
-            {
-                System.out.print( "  Downloading " + transferEvent.getResource().getName() );
-            }
-
-            public void transferProgress( TransferEvent transferEvent, byte[] buffer, int length )
-            {
-            }
-
-            public void transferCompleted( TransferEvent transferEvent )
-            {
-                System.out.println( " - Done" );
-            }
-        };
-        ResourceFetcher resourceFetcher = new WagonHelper.WagonFetcher( httpWagon, listener, null, null );
 
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
-        IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, resourceFetcher );
+        IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
         IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex( updateRequest );
         if ( updateResult.isFullUpdate() )
         {
@@ -200,7 +175,8 @@ public class IndexerCoreSearchBackendImplTest
         else
         {
             System.out.println(
-                    "Incremental update happened, change covered " + centralContextCurrentTimestamp + " - " + updateResult.getTimestamp() + " period." );
+                    "Incremental update happened, change covered " + centralContextCurrentTimestamp + " - "
+                            + updateResult.getTimestamp() + " period." );
         }
         System.out.println();
 
@@ -211,7 +187,6 @@ public class IndexerCoreSearchBackendImplTest
     public void cleanup() throws IOException
     {
         indexer.closeIndexingContext( centralContext, false );
-        plexusContainer.dispose();
     }
 
     @Test
@@ -226,7 +201,8 @@ public class IndexerCoreSearchBackendImplTest
     @Test
     public void g() throws IOException
     {
-        SearchRequest searchRequest = new SearchRequest( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ) );
+        SearchRequest searchRequest =
+                new SearchRequest( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ) );
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
@@ -235,8 +211,9 @@ public class IndexerCoreSearchBackendImplTest
     @Test
     public void ga() throws IOException
     {
-        SearchRequest searchRequest = new SearchRequest( and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
-                FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ) ) );
+        SearchRequest searchRequest =
+                new SearchRequest( and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
+                        FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ) ) );
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
@@ -245,8 +222,10 @@ public class IndexerCoreSearchBackendImplTest
     @Test
     public void gav() throws IOException
     {
-        SearchRequest searchRequest = new SearchRequest( and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
-                FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ), FieldQuery.fieldQuery( MAVEN.VERSION, "3.1.0" ) ) );
+        SearchRequest searchRequest =
+                new SearchRequest( and( FieldQuery.fieldQuery( MAVEN.GROUP_ID, "org.apache.maven.plugins" ),
+                        FieldQuery.fieldQuery( MAVEN.ARTIFACT_ID, "maven-clean-plugin" ),
+                        FieldQuery.fieldQuery( MAVEN.VERSION, "3.1.0" ) ) );
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
@@ -265,7 +244,8 @@ public class IndexerCoreSearchBackendImplTest
     @Test
     public void cn() throws IOException
     {
-        SearchRequest searchRequest = new SearchRequest( FieldQuery.fieldQuery( MAVEN.CLASS_NAME, "MavenRepositorySystem" ) );
+        SearchRequest searchRequest =
+                new SearchRequest( FieldQuery.fieldQuery( MAVEN.CLASS_NAME, "MavenRepositorySystem" ) );
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
@@ -279,5 +259,50 @@ public class IndexerCoreSearchBackendImplTest
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
+    }
+
+    private static class Java11HttpClient implements ResourceFetcher
+    {
+        private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
+
+        private URI uri;
+
+        @Override
+        public void connect( String id, String url ) throws IOException
+        {
+            this.uri = URI.create( url + "/" );
+        }
+
+        @Override
+        public void disconnect() throws IOException
+        {
+
+        }
+
+        @Override
+        public InputStream retrieve( String name ) throws IOException, FileNotFoundException
+        {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri( uri.resolve( name ) )
+                    .GET()
+                    .build();
+            try
+            {
+                HttpResponse<InputStream> response = client.send( request, HttpResponse.BodyHandlers.ofInputStream() );
+                if ( response.statusCode() == HttpURLConnection.HTTP_OK )
+                {
+                    return response.body();
+                }
+                else
+                {
+                    throw new IOException( "Unexpected response: " + response );
+                }
+            }
+            catch ( InterruptedException e )
+            {
+                Thread.currentThread().interrupt();
+                throw new IOException( e );
+            }
+        }
     }
 }

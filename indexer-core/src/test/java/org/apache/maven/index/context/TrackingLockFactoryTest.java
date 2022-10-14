@@ -34,9 +34,6 @@ import static org.junit.Assert.*;
  */
 public class TrackingLockFactoryTest {
 
-    public TrackingLockFactoryTest() {
-    }
-
     @Test
     public void testLockUnlock() throws IOException {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());

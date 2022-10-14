@@ -23,9 +23,9 @@ import java.io.File;
 
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.NexusIndexer;
-import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
-import org.apache.maven.index.treeview.IndexTreeView;
-import org.apache.maven.index.treeview.TreeNode;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class IndexTreeViewTest
     extends AbstractNexusIndexerTest
@@ -37,7 +37,7 @@ public class IndexTreeViewTest
     protected boolean debug = false;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -81,6 +81,7 @@ public class IndexTreeViewTest
         return files;
     }
 
+    @Test
     public void testRoot()
         throws Exception
     {
@@ -95,6 +96,7 @@ public class IndexTreeViewTest
         assertEquals( 49, leafsFound );
     }
 
+    @Test
     public void testPathIsAboveRealGroup()
         throws Exception
     {
@@ -109,6 +111,7 @@ public class IndexTreeViewTest
         assertEquals( 22, leafsFound );
     }
 
+    @Test
     public void testPathIsRealGroup()
         throws Exception
     {
@@ -123,6 +126,7 @@ public class IndexTreeViewTest
         assertEquals( 10, leafsFound );
     }
 
+    @Test
     public void testPathIsRealGroupArtifact()
         throws Exception
     {
@@ -138,6 +142,7 @@ public class IndexTreeViewTest
         assertEquals( 4, leafsFound );
     }
 
+    @Test
     public void testPathIsRealGroupArtifactVersion()
         throws Exception
     {

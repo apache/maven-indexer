@@ -27,6 +27,7 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,6 +35,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class DefaultIncrementalHandlerTest
     extends AbstractIndexCreatorHelper
@@ -49,7 +53,7 @@ public class DefaultIncrementalHandlerTest
     File repoDir = null;
 
     @Override
-    protected void setUp()
+    public void setUp()
         throws Exception
     {
         super.setUp();
@@ -66,7 +70,7 @@ public class DefaultIncrementalHandlerTest
     }
 
     @Override
-    protected void tearDown()
+    public void tearDown()
         throws Exception
     {
         super.tearDown();
@@ -74,6 +78,7 @@ public class DefaultIncrementalHandlerTest
         indexer.removeIndexingContext( context, true );
     }
 
+    @Test
     public void testUpdateInvalidProperties()
         throws Exception
     {
@@ -104,6 +109,7 @@ public class DefaultIncrementalHandlerTest
         }
     }
 
+    @Test
     public void testUpdateValid()
         throws Exception
     {
@@ -129,6 +135,7 @@ public class DefaultIncrementalHandlerTest
         }
     }
 
+    @Test
     public void testRemoteUpdatesInvalidProperties()
         throws Exception
     {

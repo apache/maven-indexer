@@ -22,26 +22,19 @@ package org.apache.maven.index.artifact;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-import org.apache.maven.index.artifact.Gav;
-import org.apache.maven.index.artifact.M2GavCalculator;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class M2GavCalculatorTest
-    extends TestCase
 {
-    private M2GavCalculator gavCalculator;
+    private M2GavCalculator gavCalculator = new M2GavCalculator();
 
     private SimpleDateFormat formatter = new SimpleDateFormat( "yyyyMMdd.HHmmss" );
-
-    @Override
-    public void setUp()
-        throws Exception
-    {
-        super.setUp();
-
-        gavCalculator = new M2GavCalculator();
-    }
 
     protected Long parseTimestamp( String timeStamp )
         throws ParseException
@@ -56,6 +49,7 @@ public class M2GavCalculatorTest
         }
     }
 
+    @Test
     public void testGav()
         throws Exception
     {
@@ -591,6 +585,7 @@ public class M2GavCalculatorTest
         assertNull( gav );
     }
 
+    @Test
     public void testNegGav()
         throws Exception
     {
@@ -603,6 +598,7 @@ public class M2GavCalculatorTest
         // NEXUS-4132 END
     }
 
+    @Test
     public void testGavExtreme()
         throws Exception
     {
@@ -645,6 +641,7 @@ public class M2GavCalculatorTest
         assertEquals( null, gav );
     }
 
+    @Test
     public void testIssueNexus57()
         throws Exception
     {
@@ -655,6 +652,7 @@ public class M2GavCalculatorTest
         assertNull( "We expect null since baseVersion and version mismatch in path!", gav );
     }
 
+    @Test
     public void testGavExtensionAndClassifier()
         throws Exception
     {
@@ -717,6 +715,7 @@ public class M2GavCalculatorTest
         assertEquals( "1.0.0-beta-6-20080809.181715-2", gav.getVersion() );
     }
 
+    @Test
     public void testGavSnapshotVersion()
         throws Exception
     {
@@ -755,6 +754,7 @@ public class M2GavCalculatorTest
         assertFalse( gav.isSnapshot() );
     }
 
+    @Test
     public void testGavLooseStrictedSnapshot()
         throws Exception
     {
