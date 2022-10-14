@@ -68,8 +68,7 @@ public class NexusIndexerCliTest
 
     public String getOptionsAsHtml()
     {
-        @SuppressWarnings( "unchecked" )
-        List<Option> optList = new ArrayList<Option>( new NexusIndexerCli().buildDefaultCliOptions().getOptions() );
+        List<Option> optList = new ArrayList<>( new NexusIndexerCli().buildCliOptions().getOptions() );
         optList.sort( new OptionComparator() );
 
         StringBuilder sb = new StringBuilder();

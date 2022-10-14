@@ -140,6 +140,7 @@ under the License.
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.SisuIndexResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
                     <Main-Class>org.apache.maven.index.cli.NexusIndexerCli</Main-Class>

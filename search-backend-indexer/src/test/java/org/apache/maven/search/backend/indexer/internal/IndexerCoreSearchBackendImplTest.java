@@ -19,6 +19,11 @@ package org.apache.maven.search.backend.indexer.internal;
  * under the License.
  */
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.Module;
+import com.google.inject.name.Names;
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
@@ -31,21 +36,32 @@ import org.apache.maven.index.updater.IndexUpdateResult;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.apache.maven.search.request.FieldQuery;
+import org.apache.maven.wagon.ConnectionException;
+import org.apache.maven.wagon.ResourceDoesNotExistException;
 import org.apache.maven.wagon.Wagon;
+import org.apache.maven.wagon.WagonException;
+import org.apache.maven.wagon.authentication.AuthenticationException;
+import org.apache.maven.wagon.authentication.AuthenticationInfo;
+import org.apache.maven.wagon.authorization.AuthorizationException;
 import org.apache.maven.wagon.events.TransferEvent;
 import org.apache.maven.wagon.events.TransferListener;
 import org.apache.maven.wagon.observers.AbstractTransferListener;
-import org.codehaus.plexus.DefaultContainerConfiguration;
-import org.codehaus.plexus.DefaultPlexusContainer;
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
+import org.apache.maven.wagon.providers.http.HttpWagon;
+import org.apache.maven.wagon.proxy.ProxyInfo;
+import org.apache.maven.wagon.repository.Repository;
+import org.eclipse.sisu.launch.Main;
+import org.eclipse.sisu.space.BeanScanning;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +74,7 @@ import static org.apache.maven.search.request.Query.query;
 @Ignore("This is more a showcase")
 public class IndexerCoreSearchBackendImplTest
 {
-    private PlexusContainer plexusContainer;
+    private Injector injector;
 
     private Indexer indexer;
 
@@ -134,15 +150,16 @@ public class IndexerCoreSearchBackendImplTest
     @Before
     public void prepareAndUpdateBackend() throws Exception
     {
-        final DefaultContainerConfiguration config = new DefaultContainerConfiguration();
-        config.setClassPathScanning( PlexusConstants.SCANNING_CACHE );
-        this.plexusContainer = new DefaultPlexusContainer( config );
+        final Module app = Main.wire(
+                BeanScanning.INDEX
+        );
+        injector = Guice.createInjector( app );
 
         // lookup the indexer components from plexus
-        this.indexer = plexusContainer.lookup( Indexer.class );
-        this.indexUpdater = plexusContainer.lookup( IndexUpdater.class );
+        this.indexer = injector.getInstance( Indexer.class );
+        this.indexUpdater = injector.getInstance( IndexUpdater.class );
         // lookup wagon used to remotely fetch index
-        this.httpWagon = plexusContainer.lookup( Wagon.class, "http" );
+        this.httpWagon = new HttpWagon();
 
         // Files where local cache is (if any) and Lucene Index should be located
         File centralLocalCache = new File( "target/central-cache" );
@@ -150,9 +167,9 @@ public class IndexerCoreSearchBackendImplTest
 
         // Creators we want to use (search for fields it defines)
         List<IndexCreator> indexers = new ArrayList<>();
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "min" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "jarContent" ) );
-        indexers.add( plexusContainer.lookup( IndexCreator.class, "maven-plugin" ) );
+        indexers.add( injector.getInstance( Key.get( IndexCreator.class, Names.named( "min" ) ) ) );
+        indexers.add( injector.getInstance( Key.get( IndexCreator.class, Names.named( "jarContent" ) ) ) );
+        indexers.add( injector.getInstance( Key.get( IndexCreator.class, Names.named( "maven-plugin" ) ) ) );
 
         // Create context for central repository index
         centralContext = indexer.createIndexingContext( "central-context", "central", centralLocalCache,
@@ -183,7 +200,7 @@ public class IndexerCoreSearchBackendImplTest
                 System.out.println( " - Done" );
             }
         };
-        ResourceFetcher resourceFetcher = new WagonHelper.WagonFetcher( httpWagon, listener, null, null );
+        ResourceFetcher resourceFetcher = new WagonFetcher( httpWagon, listener, null, null );
 
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, resourceFetcher );
@@ -210,7 +227,6 @@ public class IndexerCoreSearchBackendImplTest
     public void cleanup() throws IOException
     {
         indexer.closeIndexingContext( centralContext, false );
-        plexusContainer.dispose();
     }
 
     @Test
@@ -278,5 +294,155 @@ public class IndexerCoreSearchBackendImplTest
         SearchResponse searchResponse = backend.search( searchRequest );
         System.out.println( "TOTAL HITS: " + searchResponse.getTotalHits() );
         dumpPage( searchResponse );
+    }
+
+
+    public static class WagonFetcher
+            implements ResourceFetcher
+    {
+        private final TransferListener listener;
+
+        private final AuthenticationInfo authenticationInfo;
+
+        private final ProxyInfo proxyInfo;
+
+        private final Wagon wagon;
+
+        public WagonFetcher( final Wagon wagon, final TransferListener listener,
+                             final AuthenticationInfo authenticationInfo, final ProxyInfo proxyInfo )
+        {
+            this.wagon = wagon;
+            this.listener = listener;
+            this.authenticationInfo = authenticationInfo;
+            this.proxyInfo = proxyInfo;
+        }
+
+        public void connect( final String id, final String url )
+                throws IOException
+        {
+            Repository repository = new Repository( id, url );
+
+            try
+            {
+                // wagon = wagonManager.getWagon( repository );
+
+                if ( listener != null )
+                {
+                    wagon.addTransferListener( listener );
+                }
+
+                // when working in the context of Maven, the WagonManager is already
+                // populated with proxy information from the Maven environment
+
+                if ( authenticationInfo != null )
+                {
+                    if ( proxyInfo != null )
+                    {
+                        wagon.connect( repository, authenticationInfo, proxyInfo );
+                    }
+                    else
+                    {
+                        wagon.connect( repository, authenticationInfo );
+                    }
+                }
+                else
+                {
+                    if ( proxyInfo != null )
+                    {
+                        wagon.connect( repository, proxyInfo );
+                    }
+                    else
+                    {
+                        wagon.connect( repository );
+                    }
+                }
+            }
+            catch ( AuthenticationException ex )
+            {
+                String msg = "Authentication exception connecting to " + repository;
+                logError( msg, ex );
+                throw new IOException( msg, ex );
+            }
+            catch ( WagonException ex )
+            {
+                String msg = "Wagon exception connecting to " + repository;
+                logError( msg, ex );
+                throw new IOException( msg, ex );
+            }
+        }
+
+        public void disconnect()
+                throws IOException
+        {
+            if ( wagon != null )
+            {
+                try
+                {
+                    wagon.disconnect();
+                }
+                catch ( ConnectionException ex )
+                {
+                    throw new IOException( ex.toString(), ex );
+                }
+            }
+        }
+
+        public InputStream retrieve( String name )
+                throws IOException, FileNotFoundException
+        {
+            final File target = Files.createTempFile( name, "tmp" ).toFile();
+            target.deleteOnExit();
+            retrieve( name, target );
+            return new FileInputStream( target )
+            {
+                @Override
+                public void close()
+                        throws IOException
+                {
+                    super.close();
+                    target.delete();
+                }
+            };
+        }
+
+        public void retrieve( final String name, final File targetFile )
+                throws IOException, FileNotFoundException
+        {
+            try
+            {
+                wagon.get( name, targetFile );
+            }
+            catch ( AuthorizationException e )
+            {
+                targetFile.delete();
+                String msg = "Authorization exception retrieving " + name;
+                logError( msg, e );
+                throw new IOException( msg, e );
+            }
+            catch ( ResourceDoesNotExistException e )
+            {
+                targetFile.delete();
+                String msg = "Resource " + name + " does not exist";
+                logError( msg, e );
+                FileNotFoundException fileNotFoundException = new FileNotFoundException( msg );
+                fileNotFoundException.initCause( e );
+                throw fileNotFoundException;
+            }
+            catch ( WagonException e )
+            {
+                targetFile.delete();
+                String msg = "Transfer for " + name + " failed";
+                logError( msg, e );
+                throw new IOException( msg + "; " + e.getMessage(), e );
+            }
+        }
+
+        private void logError( final String msg, final Exception ex )
+        {
+            if ( listener != null )
+            {
+                listener.debug( msg + "; " + ex.getMessage() );
+            }
+        }
     }
 }

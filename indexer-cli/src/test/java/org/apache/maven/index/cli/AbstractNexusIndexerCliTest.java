@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.Random;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sisu.launch.InjectedTest;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -177,6 +178,7 @@ public abstract class AbstractNexusIndexerCliTest
     }
 
     @Test
+    @Ignore(" Plexus is gone, hence are logging levels as well ")
     public void testLoggingLevel()
         throws Exception
     {
