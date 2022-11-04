@@ -209,7 +209,8 @@ public class DefaultIndexUpdater
             Set<String> allGroups;
             if ( remoteIndexFile.endsWith( ".gz" ) )
             {
-                IndexDataReadResult result = unpackIndexData( is, directory, updateRequest.getIndexingContext() );
+                IndexDataReadResult result = unpackIndexData( is, updateRequest.getThreads(), directory,
+                        updateRequest.getIndexingContext() );
                 timestamp = result.getTimestamp();
                 rootGroups = result.getRootGroups();
                 allGroups = result.getAllGroups();
@@ -380,17 +381,20 @@ public class DefaultIndexUpdater
 
     /**
      * @param is an input stream to unpack index data from
+     * @param threads thread count to use
      * @param d
      * @param context
      */
-    public static IndexDataReadResult unpackIndexData( final InputStream is, final Directory d,
+    public static IndexDataReadResult unpackIndexData( final InputStream is, final int threads, final Directory d,
                                                        final IndexingContext context )
         throws IOException
     {
-        NexusIndexWriter w = new NexusIndexWriter( d, new IndexWriterConfig( new NexusAnalyzer() ) );
+        IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
+        config.setUseCompoundFile( false );
+        NexusIndexWriter w = new NexusIndexWriter( d, config );
         try
         {
-            IndexDataReader dr = new IndexDataReader( is );
+            IndexDataReader dr = new IndexDataReader( is, threads );
 
             return dr.readIndex( w, context );
         }

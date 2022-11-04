@@ -528,10 +528,11 @@ public class NexusIndexerCli
 
         final List<IndexCreator> indexers = getIndexers( cli, components );
 
+
         try ( BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
               FSDirectory directory = FSDirectory.open( outputFolder.toPath() ) )
         {
-            DefaultIndexUpdater.unpackIndexData( is, directory, (IndexingContext) Proxy.newProxyInstance(
+            DefaultIndexUpdater.unpackIndexData( is, 4, directory, (IndexingContext) Proxy.newProxyInstance(
                     getClass().getClassLoader(), new Class[] {IndexingContext.class}, new PartialImplementation()
                     {
                         public List<IndexCreator> getIndexCreators()

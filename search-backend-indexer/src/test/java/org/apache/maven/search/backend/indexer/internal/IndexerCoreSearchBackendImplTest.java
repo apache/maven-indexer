@@ -30,6 +30,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -158,19 +159,22 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest
         // since this block will always emit at least one HTTP GET. Central indexes are updated once a week, but
         // other index sources might have different index publishing frequency.
         // Preferred frequency is once a week.
+        long start = System.currentTimeMillis();
         System.out.println( "Updating Index..." );
         System.out.println( "This might take a while on first run, so please be patient!" );
 
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
         IndexUpdateRequest updateRequest = new IndexUpdateRequest( centralContext, new Java11HttpClient() );
+        updateRequest.setLocalIndexCacheDir( centralLocalCache );
+        updateRequest.setThreads( 4 );
         IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex( updateRequest );
         if ( updateResult.isFullUpdate() )
         {
-            System.out.println( "Full update happened!" );
+            System.out.println( "Full update happened." );
         }
         else if ( updateResult.getTimestamp().equals( centralContextCurrentTimestamp ) )
         {
-            System.out.println( "No update needed, index is up to date!" );
+            System.out.println( "No update needed, index is up to date." );
         }
         else
         {
@@ -178,6 +182,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest
                     "Incremental update happened, change covered " + centralContextCurrentTimestamp + " - "
                             + updateResult.getTimestamp() + " period." );
         }
+        System.out.println( "Done in " + Duration.ofMillis( System.currentTimeMillis() - start ) );
         System.out.println();
 
         this.backend = new IndexerCoreSearchBackendImpl( indexer, centralContext );

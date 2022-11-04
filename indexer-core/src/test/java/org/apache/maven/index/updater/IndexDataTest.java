@@ -88,7 +88,7 @@ public class IndexDataTest
 
         newDir = new ByteBuffersDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
+        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, 1, newDir, context ).getTimestamp();
 
         assertEquals( timestamp, newTimestamp );
 
@@ -126,7 +126,7 @@ public class IndexDataTest
 
         newDir = new ByteBuffersDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, newDir, context ).getTimestamp();
+        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, 1, newDir, context ).getTimestamp();
 
         assertEquals( null, newTimestamp );
 

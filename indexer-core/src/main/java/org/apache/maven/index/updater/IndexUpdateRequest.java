@@ -55,6 +55,8 @@ public class IndexUpdateRequest
 
     private FSDirectoryFactory directoryFactory;
 
+    private int threads;
+
     public IndexUpdateRequest( final IndexingContext context, final ResourceFetcher resourceFetcher )
     {
         assert context != null : "Context to be updated cannot be null!";
@@ -64,6 +66,7 @@ public class IndexUpdateRequest
         this.resourceFetcher = resourceFetcher;
         this.forceFullUpdate = false;
         this.incrementalOnly = false;
+        this.threads = 1;
     }
 
     public IndexingContext getIndexingContext()
@@ -164,5 +167,15 @@ public class IndexUpdateRequest
     public File getIndexTempDir()
     {
         return indexTempDir;
+    }
+
+    public int getThreads()
+    {
+        return threads;
+    }
+
+    public void setThreads( int threads )
+    {
+        this.threads = threads;
     }
 }
