@@ -77,9 +77,9 @@ public class IndexDataReader
     public IndexDataReader( final InputStream is, final int threads )
             throws IOException
     {
-        if ( threads < 1 || threads > 16 )
+        if ( threads < 1 )
         {
-            throw new IllegalArgumentException( "Threads allowed between 1-16, we got: " + threads );
+            throw new IllegalArgumentException( "Reader threads must be greater than zero: " + threads );
         }
         this.threads = threads;
         // MINDEXER-13
