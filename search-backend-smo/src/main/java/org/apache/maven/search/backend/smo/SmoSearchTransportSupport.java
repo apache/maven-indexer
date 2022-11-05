@@ -1,4 +1,4 @@
-package org.apache.maven.search.backend.smo.internal;
+package org.apache.maven.search.backend.smo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

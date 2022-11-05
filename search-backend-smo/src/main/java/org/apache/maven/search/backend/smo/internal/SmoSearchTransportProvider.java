@@ -1,4 +1,4 @@
-package org.apache.maven.search.backend.indexer;
+package org.apache.maven.search.backend.smo.internal;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,22 +19,18 @@ package org.apache.maven.search.backend.indexer;
  * under the License.
  */
 
-import java.io.IOException;
+import java.util.function.Supplier;
 
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.search.SearchBackend;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
 
 /**
- * The Indexer Core search backend.
+ * Transport supplier.
  */
-public interface IndexerCoreSearchBackend extends SearchBackend
+public class SmoSearchTransportProvider implements Supplier<SmoSearchTransportSupport>
 {
     @Override
-    IndexerCoreSearchResponse search( SearchRequest searchRequest ) throws IOException;
-
-    /**
-     * Returns the {@link IndexingContext} used by this search backend, never {@code null}.
-     */
-    IndexingContext getIndexingContext();
+    public SmoSearchTransportSupport get()
+    {
+        return new UrlConnectionSmoSearchTransport();
+    }
 }

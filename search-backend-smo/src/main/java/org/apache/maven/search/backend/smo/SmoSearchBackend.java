@@ -19,13 +19,19 @@ package org.apache.maven.search.backend.smo;
  * under the License.
  */
 
+import java.io.IOException;
+
 import org.apache.maven.search.SearchBackend;
+import org.apache.maven.search.SearchRequest;
 
 /**
  * The SMO search backend.
  */
 public interface SmoSearchBackend extends SearchBackend
 {
+    @Override
+    SmoSearchResponse search( SearchRequest searchRequest ) throws IOException;
+
     /**
      * Returns the base "service URI" that is used by this SMO backend. never {@code null}.
      */

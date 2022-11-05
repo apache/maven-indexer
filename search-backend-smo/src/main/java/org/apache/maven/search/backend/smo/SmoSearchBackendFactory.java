@@ -1,0 +1,55 @@
+package org.apache.maven.search.backend.smo;
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
+import org.apache.maven.search.backend.smo.internal.SmoSearchTransportProvider;
+
+/**
+ * The SMO search backend factory.
+ */
+public class SmoSearchBackendFactory
+{
+    public static final String DEFAULT_BACKEND_ID = "central-smo";
+
+    public static final String DEFAULT_REPOSITORY_ID = "central";
+
+    public static final String DEFAULT_SMO_URI = "https://search.maven.org/solrsearch/select";
+
+    /**
+     * Creates "default" SMO search backend suitable for most use cases.
+     */
+    public SmoSearchBackend createDefault()
+    {
+        return create( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI,
+                new SmoSearchTransportProvider().get() );
+    }
+
+    /**
+     * Creates SMO search backend using provided parameters.
+     */
+    public SmoSearchBackend create( String backendId,
+                                    String repositoryId,
+                                    String smoUri,
+                                    SmoSearchTransportSupport transportSupport )
+    {
+        return new SmoSearchBackendImpl( backendId, repositoryId, smoUri, transportSupport );
+    }
+}

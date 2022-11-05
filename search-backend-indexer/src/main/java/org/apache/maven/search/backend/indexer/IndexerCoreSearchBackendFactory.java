@@ -19,22 +19,29 @@ package org.apache.maven.search.backend.indexer;
  * under the License.
  */
 
-import java.io.IOException;
-
+import org.apache.maven.index.Indexer;
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.search.SearchBackend;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.backend.indexer.internal.IndexerCoreSearchBackendImpl;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * The Indexer Core search backend.
+ * The Indexer Core search backend factory.
  */
-public interface IndexerCoreSearchBackend extends SearchBackend
+public class IndexerCoreSearchBackendFactory
 {
-    @Override
-    IndexerCoreSearchResponse search( SearchRequest searchRequest ) throws IOException;
+    private final Indexer indexer;
+
+    public IndexerCoreSearchBackendFactory( Indexer indexer )
+    {
+        this.indexer = requireNonNull( indexer, "indexer cannot be null" );
+    }
 
     /**
-     * Returns the {@link IndexingContext} used by this search backend, never {@code null}.
+     * Creates {@link IndexerCoreSearchBackend} instance using passed in context.
      */
-    IndexingContext getIndexingContext();
+    public IndexerCoreSearchBackend createIndexerCoreSearchBackend( IndexingContext indexingContext )
+    {
+        return new IndexerCoreSearchBackendImpl( indexer, indexingContext );
+    }
 }
