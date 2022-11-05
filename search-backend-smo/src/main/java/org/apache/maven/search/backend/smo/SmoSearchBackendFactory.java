@@ -20,7 +20,7 @@ package org.apache.maven.search.backend.smo;
  */
 
 import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
-import org.apache.maven.search.backend.smo.internal.SmoSearchTransportProvider;
+import org.apache.maven.search.backend.smo.internal.SmoSearchTransportSupplier;
 
 /**
  * The SMO search backend factory.
@@ -39,7 +39,7 @@ public class SmoSearchBackendFactory
     public SmoSearchBackend createDefault()
     {
         return create( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI,
-                new SmoSearchTransportProvider().get() );
+                new SmoSearchTransportSupplier().get() );
     }
 
     /**

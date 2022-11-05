@@ -26,11 +26,11 @@ import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
 /**
  * Transport supplier.
  */
-public class SmoSearchTransportProvider implements Supplier<SmoSearchTransportSupport>
+public class SmoSearchTransportSupplier implements Supplier<SmoSearchTransportSupport>
 {
     @Override
     public SmoSearchTransportSupport get()
     {
-        return new Java11HttpClientSmoSearchTransport();
+        return new UrlConnectionSmoSearchTransport();
     }
 }
