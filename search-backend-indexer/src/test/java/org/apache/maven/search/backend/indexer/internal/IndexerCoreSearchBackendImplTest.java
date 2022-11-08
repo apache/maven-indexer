@@ -49,6 +49,8 @@ import org.apache.maven.search.MAVEN;
 import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.SearchResponse;
+import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
+import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackendFactory;
 import org.apache.maven.search.request.FieldQuery;
 import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.After;
@@ -74,7 +76,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest
 
     private IndexingContext centralContext;
 
-    private IndexerCoreSearchBackendImpl backend;
+    private IndexerCoreSearchBackend backend;
 
     private void dumpSingle( AtomicInteger counter, List<Record> page )
     {
@@ -185,7 +187,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest
         System.out.println( "Done in " + Duration.ofMillis( System.currentTimeMillis() - start ) );
         System.out.println();
 
-        this.backend = new IndexerCoreSearchBackendImpl( indexer, centralContext );
+        this.backend = new IndexerCoreSearchBackendFactory( indexer ).createIndexerCoreSearchBackend( centralContext );
     }
 
     @After

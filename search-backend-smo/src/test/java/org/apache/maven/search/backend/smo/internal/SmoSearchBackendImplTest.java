@@ -28,6 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.maven.search.MAVEN;
 import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.backend.smo.SmoSearchBackend;
+import org.apache.maven.search.backend.smo.SmoSearchBackendFactory;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.FieldQuery;
@@ -38,7 +40,7 @@ import org.junit.Test;
 @Ignore( "This is not a test, is more a showcase" )
 public class SmoSearchBackendImplTest
 {
-    private final SmoSearchBackendImpl backend = new SmoSearchBackendImpl();
+    private final SmoSearchBackend backend = new SmoSearchBackendFactory().createDefault();
 
     private void dumpSingle( AtomicInteger counter, List<Record> page )
     {

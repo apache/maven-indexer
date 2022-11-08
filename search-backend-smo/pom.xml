@@ -33,6 +33,10 @@ under the License.
     Indexer Search Backend implemented by SMO.
   </description>
 
+  <properties>
+    <javaVersion>8</javaVersion>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>
@@ -66,6 +70,39 @@ under the License.
         <filtering>true</filtering>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile-java-11</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <release>11</release>
+              <compileSourceRoots>
+                <compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
+              </compileSourceRoots>
+              <multiReleaseOutput>true</multiReleaseOutput>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Multi-Release>true</Multi-Release>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
 </project>

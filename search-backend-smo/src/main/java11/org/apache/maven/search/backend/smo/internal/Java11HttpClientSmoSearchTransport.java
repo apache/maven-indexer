@@ -27,6 +27,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
 
 /**
  * Java 11 {@link HttpClient} backed transport.

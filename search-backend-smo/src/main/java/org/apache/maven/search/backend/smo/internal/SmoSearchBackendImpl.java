@@ -40,6 +40,7 @@ import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
+import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.Field;
 import org.apache.maven.search.request.FieldQuery;
@@ -51,12 +52,6 @@ import static java.util.Objects.requireNonNull;
 
 public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSearchBackend
 {
-    public static final String DEFAULT_BACKEND_ID = "central-smo";
-
-    public static final String DEFAULT_REPOSITORY_ID = "central";
-
-    public static final String DEFAULT_SMO_URI = "https://search.maven.org/solrsearch/select";
-
     private static final Map<Field, String> FIELD_TRANSLATION;
 
     static
@@ -76,14 +71,6 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     private final String smoUri;
 
     private final SmoSearchTransportSupport transportSupport;
-
-    /**
-     * Creates a "default" instance of SMO backend against {@link #DEFAULT_SMO_URI}.
-     */
-    public SmoSearchBackendImpl()
-    {
-        this( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new Java11HttpClientSmoSearchTransport() );
-    }
 
     /**
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
@@ -155,8 +142,15 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
 
     private String encodeQueryParameterValue( String parameterValue )
     {
-        return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8 )
-                .replace( "+", "%20" );
+        try
+        {
+            return URLEncoder.encode( parameterValue, StandardCharsets.UTF_8.name() )
+                    .replace( "+", "%20" );
+        }
+        catch ( UnsupportedEncodingException e )
+        {
+            throw new RuntimeException( e );
+        }
     }
 
     private int populateFromRaw( JsonObject raw, List<Record> page )

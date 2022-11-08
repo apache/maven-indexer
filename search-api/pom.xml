@@ -33,6 +33,10 @@ under the License.
     Indexer Search API.
   </description>
 
+  <properties>
+    <javaVersion>8</javaVersion>
+  </properties>
+
   <dependencies>
     <!-- Test -->
     <dependency>
