@@ -20,6 +20,7 @@ package org.apache.maven.search.backend.smo.internal;
  */
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -40,7 +42,7 @@ import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
+import org.apache.maven.search.backend.smo.SmoSearchTransport;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.Field;
 import org.apache.maven.search.request.FieldQuery;
@@ -70,17 +72,46 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
 
     private final String smoUri;
 
-    private final SmoSearchTransportSupport transportSupport;
+    private final SmoSearchTransport transportSupport;
+
+    private final String userAgent;
+
+    private final Map<String, String> commonHeaders;
 
     /**
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
      */
     public SmoSearchBackendImpl( String backendId, String repositoryId, String smoUri,
-                                 SmoSearchTransportSupport transportSupport )
+                                 SmoSearchTransport transportSupport )
     {
         super( backendId, repositoryId );
         this.smoUri = requireNonNull( smoUri );
         this.transportSupport = requireNonNull( transportSupport );
+
+        final String version = discoverVersion();
+        this.userAgent = "Apache-Maven-Search-SMO/" + version + " " + transportSupport.getClass().getSimpleName();
+        this.commonHeaders = new HashMap<>();
+        this.commonHeaders.put( "User-Agent", userAgent );
+        this.commonHeaders.put( "Accept", "application/json" );
+    }
+
+    private String discoverVersion()
+    {
+        Properties properties = new Properties();
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(
+                "org/apache/maven/search/backend/smo/internal/smo-version.properties" );
+        if ( inputStream != null )
+        {
+            try ( InputStream is = inputStream )
+            {
+                properties.load( is );
+            }
+            catch ( IOException e )
+            {
+                // fall through
+            }
+        }
+        return properties.getProperty( "version", "unknown" );
     }
 
     @Override
@@ -90,17 +121,23 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     }
 
     @Override
+    public String getUserAgent()
+    {
+        return userAgent;
+    }
+
+    @Override
     public SmoSearchResponse search( SearchRequest searchRequest ) throws IOException
     {
         String searchUri = toURI( searchRequest );
-        String payload = transportSupport.fetch( searchRequest, searchUri );
+        String payload = transportSupport.fetch( searchUri, commonHeaders );
         JsonObject raw = JsonParser.parseString( payload ).getAsJsonObject();
         List<Record> page = new ArrayList<>( searchRequest.getPaging().getPageSize() );
         int totalHits = populateFromRaw( raw, page );
         return new SmoSearchResponseImpl( searchRequest, totalHits, page, searchUri, payload );
     }
 
-    private String toURI( SearchRequest searchRequest ) throws UnsupportedEncodingException
+    private String toURI( SearchRequest searchRequest )
     {
         Paging paging = searchRequest.getPaging();
         HashSet<Field> searchedFields = new HashSet<>();
@@ -115,7 +152,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return smoUri + "?q=" + smoQuery;
     }
 
-    private String toSMOQuery( HashSet<Field> searchedFields, Query query ) throws UnsupportedEncodingException
+    private String toSMOQuery( HashSet<Field> searchedFields, Query query )
     {
         if ( query instanceof BooleanQuery.And )
         {

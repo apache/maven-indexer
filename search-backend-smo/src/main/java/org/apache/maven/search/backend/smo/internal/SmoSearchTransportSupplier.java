@@ -21,15 +21,15 @@ package org.apache.maven.search.backend.smo.internal;
 
 import java.util.function.Supplier;
 
-import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
+import org.apache.maven.search.backend.smo.SmoSearchTransport;
 
 /**
  * Transport supplier.
  */
-public class SmoSearchTransportSupplier implements Supplier<SmoSearchTransportSupport>
+public class SmoSearchTransportSupplier implements Supplier<SmoSearchTransport>
 {
     @Override
-    public SmoSearchTransportSupport get()
+    public SmoSearchTransport get()
     {
         return new UrlConnectionSmoSearchTransport();
     }

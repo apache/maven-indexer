@@ -20,25 +20,18 @@ package org.apache.maven.search.backend.smo;
  */
 
 import java.io.IOException;
-
-import org.apache.maven.search.SearchBackend;
-import org.apache.maven.search.SearchRequest;
+import java.util.Map;
 
 /**
- * The SMO search backend.
+ * A trivial "transport abstraction" to make possible pluggable implementations.
  */
-public interface SmoSearchBackend extends SearchBackend
+public interface SmoSearchTransport
 {
-    @Override
-    SmoSearchResponse search( SearchRequest searchRequest ) throws IOException;
-
     /**
-     * Returns the base "service URI" that is used by this SMO backend. never {@code null}.
+     * This method should issue a HTTP GET requests using {@code serviceUri} and return body payload as {@link String}
+     * ONLY if the response was HTTP 200 Ok and there was a payload returned by service. In any other case, it should
+     * throw, never return {@code null}. The payload is expected to be {@code application/json}, so client may add
+     * headers to request. Also, the payload is expected to be "relatively small" that may be enforced.
      */
-    String getSmoUri();
-
-    /**
-     * Returns the "User-Agent" value this instance will use.
-     */
-    String getUserAgent();
+    String fetch( String serviceUri, Map<String, String> headers ) throws IOException;
 }
