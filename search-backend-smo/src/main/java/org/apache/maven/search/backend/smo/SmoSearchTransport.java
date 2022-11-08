@@ -1,4 +1,4 @@
-package org.apache.maven.search.backend.smo.internal;
+package org.apache.maven.search.backend.smo;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,18 +19,19 @@ package org.apache.maven.search.backend.smo.internal;
  * under the License.
  */
 
-import java.util.function.Supplier;
-
-import org.apache.maven.search.backend.smo.SmoSearchTransport;
+import java.io.IOException;
+import java.util.Map;
 
 /**
- * Transport supplier.
+ * A trivial "transport abstraction" to make possible pluggable implementations.
  */
-public class SmoSearchTransportSupplier implements Supplier<SmoSearchTransport>
+public interface SmoSearchTransport
 {
-    @Override
-    public SmoSearchTransport get()
-    {
-        return new UrlConnectionSmoSearchTransport();
-    }
+    /**
+     * This method should issue a HTTP GET requests using {@code serviceUri} and return body payload as {@link String}
+     * ONLY if the response was HTTP 200 Ok and there was a payload returned by service. In any other case, it should
+     * throw, never return {@code null}. The payload is expected to be {@code application/json}, so client may add
+     * headers to request. Also, the payload is expected to be "relatively small" that may be enforced.
+     */
+    String fetch( String serviceUri, Map<String, String> headers ) throws IOException;
 }

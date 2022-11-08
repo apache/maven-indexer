@@ -48,7 +48,7 @@ public class SmoSearchBackendFactory
     public SmoSearchBackend create( String backendId,
                                     String repositoryId,
                                     String smoUri,
-                                    SmoSearchTransportSupport transportSupport )
+                                    SmoSearchTransport transportSupport )
     {
         return new SmoSearchBackendImpl( backendId, repositoryId, smoUri, transportSupport );
     }

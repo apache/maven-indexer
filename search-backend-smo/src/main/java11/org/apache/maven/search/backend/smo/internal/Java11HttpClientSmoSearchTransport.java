@@ -25,26 +25,26 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
-import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
+import org.apache.maven.search.backend.smo.SmoSearchTransport;
 
 /**
  * Java 11 {@link HttpClient} backed transport.
  */
-public class Java11HttpClientSmoSearchTransport extends SmoSearchTransportSupport
+public class Java11HttpClientSmoSearchTransport implements SmoSearchTransport
 {
     private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
 
     @Override
-    public String fetch( SearchRequest searchRequest, String serviceUri ) throws IOException
+    public String fetch( String serviceUri, Map<String, String> headers ) throws IOException
     {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri( URI.create( serviceUri ) )
-                .header( "User-Agent", getUserAgent() )
-                .header( "Accept", "application/json" )
-                .GET()
-                .build();
+        HttpRequest.Builder builder = HttpRequest.newBuilder().uri( URI.create( serviceUri ) ).GET();
+        for ( Map.Entry<String, String> header : headers.entrySet() )
+        {
+            builder.header( header.getKey(), header.getValue() );
+        }
+        HttpRequest request = builder.build();
         try
         {
             HttpResponse<String> response = client.send( request, HttpResponse.BodyHandlers.ofString() );

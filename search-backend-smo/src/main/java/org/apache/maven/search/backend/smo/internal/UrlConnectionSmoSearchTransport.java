@@ -24,23 +24,25 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Scanner;
 
-import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.backend.smo.SmoSearchTransportSupport;
+import org.apache.maven.search.backend.smo.SmoSearchTransport;
 
 /**
  * {@link java.net.HttpURLConnection} backed transport.
  */
-public class UrlConnectionSmoSearchTransport extends SmoSearchTransportSupport
+public class UrlConnectionSmoSearchTransport implements SmoSearchTransport
 {
     @Override
-    public String fetch( SearchRequest searchRequest, String serviceUri ) throws IOException
+    public String fetch( String serviceUri, Map<String, String> headers ) throws IOException
     {
         HttpURLConnection httpConnection = (HttpURLConnection) new URL( serviceUri ).openConnection();
         httpConnection.setInstanceFollowRedirects( false );
-        httpConnection.setRequestProperty( "User-Agent", getUserAgent() );
-        httpConnection.setRequestProperty( "Accept", "application/json" );
+        for ( Map.Entry<String, String> entry : headers.entrySet() )
+        {
+            httpConnection.setRequestProperty( entry.getKey(), entry.getValue() );
+        }
         int httpCode = httpConnection.getResponseCode();
         if ( httpCode == HttpURLConnection.HTTP_OK )
         {
