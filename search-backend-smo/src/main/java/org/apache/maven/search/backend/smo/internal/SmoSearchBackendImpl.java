@@ -74,8 +74,6 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
 
     private final SmoSearchTransport transportSupport;
 
-    private final String userAgent;
-
     private final Map<String, String> commonHeaders;
 
     /**
@@ -88,10 +86,9 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         this.smoUri = requireNonNull( smoUri );
         this.transportSupport = requireNonNull( transportSupport );
 
-        final String version = discoverVersion();
-        this.userAgent = "Apache-Maven-Search-SMO/" + version + " " + transportSupport.getClass().getSimpleName();
         this.commonHeaders = new HashMap<>();
-        this.commonHeaders.put( "User-Agent", userAgent );
+        this.commonHeaders.put( "User-Agent", "Apache-Maven-Search-SMO/" + discoverVersion() + " "
+                + transportSupport.getClass().getSimpleName() );
         this.commonHeaders.put( "Accept", "application/json" );
     }
 
@@ -118,12 +115,6 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     public String getSmoUri()
     {
         return smoUri;
-    }
-
-    @Override
-    public String getUserAgent()
-    {
-        return userAgent;
     }
 
     @Override

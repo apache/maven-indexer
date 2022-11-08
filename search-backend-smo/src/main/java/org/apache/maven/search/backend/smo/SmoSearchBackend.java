@@ -36,9 +36,4 @@ public interface SmoSearchBackend extends SearchBackend
      * Returns the base "service URI" that is used by this SMO backend. never {@code null}.
      */
     String getSmoUri();
-
-    /**
-     * Returns the "User-Agent" value this instance will use.
-     */
-    String getUserAgent();
 }
