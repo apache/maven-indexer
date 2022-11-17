@@ -35,7 +35,7 @@ under the License.
   </description>
 
   <properties>
-    <version.spring>5.3.23</version.spring>
+    <version.spring>6.0.0</version.spring>
   </properties>
 
   <build>
