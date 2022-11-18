@@ -101,7 +101,7 @@ under the License.
     <resolver.version>1.8.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <surefire.version>3.0.0-M7</surefire.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.4</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2022-11-08T14:20:48Z</project.build.outputTimestamp>
   </properties>
