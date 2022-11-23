@@ -96,7 +96,7 @@ under the License.
 
     <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
-    <lucene.version>9.4.1</lucene.version>
+    <lucene.version>9.4.2</lucene.version>
     <maven.version>3.8.6</maven.version>
     <resolver.version>1.8.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
@@ -285,7 +285,7 @@ under the License.
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
-          <version>2.4.0</version>
+          <version>2.5.0</version>
           <executions>
             <execution>
               <id>modernizer</id>
