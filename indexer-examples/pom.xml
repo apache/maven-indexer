@@ -38,5 +38,19 @@ under the License.
     <module>indexer-examples-basic</module>
     <module>indexer-examples-spring</module>
   </modules>
-  
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <configuration>
+            <!-- the child modules are just source code examples and not to be shared as artifacts -->
+            <skip>true</skip>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
 </project>
