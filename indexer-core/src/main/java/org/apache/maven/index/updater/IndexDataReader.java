@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
@@ -171,11 +172,14 @@ public class IndexDataReader
 
         ExecutorService executorService = Executors.newFixedThreadPool( threads );
         ArrayList<Exception> errors = new ArrayList<>();
-        ArrayList<IndexWriter> silos = new ArrayList<>( threads );
+        ArrayList<FSDirectory> siloDirectories = new ArrayList<>( threads );
+        ArrayList<IndexWriter> siloWriters = new ArrayList<>( threads );
         for ( int i = 0; i < threads; i++ )
         {
             final int silo = i;
-            silos.add( tempWriter( "silo" + i ) );
+            FSDirectory siloDirectory = tempDirectory( "silo" + i );
+            siloDirectories.add( siloDirectory );
+            siloWriters.add( tempWriter( siloDirectory ) );
             executorService.execute( () ->
             {
                 LOGGER.debug( "Starting thread {}", Thread.currentThread().getName() );
@@ -190,7 +194,7 @@ public class IndexDataReader
                             {
                                 break;
                             }
-                            addToIndex( doc, context, silos.get( silo ), rootGroups, allGroups );
+                            addToIndex( doc, context, siloWriters.get( silo ), rootGroups, allGroups );
                         }
                         catch ( InterruptedException | IOException e )
                         {
@@ -245,10 +249,18 @@ public class IndexDataReader
         }
 
         LOGGER.debug( "Merging silos..." );
-        for ( IndexWriter silo : silos )
+        for ( IndexWriter siloWriter : siloWriters )
         {
-            IndexUtils.close( silo );
-            w.addIndexes( silo.getDirectory() );
+            siloWriter.commit();
+            siloWriter.close();
+        }
+        LOGGER.debug( "Cleanup of silos..." );
+        for ( FSDirectory siloDirectory : siloDirectories )
+        {
+            w.addIndexes( siloDirectory );
+            File dir = siloDirectory.getDirectory().toFile();
+            siloDirectory.close();
+            IndexUtils.delete( dir );
         }
 
         LOGGER.debug( "Merged silos..." );
@@ -269,11 +281,11 @@ public class IndexDataReader
         return FSDirectory.open( Files.createTempDirectory( name + ".dir" ) );
     }
 
-    private IndexWriter tempWriter( final String name ) throws IOException
+    private IndexWriter tempWriter( final FSDirectory directory ) throws IOException
     {
         IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
         config.setUseCompoundFile( false );
-        return new NexusIndexWriter( tempDirectory( name ), config );
+        return new NexusIndexWriter( directory, config );
     }
 
     private void addToIndex( final Document doc, final IndexingContext context, final IndexWriter indexWriter,
