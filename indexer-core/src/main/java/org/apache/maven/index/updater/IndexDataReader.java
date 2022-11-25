@@ -47,6 +47,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
@@ -174,6 +175,7 @@ public class IndexDataReader
         ArrayList<Exception> errors = new ArrayList<>();
         ArrayList<FSDirectory> siloDirectories = new ArrayList<>( threads );
         ArrayList<IndexWriter> siloWriters = new ArrayList<>( threads );
+        LOGGER.debug( "Creating {} silo writer threads...", threads );
         for ( int i = 0; i < threads; i++ )
         {
             final int silo = i;
@@ -210,6 +212,7 @@ public class IndexDataReader
             } );
         }
 
+        LOGGER.debug( "Loading up documents into silos" );
         try
         {
             Document doc;
@@ -248,22 +251,25 @@ public class IndexDataReader
             IndexUtils.updateTimestamp( w.getDirectory(), date );
         }
 
-        LOGGER.debug( "Merging silos..." );
+        LOGGER.debug( "Closing silo writers..." );
         for ( IndexWriter siloWriter : siloWriters )
         {
             siloWriter.commit();
             siloWriter.close();
         }
-        LOGGER.debug( "Cleanup of silos..." );
+
+        LOGGER.debug( "Merging silo directories..." );
+        w.addIndexes( siloDirectories.toArray( new Directory[0] ) );
+
+        LOGGER.debug( "Cleanup of silo directories..." );
         for ( FSDirectory siloDirectory : siloDirectories )
         {
-            w.addIndexes( siloDirectory );
             File dir = siloDirectory.getDirectory().toFile();
             siloDirectory.close();
             IndexUtils.delete( dir );
         }
 
-        LOGGER.debug( "Merged silos..." );
+        LOGGER.debug( "Finalizing..." );
         w.commit();
 
         IndexDataReadResult result = new IndexDataReadResult();
