@@ -32,10 +32,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -135,8 +135,8 @@ public class IndexDataReader
         int n = 0;
 
         Document doc;
-        ConcurrentMap<String, Boolean> rootGroups = new ConcurrentHashMap<>();
-        ConcurrentMap<String, Boolean> allGroups = new ConcurrentHashMap<>();
+        Set<String> rootGroups = new HashSet<>();
+        Set<String> allGroups = new HashSet<>();
 
         while ( ( doc = readDocument() ) != null )
         {
@@ -149,8 +149,8 @@ public class IndexDataReader
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
         result.setTimestamp( date );
-        result.setRootGroups( rootGroups.keySet() );
-        result.setAllGroups( allGroups.keySet() );
+        result.setRootGroups( rootGroups );
+        result.setAllGroups( allGroups );
 
         LOGGER.debug( "Reading ST index done in {} sec", Duration.between( start, Instant.now() ).getSeconds() );
         return result;
@@ -167,8 +167,8 @@ public class IndexDataReader
 
         final Document theEnd = new Document();
 
-        ConcurrentMap<String, Boolean> rootGroups = new ConcurrentHashMap<>();
-        ConcurrentMap<String, Boolean> allGroups = new ConcurrentHashMap<>();
+        Set<String> rootGroups = ConcurrentHashMap.newKeySet();
+        Set<String> allGroups = ConcurrentHashMap.newKeySet();
         ArrayBlockingQueue<Document> queue = new ArrayBlockingQueue<>( 10000 );
 
         ExecutorService executorService = Executors.newFixedThreadPool( threads );
@@ -275,8 +275,8 @@ public class IndexDataReader
         IndexDataReadResult result = new IndexDataReadResult();
         result.setDocumentCount( n );
         result.setTimestamp( date );
-        result.setRootGroups( rootGroups.keySet() );
-        result.setAllGroups( allGroups.keySet() );
+        result.setRootGroups( rootGroups );
+        result.setAllGroups( allGroups );
 
         LOGGER.debug( "Reading MT index done in {} sec", Duration.between( start, Instant.now() ).getSeconds() );
         return result;
@@ -295,8 +295,8 @@ public class IndexDataReader
     }
 
     private void addToIndex( final Document doc, final IndexingContext context, final IndexWriter indexWriter,
-                             final ConcurrentMap<String, Boolean> rootGroups,
-                             final ConcurrentMap<String, Boolean> allGroups )
+                             final Set<String> rootGroups,
+                             final Set<String> allGroups )
             throws IOException
     {
         ArtifactInfo ai = IndexUtils.constructArtifactInfo( doc, context );
@@ -304,8 +304,8 @@ public class IndexDataReader
         {
             indexWriter.addDocument( IndexUtils.updateDocument( doc, context, false, ai ) );
 
-            rootGroups.putIfAbsent( ai.getRootGroup(), Boolean.TRUE );
-            allGroups.putIfAbsent( ai.getGroupId(), Boolean.TRUE );
+            rootGroups.add( ai.getRootGroup() );
+            allGroups.add( ai.getGroupId() );
         }
         else
         {
