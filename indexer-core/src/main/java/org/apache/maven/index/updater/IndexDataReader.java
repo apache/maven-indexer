@@ -23,6 +23,7 @@ import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
@@ -46,6 +47,7 @@ import org.apache.lucene.document.FieldType;
 import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexUtils;
@@ -171,11 +173,15 @@ public class IndexDataReader
 
         ExecutorService executorService = Executors.newFixedThreadPool( threads );
         ArrayList<Exception> errors = new ArrayList<>();
-        ArrayList<IndexWriter> silos = new ArrayList<>( threads );
+        ArrayList<FSDirectory> siloDirectories = new ArrayList<>( threads );
+        ArrayList<IndexWriter> siloWriters = new ArrayList<>( threads );
+        LOGGER.debug( "Creating {} silo writer threads...", threads );
         for ( int i = 0; i < threads; i++ )
         {
             final int silo = i;
-            silos.add( tempWriter( "silo" + i ) );
+            FSDirectory siloDirectory = tempDirectory( "silo" + i );
+            siloDirectories.add( siloDirectory );
+            siloWriters.add( tempWriter( siloDirectory ) );
             executorService.execute( () ->
             {
                 LOGGER.debug( "Starting thread {}", Thread.currentThread().getName() );
@@ -190,7 +196,7 @@ public class IndexDataReader
                             {
                                 break;
                             }
-                            addToIndex( doc, context, silos.get( silo ), rootGroups, allGroups );
+                            addToIndex( doc, context, siloWriters.get( silo ), rootGroups, allGroups );
                         }
                         catch ( InterruptedException | IOException e )
                         {
@@ -206,6 +212,7 @@ public class IndexDataReader
             } );
         }
 
+        LOGGER.debug( "Loading up documents into silos" );
         try
         {
             Document doc;
@@ -244,14 +251,25 @@ public class IndexDataReader
             IndexUtils.updateTimestamp( w.getDirectory(), date );
         }
 
-        LOGGER.debug( "Merging silos..." );
-        for ( IndexWriter silo : silos )
+        LOGGER.debug( "Closing silo writers..." );
+        for ( IndexWriter siloWriter : siloWriters )
         {
-            IndexUtils.close( silo );
-            w.addIndexes( silo.getDirectory() );
+            siloWriter.commit();
+            siloWriter.close();
         }
 
-        LOGGER.debug( "Merged silos..." );
+        LOGGER.debug( "Merging silo directories..." );
+        w.addIndexes( siloDirectories.toArray( new Directory[0] ) );
+
+        LOGGER.debug( "Cleanup of silo directories..." );
+        for ( FSDirectory siloDirectory : siloDirectories )
+        {
+            File dir = siloDirectory.getDirectory().toFile();
+            siloDirectory.close();
+            IndexUtils.delete( dir );
+        }
+
+        LOGGER.debug( "Finalizing..." );
         w.commit();
 
         IndexDataReadResult result = new IndexDataReadResult();
@@ -269,11 +287,11 @@ public class IndexDataReader
         return FSDirectory.open( Files.createTempDirectory( name + ".dir" ) );
     }
 
-    private IndexWriter tempWriter( final String name ) throws IOException
+    private IndexWriter tempWriter( final FSDirectory directory ) throws IOException
     {
         IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
         config.setUseCompoundFile( false );
-        return new NexusIndexWriter( tempDirectory( name ), config );
+        return new NexusIndexWriter( directory, config );
     }
 
     private void addToIndex( final Document doc, final IndexingContext context, final IndexWriter indexWriter,
