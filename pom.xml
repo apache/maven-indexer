@@ -98,7 +98,7 @@ under the License.
     <guice.version>5.1.0</guice.version>
     <lucene.version>9.4.2</lucene.version>
     <maven.version>3.8.6</maven.version>
-    <resolver.version>1.8.2</resolver.version>
+    <resolver.version>1.9.2</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <surefire.version>3.0.0-M7</surefire.version>
     <slf4j.version>1.7.36</slf4j.version>
