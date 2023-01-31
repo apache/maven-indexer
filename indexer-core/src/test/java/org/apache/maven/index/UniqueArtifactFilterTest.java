@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,79 +30,76 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class UniqueArtifactFilterTest
-    extends AbstractIndexCreatorHelper
-{
+public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
 
     @Test
-    public void testSearchIterator()
-        throws Exception
-    {
+    public void testSearchIterator() throws Exception {
         NexusIndexer indexer = prepare();
 
-        Query q = indexer.constructQuery( MAVEN.GROUP_ID, "qdox", SearchType.SCORED );
+        Query q = indexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
 
-        IteratorSearchRequest request = new IteratorSearchRequest( q );
+        IteratorSearchRequest request = new IteratorSearchRequest(q);
 
-        IteratorSearchResponse response = indexer.searchIterator( request );
+        IteratorSearchResponse response = indexer.searchIterator(request);
 
-        assertEquals( 2, response.getTotalHits() );
+        assertEquals(2, response.getTotalHits());
 
-        for ( ArtifactInfo ai : response.getResults() )
-        {
-            assertEquals( "GroupId must match \"qdox\"!", "qdox", ai.getGroupId() );
+        for (ArtifactInfo ai : response.getResults()) {
+            assertEquals("GroupId must match \"qdox\"!", "qdox", ai.getGroupId());
         }
     }
 
     @Test
-    public void testSearchIteratorWithFilter()
-        throws Exception
-    {
+    public void testSearchIteratorWithFilter() throws Exception {
         NexusIndexer indexer = prepare();
 
-        Query q = indexer.constructQuery( MAVEN.GROUP_ID, "commons", SearchType.SCORED );
+        Query q = indexer.constructQuery(MAVEN.GROUP_ID, "commons", SearchType.SCORED);
 
         UniqueArtifactFilterPostprocessor filter = new UniqueArtifactFilterPostprocessor();
-        filter.addField( MAVEN.GROUP_ID );
-        filter.addField( MAVEN.ARTIFACT_ID );
+        filter.addField(MAVEN.GROUP_ID);
+        filter.addField(MAVEN.ARTIFACT_ID);
 
-        IteratorSearchRequest request = new IteratorSearchRequest( q, filter );
+        IteratorSearchRequest request = new IteratorSearchRequest(q, filter);
 
-        IteratorSearchResponse response = indexer.searchIterator( request );
+        IteratorSearchResponse response = indexer.searchIterator(request);
 
-        assertEquals( "15 total hits (before filtering!)", 15, response.getTotalHits() );
+        assertEquals("15 total hits (before filtering!)", 15, response.getTotalHits());
 
         ArtifactInfo ai = response.getResults().next();
-        assertTrue( "Iterator has to have next (2 should be returned)", ai != null );
+        assertTrue("Iterator has to have next (2 should be returned)", ai != null);
 
         ai = response.getResults().next();
-        assertTrue( "Iterator has to have next (2 should be returned)", ai != null );
+        assertTrue("Iterator has to have next (2 should be returned)", ai != null);
 
-        assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getVersion() );
-        assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getPackaging() );
-        assertEquals( "Property that is not unique has to have \"COLLAPSED\" value!",
-            UniqueArtifactFilterPostprocessor.COLLAPSED, ai.getClassifier() );
+        assertEquals(
+                "Property that is not unique has to have \"COLLAPSED\" value!",
+                UniqueArtifactFilterPostprocessor.COLLAPSED,
+                ai.getVersion());
+        assertEquals(
+                "Property that is not unique has to have \"COLLAPSED\" value!",
+                UniqueArtifactFilterPostprocessor.COLLAPSED,
+                ai.getPackaging());
+        assertEquals(
+                "Property that is not unique has to have \"COLLAPSED\" value!",
+                UniqueArtifactFilterPostprocessor.COLLAPSED,
+                ai.getClassifier());
     }
 
     // ==
 
-    private NexusIndexer prepare()
-        throws Exception, IOException, UnsupportedExistingLuceneIndexException
-    {
-        NexusIndexer indexer = lookup( NexusIndexer.class );
+    private NexusIndexer prepare() throws Exception, IOException, UnsupportedExistingLuceneIndexException {
+        NexusIndexer indexer = lookup(NexusIndexer.class);
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = new File( getBasedir(), "target/index/test-" + System.currentTimeMillis() );
-        FileUtils.deleteDirectory( indexDir );
+        File indexDir = new File(getBasedir(), "target/index/test-" + System.currentTimeMillis());
+        FileUtils.deleteDirectory(indexDir);
 
-        File repo = new File( getBasedir(), "src/test/repo" );
+        File repo = new File(getBasedir(), "src/test/repo");
 
-        context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
 
-        indexer.scan( context );
+        indexer.scan(context);
 
         return indexer;
     }

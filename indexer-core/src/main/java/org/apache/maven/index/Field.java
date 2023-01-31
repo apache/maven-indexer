@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,14 +16,14 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class Field
-{
+public class Field {
     public static final String NOT_PRESENT = "N/P";
 
     private final Field parent;
@@ -38,8 +36,7 @@ public class Field
 
     private final List<IndexerField> indexerFields;
 
-    public Field( final Field parent, final String namespace, final String name, final String description )
-    {
+    public Field(final Field parent, final String namespace, final String name, final String description) {
         this.parent = parent;
 
         this.namespace = namespace;
@@ -51,48 +48,39 @@ public class Field
         this.indexerFields = new ArrayList<>();
     }
 
-    public Field getParent()
-    {
+    public Field getParent() {
         return parent;
     }
 
-    public String getNamespace()
-    {
+    public String getNamespace() {
         return namespace;
     }
 
-    public String getFieldName()
-    {
+    public String getFieldName() {
         return fieldName;
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public Collection<IndexerField> getIndexerFields()
-    {
-        return Collections.unmodifiableList( indexerFields );
+    public Collection<IndexerField> getIndexerFields() {
+        return Collections.unmodifiableList(indexerFields);
     }
 
-    public boolean addIndexerField( IndexerField field )
-    {
-        return indexerFields.add( field );
+    public boolean addIndexerField(IndexerField field) {
+        return indexerFields.add(field);
     }
 
-    public boolean removeIndexerField( IndexerField field )
-    {
-        return indexerFields.remove( field );
+    public boolean removeIndexerField(IndexerField field) {
+        return indexerFields.remove(field);
     }
 
-    public String getFQN()
-    {
+    public String getFQN() {
         return getNamespace() + getFieldName();
     }
 
-    public String toString()
-    {
+    public String toString() {
         return getFQN() + " (with " + getIndexerFields().size() + " registered index fields)";
     }
 }

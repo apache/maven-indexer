@@ -1,5 +1,3 @@
-package org.apache.maven.index.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.util;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -30,32 +29,24 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.AbstractIndexCreator;
 
-public class SpoofIndexCreator
-    extends AbstractIndexCreator
-{
-    protected SpoofIndexCreator( final String id, final List<String> creatorDependencies )
-    {
-        super( id, creatorDependencies );
+public class SpoofIndexCreator extends AbstractIndexCreator {
+    protected SpoofIndexCreator(final String id, final List<String> creatorDependencies) {
+        super(id, creatorDependencies);
     }
 
-    public Collection<IndexerField> getIndexerFields()
-    {
+    public Collection<IndexerField> getIndexerFields() {
         return Collections.emptyList();
     }
 
-    public void populateArtifactInfo( ArtifactContext artifactContext )
-        throws IOException
-    {
+    public void populateArtifactInfo(ArtifactContext artifactContext) throws IOException {
         // TODO Auto-generated method stub
     }
 
-    public void updateDocument( ArtifactInfo artifactInfo, Document document )
-    {
+    public void updateDocument(ArtifactInfo artifactInfo, Document document) {
         // TODO Auto-generated method stub
     }
 
-    public boolean updateArtifactInfo( Document document, ArtifactInfo artifactInfo )
-    {
+    public boolean updateArtifactInfo(Document document, ArtifactInfo artifactInfo) {
         // TODO Auto-generated method stub
         return false;
     }

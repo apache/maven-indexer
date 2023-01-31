@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,9 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,45 +29,46 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
 
-public class BufferedWritableResourceHandlerTest
-{
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
+
+public class BufferedWritableResourceHandlerTest {
     private Mockery context = new Mockery();
 
     @Test
-    public void locate() throws IOException
-    {
-        final WritableResource writableResource = context.mock( WritableResource.class );
-        final WritableResourceHandler writableResourceHandler = context
-                .mock( WritableResourceHandler.class );
+    public void locate() throws IOException {
+        final WritableResource writableResource = context.mock(WritableResource.class);
+        final WritableResourceHandler writableResourceHandler = context.mock(WritableResourceHandler.class);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        context.checking( new Expectations()
-        {{
-            oneOf( writableResource ).write();
-            will( returnValue( baos ) );
-            oneOf( writableResourceHandler ).locate( "test.txt" );
-            will( returnValue( writableResource ) );
-        }} );
-        OutputStream out = new BufferedWritableResourceHandler( writableResourceHandler )
-                .locate( "test.txt" ).write();
-        assertTrue( out instanceof BufferedOutputStream );
-        assertArrayEquals( new byte[] {}, baos.toByteArray() );
-        out.write( 'a' );
-        assertArrayEquals( new byte[] {}, baos.toByteArray() );
+        context.checking(new Expectations() {
+            {
+                oneOf(writableResource).write();
+                will(returnValue(baos));
+                oneOf(writableResourceHandler).locate("test.txt");
+                will(returnValue(writableResource));
+            }
+        });
+        OutputStream out = new BufferedWritableResourceHandler(writableResourceHandler)
+                .locate("test.txt")
+                .write();
+        assertTrue(out instanceof BufferedOutputStream);
+        assertArrayEquals(new byte[] {}, baos.toByteArray());
+        out.write('a');
+        assertArrayEquals(new byte[] {}, baos.toByteArray());
         out.flush();
-        assertArrayEquals( new byte[] {'a'}, baos.toByteArray() );
+        assertArrayEquals(new byte[] {'a'}, baos.toByteArray());
         context.assertIsSatisfied();
     }
 
     @Test
-    public void close() throws IOException
-    {
-        final WritableResourceHandler writableResourceHandler = context
-                .mock( WritableResourceHandler.class );
-        context.checking( new Expectations()
-        {{
-            oneOf( writableResourceHandler ).close();
-        }} );
-        new BufferedWritableResourceHandler( writableResourceHandler ).close();
+    public void close() throws IOException {
+        final WritableResourceHandler writableResourceHandler = context.mock(WritableResourceHandler.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(writableResourceHandler).close();
+            }
+        });
+        new BufferedWritableResourceHandler(writableResourceHandler).close();
         context.assertIsSatisfied();
     }
 }

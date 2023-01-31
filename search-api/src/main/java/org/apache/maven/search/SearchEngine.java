@@ -1,5 +1,3 @@
-package org.apache.maven.search;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,16 +16,16 @@ package org.apache.maven.search;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search;
 
 import java.io.IOException;
 
 /**
  * A search engine to perform searches trough configured repository indexes.
  */
-public interface SearchEngine
-{
+public interface SearchEngine {
     /**
      * Performs a search with given {@link SearchRequest} and returns {@link SearchResponse}, never {@code null}.
      */
-    SearchResponse search( SearchRequest searchRequest ) throws IOException;
+    SearchResponse search(SearchRequest searchRequest) throws IOException;
 }

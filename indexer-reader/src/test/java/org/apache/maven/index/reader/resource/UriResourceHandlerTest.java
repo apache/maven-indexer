@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,9 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,21 +27,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class UriResourceHandlerTest
-{
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class UriResourceHandlerTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void locate() throws IOException
-    {
-        Resource test = new UriResourceHandler( folder.getRoot().toURI() )
-                .locate( "test.txt" );
-        assertNull( test.read() );
-        Files.write( folder.getRoot().toPath().resolve( "test.txt" ), new byte[] {'a'} );
-        try ( InputStream in = test.read() )
-        {
-            assertEquals( 'a', in.read() );
+    public void locate() throws IOException {
+        Resource test = new UriResourceHandler(folder.getRoot().toURI()).locate("test.txt");
+        assertNull(test.read());
+        Files.write(folder.getRoot().toPath().resolve("test.txt"), new byte[] {'a'});
+        try (InputStream in = test.read()) {
+            assertEquals('a', in.read());
         }
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.nio.file.Path;
 
@@ -28,19 +27,16 @@ import static java.util.Objects.requireNonNull;
 /**
  * A {@link WritableResourceHandler} that represents the base of a {@link Path} hierarchy.
  */
-public class PathWritableResourceHandler implements WritableResourceHandler
-{
+public class PathWritableResourceHandler implements WritableResourceHandler {
     private final Path path;
 
-    public PathWritableResourceHandler( Path path )
-    {
-        requireNonNull( path, "path cannot be null" );
+    public PathWritableResourceHandler(Path path) {
+        requireNonNull(path, "path cannot be null");
         this.path = path;
     }
 
     @Override
-    public WritableResource locate( String name )
-    {
-        return new PathWritableResource( path.resolve( name ) );
+    public WritableResource locate(String name) {
+        return new PathWritableResource(path.resolve(name));
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import java.io.IOException;
 
@@ -34,35 +33,29 @@ import org.apache.lucene.store.LockObtainFailedException;
  * href="http://lucene.apache.org/java/2_4_0/api/core/org/apache/lucene/index/IndexWriter.html">Lucene IndexWriter</a>
  * to allow to track if writer is closed
  */
-public class NexusIndexWriter
-    extends IndexWriter
-{
-    public interface IndexWriterConfigFactory
-    {
-        IndexWriterConfig create( Analyzer analyzer );
+public class NexusIndexWriter extends IndexWriter {
+    public interface IndexWriterConfigFactory {
+        IndexWriterConfig create(Analyzer analyzer);
     }
 
     @Deprecated
-    public NexusIndexWriter( final Directory directory, final Analyzer analyzer, boolean create )
-        throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-        this( directory, new IndexWriterConfig( analyzer ) );
+    public NexusIndexWriter(final Directory directory, final Analyzer analyzer, boolean create)
+            throws CorruptIndexException, LockObtainFailedException, IOException {
+        this(directory, new IndexWriterConfig(analyzer));
     }
 
-    public NexusIndexWriter( final Directory directory, final IndexWriterConfig config )
-        throws CorruptIndexException, LockObtainFailedException, IOException
-    {
-        super( directory, config );
+    public NexusIndexWriter(final Directory directory, final IndexWriterConfig config)
+            throws CorruptIndexException, LockObtainFailedException, IOException {
+        super(directory, config);
     }
 
     // ==
 
-    public static IndexWriterConfig defaultConfig()
-    {
-        final IndexWriterConfig config = new IndexWriterConfig( new NexusAnalyzer() );
+    public static IndexWriterConfig defaultConfig() {
+        final IndexWriterConfig config = new IndexWriterConfig(new NexusAnalyzer());
         // default open mode is CreateOrAppend which suits us
-        config.setRAMBufferSizeMB( 2.0 ); // old default
-        config.setMergeScheduler( new SerialMergeScheduler() ); // merging serially
+        config.setRAMBufferSizeMB(2.0); // old default
+        config.setMergeScheduler(new SerialMergeScheduler()); // merging serially
         return config;
     }
 }

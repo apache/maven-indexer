@@ -1,5 +1,3 @@
-package org.apache.maven.search;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search;
 
 import org.apache.maven.search.request.Field.BooleanField;
 import org.apache.maven.search.request.Field.NumberField;
@@ -26,78 +25,76 @@ import org.apache.maven.search.request.Field.StringField;
 /**
  * The ontology of Apache Maven related fields.
  */
-public final class MAVEN
-{
-    private MAVEN()
-    {
+public final class MAVEN {
+    private MAVEN() {
         // no instances
     }
 
     /**
      * String field for artifact groupId. Searchable.
      */
-    public static final StringField GROUP_ID = new StringField( "groupId", true );
+    public static final StringField GROUP_ID = new StringField("groupId", true);
 
     /**
      * String field for artifact artifactId. Searchable.
      */
-    public static final StringField ARTIFACT_ID = new StringField( "artifactId", true );
+    public static final StringField ARTIFACT_ID = new StringField("artifactId", true);
 
     /**
      * String field for artifact version. Searchable.
      */
-    public static final StringField VERSION = new StringField( "version", true );
+    public static final StringField VERSION = new StringField("version", true);
 
     /**
      * String field for artifact classifier. Searchable.
      */
-    public static final StringField CLASSIFIER = new StringField( "classifier", true );
+    public static final StringField CLASSIFIER = new StringField("classifier", true);
 
     /**
      * String field for artifact packaging. Searchable.
      */
-    public static final StringField PACKAGING = new StringField( "packaging", true );
+    public static final StringField PACKAGING = new StringField("packaging", true);
 
     /**
      * String field for artifact contained Java class name. Searchable, but not present in resulting records.
      */
-    public static final StringField CLASS_NAME = new StringField( "cn", true );
+    public static final StringField CLASS_NAME = new StringField("cn", true);
 
     /**
      * String field for artifact contained FQ Java class name. Searchable, but not present in resulting records.
      */
-    public static final StringField FQ_CLASS_NAME = new StringField( "fqcn", true );
+    public static final StringField FQ_CLASS_NAME = new StringField("fqcn", true);
 
     /**
      * String field for artifact SHA1 checksum. Searchable, but not present in resulting records.
      */
-    public static final StringField SHA1 = new StringField( "sha1", true );
+    public static final StringField SHA1 = new StringField("sha1", true);
 
     /**
      * String field for artifact file extension. Non-searchable. Indexer backend specific.
      */
-    public static final StringField FILE_EXTENSION = new StringField( "fileExtension", false );
+    public static final StringField FILE_EXTENSION = new StringField("fileExtension", false);
 
     /**
      * Number field carrying {@link Integer}, representing the count of versions for given GA. Non-searchable.
      */
-    public static final NumberField VERSION_COUNT = new NumberField( "versionCount", false );
+    public static final NumberField VERSION_COUNT = new NumberField("versionCount", false);
 
     /**
      * Boolean field representing the known presence/absence of artifact sources (is {@code -sources.jar} present).
      * Non-searchable.
      */
-    public static final BooleanField HAS_SOURCE = new BooleanField( "source", false );
+    public static final BooleanField HAS_SOURCE = new BooleanField("source", false);
 
     /**
      * Boolean field representing the known presence/absence of artifact Javadoc (is {@code -javadoc.jar} present).
      * Non-searchable.
      */
-    public static final BooleanField HAS_JAVADOC = new BooleanField( "javadoc", false );
+    public static final BooleanField HAS_JAVADOC = new BooleanField("javadoc", false);
 
     /**
      * Boolean field representing the known presence/absence of artifact GPG signature. Non-searchable. Indexer
      * backend specific.
      */
-    public static final BooleanField HAS_GPG_SIGNATURE = new BooleanField( "gpg", false );
+    public static final BooleanField HAS_GPG_SIGNATURE = new BooleanField("gpg", false);
 }

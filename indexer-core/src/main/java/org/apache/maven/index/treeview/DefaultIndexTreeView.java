@@ -1,5 +1,3 @@
-package org.apache.maven.index.treeview;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.treeview;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,10 +16,12 @@ package org.apache.maven.index.treeview;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.treeview;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,85 +43,64 @@ import org.codehaus.plexus.util.StringUtils;
 
 @Singleton
 @Named
-public class DefaultIndexTreeView
-    implements IndexTreeView
-{
+public class DefaultIndexTreeView implements IndexTreeView {
 
     private final Indexer indexer;
 
-
     @Inject
-    public DefaultIndexTreeView( Indexer indexer )
-    {
+    public DefaultIndexTreeView(Indexer indexer) {
         this.indexer = indexer;
     }
 
-    protected Indexer getIndexer()
-    {
+    protected Indexer getIndexer() {
         return indexer;
     }
 
-    public TreeNode listNodes( TreeViewRequest request )
-        throws IOException
-    {
+    public TreeNode listNodes(TreeViewRequest request) throws IOException {
         // get the last path elem
         String name;
 
-        if ( !"/".equals( request.getPath() ) )
-        {
+        if (!"/".equals(request.getPath())) {
 
-            if ( request.getPath().endsWith( "/" ) )
-            {
-                name = request.getPath().substring( 0, request.getPath().length() - 1 );
-            }
-            else
-            {
+            if (request.getPath().endsWith("/")) {
+                name = request.getPath().substring(0, request.getPath().length() - 1);
+            } else {
                 name = request.getPath();
             }
 
-            name = name.substring( name.lastIndexOf( '/' ) + 1 );
+            name = name.substring(name.lastIndexOf('/') + 1);
 
             // root is "/"
-            if ( !name.equals( "/" ) && name.endsWith( "/" ) )
-            {
-                name = name.substring( 0, name.length() - 1 );
+            if (!name.equals("/") && name.endsWith("/")) {
+                name = name.substring(0, name.length() - 1);
             }
 
-        }
-        else
-        {
+        } else {
             name = "/";
         }
 
         // the root node depends on request we have, so let's see
-        TreeNode result = request.getFactory().createGNode( this, request, request.getPath(), name );
+        TreeNode result = request.getFactory().createGNode(this, request, request.getPath(), name);
 
-        if ( request.hasFieldHints() )
-        {
-            listChildren( result, request, null );
-        }
-        else
-        {
+        if (request.hasFieldHints()) {
+            listChildren(result, request, null);
+        } else {
             // non hinted way, the "old" way
-            if ( "/".equals( request.getPath() ) )
-            {
+            if ("/".equals(request.getPath())) {
                 // get root groups and finish
                 Set<String> rootGroups = request.getIndexingContext().getRootGroups();
 
-                for ( String group : rootGroups )
-                {
-                    if ( group.length() > 0 )
-                    {
-                        result.getChildren().add(
-                            request.getFactory().createGNode( this, request, request.getPath() + group + "/", group ) );
+                for (String group : rootGroups) {
+                    if (group.length() > 0) {
+                        result.getChildren()
+                                .add(request.getFactory()
+                                        .createGNode(this, request, request.getPath() + group + "/", group));
                     }
                 }
-            }
-            else
-            {
+            } else {
                 Set<String> allGroups = request.getIndexingContext().getAllGroups();
 
-                listChildren( result, request, allGroups );
+                listChildren(result, request, allGroups);
             }
         }
 
@@ -134,33 +113,27 @@ public class DefaultIndexTreeView
      * @param allGroups
      * @throws IOException
      */
-    protected void listChildren( TreeNode root, TreeViewRequest request, Set<String> allGroups )
-        throws IOException
-    {
+    protected void listChildren(TreeNode root, TreeViewRequest request, Set<String> allGroups) throws IOException {
         String path = root.getPath();
 
         Map<String, TreeNode> folders = new HashMap<>();
 
-        String rootPartialGroupId = StringUtils.strip( root.getPath().replaceAll( "/", "." ), "." );
+        String rootPartialGroupId = StringUtils.strip(root.getPath().replaceAll("/", "."), ".");
 
-        folders.put( Type.G + ":" + rootPartialGroupId, root );
+        folders.put(Type.G + ":" + rootPartialGroupId, root);
 
-        try ( IteratorSearchResponse artifacts = getArtifacts( root, request ) )
-        {
-            for ( ArtifactInfo ai : artifacts )
-            {
+        try (IteratorSearchResponse artifacts = getArtifacts(root, request)) {
+            for (ArtifactInfo ai : artifacts) {
                 String versionKey = Type.V + ":" + ai.getArtifactId() + ":" + ai.getVersion();
 
-                TreeNode versionResource = folders.get( versionKey );
+                TreeNode versionResource = folders.get(versionKey);
 
-                if ( versionResource == null )
-                {
+                if (versionResource == null) {
                     String artifactKey = Type.A + ":" + ai.getArtifactId();
 
-                    TreeNode artifactResource = folders.get( artifactKey );
+                    TreeNode artifactResource = folders.get(artifactKey);
 
-                    if ( artifactResource == null )
-                    {
+                    if (artifactResource == null) {
                         TreeNode groupParentResource = root;
 
                         TreeNode groupResource;
@@ -168,44 +141,42 @@ public class DefaultIndexTreeView
                         // here comes the twist: we have to search for parent G node
                         String partialGroupId = null;
 
-                        String[] groupIdElems = ai.getGroupId().split( "\\." );
+                        String[] groupIdElems = ai.getGroupId().split("\\.");
 
-                        for ( String groupIdElem : groupIdElems )
-                        {
-                            if ( partialGroupId == null )
-                            {
+                        for (String groupIdElem : groupIdElems) {
+                            if (partialGroupId == null) {
                                 partialGroupId = groupIdElem;
-                            }
-                            else
-                            {
+                            } else {
                                 partialGroupId = partialGroupId + "." + groupIdElem;
                             }
 
                             String groupKey = Type.G + ":" + partialGroupId;
 
-                            groupResource = folders.get( groupKey );
+                            groupResource = folders.get(groupKey);
 
                             // it needs to be created only if not found (is null) and is _below_ groupParentResource
-                            if ( groupResource == null && groupParentResource.getPath().length() < getPathForAi( ai,
-                                    MAVEN.GROUP_ID ).length() )
-                            {
-                                String gNodeName = partialGroupId.lastIndexOf( '.' ) > -1 ? partialGroupId.substring(
-                                        partialGroupId.lastIndexOf( '.' ) + 1 ) : partialGroupId;
+                            if (groupResource == null
+                                    && groupParentResource.getPath().length()
+                                            < getPathForAi(ai, MAVEN.GROUP_ID).length()) {
+                                String gNodeName = partialGroupId.lastIndexOf('.') > -1
+                                        ? partialGroupId.substring(partialGroupId.lastIndexOf('.') + 1)
+                                        : partialGroupId;
 
-                                groupResource = request.getFactory().createGNode( this, request,
-                                        "/" + partialGroupId.replaceAll( "\\.", "/" ) + "/", gNodeName );
+                                groupResource = request.getFactory()
+                                        .createGNode(
+                                                this,
+                                                request,
+                                                "/" + partialGroupId.replaceAll("\\.", "/") + "/",
+                                                gNodeName);
 
-                                groupParentResource.getChildren().add( groupResource );
+                                groupParentResource.getChildren().add(groupResource);
 
-                                folders.put( groupKey, groupResource );
+                                folders.put(groupKey, groupResource);
 
                                 groupParentResource = groupResource;
-                            }
-                            else if ( groupResource != null )
-                            {
+                            } else if (groupResource != null) {
                                 // we found it as already existing, break if this is the node we want
-                                if ( groupResource.getPath().equals( getPathForAi( ai, MAVEN.GROUP_ID ) ) )
-                                {
+                                if (groupResource.getPath().equals(getPathForAi(ai, MAVEN.GROUP_ID))) {
                                     break;
                                 }
 
@@ -213,48 +184,42 @@ public class DefaultIndexTreeView
                             }
                         }
 
-                        artifactResource = request.getFactory().createANode( this, request, ai,
-                                getPathForAi( ai, MAVEN.ARTIFACT_ID ) );
+                        artifactResource = request.getFactory()
+                                .createANode(this, request, ai, getPathForAi(ai, MAVEN.ARTIFACT_ID));
 
-                        groupParentResource.getChildren().add( artifactResource );
+                        groupParentResource.getChildren().add(artifactResource);
 
-                        folders.put( artifactKey, artifactResource );
+                        folders.put(artifactKey, artifactResource);
                     }
 
-                    versionResource = request.getFactory().createVNode( this, request, ai,
-                            getPathForAi( ai, MAVEN.VERSION ) );
+                    versionResource =
+                            request.getFactory().createVNode(this, request, ai, getPathForAi(ai, MAVEN.VERSION));
 
-                    artifactResource.getChildren().add( versionResource );
+                    artifactResource.getChildren().add(versionResource);
 
-                    folders.put( versionKey, versionResource );
+                    folders.put(versionKey, versionResource);
                 }
 
-                String nodePath = getPathForAi( ai, null );
+                String nodePath = getPathForAi(ai, null);
 
-                versionResource.getChildren().add(
-                        request.getFactory().createArtifactNode( this, request, ai, nodePath ) );
+                versionResource.getChildren().add(request.getFactory().createArtifactNode(this, request, ai, nodePath));
             }
         }
 
-        if ( !request.hasFieldHints() )
-        {
-            Set<String> groups = getGroups( path, allGroups );
+        if (!request.hasFieldHints()) {
+            Set<String> groups = getGroups(path, allGroups);
 
-            for ( String group : groups )
-            {
-                TreeNode groupResource = root.findChildByPath( path + group + "/", Type.G );
+            for (String group : groups) {
+                TreeNode groupResource = root.findChildByPath(path + group + "/", Type.G);
 
-                if ( groupResource == null )
-                {
-                    groupResource = request.getFactory().createGNode( this, request, path + group + "/", group );
+                if (groupResource == null) {
+                    groupResource = request.getFactory().createGNode(this, request, path + group + "/", group);
 
-                    root.getChildren().add( groupResource );
-                }
-                else
-                {
+                    root.getChildren().add(groupResource);
+                } else {
                     // if the folder has been created as an artifact name,
                     // we need to check for possible nested groups as well
-                    listChildren( groupResource, request, allGroups );
+                    listChildren(groupResource, request, allGroups);
                 }
             }
         }
@@ -264,75 +229,65 @@ public class DefaultIndexTreeView
      * Builds a path out from ArtifactInfo. The field parameter controls "how deep" the path goes. Possible values are
      * MAVEN.GROUP_ID (builds a path from groupId only), MAVEN.ARTIFACT_ID (builds a path from groupId + artifactId),
      * MAVEN.VERSION (builds a path up to version) or anything else (including null) will build "full" artifact path.
-     * 
+     *
      * @param ai
      * @param field
      * @return path
      */
-    protected String getPathForAi( ArtifactInfo ai, Field field )
-    {
-        StringBuilder sb = new StringBuilder( "/" );
+    protected String getPathForAi(ArtifactInfo ai, Field field) {
+        StringBuilder sb = new StringBuilder("/");
 
-        sb.append( ai.getGroupId().replaceAll( "\\.", "/" ) );
+        sb.append(ai.getGroupId().replaceAll("\\.", "/"));
 
-        if ( MAVEN.GROUP_ID.equals( field ) )
-        {
+        if (MAVEN.GROUP_ID.equals(field)) {
             // stop here
-            return sb.append( "/" ).toString();
+            return sb.append("/").toString();
         }
 
-        sb.append( "/" ).append( ai.getArtifactId() );
+        sb.append("/").append(ai.getArtifactId());
 
-        if ( MAVEN.ARTIFACT_ID.equals( field ) )
-        {
+        if (MAVEN.ARTIFACT_ID.equals(field)) {
             // stop here
-            return sb.append( "/" ).toString();
+            return sb.append("/").toString();
         }
 
-        sb.append( "/" ).append( ai.getVersion() );
+        sb.append("/").append(ai.getVersion());
 
-        if ( MAVEN.VERSION.equals( field ) )
-        {
+        if (MAVEN.VERSION.equals(field)) {
             // stop here
-            return sb.append( "/" ).toString();
+            return sb.append("/").toString();
         }
 
-        sb.append( "/" ).append( ai.getArtifactId() ).append( "-" ).append( ai.getVersion() );
+        sb.append("/").append(ai.getArtifactId()).append("-").append(ai.getVersion());
 
-        if ( ai.getClassifier() != null )
-        {
-            sb.append( "-" ).append( ai.getClassifier() );
+        if (ai.getClassifier() != null) {
+            sb.append("-").append(ai.getClassifier());
         }
 
-        sb.append( "." ).append( ai.getFileExtension() == null ? "jar" : ai.getFileExtension() );
+        sb.append(".").append(ai.getFileExtension() == null ? "jar" : ai.getFileExtension());
 
         return sb.toString();
     }
 
-    protected Set<String> getGroups( String path, Set<String> allGroups )
-    {
-        path = path.substring( 1 ).replace( '/', '.' );
+    protected Set<String> getGroups(String path, Set<String> allGroups) {
+        path = path.substring(1).replace('/', '.');
 
         int n = path.length();
 
         Set<String> result = new HashSet<>();
 
-        for ( String group : allGroups )
-        {
-            if ( group.startsWith( path ) )
-            {
-                group = group.substring( n );
+        for (String group : allGroups) {
+            if (group.startsWith(path)) {
+                group = group.substring(n);
 
-                int nextDot = group.indexOf( '.' );
+                int nextDot = group.indexOf('.');
 
-                if ( nextDot > -1 )
-                {
-                    group = group.substring( 0, nextDot );
+                if (nextDot > -1) {
+                    group = group.substring(0, nextDot);
                 }
 
-                if ( group.length() > 0 )
-                {
-                    result.add( group );
+                if (group.length() > 0) {
+                    result.add(group);
                 }
             }
         }
@@ -340,12 +295,9 @@ public class DefaultIndexTreeView
         return result;
     }
 
-    protected IteratorSearchResponse getArtifacts( TreeNode root, TreeViewRequest request )
-        throws IOException
-    {
-        if ( request.hasFieldHints() )
-        {
-            return getHintedArtifacts( root, request );
+    protected IteratorSearchResponse getArtifacts(TreeNode root, TreeViewRequest request) throws IOException {
+        if (request.hasFieldHints()) {
+            return getHintedArtifacts(root, request);
         }
 
         String path = root.getPath();
@@ -362,9 +314,8 @@ public class DefaultIndexTreeView
         String wp;
 
         // remove last / from path
-        if ( path.endsWith( "/" ) )
-        {
-            path = path.substring( 0, path.length() - 1 );
+        if (path.endsWith("/")) {
+            path = path.substring(0, path.length() - 1);
         }
 
         // 1st try, let's consider path is a group
@@ -372,123 +323,98 @@ public class DefaultIndexTreeView
         // reset wp
         wp = path;
 
-        g = wp.substring( 1 ).replace( '/', '.' );
+        g = wp.substring(1).replace('/', '.');
 
-        result = getArtifactsByG( g, request );
+        result = getArtifactsByG(g, request);
 
-        if ( result.getTotalHitsCount() > 0 )
-        {
+        if (result.getTotalHitsCount() > 0) {
             return result;
-        }
-        else
-        {
+        } else {
             result.close();
         }
 
         // 2nd try, lets consider path a group + artifactId, we must ensure there is at least one / but not as root
 
-        if ( path.lastIndexOf( '/' ) > 0 )
-        {
+        if (path.lastIndexOf('/') > 0) {
             // reset wp
             wp = path;
 
-            a = wp.substring( wp.lastIndexOf( '/' ) + 1 );
+            a = wp.substring(wp.lastIndexOf('/') + 1);
 
-            g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
+            g = wp.substring(1, wp.lastIndexOf('/')).replace('/', '.');
 
-            result = getArtifactsByGA( g, a, request );
+            result = getArtifactsByGA(g, a, request);
 
-            if ( result.getTotalHitsCount() > 0 )
-            {
+            if (result.getTotalHitsCount() > 0) {
                 return result;
-            }
-            else
-            {
+            } else {
                 result.close();
             }
 
             // 3rd try, let's consider path a group + artifactId + version. There is no 100% way to detect this!
 
-            try
-            {
+            try {
                 // reset wp
                 wp = path;
 
-                v = wp.substring( wp.lastIndexOf( '/' ) + 1 );
+                v = wp.substring(wp.lastIndexOf('/') + 1);
 
-                wp = wp.substring( 0, wp.lastIndexOf( '/' ) );
+                wp = wp.substring(0, wp.lastIndexOf('/'));
 
-                a = wp.substring( wp.lastIndexOf( '/' ) + 1 );
+                a = wp.substring(wp.lastIndexOf('/') + 1);
 
-                g = wp.substring( 1, wp.lastIndexOf( '/' ) ).replace( '/', '.' );
+                g = wp.substring(1, wp.lastIndexOf('/')).replace('/', '.');
 
-                result = getArtifactsByGAV( g, a, v, request );
+                result = getArtifactsByGAV(g, a, v, request);
 
-                if ( result.getTotalHitsCount() > 0 )
-                {
+                if (result.getTotalHitsCount() > 0) {
                     return result;
-                }
-                else
-                {
+                } else {
                     result.close();
                 }
-            }
-            catch ( StringIndexOutOfBoundsException e )
-            {
+            } catch (StringIndexOutOfBoundsException e) {
                 // nothing
             }
         }
 
         // if we are here, no hits found
-        return IteratorSearchResponse.empty( result.getQuery() );
+        return IteratorSearchResponse.empty(result.getQuery());
     }
 
-    protected IteratorSearchResponse getHintedArtifacts( TreeNode root, TreeViewRequest request )
-        throws IOException
-    {
+    protected IteratorSearchResponse getHintedArtifacts(TreeNode root, TreeViewRequest request) throws IOException {
         // we know that hints are there: G hint, GA hint or GAV hint
-        if ( request.hasFieldHint( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID, MAVEN.VERSION ) )
-        {
-            return getArtifactsByGAV( request.getFieldHint( MAVEN.GROUP_ID ),
-                request.getFieldHint( MAVEN.ARTIFACT_ID ), request.getFieldHint( MAVEN.VERSION ), request );
-        }
-        else if ( request.hasFieldHint( MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID ) )
-        {
-            return getArtifactsByGA( request.getFieldHint( MAVEN.GROUP_ID ), request.getFieldHint( MAVEN.ARTIFACT_ID ),
-                request );
-        }
-        else if ( request.hasFieldHint( MAVEN.GROUP_ID ) )
-        {
-            return getArtifactsByG( request.getFieldHint( MAVEN.GROUP_ID ), request );
-        }
-        else
-        {
+        if (request.hasFieldHint(MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID, MAVEN.VERSION)) {
+            return getArtifactsByGAV(
+                    request.getFieldHint(MAVEN.GROUP_ID),
+                    request.getFieldHint(MAVEN.ARTIFACT_ID),
+                    request.getFieldHint(MAVEN.VERSION),
+                    request);
+        } else if (request.hasFieldHint(MAVEN.GROUP_ID, MAVEN.ARTIFACT_ID)) {
+            return getArtifactsByGA(
+                    request.getFieldHint(MAVEN.GROUP_ID), request.getFieldHint(MAVEN.ARTIFACT_ID), request);
+        } else if (request.hasFieldHint(MAVEN.GROUP_ID)) {
+            return getArtifactsByG(request.getFieldHint(MAVEN.GROUP_ID), request);
+        } else {
             // if we are here, no hits found or something horribly went wrong?
-            return IteratorSearchResponse.empty( null );
+            return IteratorSearchResponse.empty(null);
         }
     }
 
-    protected IteratorSearchResponse getArtifactsByG( String g, TreeViewRequest request )
-        throws IOException
-    {
-        return getArtifactsByGAVField( g, null, null, request );
+    protected IteratorSearchResponse getArtifactsByG(String g, TreeViewRequest request) throws IOException {
+        return getArtifactsByGAVField(g, null, null, request);
     }
 
-    protected IteratorSearchResponse getArtifactsByGA( String g, String a, TreeViewRequest request )
-        throws IOException
-    {
-        return getArtifactsByGAVField( g, a, null, request );
+    protected IteratorSearchResponse getArtifactsByGA(String g, String a, TreeViewRequest request) throws IOException {
+        return getArtifactsByGAVField(g, a, null, request);
     }
 
-    protected IteratorSearchResponse getArtifactsByGAV( String g, String a, String v, TreeViewRequest request )
-        throws IOException
-    {
-        return getArtifactsByGAVField( g, a, v, request );
+    protected IteratorSearchResponse getArtifactsByGAV(String g, String a, String v, TreeViewRequest request)
+            throws IOException {
+        return getArtifactsByGAVField(g, a, v, request);
     }
 
-    protected IteratorSearchResponse getArtifactsByGAVField( String g, String a, String v, TreeViewRequest request )
-        throws IOException
-    {
+    protected IteratorSearchResponse getArtifactsByGAVField(String g, String a, String v, TreeViewRequest request)
+            throws IOException {
         assert g != null;
 
         Query groupIdQ;
@@ -496,36 +422,31 @@ public class DefaultIndexTreeView
         Query versionQ = null;
 
         // minimum must have
-        groupIdQ = getIndexer().constructQuery( MAVEN.GROUP_ID, new SourcedSearchExpression( g ) );
+        groupIdQ = getIndexer().constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression(g));
 
-        if ( StringUtils.isNotBlank( a ) )
-        {
-            artifactIdQ = getIndexer().constructQuery( MAVEN.ARTIFACT_ID, new SourcedSearchExpression( a ) );
+        if (StringUtils.isNotBlank(a)) {
+            artifactIdQ = getIndexer().constructQuery(MAVEN.ARTIFACT_ID, new SourcedSearchExpression(a));
         }
 
-        if ( StringUtils.isNotBlank( v ) )
-        {
-            versionQ = getIndexer().constructQuery( MAVEN.VERSION, new SourcedSearchExpression( v ) );
+        if (StringUtils.isNotBlank(v)) {
+            versionQ = getIndexer().constructQuery(MAVEN.VERSION, new SourcedSearchExpression(v));
         }
 
-        BooleanQuery.Builder qb = new BooleanQuery.Builder()
-            .add( new BooleanClause( groupIdQ, BooleanClause.Occur.MUST ) );
+        BooleanQuery.Builder qb = new BooleanQuery.Builder().add(new BooleanClause(groupIdQ, BooleanClause.Occur.MUST));
 
-        if ( artifactIdQ != null )
-        {
-            qb.add( new BooleanClause( artifactIdQ, BooleanClause.Occur.MUST ) );
+        if (artifactIdQ != null) {
+            qb.add(new BooleanClause(artifactIdQ, BooleanClause.Occur.MUST));
         }
 
-        if ( versionQ != null )
-        {
-            qb.add( new BooleanClause( versionQ, BooleanClause.Occur.MUST ) );
+        if (versionQ != null) {
+            qb.add(new BooleanClause(versionQ, BooleanClause.Occur.MUST));
         }
 
-        IteratorSearchRequest searchRequest = new IteratorSearchRequest( qb.build(), request.getArtifactInfoFilter() );
+        IteratorSearchRequest searchRequest = new IteratorSearchRequest(qb.build(), request.getArtifactInfoFilter());
 
-        searchRequest.getContexts().add( request.getIndexingContext() );
+        searchRequest.getContexts().add(request.getIndexingContext());
 
-        IteratorSearchResponse result = getIndexer().searchIterator( searchRequest );
+        IteratorSearchResponse result = getIndexer().searchIterator(searchRequest);
 
         return result;
     }

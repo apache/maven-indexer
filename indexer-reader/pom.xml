@@ -30,11 +30,9 @@ under the License.
   <packaging>bundle</packaging>
 
   <name>Maven :: Indexer Reader</name>
-  <description>
-    Indexer Reader is a dependency-less library that is able to read published (remote) index with incremental update
+  <description>Indexer Reader is a dependency-less library that is able to read published (remote) index with incremental update
     support, making usable to integrate published Maven Indexes into any engine without depending on
-    maven-indexer-core and its transitive dependencies.
-  </description>
+    maven-indexer-core and its transitive dependencies.</description>
 
   <dependencies>
     <!-- Test -->

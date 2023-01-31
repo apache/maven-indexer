@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,13 +39,11 @@ import org.eclipse.aether.version.VersionScheme;
 /**
  * ArtifactInfo holds the values known about an repository artifact. This is a simple Value Object kind of stuff.
  * Phasing out.
- * 
+ *
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
-public class ArtifactInfo
-    extends ArtifactInfoRecord
-{
+public class ArtifactInfo extends ArtifactInfoRecord {
     private static final long serialVersionUID = 6028843453477511105L;
 
     // --
@@ -140,7 +137,6 @@ public class ArtifactInfo
      */
     public static final String PLUGIN_GOALS = MavenPluginArtifactInfoIndexCreator.FLD_PLUGIN_GOALS.getKey();
 
-
     /**
      * @since 1.4.2
      */
@@ -169,6 +165,7 @@ public class ArtifactInfo
      */
     public static final String BUNDLE_REQUIRE_CAPABILITY =
             OsgiArtifactIndexCreator.FLD_BUNDLE_REQUIRE_CAPABILITY.getKey();
+
     public static final Comparator<ArtifactInfo> VERSION_COMPARATOR = new VersionComparator();
 
     public static final Comparator<ArtifactInfo> REPOSITORY_VERSION_COMPARATOR = new RepositoryVersionComparator();
@@ -294,7 +291,6 @@ public class ArtifactInfo
      */
     private String bundleRequireBundle;
 
-
     /**
      * contains osgi metadata Provide-Capability if available
      *
@@ -320,7 +316,6 @@ public class ArtifactInfo
      */
     private String bundleFragmentHost;
 
-
     /**
      * bundle required execution environment
      *
@@ -334,14 +329,12 @@ public class ArtifactInfo
 
     private final transient VersionScheme versionScheme;
 
-    public ArtifactInfo()
-    {
+    public ArtifactInfo() {
         versionScheme = new GenericVersionScheme();
     }
 
-    public ArtifactInfo( String repository, String groupId, String artifactId, String version, String classifier,
-                         String extension )
-    {
+    public ArtifactInfo(
+            String repository, String groupId, String artifactId, String version, String classifier, String extension) {
         this();
         this.repository = repository;
         this.groupId = groupId;
@@ -351,16 +344,11 @@ public class ArtifactInfo
         this.fileExtension = extension;
     }
 
-    public Version getArtifactVersion()
-    {
-        if ( artifactVersion == null )
-        {
-            try
-            {
-                artifactVersion = versionScheme.parseVersion( version );
-            }
-            catch ( InvalidVersionSpecificationException e )
-            {
+    public Version getArtifactVersion() {
+        if (artifactVersion == null) {
+            try {
+                artifactVersion = versionScheme.parseVersion(version);
+            } catch (InvalidVersionSpecificationException e) {
                 // will not happen, only with version ranges but we should not have those
                 // we handle POM versions here, not dependency versions
             }
@@ -369,90 +357,84 @@ public class ArtifactInfo
         return artifactVersion;
     }
 
-    public float getLuceneScore()
-    {
+    public float getLuceneScore() {
         return luceneScore;
     }
 
-    public void setLuceneScore( float score )
-    {
+    public void setLuceneScore(float score) {
         this.luceneScore = score;
     }
 
-    public String getUinfo()
-    {
-        return groupId + FS + artifactId + FS + version + FS + nvl( classifier ) + FS + fileExtension;
+    public String getUinfo() {
+        return groupId + FS + artifactId + FS + version + FS + nvl(classifier) + FS + fileExtension;
         // extension is stored in the packaging field when classifier is not used
         // .append( StringUtils.isEmpty( classifier ) || StringUtils.isEmpty( packaging ) ? "" : FS + packaging ) //
     }
 
-    public String getRootGroup()
-    {
-        int n = groupId.indexOf( '.' );
-        if ( n > -1 )
-        {
-            return groupId.substring( 0, n );
+    public String getRootGroup() {
+        int n = groupId.indexOf('.');
+        if (n > -1) {
+            return groupId.substring(0, n);
         }
         return groupId;
     }
 
-    public Gav calculateGav()
-    {
-        return new Gav( groupId, artifactId, version, classifier, fileExtension, null, // snapshotBuildNumber
-            null, // snapshotTimeStamp
-            fileName, // name
-            false, // hash
-            null, // hashType
-            false, // signature
-            null ); // signatureType
+    public Gav calculateGav() {
+        return new Gav(
+                groupId,
+                artifactId,
+                version,
+                classifier,
+                fileExtension,
+                null, // snapshotBuildNumber
+                null, // snapshotTimeStamp
+                fileName, // name
+                false, // hash
+                null, // hashType
+                false, // signature
+                null); // signatureType
     }
 
-    public Map<String, String> getAttributes()
-    {
+    public Map<String, String> getAttributes() {
         return attributes;
     }
 
-    public List<MatchHighlight> getMatchHighlights()
-    {
+    public List<MatchHighlight> getMatchHighlights() {
         return matchHighlights;
     }
 
     @Override
-    public String toString()
-    {
-        final StringBuilder result = new StringBuilder( getUinfo() );
+    public String toString() {
+        final StringBuilder result = new StringBuilder(getUinfo());
         String packaging = getPackaging();
-        if ( packaging != null && !getPackaging().isEmpty() )
-        {
-            result.append( "[" ).append( getPackaging() ).append( "]" );
+        if (packaging != null && !getPackaging().isEmpty()) {
+            result.append("[").append(getPackaging()).append("]");
         }
         return result.toString();
     }
 
     private static final List<Field> DEFAULT_FIELDS = new ArrayList<>();
-    static
-    {
-        DEFAULT_FIELDS.add( MAVEN.GROUP_ID );
-        DEFAULT_FIELDS.add( MAVEN.ARTIFACT_ID );
-        DEFAULT_FIELDS.add( MAVEN.VERSION );
-        DEFAULT_FIELDS.add( MAVEN.PACKAGING );
-        DEFAULT_FIELDS.add( MAVEN.CLASSIFIER );
-        DEFAULT_FIELDS.add( MAVEN.SHA1 );
-        DEFAULT_FIELDS.add( MAVEN.NAME );
-        DEFAULT_FIELDS.add( MAVEN.DESCRIPTION );
-        DEFAULT_FIELDS.add( MAVEN.CLASSNAMES );
-        DEFAULT_FIELDS.add( MAVEN.REPOSITORY_ID );
+
+    static {
+        DEFAULT_FIELDS.add(MAVEN.GROUP_ID);
+        DEFAULT_FIELDS.add(MAVEN.ARTIFACT_ID);
+        DEFAULT_FIELDS.add(MAVEN.VERSION);
+        DEFAULT_FIELDS.add(MAVEN.PACKAGING);
+        DEFAULT_FIELDS.add(MAVEN.CLASSIFIER);
+        DEFAULT_FIELDS.add(MAVEN.SHA1);
+        DEFAULT_FIELDS.add(MAVEN.NAME);
+        DEFAULT_FIELDS.add(MAVEN.DESCRIPTION);
+        DEFAULT_FIELDS.add(MAVEN.CLASSNAMES);
+        DEFAULT_FIELDS.add(MAVEN.REPOSITORY_ID);
     }
 
     private List<Field> fields;
 
-    public Collection<Field> getFields()
-    {
-        if ( fields == null )
-        {
-            fields = new ArrayList<>( DEFAULT_FIELDS.size() );
+    public Collection<Field> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<>(DEFAULT_FIELDS.size());
 
-            fields.addAll( DEFAULT_FIELDS );
+            fields.addAll(DEFAULT_FIELDS);
         }
 
         return fields;
@@ -460,50 +442,30 @@ public class ArtifactInfo
 
     /**
      * This method will disappear, once we drop ArtifactInfo.
-     * 
+     *
      * @param field
      * @return
      */
-    public String getFieldValue( Field field )
-    {
-        if ( MAVEN.GROUP_ID.equals( field ) )
-        {
+    public String getFieldValue(Field field) {
+        if (MAVEN.GROUP_ID.equals(field)) {
             return groupId;
-        }
-        else if ( MAVEN.ARTIFACT_ID.equals( field ) )
-        {
+        } else if (MAVEN.ARTIFACT_ID.equals(field)) {
             return artifactId;
-        }
-        else if ( MAVEN.VERSION.equals( field ) )
-        {
+        } else if (MAVEN.VERSION.equals(field)) {
             return version;
-        }
-        else if ( MAVEN.PACKAGING.equals( field ) )
-        {
+        } else if (MAVEN.PACKAGING.equals(field)) {
             return packaging;
-        }
-        else if ( MAVEN.CLASSIFIER.equals( field ) )
-        {
+        } else if (MAVEN.CLASSIFIER.equals(field)) {
             return classifier;
-        }
-        else if ( MAVEN.SHA1.equals( field ) )
-        {
+        } else if (MAVEN.SHA1.equals(field)) {
             return sha1;
-        }
-        else if ( MAVEN.NAME.equals( field ) )
-        {
+        } else if (MAVEN.NAME.equals(field)) {
             return name;
-        }
-        else if ( MAVEN.DESCRIPTION.equals( field ) )
-        {
+        } else if (MAVEN.DESCRIPTION.equals(field)) {
             return description;
-        }
-        else if ( MAVEN.CLASSNAMES.equals( field ) )
-        {
+        } else if (MAVEN.CLASSNAMES.equals(field)) {
             return classNames;
-        }
-        else if ( MAVEN.REPOSITORY_ID.equals( field ) )
-        {
+        } else if (MAVEN.REPOSITORY_ID.equals(field)) {
             return repository;
         }
 
@@ -511,46 +473,26 @@ public class ArtifactInfo
         return null;
     }
 
-    public ArtifactInfo setFieldValue( Field field, String value )
-    {
-        if ( MAVEN.GROUP_ID.equals( field ) )
-        {
+    public ArtifactInfo setFieldValue(Field field, String value) {
+        if (MAVEN.GROUP_ID.equals(field)) {
             groupId = value;
-        }
-        else if ( MAVEN.ARTIFACT_ID.equals( field ) )
-        {
+        } else if (MAVEN.ARTIFACT_ID.equals(field)) {
             artifactId = value;
-        }
-        else if ( MAVEN.VERSION.equals( field ) )
-        {
+        } else if (MAVEN.VERSION.equals(field)) {
             version = value;
-        }
-        else if ( MAVEN.PACKAGING.equals( field ) )
-        {
+        } else if (MAVEN.PACKAGING.equals(field)) {
             packaging = value;
-        }
-        else if ( MAVEN.CLASSIFIER.equals( field ) )
-        {
+        } else if (MAVEN.CLASSIFIER.equals(field)) {
             classifier = value;
-        }
-        else if ( MAVEN.SHA1.equals( field ) )
-        {
+        } else if (MAVEN.SHA1.equals(field)) {
             sha1 = value;
-        }
-        else if ( MAVEN.NAME.equals( field ) )
-        {
+        } else if (MAVEN.NAME.equals(field)) {
             name = value;
-        }
-        else if ( MAVEN.DESCRIPTION.equals( field ) )
-        {
+        } else if (MAVEN.DESCRIPTION.equals(field)) {
             description = value;
-        }
-        else if ( MAVEN.CLASSNAMES.equals( field ) )
-        {
+        } else if (MAVEN.CLASSNAMES.equals(field)) {
             classNames = value;
-        }
-        else if ( MAVEN.REPOSITORY_ID.equals( field ) )
-        {
+        } else if (MAVEN.REPOSITORY_ID.equals(field)) {
             repository = value;
         }
 
@@ -562,77 +504,60 @@ public class ArtifactInfo
     // Utils
     // ----------------------------------------------------------------------------
 
-    public static String nvl( String v )
-    {
+    public static String nvl(String v) {
         return v == null ? NA : v;
     }
 
-    public static String renvl( String v )
-    {
-        return NA.equals( v ) ? null : v;
+    public static String renvl(String v) {
+        return NA.equals(v) ? null : v;
     }
 
-    public static String lst2str( Collection<String> list )
-    {
+    public static String lst2str(Collection<String> list) {
         StringBuilder sb = new StringBuilder();
-        for ( String s : list )
-        {
-            sb.append( s ).append( ArtifactInfo.FS );
+        for (String s : list) {
+            sb.append(s).append(ArtifactInfo.FS);
         }
-        return sb.length() == 0 ? sb.toString() : sb.substring( 0, sb.length() - 1 );
+        return sb.length() == 0 ? sb.toString() : sb.substring(0, sb.length() - 1);
     }
 
-    public static List<String> str2lst( String str )
-    {
-        return Arrays.asList( ArtifactInfo.FS_PATTERN.split( str ) );
+    public static List<String> str2lst(String str) {
+        return Arrays.asList(ArtifactInfo.FS_PATTERN.split(str));
     }
 
     /**
      * A version comparator
      */
-    static class VersionComparator
-        implements Comparator<ArtifactInfo>
-    {
-        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
-        {
-            int n = f1.groupId.compareTo( f2.groupId );
-            if ( n != 0 )
-            {
+    static class VersionComparator implements Comparator<ArtifactInfo> {
+        public int compare(final ArtifactInfo f1, final ArtifactInfo f2) {
+            int n = f1.groupId.compareTo(f2.groupId);
+            if (n != 0) {
                 return n;
             }
 
-            n = f1.artifactId.compareTo( f2.artifactId );
-            if ( n != 0 )
-            {
+            n = f1.artifactId.compareTo(f2.artifactId);
+            if (n != 0) {
                 return n;
             }
 
-            n = -f1.getArtifactVersion().compareTo( f2.getArtifactVersion() );
-            if ( n != 0 )
-            {
+            n = -f1.getArtifactVersion().compareTo(f2.getArtifactVersion());
+            if (n != 0) {
                 return n;
             }
 
             {
                 final String c1 = f1.classifier;
                 final String c2 = f2.classifier;
-                if ( c1 == null )
-                {
-                    if ( c2 != null )
-                    {
+                if (c1 == null) {
+                    if (c2 != null) {
                         return -1;
                     }
-                }
-                else
-                {
-                    if ( c2 == null )
-                    {
+                } else {
+                    if (c2 == null) {
                         return 1;
                     }
 
-                    n = c1.compareTo( c2 );
-                    if ( n != 0 )
-                    {
+                    n = c1.compareTo(c2);
+                    if (n != 0) {
                         return n;
                     }
                 }
@@ -641,13 +566,10 @@ public class ArtifactInfo
             {
                 final String p1 = f1.packaging;
                 final String p2 = f2.packaging;
-                if ( p1 == null )
-                {
+                if (p1 == null) {
                     return p2 == null ? 0 : -1;
-                }
-                else
-                {
-                    return p2 == null ? 1 : p1.compareTo( p2 );
+                } else {
+                    return p2 == null ? 1 : p1.compareTo(p2);
                 }
             }
         }
@@ -656,452 +578,358 @@ public class ArtifactInfo
     /**
      * A repository and version comparator
      */
-    static class RepositoryVersionComparator
-        extends VersionComparator
-    {
+    static class RepositoryVersionComparator extends VersionComparator {
         @Override
-        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
-        {
-            final int n = super.compare( f1, f2 );
-            if ( n != 0 )
-            {
+        public int compare(final ArtifactInfo f1, final ArtifactInfo f2) {
+            final int n = super.compare(f1, f2);
+            if (n != 0) {
                 return n;
             }
 
             final String r1 = f1.repository;
             final String r2 = f2.repository;
-            if ( r1 == null )
-            {
+            if (r1 == null) {
                 return r2 == null ? 0 : -1;
-            }
-            else
-            {
-                return r2 == null ? 1 : r1.compareTo( r2 );
+            } else {
+                return r2 == null ? 1 : r1.compareTo(r2);
             }
         }
     }
-    
+
     /**
      * A context and version comparator
      */
-    static class ContextVersionComparator
-        extends VersionComparator
-    {
+    static class ContextVersionComparator extends VersionComparator {
         @Override
-        public int compare( final ArtifactInfo f1, final ArtifactInfo f2 )
-        {
-            final int n = super.compare( f1, f2 );
-            if ( n != 0 )
-            {
+        public int compare(final ArtifactInfo f1, final ArtifactInfo f2) {
+            final int n = super.compare(f1, f2);
+            if (n != 0) {
                 return n;
             }
 
             final String r1 = f1.context;
             final String r2 = f2.context;
-            if ( r1 == null )
-            {
+            if (r1 == null) {
                 return r2 == null ? 0 : -1;
-            }
-            else
-            {
-                return r2 == null ? 1 : r1.compareTo( r2 );
+            } else {
+                return r2 == null ? 1 : r1.compareTo(r2);
             }
         }
     }
 
-    public String getFileName( )
-    {
+    public String getFileName() {
         return fileName;
     }
 
-    public void setFileName( String fileName )
-    {
+    public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-    public String getFileExtension( )
-    {
+    public String getFileExtension() {
         return fileExtension;
     }
 
-    public void setFileExtension( String fileExtension )
-    {
+    public void setFileExtension(String fileExtension) {
         this.fileExtension = fileExtension;
     }
 
-    public String getGroupId( )
-    {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
-    public String getArtifactId( )
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
-    public String getVersion( )
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public void setArtifactVersion( Version artifactVersion )
-    {
+    public void setArtifactVersion(Version artifactVersion) {
         this.artifactVersion = artifactVersion;
     }
 
-    public String getClassifier( )
-    {
+    public String getClassifier() {
         return classifier;
     }
 
-    public void setClassifier( String classifier )
-    {
+    public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
-    public String getPackaging( )
-    {
+    public String getPackaging() {
         return packaging;
     }
 
-    public void setPackaging( String packaging )
-    {
+    public void setPackaging(String packaging) {
         this.packaging = packaging;
     }
 
-    public String getName( )
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName( String name )
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public String getDescription( )
-    {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription( String description )
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public long getLastModified( )
-    {
+    public long getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified( long lastModified )
-    {
+    public void setLastModified(long lastModified) {
         this.lastModified = lastModified;
     }
 
-    public long getSize( )
-    {
+    public long getSize() {
         return size;
     }
 
-    public void setSize( long size )
-    {
+    public void setSize(long size) {
         this.size = size;
     }
 
-    public String getMd5( )
-    {
+    public String getMd5() {
         return md5;
     }
 
-    public void setMd5( String md5 )
-    {
+    public void setMd5(String md5) {
         this.md5 = md5;
     }
 
-    public String getSha1( )
-    {
+    public String getSha1() {
         return sha1;
     }
 
-    public void setSha1( String sha1 )
-    {
+    public void setSha1(String sha1) {
         this.sha1 = sha1;
     }
 
-    public ArtifactAvailability getSourcesExists( )
-    {
+    public ArtifactAvailability getSourcesExists() {
         return sourcesExists;
     }
 
-    public void setSourcesExists( ArtifactAvailability sourcesExists )
-    {
+    public void setSourcesExists(ArtifactAvailability sourcesExists) {
         this.sourcesExists = sourcesExists;
     }
 
-    public ArtifactAvailability getJavadocExists( )
-    {
+    public ArtifactAvailability getJavadocExists() {
         return javadocExists;
     }
 
-    public void setJavadocExists( ArtifactAvailability javadocExists )
-    {
+    public void setJavadocExists(ArtifactAvailability javadocExists) {
         this.javadocExists = javadocExists;
     }
 
-    public ArtifactAvailability getSignatureExists( )
-    {
+    public ArtifactAvailability getSignatureExists() {
         return signatureExists;
     }
 
-    public void setSignatureExists( ArtifactAvailability signatureExists )
-    {
+    public void setSignatureExists(ArtifactAvailability signatureExists) {
         this.signatureExists = signatureExists;
     }
 
-    public String getClassNames( )
-    {
+    public String getClassNames() {
         return classNames;
     }
 
-    public void setClassNames( String classNames )
-    {
+    public void setClassNames(String classNames) {
         this.classNames = classNames;
     }
 
-    public String getRepository( )
-    {
+    public String getRepository() {
         return repository;
     }
 
-    public void setRepository( String repository )
-    {
+    public void setRepository(String repository) {
         this.repository = repository;
     }
 
-    public String getPath( )
-    {
+    public String getPath() {
         return path;
     }
 
-    public void setPath( String path )
-    {
+    public void setPath(String path) {
         this.path = path;
     }
 
-    public String getRemoteUrl( )
-    {
+    public String getRemoteUrl() {
         return remoteUrl;
     }
 
-    public void setRemoteUrl( String remoteUrl )
-    {
+    public void setRemoteUrl(String remoteUrl) {
         this.remoteUrl = remoteUrl;
     }
 
-    public String getContext( )
-    {
+    public String getContext() {
         return context;
     }
 
-    public void setContext( String context )
-    {
+    public void setContext(String context) {
         this.context = context;
     }
 
-    public String getPrefix( )
-    {
+    public String getPrefix() {
         return prefix;
     }
 
-    public void setPrefix( String prefix )
-    {
+    public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
 
-    public List<String> getGoals( )
-    {
+    public List<String> getGoals() {
         return goals;
     }
 
-    public void setGoals( List<String> goals )
-    {
+    public void setGoals(List<String> goals) {
         this.goals = goals;
     }
 
-    public String getBundleVersion( )
-    {
+    public String getBundleVersion() {
         return bundleVersion;
     }
 
-    public void setBundleVersion( String bundleVersion )
-    {
+    public void setBundleVersion(String bundleVersion) {
         this.bundleVersion = bundleVersion;
     }
 
-    public String getBundleSymbolicName( )
-    {
+    public String getBundleSymbolicName() {
         return bundleSymbolicName;
     }
 
-    public void setBundleSymbolicName( String bundleSymbolicName )
-    {
+    public void setBundleSymbolicName(String bundleSymbolicName) {
         this.bundleSymbolicName = bundleSymbolicName;
     }
 
-    public String getBundleExportPackage( )
-    {
+    public String getBundleExportPackage() {
         return bundleExportPackage;
     }
 
-    public void setBundleExportPackage( String bundleExportPackage )
-    {
+    public void setBundleExportPackage(String bundleExportPackage) {
         this.bundleExportPackage = bundleExportPackage;
     }
 
-    public String getBundleExportService( )
-    {
+    public String getBundleExportService() {
         return bundleExportService;
     }
 
-    public void setBundleExportService( String bundleExportService )
-    {
+    public void setBundleExportService(String bundleExportService) {
         this.bundleExportService = bundleExportService;
     }
 
-    public String getBundleDescription( )
-    {
+    public String getBundleDescription() {
         return bundleDescription;
     }
 
-    public void setBundleDescription( String bundleDescription )
-    {
+    public void setBundleDescription(String bundleDescription) {
         this.bundleDescription = bundleDescription;
     }
 
-    public String getBundleName( )
-    {
+    public String getBundleName() {
         return bundleName;
     }
 
-    public void setBundleName( String bundleName )
-    {
+    public void setBundleName(String bundleName) {
         this.bundleName = bundleName;
     }
 
-    public String getBundleLicense( )
-    {
+    public String getBundleLicense() {
         return bundleLicense;
     }
 
-    public void setBundleLicense( String bundleLicense )
-    {
+    public void setBundleLicense(String bundleLicense) {
         this.bundleLicense = bundleLicense;
     }
 
-    public String getBundleDocUrl( )
-    {
+    public String getBundleDocUrl() {
         return bundleDocUrl;
     }
 
-    public void setBundleDocUrl( String bundleDocUrl )
-    {
+    public void setBundleDocUrl(String bundleDocUrl) {
         this.bundleDocUrl = bundleDocUrl;
     }
 
-    public String getBundleImportPackage( )
-    {
+    public String getBundleImportPackage() {
         return bundleImportPackage;
     }
 
-    public void setBundleImportPackage( String bundleImportPackage )
-    {
+    public void setBundleImportPackage(String bundleImportPackage) {
         this.bundleImportPackage = bundleImportPackage;
     }
 
-    public String getBundleRequireBundle( )
-    {
+    public String getBundleRequireBundle() {
         return bundleRequireBundle;
     }
 
-    public void setBundleRequireBundle( String bundleRequireBundle )
-    {
+    public void setBundleRequireBundle(String bundleRequireBundle) {
         this.bundleRequireBundle = bundleRequireBundle;
     }
 
-    public VersionScheme getVersionScheme( )
-    {
+    public VersionScheme getVersionScheme() {
         return versionScheme;
     }
 
-    public void setFields( List<Field> fields )
-    {
+    public void setFields(List<Field> fields) {
         this.fields = fields;
     }
 
-    public String getBundleProvideCapability()
-    {
+    public String getBundleProvideCapability() {
         return bundleProvideCapability;
     }
 
-    public void setBundleProvideCapability( String bundleProvideCapability )
-    {
+    public void setBundleProvideCapability(String bundleProvideCapability) {
         this.bundleProvideCapability = bundleProvideCapability;
     }
 
-    public String getBundleRequireCapability()
-    {
+    public String getBundleRequireCapability() {
         return bundleRequireCapability;
     }
 
-    public void setBundleRequireCapability( String bundleRequireCapability )
-    {
+    public void setBundleRequireCapability(String bundleRequireCapability) {
         this.bundleRequireCapability = bundleRequireCapability;
     }
 
-    public String getSha256()
-    {
+    public String getSha256() {
         return sha256;
     }
 
-    public void setSha256( String sha256 )
-    {
+    public void setSha256(String sha256) {
         this.sha256 = sha256;
     }
 
-    public String getBundleFragmentHost()
-    {
+    public String getBundleFragmentHost() {
         return bundleFragmentHost;
     }
 
-    public void setBundleFragmentHost( String bundleFragmentHost )
-    {
+    public void setBundleFragmentHost(String bundleFragmentHost) {
         this.bundleFragmentHost = bundleFragmentHost;
     }
 
-    public String getBundleRequiredExecutionEnvironment()
-    {
+    public String getBundleRequiredExecutionEnvironment() {
         return bundleRequiredExecutionEnvironment;
     }
 
-    public void setBundleRequiredExecutionEnvironment( String bundleRequiredExecutionEnvironment )
-    {
+    public void setBundleRequiredExecutionEnvironment(String bundleRequiredExecutionEnvironment) {
         this.bundleRequiredExecutionEnvironment = bundleRequiredExecutionEnvironment;
     }
-
 }

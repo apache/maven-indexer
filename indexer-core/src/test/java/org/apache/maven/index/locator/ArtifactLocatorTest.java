@@ -1,5 +1,3 @@
-package org.apache.maven.index.locator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.locator;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.locator;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.locator;
 
 import java.io.File;
 
@@ -32,56 +31,50 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class ArtifactLocatorTest
-    extends AbstractNexusIndexerTest
-{
-    protected File repo = new File( getBasedir(), "src/test/repo" );
+public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
+    protected File repo = new File(getBasedir(), "src/test/repo");
 
     private ArtifactContextProducer artifactContextProducer;
 
     private ArtifactPackagingMapper artifactPackagingMapper;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
-        context = nexusIndexer.addIndexingContext( "al-test", "al-test", repo, indexDir, null, null, FULL_CREATORS );
+    protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
+        context = nexusIndexer.addIndexingContext("al-test", "al-test", repo, indexDir, null, null, FULL_CREATORS);
 
-        nexusIndexer.scan( context );
+        nexusIndexer.scan(context);
 
-        artifactContextProducer = lookup( ArtifactContextProducer.class );
+        artifactContextProducer = lookup(ArtifactContextProducer.class);
 
-        artifactPackagingMapper = lookup( ArtifactPackagingMapper.class );
+        artifactPackagingMapper = lookup(ArtifactPackagingMapper.class);
     }
 
     @Test
-    public void testContextProducer()
-    {
+    public void testContextProducer() {
         final File pomFile =
-            getTestFile( "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+                getTestFile("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
-        final ArtifactContext ac = artifactContextProducer.getArtifactContext( context, pomFile );
+        final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile);
 
-        assertTrue( "Artifact file was not found!", ac.getArtifact() != null );
-        assertTrue( "Artifact file was not found!", ac.getArtifact().exists() );
+        assertTrue("Artifact file was not found!", ac.getArtifact() != null);
+        assertTrue("Artifact file was not found!", ac.getArtifact().exists());
     }
 
     @Test
-    public void testArtifactLocator()
-    {
-        ArtifactLocator al = new ArtifactLocator( artifactPackagingMapper );
+    public void testArtifactLocator() {
+        ArtifactLocator al = new ArtifactLocator(artifactPackagingMapper);
 
         final M2GavCalculator gavCalculator = new M2GavCalculator();
 
         final File pomFile =
-            getTestFile( "src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+                getTestFile("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
         final Gav gav =
-            gavCalculator.pathToGav( "/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom" );
+                gavCalculator.pathToGav("/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
-        File artifactFile = al.locate( pomFile, gavCalculator, gav );
+        File artifactFile = al.locate(pomFile, gavCalculator, gav);
 
-        assertTrue( "Artifact file was not located!", artifactFile != null );
-        assertTrue( "Artifact file was not located!", artifactFile.exists() );
+        assertTrue("Artifact file was not located!", artifactFile != null);
+        assertTrue("Artifact file was not located!", artifactFile.exists());
     }
 }

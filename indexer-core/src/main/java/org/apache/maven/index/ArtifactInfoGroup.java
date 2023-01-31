@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -25,46 +24,38 @@ import java.util.TreeSet;
 
 /**
  * An object that holds grouped sets of {@link ArtifactInfo} in case of grouped search.
- * 
+ *
  * @author Tamas Cservenak
  */
-public class ArtifactInfoGroup
-{
+public class ArtifactInfoGroup {
     private String groupKey;
 
     private final Set<ArtifactInfo> artifactInfos;
 
-    public ArtifactInfoGroup( String groupKey )
-    {
-        this( groupKey, ArtifactInfo.VERSION_COMPARATOR );
+    public ArtifactInfoGroup(String groupKey) {
+        this(groupKey, ArtifactInfo.VERSION_COMPARATOR);
     }
 
-    public ArtifactInfoGroup( String groupKey, Comparator<ArtifactInfo> comparator )
-    {
+    public ArtifactInfoGroup(String groupKey, Comparator<ArtifactInfo> comparator) {
         this.groupKey = groupKey;
 
-        this.artifactInfos = new TreeSet<>( comparator );
+        this.artifactInfos = new TreeSet<>(comparator);
     }
 
-    public String getGroupKey()
-    {
+    public String getGroupKey() {
         return groupKey;
     }
 
-    public boolean addArtifactInfo( ArtifactInfo artifactInfo )
-    {
-        return artifactInfos.add( artifactInfo );
+    public boolean addArtifactInfo(ArtifactInfo artifactInfo) {
+        return artifactInfos.add(artifactInfo);
     }
 
-    public Set<ArtifactInfo> getArtifactInfos()
-    {
+    public Set<ArtifactInfo> getArtifactInfos() {
         return artifactInfos;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return groupKey + "=" + artifactInfos;
     }
-
 }

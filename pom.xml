@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>37</version>
+    <version>39</version>
     <relativePath />
   </parent>
 
@@ -33,10 +33,8 @@ under the License.
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
-  <description>
-    Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
-    of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.
-  </description>
+  <description>Apache Maven Indexer (former Sonatype Nexus Indexer) is the defacto standard for producing indexes
+    of Maven repositories. The Indexes are produced and consumed by all major tools in the ecosystem.</description>
 
   <url>https://maven.apache.org/maven-indexer/</url>
 
@@ -61,11 +59,21 @@ under the License.
     </contributor>
   </contributors>
 
+  <modules>
+    <module>indexer-core</module>
+    <module>indexer-cli</module>
+    <module>indexer-reader</module>
+    <module>indexer-examples</module>
+    <module>search-api</module>
+    <module>search-backend-indexer</module>
+    <module>search-backend-smo</module>
+  </modules>
+
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</developerConnection>
-    <url>https://github.com/apache/maven-indexer/tree/${project.scm.tag}</url>
     <tag>master</tag>
+    <url>https://github.com/apache/maven-indexer/tree/${project.scm.tag}</url>
   </scm>
 
   <issueManagement>
@@ -264,50 +272,25 @@ under the License.
     </dependencies>
   </dependencyManagement>
 
-  <modules>
-    <module>indexer-core</module>
-    <module>indexer-cli</module>
-    <module>indexer-reader</module>
-    <module>indexer-examples</module>
-    <module>search-api</module>
-    <module>search-backend-indexer</module>
-    <module>search-backend-smo</module>
-  </modules>
-
   <build>
     <pluginManagement>
       <plugins>
-        <plugin> <!-- remove once parent POM updated -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-        <plugin> <!-- remove once parent POM updated -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <plugin> <!-- remove once parent POM updated -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-shade-plugin</artifactId>
-          <version>3.4.1</version>
-        </plugin>
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
           <version>2.5.0</version>
-          <executions>
-            <execution>
-              <id>modernizer</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>modernizer</goal>
-              </goals>
-            </execution>
-          </executions>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
           </configuration>
+          <executions>
+            <execution>
+              <id>modernizer</id>
+              <goals>
+                <goal>modernizer</goal>
+              </goals>
+              <phase>verify</phase>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -315,23 +298,6 @@ under the License.
           <configuration>
             <release>${javaVersion}</release>
           </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>3.2.0</version>
-          <dependencies>
-            <dependency>
-              <groupId>com.puppycrawl.tools</groupId>
-              <artifactId>checkstyle</artifactId>
-              <version>10.4</version>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven.shared</groupId>
-              <artifactId>maven-shared-resources</artifactId>
-              <version>4</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -375,10 +341,10 @@ under the License.
         <executions>
           <execution>
             <id>rat-check</id>
-            <phase>validate</phase>
             <goals>
               <goal>check</goal>
             </goals>
+            <phase>validate</phase>
             <configuration>
               <excludes combine.children="append">
                 <exclude>*.md</exclude>
@@ -435,10 +401,10 @@ under the License.
         </configuration>
         <reportSets>
           <reportSet>
-            <inherited>false</inherited>
             <reports>
               <report>aggregate</report>
             </reports>
+            <inherited>false</inherited>
           </reportSet>
         </reportSets>
       </plugin>

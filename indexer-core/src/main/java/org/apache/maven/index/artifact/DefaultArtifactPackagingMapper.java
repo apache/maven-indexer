@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,9 +16,11 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,14 +40,11 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @Named
-public class DefaultArtifactPackagingMapper
-    implements ArtifactPackagingMapper
-{
+public class DefaultArtifactPackagingMapper implements ArtifactPackagingMapper {
 
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected Logger getLogger()
-    {
+    protected Logger getLogger() {
         return logger;
     }
 
@@ -59,80 +56,67 @@ public class DefaultArtifactPackagingMapper
 
     private static final Map<String, String> DEFAULTS;
 
-    static
-    {
+    static {
         DEFAULTS = new HashMap<>();
-        DEFAULTS.put( "ejb-client", "jar" );
-        DEFAULTS.put( "ejb", "jar" );
-        DEFAULTS.put( "rar", "jar" );
-        DEFAULTS.put( "par", "jar" );
-        DEFAULTS.put( "maven-plugin", "jar" );
-        DEFAULTS.put( "maven-archetype", "jar" );
-        DEFAULTS.put( "plexus-application", "jar" );
-        DEFAULTS.put( "eclipse-plugin", "jar" );
-        DEFAULTS.put( "eclipse-feature", "jar" );
-        DEFAULTS.put( "eclipse-application", "zip" );
-        DEFAULTS.put( "nexus-plugin", "jar" );
-        DEFAULTS.put( "java-source", "jar" );
-        DEFAULTS.put( "javadoc", "jar" );
-        DEFAULTS.put( "test-jar", "jar" );
+        DEFAULTS.put("ejb-client", "jar");
+        DEFAULTS.put("ejb", "jar");
+        DEFAULTS.put("rar", "jar");
+        DEFAULTS.put("par", "jar");
+        DEFAULTS.put("maven-plugin", "jar");
+        DEFAULTS.put("maven-archetype", "jar");
+        DEFAULTS.put("plexus-application", "jar");
+        DEFAULTS.put("eclipse-plugin", "jar");
+        DEFAULTS.put("eclipse-feature", "jar");
+        DEFAULTS.put("eclipse-application", "zip");
+        DEFAULTS.put("nexus-plugin", "jar");
+        DEFAULTS.put("java-source", "jar");
+        DEFAULTS.put("javadoc", "jar");
+        DEFAULTS.put("test-jar", "jar");
     }
 
-    public void setPropertiesFile( File propertiesFile )
-    {
+    public void setPropertiesFile(File propertiesFile) {
         this.propertiesFile = propertiesFile;
         this.packaging2extensionMapping = null;
     }
 
-    public Map<String, String> getPackaging2extensionMapping()
-    {
-        if ( packaging2extensionMapping == null )
-        {
-            synchronized ( this )
-            {
-                if ( packaging2extensionMapping == null )
-                {
+    public Map<String, String> getPackaging2extensionMapping() {
+        if (packaging2extensionMapping == null) {
+            synchronized (this) {
+                if (packaging2extensionMapping == null) {
                     packaging2extensionMapping = new HashMap<>();
 
                     // merge defaults
-                    packaging2extensionMapping.putAll( DEFAULTS );
+                    packaging2extensionMapping.putAll(DEFAULTS);
 
-                    if ( propertiesFile != null && propertiesFile.exists() )
-                    {
-                        getLogger().info( "Found user artifact packaging mapping file, applying it..." );
+                    if (propertiesFile != null && propertiesFile.exists()) {
+                        getLogger().info("Found user artifact packaging mapping file, applying it...");
 
                         Properties userMappings = new Properties();
 
-                        try ( FileInputStream fis = new FileInputStream( propertiesFile ) )
-                        {
-                            userMappings.load( fis );
+                        try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+                            userMappings.load(fis);
 
-                            if ( userMappings.keySet().size() > 0 )
-                            {
-                                for ( Object key : userMappings.keySet() )
-                                {
-                                    packaging2extensionMapping.put( key.toString(),
-                                                                    userMappings.getProperty( key.toString() ) );
+                            if (userMappings.keySet().size() > 0) {
+                                for (Object key : userMappings.keySet()) {
+                                    packaging2extensionMapping.put(
+                                            key.toString(), userMappings.getProperty(key.toString()));
                                 }
 
-                                getLogger().info(
-                                    propertiesFile.getAbsolutePath()
-                                        + " user artifact packaging mapping file contained "
-                                        + userMappings.keySet().size() + " mappings, applied them all succesfully." );
+                                getLogger()
+                                        .info(propertiesFile.getAbsolutePath()
+                                                + " user artifact packaging mapping file contained "
+                                                + userMappings.keySet().size()
+                                                + " mappings, applied them all succesfully.");
                             }
-                        }
-                        catch ( IOException e )
-                        {
-                            getLogger().warn(
-                                "Got IO exception during read of file: " + propertiesFile.getAbsolutePath() );
+                        } catch (IOException e) {
+                            getLogger()
+                                    .warn("Got IO exception during read of file: " + propertiesFile.getAbsolutePath());
                         }
 
-                    }
-                    else
-                    {
+                    } else {
                         // make it silent if using defaults
-                        getLogger().debug(
-                            "User artifact packaging mappings file not found, will work with defaults..." );
+                        getLogger()
+                                .debug("User artifact packaging mappings file not found, will work with defaults...");
                     }
                 }
             }
@@ -141,24 +125,20 @@ public class DefaultArtifactPackagingMapper
         return packaging2extensionMapping;
     }
 
-    public void setPackaging2extensionMapping( Map<String, String> packaging2extensionMapping )
-    {
+    public void setPackaging2extensionMapping(Map<String, String> packaging2extensionMapping) {
         this.packaging2extensionMapping = packaging2extensionMapping;
     }
 
-    public Map<String, String> getDefaults()
-    {
+    public Map<String, String> getDefaults() {
         return DEFAULTS;
     }
 
-    public String getExtensionForPackaging( String packaging )
-    {
-        if ( packaging == null )
-        {
+    public String getExtensionForPackaging(String packaging) {
+        if (packaging == null) {
             return "jar";
         }
 
         // default's to packaging name, ie. "jar", "war", "pom", etc.
-        return getPackaging2extensionMapping().getOrDefault( packaging, packaging );
+        return getPackaging2extensionMapping().getOrDefault(packaging, packaging);
     }
 }

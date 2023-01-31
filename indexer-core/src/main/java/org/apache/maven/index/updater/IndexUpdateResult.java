@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,51 +16,44 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.util.Date;
 
-public class IndexUpdateResult
-{
+public class IndexUpdateResult {
     private Date timestamp;
 
     private boolean fullUpdate;
-    
+
     private boolean successful;
-    
-    public IndexUpdateResult()
-    {
+
+    public IndexUpdateResult() {
         this.timestamp = null;
         this.fullUpdate = false;
         this.successful = false;
     }
 
-    public Date getTimestamp()
-    {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp( Date timestamp )
-    {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
-    public void setFullUpdate( boolean fullUpdate )
-    {
+    public void setFullUpdate(boolean fullUpdate) {
         this.fullUpdate = fullUpdate;
     }
 
-    public boolean isFullUpdate()
-    {
+    public boolean isFullUpdate() {
         return this.fullUpdate;
     }
 
-    public boolean isSuccessful()
-    {
+    public boolean isSuccessful() {
         return successful;
     }
 
-    public void setSuccessful( boolean successful )
-    {
+    public void setSuccessful(boolean successful) {
         this.successful = successful;
     }
 }

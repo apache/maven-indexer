@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,8 +16,14 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import javax.inject.Inject;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -31,20 +35,13 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.apache.lucene.search.BooleanClause.*;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Olivier Lamy
  */
-public class SearchWithAnEmptyIndexTest
-    extends AbstractTestSupport
-{
+public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
     static final String INDEX_ID1 = "osgi-test1";
     static final String INDEX_ID2 = "empty-repo";
 
@@ -58,89 +55,90 @@ public class SearchWithAnEmptyIndexTest
     protected List<IndexCreator> indexCreators;
 
     @Override
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
 
-        if ( !nexusIndexer.getIndexingContexts().isEmpty() )
-        {
-            for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
-            {
-                nexusIndexer.removeIndexingContext( context, true );
+        if (!nexusIndexer.getIndexingContexts().isEmpty()) {
+            for (IndexingContext context : nexusIndexer.getIndexingContexts().values()) {
+                nexusIndexer.removeIndexingContext(context, true);
             }
         }
     }
 
     @Test
-    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat()
-        throws Exception
-    {
+    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat() throws Exception {
 
         String repoPath = "target/test/empty-repo-for-searchtest";
 
-        File emptyRepo = new File( getBasedir(), repoPath );
+        File emptyRepo = new File(getBasedir(), repoPath);
 
-        if ( emptyRepo.exists() )
-        {
-            FileUtils.deleteDirectory( emptyRepo );
+        if (emptyRepo.exists()) {
+            FileUtils.deleteDirectory(emptyRepo);
         }
 
         emptyRepo.mkdirs();
 
-        //createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
-        createIndex( repoPath, repoPath, INDEX_ID2 );
+        // createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
+        createIndex(repoPath, repoPath, INDEX_ID2);
 
-        createIndex( "src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1 );
+        createIndex("src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1);
 
-        try
-        {
+        try {
             BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.command" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.SYMBOLIC_NAME,
+                                    new StringSearchExpression("org.apache.karaf.features.command")),
+                            Occur.MUST)
+                    .build();
 
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
-            request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
-                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            assertEquals(2, nexusIndexer.getIndexingContexts().values().size());
+            request.setContexts(Arrays.asList(
+                    nexusIndexer.getIndexingContexts().get(INDEX_ID2),
+                    nexusIndexer.getIndexingContexts().get(INDEX_ID1)));
 
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
-            assertEquals( 1, response.getResults().size() );
+            assertEquals(1, response.getResults().size());
 
             q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.SYMBOLIC_NAME, new StringSearchExpression("org.apache.karaf.features.core")),
+                            Occur.MUST)
+                    .build();
 
-            request = new FlatSearchRequest( q );
-            request.setContexts( new ArrayList<>( nexusIndexer.getIndexingContexts().values() ) );
+            request = new FlatSearchRequest(q);
+            request.setContexts(
+                    new ArrayList<>(nexusIndexer.getIndexingContexts().values()));
 
-            response = nexusIndexer.searchFlat( request );
+            response = nexusIndexer.searchFlat(request);
 
             assertEquals(3, response.getResults().size());
 
             String term = "org.apache.karaf.features";
 
             q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( term ) ), Occur.SHOULD )
-                .add( nexusIndexer.constructQuery( MAVEN.ARTIFACT_ID, new StringSearchExpression( term ) ), Occur.SHOULD )
-                .add( nexusIndexer.constructQuery( MAVEN.VERSION, new StringSearchExpression( term ) ), Occur.SHOULD )
-                .add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( term ) ), Occur.SHOULD )
-                .add( nexusIndexer.constructQuery( MAVEN.CLASSNAMES, new StringSearchExpression( term ) ), Occur.SHOULD )
-                .build();
+                    .add(nexusIndexer.constructQuery(MAVEN.GROUP_ID, new StringSearchExpression(term)), Occur.SHOULD)
+                    .add(nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, new StringSearchExpression(term)), Occur.SHOULD)
+                    .add(nexusIndexer.constructQuery(MAVEN.VERSION, new StringSearchExpression(term)), Occur.SHOULD)
+                    .add(nexusIndexer.constructQuery(MAVEN.PACKAGING, new StringSearchExpression(term)), Occur.SHOULD)
+                    .add(nexusIndexer.constructQuery(MAVEN.CLASSNAMES, new StringSearchExpression(term)), Occur.SHOULD)
+                    .build();
 
-            request = new FlatSearchRequest( q );
-            request.setContexts( new ArrayList<>( nexusIndexer.getIndexingContexts().values() ) );
+            request = new FlatSearchRequest(q);
+            request.setContexts(
+                    new ArrayList<>(nexusIndexer.getIndexingContexts().values()));
 
-            response = nexusIndexer.searchFlat( request );
+            response = nexusIndexer.searchFlat(request);
 
-            System.out.println( " result size with term usage " + response.getResults().size() );
+            System.out.println(
+                    " result size with term usage " + response.getResults().size());
 
             assertEquals(4, response.getResults().size());
 
-        }
-        finally
-        {
+        } finally {
             closeAllIndexs();
         }
     }
@@ -149,95 +147,91 @@ public class SearchWithAnEmptyIndexTest
      * both repos contains commons-cli so ensure we don't return duplicates
      */
     @Test
-    public void testSearchNoDuplicateArtifactInfo()
-        throws Exception
-    {
+    public void testSearchNoDuplicateArtifactInfo() throws Exception {
 
         String repoPathIndex = "target/test/repo-for-searchdupe";
 
-        File emptyRepo = new File( getBasedir(), repoPathIndex );
+        File emptyRepo = new File(getBasedir(), repoPathIndex);
 
-        if ( emptyRepo.exists() )
-        {
-            FileUtils.deleteDirectory( emptyRepo );
+        if (emptyRepo.exists()) {
+            FileUtils.deleteDirectory(emptyRepo);
         }
 
         emptyRepo.mkdirs();
 
-        //createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
-        createIndex( "/src/test/repo", repoPathIndex, INDEX_ID2 );
+        // createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
+        createIndex("/src/test/repo", repoPathIndex, INDEX_ID2);
 
-        createIndex( "src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1 );
+        createIndex("src/test/repo-with-osgi", "target/test/repo-with-osgi/", INDEX_ID1);
 
-        try
-        {
+        try {
             BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( MAVEN.GROUP_ID, new StringSearchExpression( "commons-cli" ) ), Occur.MUST )
-                .add( nexusIndexer.constructQuery( MAVEN.PACKAGING, new StringSearchExpression( "jar" ) ), Occur.MUST )
-                .add( nexusIndexer.constructQuery( MAVEN.CLASSIFIER, new StringSearchExpression( "sources" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(MAVEN.GROUP_ID, new StringSearchExpression("commons-cli")),
+                            Occur.MUST)
+                    .add(nexusIndexer.constructQuery(MAVEN.PACKAGING, new StringSearchExpression("jar")), Occur.MUST)
+                    .add(
+                            nexusIndexer.constructQuery(MAVEN.CLASSIFIER, new StringSearchExpression("sources")),
+                            Occur.MUST)
+                    .build();
 
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            assertEquals( 2, nexusIndexer.getIndexingContexts().values().size() );
-            request.setContexts( Arrays.asList( nexusIndexer.getIndexingContexts().get( INDEX_ID2 ),
-                                                nexusIndexer.getIndexingContexts().get( INDEX_ID1 ) ) );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            assertEquals(2, nexusIndexer.getIndexingContexts().values().size());
+            request.setContexts(Arrays.asList(
+                    nexusIndexer.getIndexingContexts().get(INDEX_ID2),
+                    nexusIndexer.getIndexingContexts().get(INDEX_ID1)));
 
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
-            assertEquals( 1, response.getResults().size() );
+            assertEquals(1, response.getResults().size());
 
-        }
-        finally
-        {
+        } finally {
             closeAllIndexs();
         }
     }
 
-    private void closeAllIndexs()
-        throws Exception
-    {
-        for ( IndexingContext context : nexusIndexer.getIndexingContexts().values() )
-        {
-            context.close( true );
+    private void closeAllIndexs() throws Exception {
+        for (IndexingContext context : nexusIndexer.getIndexingContexts().values()) {
+            context.close(true);
         }
     }
 
-    private void createIndex( String filePath, String repoIndex, String contextId )
-        throws Exception
-    {
+    private void createIndex(String filePath, String repoIndex, String contextId) throws Exception {
 
-        File repo = new File( getBasedir(), filePath );
+        File repo = new File(getBasedir(), filePath);
 
-        File repoIndexDir = new File( getBasedir(), repoIndex + "/.index" );
+        File repoIndexDir = new File(getBasedir(), repoIndex + "/.index");
 
-        if ( repoIndexDir.exists() )
-        {
-            FileUtils.deleteDirectory( repoIndexDir );
+        if (repoIndexDir.exists()) {
+            FileUtils.deleteDirectory(repoIndexDir);
         }
 
         repoIndexDir.mkdirs();
 
-        System.out.println(
-            "creating Index with id " + contextId + " path : " + filePath + " , indexPath " + repoIndex );
+        System.out.println("creating Index with id " + contextId + " path : " + filePath + " , indexPath " + repoIndex);
 
-        IndexingContext indexingContext =
-            nexusIndexer.addIndexingContext( contextId, contextId, repo, repoIndexDir, "http://www.apache.org",
-                                             "http://www.apache.org/.index", indexCreators );
-        indexingContext.setSearchable( true );
-        nexusIndexer.scan( indexingContext, false );
+        IndexingContext indexingContext = nexusIndexer.addIndexingContext(
+                contextId,
+                contextId,
+                repo,
+                repoIndexDir,
+                "http://www.apache.org",
+                "http://www.apache.org/.index",
+                indexCreators);
+        indexingContext.setSearchable(true);
+        nexusIndexer.scan(indexingContext, false);
 
         indexingContext.optimize();
 
-        File managedRepository = new File( repoIndex );
+        File managedRepository = new File(repoIndex);
         final IndexSearcher indexSearcher = indexingContext.acquireIndexSearcher();
-        try
-        {
-            final File indexLocation = new File( managedRepository, ".index" );
-            IndexPackingRequest request = new IndexPackingRequest( indexingContext, indexSearcher.getIndexReader(), indexLocation );
-            indexPacker.packIndex( request );
+        try {
+            final File indexLocation = new File(managedRepository, ".index");
+            IndexPackingRequest request =
+                    new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation);
+            indexPacker.packIndex(request);
         } finally {
-            indexingContext.releaseIndexSearcher( indexSearcher );
+            indexingContext.releaseIndexSearcher(indexSearcher);
         }
-
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 
@@ -26,11 +25,8 @@ import org.eclipse.sisu.launch.InjectedTest;
 /**
  * @author cstamas
  */
-public class AbstractTestSupport
-        extends InjectedTest
-{
-    protected File getTestFile( String path )
-    {
-        return new File( new File( getBasedir() ), path );
+public class AbstractTestSupport extends InjectedTest {
+    protected File getTestFile(String path) {
+        return new File(new File(getBasedir()), path);
     }
 }

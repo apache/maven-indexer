@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.util.List;
 
@@ -27,27 +26,20 @@ import org.apache.maven.index.context.IndexingContext;
  * This is a aggregated artifact info filter that performs AND operation (all filter has to accept the artifact info, if
  * one rejects, results is reject). It is implemented in "fail fast" way, as soon as some member ArtifactFilter rejects,
  * it will be rejected.
- * 
+ *
  * @author cstamas
  */
-public class AndMultiArtifactInfoFilter
-    extends AbstractMultiArtifactInfoFilter
-{
-    public AndMultiArtifactInfoFilter( List<ArtifactInfoFilter> filters )
-    {
-        super( filters );
+public class AndMultiArtifactInfoFilter extends AbstractMultiArtifactInfoFilter {
+    public AndMultiArtifactInfoFilter(List<ArtifactInfoFilter> filters) {
+        super(filters);
     }
 
     @Override
-    protected boolean accepts( List<ArtifactInfoFilter> filters, IndexingContext ctx, ArtifactInfo ai )
-    {
-        for ( ArtifactInfoFilter filter : filters )
-        {
-            if ( !filter.accepts( ctx, ai ) )
-            {
+    protected boolean accepts(List<ArtifactInfoFilter> filters, IndexingContext ctx, ArtifactInfo ai) {
+        for (ArtifactInfoFilter filter : filters) {
+            if (!filter.accepts(ctx, ai)) {
                 return false;
             }
-
         }
 
         return true;

@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.IOException;
 
@@ -26,7 +25,7 @@ import java.io.IOException;
  * {@link org.apache.maven.index.packer.IndexPacker}.
  * <p>
  * The following snippet shows how to update/download remote index:
- * 
+ *
  * <pre>
  *   IndexingContext context = indexer.getIndexingContexts().get( indexId );
  *   Settings settings = embedder.getSettings();
@@ -41,19 +40,17 @@ import java.io.IOException;
  *       proxyInfo.setUserName( proxy.getUsername() );
  *       proxyInfo.setPassword( proxy.getPassword() );
  *   }
- *   
+ *
  *   Date indexTime = updater.fetchAndUpdateIndex( context, transferListener, proxyInfo );
  *   ...
  * </pre>
- * 
+ *
  * @author Jason van Zyl
  * @author Eugene Kuleshov
  */
-public interface IndexUpdater
-{
+public interface IndexUpdater {
     /**
      * @return IndexUpdateResult
      */
-    IndexUpdateResult fetchAndUpdateIndex( IndexUpdateRequest updateRequest )
-        throws IOException;
+    IndexUpdateResult fetchAndUpdateIndex(IndexUpdateRequest updateRequest) throws IOException;
 }

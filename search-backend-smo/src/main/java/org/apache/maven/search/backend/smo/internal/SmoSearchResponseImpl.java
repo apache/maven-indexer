@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.smo.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo.internal;
 
 import java.util.List;
 
@@ -28,29 +27,25 @@ import org.apache.maven.search.support.SearchResponseSupport;
 
 import static java.util.Objects.requireNonNull;
 
-public class SmoSearchResponseImpl extends SearchResponseSupport implements SmoSearchResponse
-{
+public class SmoSearchResponseImpl extends SearchResponseSupport implements SmoSearchResponse {
     private final String searchUri;
 
     private final String rawJsonResponse;
 
-    public SmoSearchResponseImpl( SearchRequest searchRequest, int totalHits, List<Record> page,
-                                  String searchUri, String rawJsonResponse )
-    {
-        super( searchRequest, totalHits, page );
-        this.searchUri = requireNonNull( searchUri );
-        this.rawJsonResponse = requireNonNull( rawJsonResponse );
+    public SmoSearchResponseImpl(
+            SearchRequest searchRequest, int totalHits, List<Record> page, String searchUri, String rawJsonResponse) {
+        super(searchRequest, totalHits, page);
+        this.searchUri = requireNonNull(searchUri);
+        this.rawJsonResponse = requireNonNull(rawJsonResponse);
     }
 
     @Override
-    public String getSearchUri()
-    {
+    public String getSearchUri() {
         return searchUri;
     }
 
     @Override
-    public String getRawJsonResponse()
-    {
+    public String getRawJsonResponse() {
         return rawJsonResponse;
     }
 }

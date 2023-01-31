@@ -1,5 +1,3 @@
-package org.apache.maven.search;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,14 +16,14 @@ package org.apache.maven.search;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search;
 
 import java.io.Closeable;
 
 /**
  * An engine to perform search trough single repository index (backend).
  */
-public interface SearchBackend extends SearchEngine, Closeable
-{
+public interface SearchBackend extends SearchEngine, Closeable {
     /**
      * Returns the ID of this backend, never {@code null}.
      */

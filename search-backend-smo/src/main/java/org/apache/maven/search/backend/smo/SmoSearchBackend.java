@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.smo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo;
 
 import java.io.IOException;
 
@@ -27,10 +26,9 @@ import org.apache.maven.search.SearchRequest;
 /**
  * The SMO search backend.
  */
-public interface SmoSearchBackend extends SearchBackend
-{
+public interface SmoSearchBackend extends SearchBackend {
     @Override
-    SmoSearchResponse search( SearchRequest searchRequest ) throws IOException;
+    SmoSearchResponse search(SearchRequest searchRequest) throws IOException;
 
     /**
      * Returns the base "service URI" that is used by this SMO backend. never {@code null}.

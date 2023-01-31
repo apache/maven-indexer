@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,42 +25,32 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.maven.index.updater.DefaultIndexUpdater;
-
 /**
  * ResourceFetcher that keeps track of all requested remote resources.
- * 
+ *
  * @author igor
  */
-public class TrackingFetcher
-    extends DefaultIndexUpdater.FileFetcher
-{
+public class TrackingFetcher extends DefaultIndexUpdater.FileFetcher {
 
     private final ArrayList<String> resources = new ArrayList<>();
 
-    public TrackingFetcher( File basedir )
-    {
-        super( basedir );
+    public TrackingFetcher(File basedir) {
+        super(basedir);
     }
 
     @Override
-    public InputStream retrieve( String name )
-        throws IOException, FileNotFoundException
-    {
-        resources.add( name );
-        return super.retrieve( name );
+    public InputStream retrieve(String name) throws IOException, FileNotFoundException {
+        resources.add(name);
+        return super.retrieve(name);
     }
 
     @Override
-    public void retrieve( String name, File targetFile )
-        throws IOException, FileNotFoundException
-    {
-        resources.add( name );
-        super.retrieve( name, targetFile );
+    public void retrieve(String name, File targetFile) throws IOException, FileNotFoundException {
+        resources.add(name);
+        super.retrieve(name, targetFile);
     }
 
-    public List<String> getRetrievedResources()
-    {
+    public List<String> getRetrievedResources() {
         return resources;
     }
 }

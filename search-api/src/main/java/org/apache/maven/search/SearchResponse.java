@@ -1,5 +1,3 @@
-package org.apache.maven.search;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,14 +16,14 @@ package org.apache.maven.search;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search;
 
 import java.util.List;
 
 /**
  * A search engine response.
  */
-public interface SearchResponse
-{
+public interface SearchResponse {
     /**
      * Returns the {@link SearchRequest} used for this response, never {@code null}.
      */

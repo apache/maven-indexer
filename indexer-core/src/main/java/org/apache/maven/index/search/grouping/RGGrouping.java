@@ -1,5 +1,3 @@
-package org.apache.maven.index.search.grouping;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.search.grouping;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.search.grouping;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.search.grouping;
 
 import java.util.Comparator;
 
@@ -25,27 +24,21 @@ import org.apache.maven.index.ArtifactInfo;
 
 /**
  * A Repository : GroupId grouping implementation.
- * 
+ *
  * @author Tamas Cservenak
  */
-public class RGGrouping
-    extends AbstractGrouping
-{
+public class RGGrouping extends AbstractGrouping {
 
-    public RGGrouping()
-    {
+    public RGGrouping() {
         super();
     }
 
-    public RGGrouping( Comparator<ArtifactInfo> comparator )
-    {
-        super( comparator );
+    public RGGrouping(Comparator<ArtifactInfo> comparator) {
+        super(comparator);
     }
 
     @Override
-    protected String getGroupKey( ArtifactInfo artifactInfo )
-    {
+    protected String getGroupKey(ArtifactInfo artifactInfo) {
         return artifactInfo.getRepository() + ":" + artifactInfo.getGroupId();
     }
-
 }

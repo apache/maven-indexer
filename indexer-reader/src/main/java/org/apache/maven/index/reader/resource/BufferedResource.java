@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -30,30 +29,25 @@ import static java.util.Objects.requireNonNull;
 /**
  * Wraps {@link Resource}s so that they return {@link BufferedInputStream}s.
  */
-public class BufferedResource implements Resource
-{
+public class BufferedResource implements Resource {
     private final Resource resource;
 
-    public BufferedResource( Resource resource )
-    {
-        requireNonNull( resource, "resource cannot be null" );
+    public BufferedResource(Resource resource) {
+        requireNonNull(resource, "resource cannot be null");
         this.resource = resource;
     }
 
     @Override
-    public InputStream read() throws IOException
-    {
+    public InputStream read() throws IOException {
         InputStream in = resource.read();
-        if ( in == null )
-        {
+        if (in == null) {
             return null;
         }
-        return new BufferedInputStream( in );
+        return new BufferedInputStream(in);
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         resource.close();
     }
 }

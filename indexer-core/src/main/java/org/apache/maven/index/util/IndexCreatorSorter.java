@@ -1,5 +1,3 @@
-package org.apache.maven.index.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,55 +27,42 @@ import org.codehaus.plexus.util.dag.CycleDetectedException;
 import org.codehaus.plexus.util.dag.DAG;
 import org.codehaus.plexus.util.dag.TopologicalSorter;
 
-public class IndexCreatorSorter
-{
-    public static List<IndexCreator> sort( List<? extends IndexCreator> creators )
-        throws IllegalArgumentException
-    {
-        try
-        {
-            final HashMap<String, IndexCreator> creatorsById = new HashMap<>( creators.size() );
+public class IndexCreatorSorter {
+    public static List<IndexCreator> sort(List<? extends IndexCreator> creators) throws IllegalArgumentException {
+        try {
+            final HashMap<String, IndexCreator> creatorsById = new HashMap<>(creators.size());
 
             DAG dag = new DAG();
 
-            for ( IndexCreator creator : creators )
-            {
-                creatorsById.put( creator.getId(), creator );
+            for (IndexCreator creator : creators) {
+                creatorsById.put(creator.getId(), creator);
 
-                dag.addVertex( creator.getId() );
+                dag.addVertex(creator.getId());
 
-                for ( String depId : creator.getCreatorDependencies() )
-                {
-                    dag.addEdge( creator.getId(), depId );
+                for (String depId : creator.getCreatorDependencies()) {
+                    dag.addEdge(creator.getId(), depId);
                 }
             }
 
-            List<String> sortedIds = TopologicalSorter.sort( dag );
+            List<String> sortedIds = TopologicalSorter.sort(dag);
 
-            final ArrayList<IndexCreator> sortedCreators = new ArrayList<>( creators.size() );
+            final ArrayList<IndexCreator> sortedCreators = new ArrayList<>(creators.size());
 
-            for ( String id : sortedIds )
-            {
-                final IndexCreator creator = creatorsById.get( id );
+            for (String id : sortedIds) {
+                final IndexCreator creator = creatorsById.get(id);
 
-                if ( creator != null )
-                {
-                    sortedCreators.add( creator );
-                }
-                else
-                {
-                    throw new IllegalArgumentException( String.format(
-                        "IndexCreator with ID=\"%s\" does not exists, the present creator ID=\"%s\" depends on it!",
-                        id, dag.getParentLabels( id ) ) );
+                if (creator != null) {
+                    sortedCreators.add(creator);
+                } else {
+                    throw new IllegalArgumentException(String.format(
+                            "IndexCreator with ID=\"%s\" does not exists, the present creator ID=\"%s\" depends on it!",
+                            id, dag.getParentLabels(id)));
                 }
             }
 
             return sortedCreators;
+        } catch (CycleDetectedException e) {
+            throw new IllegalArgumentException("Supplied IndexCreator inter-dependencies", e);
         }
-        catch ( CycleDetectedException e )
-        {
-            throw new IllegalArgumentException( "Supplied IndexCreator inter-dependencies", e );
-        }
-
     }
 }

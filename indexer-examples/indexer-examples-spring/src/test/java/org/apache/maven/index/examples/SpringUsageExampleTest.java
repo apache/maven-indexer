@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.examples;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,126 +43,116 @@ import static org.junit.Assert.assertTrue;
  * @author mtodorov
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/META-INF/spring/*-context.xml",
-                                    "classpath*:/META-INF/spring/*-context.xml" })
-public class SpringUsageExampleTest
-{
+@ContextConfiguration(locations = {"/META-INF/spring/*-context.xml", "classpath*:/META-INF/spring/*-context.xml"})
+public class SpringUsageExampleTest {
 
-    public static final File REPOSITORIES_BASEDIR = new File( "target/repositories" );
+    public static final File REPOSITORIES_BASEDIR = new File("target/repositories");
 
     @Autowired
     private ArtifactIndexingService artifactIndexingService;
 
     private SimpleArtifactGenerator generator = new SimpleArtifactGenerator();
 
-
     @Before
-    public void setUp()
-            throws Exception
-    {
-        if ( !new File( REPOSITORIES_BASEDIR,
-                        "releases/org/apache/maven/indexer/examples/indexer-examples-spring" ).exists() )
-        {
+    public void setUp() throws Exception {
+        if (!new File(REPOSITORIES_BASEDIR, "releases/org/apache/maven/indexer/examples/indexer-examples-spring")
+                .exists()) {
             //noinspection ResultOfMethodCallIgnored
             REPOSITORIES_BASEDIR.mkdirs();
 
             // Generate some valid test artifacts:
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.0",
-                                           "jar",
-                                           null );
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.1",
-                                           "jar",
-                                           null );
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.2",
-                                           "jar",
-                                           null );
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.3",
-                                           "jar",
-                                           null );
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.3.1",
-                                           "jar",
-                                           null );
-            generateArtifactAndAddToIndex( new File( REPOSITORIES_BASEDIR, "releases" ).getAbsolutePath(),
-                                           "releases",
-                                           "org.apache.maven.indexer.examples",
-                                           "indexer-examples-spring",
-                                           "1.4",
-                                           "jar",
-                                           null );
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.0",
+                    "jar",
+                    null);
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.1",
+                    "jar",
+                    null);
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.2",
+                    "jar",
+                    null);
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.3",
+                    "jar",
+                    null);
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.3.1",
+                    "jar",
+                    null);
+            generateArtifactAndAddToIndex(
+                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    "releases",
+                    "org.apache.maven.indexer.examples",
+                    "indexer-examples-spring",
+                    "1.4",
+                    "jar",
+                    null);
         }
     }
 
     @Test
     public void testAddAndDelete()
-            throws IOException, ParseException, NoSuchAlgorithmException, XmlPullParserException
-    {
+            throws IOException, ParseException, NoSuchAlgorithmException, XmlPullParserException {
         // Create a search request matching GAV "org.apache.maven.indexer.examples:indexer-examples-spring:1.4"
-        SearchRequest request = new SearchRequest( "releases",
-                                                   "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.4" );
+        SearchRequest request =
+                new SearchRequest("releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.4");
 
-        assertTrue( "Couldn't find existing artifact!", artifactIndexingService.contains( request ) );
+        assertTrue("Couldn't find existing artifact!", artifactIndexingService.contains(request));
 
         // Delete the artifact from the index:
-        artifactIndexingService.deleteFromIndex( "releases",
-                                                 "org.apache.maven.indexer.examples",
-                                                 "indexer-examples-spring",
-                                                 "1.4",
-                                                 "jar",
-                                                 null );
+        artifactIndexingService.deleteFromIndex(
+                "releases", "org.apache.maven.indexer.examples", "indexer-examples-spring", "1.4", "jar", null);
 
-        assertFalse( "Failed to remove artifact from index!", artifactIndexingService.contains( request ) );
+        assertFalse("Failed to remove artifact from index!", artifactIndexingService.contains(request));
     }
 
     @Test
-    public void testSearch()
-            throws IOException, ParseException
-    {
+    public void testSearch() throws IOException, ParseException {
         // Create a search request matching GAV "org.apache.maven.indexer.examples:indexer-examples-spring:1.3"
-        SearchRequest request = new SearchRequest( "releases",
-                                                   "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.3*" );
+        SearchRequest request = new SearchRequest(
+                "releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.3*");
 
-        assertTrue( "Couldn't find existing artifact!", artifactIndexingService.contains( request ) );
+        assertTrue("Couldn't find existing artifact!", artifactIndexingService.contains(request));
 
-        final SearchResults searchResults = artifactIndexingService.search( request );
+        final SearchResults searchResults = artifactIndexingService.search(request);
 
-        assertFalse( searchResults.getResults().isEmpty() );
+        assertFalse(searchResults.getResults().isEmpty());
 
-        for ( String repositoryId : searchResults.getResults().keySet() )
-        {
-            System.out.println( "Matches in repository " + repositoryId + ":" );
+        for (String repositoryId : searchResults.getResults().keySet()) {
+            System.out.println("Matches in repository " + repositoryId + ":");
 
-            final Collection<ArtifactInfo> artifactInfos = searchResults.getResults().get( repositoryId );
-            for ( ArtifactInfo artifactInfo : artifactInfos )
-            {
-                System.out.println( "   " +
-                                    artifactInfo.getGroupId() + ":" +
-                                    artifactInfo.getArtifactId() + ":" +
-                                    artifactInfo.getVersion() + ":" +
-                                    artifactInfo.getPackaging() + ":" +
-                                    artifactInfo.getClassifier() );
+            final Collection<ArtifactInfo> artifactInfos =
+                    searchResults.getResults().get(repositoryId);
+            for (ArtifactInfo artifactInfo : artifactInfos) {
+                System.out.println("   " + artifactInfo.getGroupId()
+                        + ":" + artifactInfo.getArtifactId()
+                        + ":" + artifactInfo.getVersion()
+                        + ":" + artifactInfo.getPackaging()
+                        + ":" + artifactInfo.getClassifier());
             }
         }
-
     }
 
     /**
@@ -181,32 +170,22 @@ public class SpringUsageExampleTest
      * @throws NoSuchAlgorithmException
      * @throws XmlPullParserException
      */
-    private File generateArtifactAndAddToIndex( String repositoryBasedir,
-                                                String repositoryId,
-                                                String groupId,
-                                                String artifactId,
-                                                String version,
-                                                String extension,
-                                                String classifier )
-            throws IOException, NoSuchAlgorithmException, XmlPullParserException
-    {
-        final File artifactFile = generator.generateArtifact( repositoryBasedir,
-                                                              groupId,
-                                                              artifactId,
-                                                              version,
-                                                              classifier,
-                                                              extension );
+    private File generateArtifactAndAddToIndex(
+            String repositoryBasedir,
+            String repositoryId,
+            String groupId,
+            String artifactId,
+            String version,
+            String extension,
+            String classifier)
+            throws IOException, NoSuchAlgorithmException, XmlPullParserException {
+        final File artifactFile =
+                generator.generateArtifact(repositoryBasedir, groupId, artifactId, version, classifier, extension);
 
         // Add the artifact to the index:
-        artifactIndexingService.addToIndex( repositoryId,
-                                            artifactFile,
-                                            groupId,
-                                            artifactId,
-                                            version,
-                                            extension,
-                                            classifier );
+        artifactIndexingService.addToIndex(
+                repositoryId, artifactFile, groupId, artifactId, version, extension, classifier);
 
         return artifactFile;
     }
-
 }

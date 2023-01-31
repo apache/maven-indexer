@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -29,59 +28,55 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * A search engine used to perform searches trough repository indexes.
- * 
+ *
  * @author Eugene Kuleshov
  * @author Jason van Zyl
  * @author Tamas Cservenak
  */
-public interface SearchEngine
-{
+public interface SearchEngine {
     @Deprecated
-    Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext indexingContext,
-                                  Query query )
-        throws IOException;
+    Set<ArtifactInfo> searchFlat(
+            Comparator<ArtifactInfo> artifactInfoComparator, IndexingContext indexingContext, Query query)
+            throws IOException;
 
     @Deprecated
-    Set<ArtifactInfo> searchFlat( Comparator<ArtifactInfo> artifactInfoComparator,
-                                  Collection<IndexingContext> indexingContexts, Query query )
-        throws IOException;
+    Set<ArtifactInfo> searchFlat(
+            Comparator<ArtifactInfo> artifactInfoComparator, Collection<IndexingContext> indexingContexts, Query query)
+            throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
-    FlatSearchResponse searchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    FlatSearchResponse searchFlatPaged(FlatSearchRequest request, Collection<IndexingContext> indexingContexts)
+            throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
-    IteratorSearchResponse searchIteratorPaged( IteratorSearchRequest request,
-                                                Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    IteratorSearchResponse searchIteratorPaged(
+            IteratorSearchRequest request, Collection<IndexingContext> indexingContexts) throws IOException;
 
     /**
      * Do the search only on searchable contexts
      */
-    GroupedSearchResponse searchGrouped( GroupedSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    GroupedSearchResponse searchGrouped(GroupedSearchRequest request, Collection<IndexingContext> indexingContexts)
+            throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
-    FlatSearchResponse forceSearchFlatPaged( FlatSearchRequest request, Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    FlatSearchResponse forceSearchFlatPaged(FlatSearchRequest request, Collection<IndexingContext> indexingContexts)
+            throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
-    IteratorSearchResponse forceSearchIteratorPaged( IteratorSearchRequest request,
-                                                     Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    IteratorSearchResponse forceSearchIteratorPaged(
+            IteratorSearchRequest request, Collection<IndexingContext> indexingContexts) throws IOException;
 
     /**
      * Do the search in all contexts, no matter if the context is searchable or not
      */
-    GroupedSearchResponse forceSearchGrouped( GroupedSearchRequest request,
-                                              Collection<IndexingContext> indexingContexts )
-        throws IOException;
+    GroupedSearchResponse forceSearchGrouped(GroupedSearchRequest request, Collection<IndexingContext> indexingContexts)
+            throws IOException;
 }

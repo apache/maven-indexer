@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,21 +16,17 @@ package org.apache.maven.index.examples;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples;
 
 import com.google.inject.Guice;
 import org.eclipse.sisu.launch.Main;
 import org.eclipse.sisu.space.BeanScanning;
 import org.junit.Test;
 
-public class BasicUsageExampleTest
-{
+public class BasicUsageExampleTest {
     @Test
-    public void testApp()
-            throws Exception
-    {
-        final com.google.inject.Module app = Main.wire(
-                BeanScanning.INDEX
-        );
-        Guice.createInjector( app ).getInstance( BasicUsageExample.class ).perform();
+    public void testApp() throws Exception {
+        final com.google.inject.Module app = Main.wire(BeanScanning.INDEX);
+        Guice.createInjector(app).getInstance(BasicUsageExample.class).perform();
     }
 }

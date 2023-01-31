@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,10 +16,12 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.io.File;
 
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
@@ -36,15 +36,13 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * A default implementation of the {@link ArtifactContextProducer}.
- * 
+ *
  * @author Tamas Cservenak
  * @author Eugene Kuleshov
  */
 @Singleton
 @Named
-public class DefaultArtifactContextProducer
-    implements ArtifactContextProducer
-{
+public class DefaultArtifactContextProducer implements ArtifactContextProducer {
 
     private final ArtifactPackagingMapper mapper;
 
@@ -52,61 +50,51 @@ public class DefaultArtifactContextProducer
 
     private Locator ml = new MetadataLocator();
 
-
     @Inject
-    public DefaultArtifactContextProducer( ArtifactPackagingMapper mapper )
-    {
+    public DefaultArtifactContextProducer(ArtifactPackagingMapper mapper) {
         this.mapper = mapper;
     }
 
     /**
      * Get ArtifactContext for given pom or artifact (jar, war, etc). A file can be
      */
-    public ArtifactContext getArtifactContext( IndexingContext context, File file )
-    {
+    public ArtifactContext getArtifactContext(IndexingContext context, File file) {
         // TODO shouldn't this use repository layout instead?
 
         String repositoryPath = context.getRepository().getAbsolutePath();
         String artifactPath = file.getAbsolutePath();
 
         // protection from IndexOutOfBounds
-        if ( artifactPath.length() <= repositoryPath.length() )
-        {
+        if (artifactPath.length() <= repositoryPath.length()) {
             return null; // not an artifact
         }
 
-        if ( !isIndexable( file ) )
-        {
+        if (!isIndexable(file)) {
             return null; // skipped
         }
 
-        Gav gav = getGavFromPath( context, repositoryPath, artifactPath );
+        Gav gav = getGavFromPath(context, repositoryPath, artifactPath);
 
-        if ( gav == null )
-        {
+        if (gav == null) {
             return null; // not an artifact, but rather metadata
         }
 
         File pom;
         File artifact;
 
-        if ( file.getName().endsWith( ".pom" ) )
-        {
-            ArtifactLocator al = new ArtifactLocator( mapper );
-            artifact = al.locate( file, context.getGavCalculator(), gav );
+        if (file.getName().endsWith(".pom")) {
+            ArtifactLocator al = new ArtifactLocator(mapper);
+            artifact = al.locate(file, context.getGavCalculator(), gav);
 
             // If we found the matching artifact, switch over to indexing that, instead of the pom
-            if ( artifact != null )
-            {
-                gav = getGavFromPath( context, repositoryPath, artifact.getAbsolutePath() );
+            if (artifact != null) {
+                gav = getGavFromPath(context, repositoryPath, artifact.getAbsolutePath());
             }
 
             pom = file;
-        }
-        else
-        {
+        } else {
             artifact = file;
-            pom = pl.locate( file, context.getGavCalculator(), gav );
+            pom = pl.locate(file, context.getGavCalculator(), gav);
         }
 
         String groupId = gav.getGroupId();
@@ -117,48 +105,45 @@ public class DefaultArtifactContextProducer
 
         String classifier = gav.getClassifier();
 
-        ArtifactInfo ai =
-            new ArtifactInfo( context.getRepositoryId(), groupId, artifactId, version, classifier, gav.getExtension() );
+        ArtifactInfo ai = new ArtifactInfo(
+                context.getRepositoryId(), groupId, artifactId, version, classifier, gav.getExtension());
 
         // store extension if classifier is not empty
-        if ( !StringUtils.isEmpty( ai.getClassifier() ) )
-        {
-            ai.setPackaging( gav.getExtension() );
+        if (!StringUtils.isEmpty(ai.getClassifier())) {
+            ai.setPackaging(gav.getExtension());
         }
 
-        ai.setFileName( file.getName() );
-        ai.setFileExtension( gav.getExtension() );
+        ai.setFileName(file.getName());
+        ai.setFileExtension(gav.getExtension());
 
-        File metadata = ml.locate( pom );
+        File metadata = ml.locate(pom);
 
-        return new ArtifactContext( pom, artifact, metadata, ai, gav );
+        return new ArtifactContext(pom, artifact, metadata, ai, gav);
     }
 
-    protected boolean isIndexable( File file )
-    {
-        if ( file == null )
-        {
+    protected boolean isIndexable(File file) {
+        if (file == null) {
             return false;
         }
 
         String filename = file.getName();
 
-        return !filename.equals( "maven-metadata.xml" )
-                && !( filename.startsWith( "maven-metadata-" ) && filename.endsWith( ".xml" ) )
-                && !( filename.startsWith( "_" ) && filename.endsWith( ".repositories" ) )
+        return !filename.equals("maven-metadata.xml")
+                && !(filename.startsWith("maven-metadata-") && filename.endsWith(".xml"))
+                && !(filename.startsWith("_") && filename.endsWith(".repositories"))
                 // || filename.endsWith( "-javadoc.jar" )
                 // || filename.endsWith( "-javadocs.jar" )
                 // || filename.endsWith( "-sources.jar" )
-                && !filename.endsWith( ".properties" )
+                && !filename.endsWith(".properties")
                 // || filename.endsWith( ".xml" ) // NEXUS-3029
-                && !filename.endsWith( ".asc" ) && !filename.endsWith( ".md5" ) && !filename.endsWith( ".sha1" );
+                && !filename.endsWith(".asc")
+                && !filename.endsWith(".md5")
+                && !filename.endsWith(".sha1");
     }
 
-    protected Gav getGavFromPath( IndexingContext context, String repositoryPath, String artifactPath )
-    {
-        String path = artifactPath.substring( repositoryPath.length() + 1 ).replace( '\\', '/' );
+    protected Gav getGavFromPath(IndexingContext context, String repositoryPath, String artifactPath) {
+        String path = artifactPath.substring(repositoryPath.length() + 1).replace('\\', '/');
 
-        return context.getGavCalculator().pathToGav( path );
+        return context.getGavCalculator().pathToGav(path);
     }
-
 }

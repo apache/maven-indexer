@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.boot;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,12 @@ package org.apache.maven.index.examples.boot;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples.boot;
+
+import javax.annotation.PostConstruct;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.maven.index.examples.indexing.RepositoryIndexManager;
 import org.apache.maven.index.examples.indexing.RepositoryIndexer;
@@ -27,20 +31,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-
 /**
  * This is a dummy artifact repository creator.
  *
  * @author mtodorov
  */
 @Component
-public class RepositoryBooter
-{
+public class RepositoryBooter {
 
-    private static final Logger logger = LoggerFactory.getLogger( RepositoryBooter.class );
+    private static final Logger logger = LoggerFactory.getLogger(RepositoryBooter.class);
 
     @Autowired
     private RepositoryIndexManager repositoryIndexManager;
@@ -48,96 +47,74 @@ public class RepositoryBooter
     @Autowired
     private RepositoryIndexerFactory repositoryIndexerFactory;
 
-
-    public RepositoryBooter()
-    {
+    public RepositoryBooter() {
         // no op
     }
 
     @PostConstruct
-    public void initialize()
-        throws IOException
-    {
-        File repositoriesBaseDir = new File( "target/repositories" );
+    public void initialize() throws IOException {
+        File repositoriesBaseDir = new File("target/repositories");
 
-        if ( !lockExists( repositoriesBaseDir ) )
-        {
-            createLockFile( repositoriesBaseDir );
-            initializeRepositories( repositoriesBaseDir );
-        }
-        else
-        {
-            logger.error( "Failed to initialize the repositories. Another JVM may have already done this." );
+        if (!lockExists(repositoriesBaseDir)) {
+            createLockFile(repositoriesBaseDir);
+            initializeRepositories(repositoriesBaseDir);
+        } else {
+            logger.error("Failed to initialize the repositories. Another JVM may have already done this.");
         }
 
-        logger.debug( "Initialized repositories." );
+        logger.debug("Initialized repositories.");
     }
 
-    private void createLockFile( File repositoriesRootDir )
-        throws IOException
-    {
-        final File lockFile = new File( repositoriesRootDir, "repositories.lock" );
+    private void createLockFile(File repositoriesRootDir) throws IOException {
+        final File lockFile = new File(repositoriesRootDir, "repositories.lock");
         //noinspection ResultOfMethodCallIgnored
         lockFile.getParentFile().mkdirs();
         //noinspection ResultOfMethodCallIgnored
         lockFile.createNewFile();
     }
 
-    private boolean lockExists( File repositoriesRootDir )
-        throws IOException
-    {
-        File lockFile = new File( repositoriesRootDir, "repositories.lock" );
+    private boolean lockExists(File repositoriesRootDir) throws IOException {
+        File lockFile = new File(repositoriesRootDir, "repositories.lock");
 
         return lockFile.exists();
     }
 
-    private void initializeRepositories( File repositoriesBaseDir )
-        throws IOException
-    {
-        initializeRepository( repositoriesBaseDir, "releases" );
-        initializeRepository( repositoriesBaseDir, "snapshots" );
+    private void initializeRepositories(File repositoriesBaseDir) throws IOException {
+        initializeRepository(repositoriesBaseDir, "releases");
+        initializeRepository(repositoriesBaseDir, "snapshots");
     }
 
-    private void initializeRepository( File repositoriesBaseDir, String repositoryName )
-        throws IOException
-    {
-        createRepositoryStructure( repositoriesBaseDir.getAbsolutePath(), repositoryName );
+    private void initializeRepository(File repositoriesBaseDir, String repositoryName) throws IOException {
+        createRepositoryStructure(repositoriesBaseDir.getAbsolutePath(), repositoryName);
 
-        initializeRepositoryIndex( new File( repositoriesBaseDir.getAbsoluteFile(), repositoryName ), repositoryName );
+        initializeRepositoryIndex(new File(repositoriesBaseDir.getAbsoluteFile(), repositoryName), repositoryName);
     }
 
-    public void createRepositoryStructure( String repositoriesBaseDir, String repositoryName )
-        throws IOException
-    {
-        final File repositoriesBasedir = new File( repositoriesBaseDir );
+    public void createRepositoryStructure(String repositoriesBaseDir, String repositoryName) throws IOException {
+        final File repositoriesBasedir = new File(repositoriesBaseDir);
         //noinspection ResultOfMethodCallIgnored
-        new File( repositoriesBasedir, repositoryName ).mkdirs();
+        new File(repositoriesBasedir, repositoryName).mkdirs();
         //noinspection ResultOfMethodCallIgnored
-        new File( repositoriesBasedir, repositoryName + File.separatorChar + ".index" ).mkdirs();
+        new File(repositoriesBasedir, repositoryName + File.separatorChar + ".index").mkdirs();
 
-        logger.debug( "Created directory structure for repository '" +
-                          repositoriesBasedir.getAbsolutePath() + File.separatorChar + repositoryName + "'." );
+        logger.debug("Created directory structure for repository '" + repositoriesBasedir.getAbsolutePath()
+                + File.separatorChar + repositoryName + "'.");
     }
 
-    private void initializeRepositoryIndex( File repositoryBasedir, String repositoryId )
-        throws IOException
-    {
-        final File indexDir = new File( repositoryBasedir, ".index" );
+    private void initializeRepositoryIndex(File repositoryBasedir, String repositoryId) throws IOException {
+        final File indexDir = new File(repositoryBasedir, ".index");
 
         RepositoryIndexer repositoryIndexer =
-            repositoryIndexerFactory.createRepositoryIndexer( repositoryId, repositoryBasedir, indexDir );
+                repositoryIndexerFactory.createRepositoryIndexer(repositoryId, repositoryBasedir, indexDir);
 
-        repositoryIndexManager.addRepositoryIndex( repositoryId, repositoryIndexer );
+        repositoryIndexManager.addRepositoryIndex(repositoryId, repositoryIndexer);
     }
 
-    public RepositoryIndexManager getRepositoryIndexManager()
-    {
+    public RepositoryIndexManager getRepositoryIndexManager() {
         return repositoryIndexManager;
     }
 
-    public void setRepositoryIndexManager( RepositoryIndexManager repositoryIndexManager )
-    {
+    public void setRepositoryIndexManager(RepositoryIndexManager repositoryIndexManager) {
         this.repositoryIndexManager = repositoryIndexManager;
     }
-
 }

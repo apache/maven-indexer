@@ -29,9 +29,7 @@ under the License.
   <artifactId>search-api</artifactId>
 
   <name>Maven :: Search API</name>
-  <description>
-    Indexer Search API.
-  </description>
+  <description>Indexer Search API.</description>
 
   <properties>
     <javaVersion>8</javaVersion>

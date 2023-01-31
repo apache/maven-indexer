@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -30,15 +29,11 @@ import java.io.OutputStream;
  * @see ResourceHandler
  * @since 5.1.2
  */
-public interface WritableResourceHandler
-        extends ResourceHandler
-{
+public interface WritableResourceHandler extends ResourceHandler {
     /**
      * Resource that is writable.
      */
-    interface WritableResource
-            extends Resource
-    {
+    interface WritableResource extends Resource {
         /**
          * Returns the {@link OutputStream} stream of the resource, if exists, it will replace the existing content, or
          * if not exists, the resource will be created. The stream should be closed by caller, otherwise resource leaks
@@ -56,5 +51,5 @@ public interface WritableResourceHandler
      *
      * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
      */
-    WritableResource locate( String name ) throws IOException;
+    WritableResource locate(String name) throws IOException;
 }

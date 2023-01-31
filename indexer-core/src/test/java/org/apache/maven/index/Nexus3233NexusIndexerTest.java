@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 import java.util.Collection;
@@ -28,52 +27,46 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
-public class Nexus3233NexusIndexerTest
-    extends AbstractNexusIndexerTest
-{
-    protected File repo = new File( getBasedir(), "src/test/nexus-3233" );
+public class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {
+    protected File repo = new File(getBasedir(), "src/test/nexus-3233");
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
+    protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         context =
-            nexusIndexer.addIndexingContext( "nexus-3233", "nexus-3233", repo, indexDir, null, null, FULL_CREATORS );
-        nexusIndexer.scan( context );
+                nexusIndexer.addIndexingContext("nexus-3233", "nexus-3233", repo, indexDir, null, null, FULL_CREATORS);
+        nexusIndexer.scan(context);
     }
 
     @Test
-    public void testIdentifyPomPackagingArtifacts()
-        throws Exception
-    {
+    public void testIdentifyPomPackagingArtifacts() throws Exception {
         // POM1
-        Collection<ArtifactInfo> ais = nexusIndexer.identify( MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc" );
+        Collection<ArtifactInfo> ais = nexusIndexer.identify(MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc");
 
-        assertEquals( 1, ais.size() );
+        assertEquals(1, ais.size());
 
         ArtifactInfo ai = ais.iterator().next();
 
-        assertNotNull( ai );
+        assertNotNull(ai);
 
-        assertEquals( "cisco.infra.dft", ai.getGroupId() );
+        assertEquals("cisco.infra.dft", ai.getGroupId());
 
-        assertEquals( "dma.maven.plugins", ai.getArtifactId() );
+        assertEquals("dma.maven.plugins", ai.getArtifactId());
 
-        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
+        assertEquals("1.0-SNAPSHOT", ai.getVersion());
 
         // POM2
-        ais = nexusIndexer.identify( MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857" );
+        ais = nexusIndexer.identify(MAVEN.SHA1, "efb52d4ef65452b4e575fc2e7709595915775857");
 
-        assertEquals( 1, ais.size() );
+        assertEquals(1, ais.size());
 
         ai = ais.iterator().next();
 
-        assertNotNull( ai );
+        assertNotNull(ai);
 
-        assertEquals( "cisco.infra.dft", ai.getGroupId() );
+        assertEquals("cisco.infra.dft", ai.getGroupId());
 
-        assertEquals( "parent.pom", ai.getArtifactId() );
+        assertEquals("parent.pom", ai.getArtifactId());
 
-        assertEquals( "1.0-SNAPSHOT", ai.getVersion() );
+        assertEquals("1.0-SNAPSHOT", ai.getVersion());
     }
 }

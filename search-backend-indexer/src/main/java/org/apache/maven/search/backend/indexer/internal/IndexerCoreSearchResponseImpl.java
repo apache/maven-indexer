@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.indexer.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.indexer.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.indexer.internal;
 
 import java.util.List;
 
@@ -33,29 +32,29 @@ import static java.util.Objects.requireNonNull;
 /**
  * An engine to perform search trough single repository index (endpoint).
  */
-public class IndexerCoreSearchResponseImpl extends SearchResponseSupport implements IndexerCoreSearchResponse
-{
+public class IndexerCoreSearchResponseImpl extends SearchResponseSupport implements IndexerCoreSearchResponse {
     private final Query query;
 
     private final List<ArtifactInfo> artifactInfos;
 
-    public IndexerCoreSearchResponseImpl( SearchRequest searchRequest, int totalHits, List<Record> page,
-                                          Query query, List<ArtifactInfo> artifactInfos )
-    {
-        super( searchRequest, totalHits, page );
-        this.query = requireNonNull( query );
-        this.artifactInfos = requireNonNull( artifactInfos );
+    public IndexerCoreSearchResponseImpl(
+            SearchRequest searchRequest,
+            int totalHits,
+            List<Record> page,
+            Query query,
+            List<ArtifactInfo> artifactInfos) {
+        super(searchRequest, totalHits, page);
+        this.query = requireNonNull(query);
+        this.artifactInfos = requireNonNull(artifactInfos);
     }
 
     @Override
-    public Query getQuery()
-    {
+    public Query getQuery() {
         return query;
     }
 
     @Override
-    public List<ArtifactInfo> getArtifactInfos()
-    {
+    public List<ArtifactInfo> getArtifactInfos() {
         return artifactInfos;
     }
 }

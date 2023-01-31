@@ -1,5 +1,3 @@
-package org.apache.maven.index.expr;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.expr;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,17 +16,17 @@ package org.apache.maven.index.expr;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.expr;
 
 /**
  * SearchExpression is a wrapper interface for expressions representable as plain strings to be used within searches.
- * 
+ *
  * @author cstamas
  */
-public interface SearchExpression
-{
+public interface SearchExpression {
     /**
      * Returns the expression value as plain java String.
-     * 
+     *
      * @return
      */
     String getStringValue();

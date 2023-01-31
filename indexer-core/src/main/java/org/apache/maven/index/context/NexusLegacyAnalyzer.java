@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,66 +16,56 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.AnalyzerWrapper;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.Tokenizer;
-import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.util.CharTokenizer;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
  * A Nexus specific <a
  * href="http://lucene.apache.org/java/2_4_0/api/core/org/apache/lucene/analysis/Analyzer.html">Lucene Analyzer</a> used
  * to produce legacy index transfer format
- * 
+ *
  * @author Jason van Zyl
  */
-public final class NexusLegacyAnalyzer
-    extends AnalyzerWrapper
-{
+public final class NexusLegacyAnalyzer extends AnalyzerWrapper {
     private static final Analyzer DEFAULT_ANALYZER = new StandardAnalyzer();
 
-    private static final Analyzer LETTER_OR_DIGIT_ANALYZER = new Analyzer()
-    {
+    private static final Analyzer LETTER_OR_DIGIT_ANALYZER = new Analyzer() {
         @Override
-        protected TokenStreamComponents createComponents( final String fieldName )
-        {
-            final Tokenizer tokenizer = new CharTokenizer()
-            {
+        protected TokenStreamComponents createComponents(final String fieldName) {
+            final Tokenizer tokenizer = new CharTokenizer() {
                 @Override
-                protected boolean isTokenChar( int c )
-                {
-                    return Character.isLetterOrDigit( c );
+                protected boolean isTokenChar(int c) {
+                    return Character.isLetterOrDigit(c);
                 }
             };
 
-            return new TokenStreamComponents( tokenizer, new LowerCaseFilter( tokenizer ) );
+            return new TokenStreamComponents(tokenizer, new LowerCaseFilter(tokenizer));
         }
     };
 
-    public NexusLegacyAnalyzer()
-    {
-        super( PER_FIELD_REUSE_STRATEGY );
+    public NexusLegacyAnalyzer() {
+        super(PER_FIELD_REUSE_STRATEGY);
     }
 
     @Override
-    protected Analyzer getWrappedAnalyzer( String fieldName )
-    {
-        if ( !isTextField( fieldName ) )
-        {
+    protected Analyzer getWrappedAnalyzer(String fieldName) {
+        if (!isTextField(fieldName)) {
             return LETTER_OR_DIGIT_ANALYZER;
-        }
-        else
-        {
+        } else {
             return DEFAULT_ANALYZER;
         }
     }
 
-    protected boolean isTextField( String field )
-    {
-        return ArtifactInfo.NAME.equals( field ) || ArtifactInfo.DESCRIPTION.equals( field )
-            || ArtifactInfo.NAMES.equals( field );
+    protected boolean isTextField(String field) {
+        return ArtifactInfo.NAME.equals(field)
+                || ArtifactInfo.DESCRIPTION.equals(field)
+                || ArtifactInfo.NAMES.equals(field);
     }
 }

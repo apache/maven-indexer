@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 
@@ -27,77 +26,69 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
 import org.junit.Test;
 
-public class FSDirectoryDeleteTest
-    extends AbstractIndexCreatorHelper
-{
+public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
 
-    protected File repo = new File( getBasedir(), "src/test/nexus-13" );
+    protected File repo = new File(getBasedir(), "src/test/nexus-13");
 
     protected IndexingContext context;
 
-    protected File indexDirFile = super.getDirectory( "fsdirectorytest/one" );
+    protected File indexDirFile = super.getDirectory("fsdirectorytest/one");
 
     protected Directory indexDir;
 
     protected IndexingContext otherContext;
 
-    protected File otherIndexDirFile = super.getDirectory( "fsdirectorytest/other" );
+    protected File otherIndexDirFile = super.getDirectory("fsdirectorytest/other");
 
     protected Directory otherIndexDir;
 
     @Override
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
 
-        nexusIndexer = lookup( NexusIndexer.class );
+        nexusIndexer = lookup(NexusIndexer.class);
 
-        indexDir = FSDirectory.open( indexDirFile.toPath() );
+        indexDir = FSDirectory.open(indexDirFile.toPath());
 
-        context = nexusIndexer.addIndexingContext( "one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer.addIndexingContext("one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS);
 
-        nexusIndexer.scan( context );
+        nexusIndexer.scan(context);
 
-        otherIndexDir = FSDirectory.open( otherIndexDirFile.toPath() );
+        otherIndexDir = FSDirectory.open(otherIndexDirFile.toPath());
 
         otherContext =
-            nexusIndexer.addIndexingContext( "other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS );
+                nexusIndexer.addIndexingContext("other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS);
 
-        nexusIndexer.scan( otherContext );
+        nexusIndexer.scan(otherContext);
     }
 
     @Override
-    public void tearDown()
-        throws Exception
-    {
+    public void tearDown() throws Exception {
         super.tearDown();
 
-        nexusIndexer.removeIndexingContext( context, true );
+        nexusIndexer.removeIndexingContext(context, true);
 
-        nexusIndexer.removeIndexingContext( otherContext, true );
+        nexusIndexer.removeIndexingContext(otherContext, true);
 
-        super.deleteDirectory( indexDirFile );
+        super.deleteDirectory(indexDirFile);
 
-        super.deleteDirectory( otherIndexDirFile );
+        super.deleteDirectory(otherIndexDirFile);
     }
 
     @Test
-    public void testIndexAndDelete()
-        throws Exception
-    {
+    public void testIndexAndDelete() throws Exception {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         final IndexSearcher otherIndexSearcher = otherContext.acquireIndexSearcher();
-        
+
         indexSearcher.getIndexReader().maxDoc();
         otherIndexSearcher.getIndexReader().maxDoc();
-        
-        context.releaseIndexSearcher( indexSearcher );
-        otherContext.releaseIndexSearcher( otherIndexSearcher );
 
-        context.replace( otherIndexDir );
+        context.releaseIndexSearcher(indexSearcher);
+        otherContext.releaseIndexSearcher(otherIndexSearcher);
 
-        context.merge( otherIndexDir );
+        context.replace(otherIndexDir);
+
+        context.merge(otherIndexDir);
     }
 }

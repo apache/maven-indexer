@@ -29,9 +29,7 @@ under the License.
   <artifactId>indexer-cli</artifactId>
 
   <name>Maven :: Indexer CLI</name>
-  <description>
-    Indexer CLI produces a CLI tool for indexing and publishing Maven repositories.
-  </description>
+  <description>Indexer CLI produces a CLI tool for indexing and publishing Maven repositories.</description>
 
   <!-- IMPORTANT! * WHEN YOU CHANGE DEPS MAKE SURE TO UPDATE SHADE CONFIG! * DON'T FORGET OTHERWISE YOU ARE RENDERING CLI 
     UNWORKABLE! -->
@@ -61,7 +59,8 @@ under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <scope>compile</scope> <!-- to make it into shaded CLI JAR -->
+      <scope>compile</scope>
+      <!-- to make it into shaded CLI JAR -->
     </dependency>
 
     <!-- Needed for CLI assembly only, to make it work in "standalone" CLI mode -->
@@ -106,10 +105,10 @@ under the License.
         <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
-            <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <shadedClassifierName>${cliClassifier}</shadedClassifierName>
               <shadedArtifactAttached>true</shadedArtifactAttached>

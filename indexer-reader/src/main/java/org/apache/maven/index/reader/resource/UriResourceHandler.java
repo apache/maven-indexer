@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,19 +28,16 @@ import static java.util.Objects.requireNonNull;
 /**
  * A {@link ResourceHandler} that represents the base of a {@link URI} hierarchy.
  */
-public class UriResourceHandler implements ResourceHandler
-{
+public class UriResourceHandler implements ResourceHandler {
     private final URI uri;
 
-    public UriResourceHandler( URI uri )
-    {
-        requireNonNull( uri, "uri cannot be null" );
+    public UriResourceHandler(URI uri) {
+        requireNonNull(uri, "uri cannot be null");
         this.uri = uri;
     }
 
     @Override
-    public Resource locate( String name ) throws IOException
-    {
-        return new UrlResource( uri.resolve( name ).toURL() );
+    public Resource locate(String name) throws IOException {
+        return new UrlResource(uri.resolve(name).toURL());
     }
 }

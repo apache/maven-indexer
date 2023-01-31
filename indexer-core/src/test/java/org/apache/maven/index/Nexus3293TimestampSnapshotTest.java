@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,23 +33,19 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class Nexus3293TimestampSnapshotTest
-    extends AbstractIndexCreatorHelper
-{
+public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
 
-    private NexusIndexer prepare()
-        throws Exception, IOException, UnsupportedExistingLuceneIndexException
-    {
-        NexusIndexer indexer = lookup( NexusIndexer.class );
+    private NexusIndexer prepare() throws Exception, IOException, UnsupportedExistingLuceneIndexException {
+        NexusIndexer indexer = lookup(NexusIndexer.class);
 
-        File indexDir = new File( getBasedir(), "target/index/test-" + System.currentTimeMillis() );
-        FileUtils.deleteDirectory( indexDir );
+        File indexDir = new File(getBasedir(), "target/index/test-" + System.currentTimeMillis());
+        FileUtils.deleteDirectory(indexDir);
 
-        File repo = new File( getBasedir(), "src/test/nexus-3293" );
+        File repo = new File(getBasedir(), "src/test/nexus-3293");
         repo.mkdirs();
 
-        context = indexer.addIndexingContext( "test", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
 
         // IndexReader indexReader = context.getIndexSearcher().getIndexReader();
         // int numDocs = indexReader.numDocs();
@@ -64,79 +59,73 @@ public class Nexus3293TimestampSnapshotTest
     }
 
     @Test
-    public void test_nexus_3293_releaseJar()
-        throws Exception
-    {
+    public void test_nexus_3293_releaseJar() throws Exception {
         NexusIndexer indexer = prepare();
 
-        File artifact = new File( getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar" );
+        File artifact = new File(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar");
 
-        File pom = new File( getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+        File pom = new File(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
-        ArtifactInfo artifactInfo = new ArtifactInfo( "test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null, "jar" );
+        ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null, "jar");
 
         M2GavCalculator gavCalc = new M2GavCalculator();
 
-        Gav jarGav = gavCalc.pathToGav( "aopalliance/aopalliance/1.0/aopalliance-1.0.jar" );
-        Gav pomGav = gavCalc.pathToGav( "aopalliance/aopalliance/1.0/aopalliance-1.0.pom" );
+        Gav jarGav = gavCalc.pathToGav("aopalliance/aopalliance/1.0/aopalliance-1.0.jar");
+        Gav pomGav = gavCalc.pathToGav("aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
-        ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, jarGav );
+        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, jarGav);
 
-        indexer.addArtifactToIndex( artifactContext, context );
+        indexer.addArtifactToIndex(artifactContext, context);
 
-        validateIndexContents( indexer );
+        validateIndexContents(indexer);
 
-        artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, jarGav );
+        artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, jarGav);
 
-        indexer.addArtifactToIndex( artifactContext, context );
+        indexer.addArtifactToIndex(artifactContext, context);
 
-        validateIndexContents( indexer );
+        validateIndexContents(indexer);
     }
 
     @Test
-    public void test_nexus_3293_indexTimestampedSnapshotJar()
-        throws Exception
-    {
+    public void test_nexus_3293_indexTimestampedSnapshotJar() throws Exception {
         NexusIndexer indexer = prepare();
 
-        File artifact =
-            new File( getBasedir(),
-                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar" );
+        File artifact = new File(
+                getBasedir(),
+                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar");
 
-        File pom =
-            new File( getBasedir(),
-                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom" );
+        File pom = new File(
+                getBasedir(),
+                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom");
 
-        ArtifactContextProducer artifactContextProducer = lookup( ArtifactContextProducer.class );
+        ArtifactContextProducer artifactContextProducer = lookup(ArtifactContextProducer.class);
 
-        ArtifactContext artifactContext = artifactContextProducer.getArtifactContext( context, artifact );
+        ArtifactContext artifactContext = artifactContextProducer.getArtifactContext(context, artifact);
 
-        indexer.addArtifactToIndex( artifactContext, context );
+        indexer.addArtifactToIndex(artifactContext, context);
 
-        validateIndexContents( indexer );
+        validateIndexContents(indexer);
 
-        artifactContext = artifactContextProducer.getArtifactContext( context, pom );
+        artifactContext = artifactContextProducer.getArtifactContext(context, pom);
 
-        indexer.addArtifactToIndex( artifactContext, context );
+        indexer.addArtifactToIndex(artifactContext, context);
 
-        validateIndexContents( indexer );
+        validateIndexContents(indexer);
     }
 
-    private void validateIndexContents( NexusIndexer indexer )
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*aopalliance*" ) );
+    private void validateIndexContents(NexusIndexer indexer) throws Exception {
+        WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*aopalliance*"));
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.getContexts().add( context );
+        FlatSearchRequest request = new FlatSearchRequest(q);
+        request.getContexts().add(context);
 
-        FlatSearchResponse response = indexer.searchFlat( request );
+        FlatSearchResponse response = indexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 1, r.size() );
+        assertEquals(r.toString(), 1, r.size());
 
         ArtifactInfo ai = r.iterator().next();
 
-        assertEquals( "jar", ai.getPackaging() );
-        assertEquals( "jar", ai.getFileExtension() );
+        assertEquals("jar", ai.getPackaging());
+        assertEquals("jar", ai.getFileExtension());
     }
 }

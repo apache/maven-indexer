@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -31,25 +30,21 @@ import static java.util.Objects.requireNonNull;
  * Wraps {@link WritableResourceHandler}s so that they return {@link WritableResource}s that return
  * {@link BufferedInputStream}s and {@link BufferedOutputStream}s.
  */
-public class BufferedWritableResourceHandler implements WritableResourceHandler
-{
+public class BufferedWritableResourceHandler implements WritableResourceHandler {
     private final WritableResourceHandler writableResourceHandler;
 
-    public BufferedWritableResourceHandler( WritableResourceHandler writableResourceHandler )
-    {
-        requireNonNull( writableResourceHandler, "writableResourceHandler cannot be null" );
+    public BufferedWritableResourceHandler(WritableResourceHandler writableResourceHandler) {
+        requireNonNull(writableResourceHandler, "writableResourceHandler cannot be null");
         this.writableResourceHandler = writableResourceHandler;
     }
 
     @Override
-    public WritableResource locate( String name ) throws IOException
-    {
-        return new BufferedWritableResource( writableResourceHandler.locate( name ) );
+    public WritableResource locate(String name) throws IOException {
+        return new BufferedWritableResource(writableResourceHandler.locate(name));
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         writableResourceHandler.close();
     }
 }

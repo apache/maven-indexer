@@ -29,9 +29,7 @@ under the License.
   <artifactId>search-backend-smo</artifactId>
 
   <name>Maven :: Search API SMO Backend</name>
-  <description>
-    Indexer Search Backend implemented by SMO.
-  </description>
+  <description>Indexer Search Backend implemented by SMO.</description>
 
   <properties>
     <javaVersion>8</javaVersion>
@@ -71,8 +69,8 @@ under the License.
   <build>
     <resources>
       <resource>
-        <directory>src/main/filtered-resources</directory>
         <filtering>true</filtering>
+        <directory>src/main/filtered-resources</directory>
       </resource>
     </resources>
     <plugins>
@@ -82,10 +80,10 @@ under the License.
         <executions>
           <execution>
             <id>compile-java-11</id>
-            <phase>compile</phase>
             <goals>
               <goal>compile</goal>
             </goals>
+            <phase>compile</phase>
             <configuration>
               <release>11</release>
               <compileSourceRoots>

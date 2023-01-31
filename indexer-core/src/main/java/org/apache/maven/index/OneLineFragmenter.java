@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,57 +16,46 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.search.highlight.Fragmenter;
 
-public class OneLineFragmenter
-    implements Fragmenter
-{
+public class OneLineFragmenter implements Fragmenter {
     private String text;
 
-    public void start( String originalText )
-    {
-        setText( originalText );
+    public void start(String originalText) {
+        setText(originalText);
     }
 
-    protected boolean isNewline( char c )
-    {
+    protected boolean isNewline(char c) {
         return c == '\n';
     }
 
-    protected char getChar( int pos )
-    {
-        if ( ( pos < 0 ) || ( pos > ( getText().length() - 1 ) ) )
-        {
+    protected char getChar(int pos) {
+        if ((pos < 0) || (pos > (getText().length() - 1))) {
             // return no newline ;)
             return ' ';
-        }
-        else
-        {
-            return getText().charAt( pos );
+        } else {
+            return getText().charAt(pos);
         }
     }
 
-    public String getText()
-    {
+    public String getText() {
         return text;
     }
 
-    public void setText( String text )
-    {
+    public void setText(String text) {
         this.text = text;
     }
 
-    public boolean isNewFragment()
-    {
+    public boolean isNewFragment() {
         // TODO Auto-generated method stub
         return false;
     }
 
-    public void start( String arg0, TokenStream arg1 )
-    {
+    public void start(String arg0, TokenStream arg1) {
         // TODO Auto-generated method stub
-        
+
     }
 }

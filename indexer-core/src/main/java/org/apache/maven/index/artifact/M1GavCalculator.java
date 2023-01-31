@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,128 +16,102 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * An M1 <code>GavCalculator</code>. Heavily under-maintained.
- * 
+ *
  * @author Jason van Zyl
  * @author Tamas Cservenak
  * @deprecated Maven1 support to be dropped.
  */
 @Singleton
-@Named( "maven1" )
+@Named("maven1")
 @Deprecated
-public class M1GavCalculator
-    implements GavCalculator
-{
+public class M1GavCalculator implements GavCalculator {
 
-    private static final Pattern PAT1 = Pattern.compile( "^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT1 = Pattern.compile("^([^0-9]+)-([0-9].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$");
 
-    private static final Pattern PAT2 =
-        Pattern.compile( "^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$" );
+    private static final Pattern PAT2 = Pattern.compile("^([a-z0-9-_]+)-([0-9-].+)\\.([^0-9]+)(\\.md5|\\.sha1){0,1}$");
 
-    public Gav pathToGav( String str )
-    {
-        try
-        {
-            String s = str.startsWith( "/" ) ? str.substring( 1 ) : str;
+    public Gav pathToGav(String str) {
+        try {
+            String s = str.startsWith("/") ? str.substring(1) : str;
 
-            int n1 = s.lastIndexOf( '/' );
+            int n1 = s.lastIndexOf('/');
 
-            if ( n1 == -1 )
-            {
+            if (n1 == -1) {
                 return null;
             }
 
-            int n2 = s.lastIndexOf( '/', n1 - 1 );
+            int n2 = s.lastIndexOf('/', n1 - 1);
 
-            if ( n2 == -1 )
-            {
+            if (n2 == -1) {
                 return null;
             }
 
-            String g = s.substring( 0, n2 ).replace( '/', '.' );
-            String middle = s.substring( n2 + 1, n1 );
-            String n = s.substring( n1 + 1 );
+            String g = s.substring(0, n2).replace('/', '.');
+            String middle = s.substring(n2 + 1, n1);
+            String n = s.substring(n1 + 1);
 
             String classifier = null;
-            if ( "java-sources".equals( middle ) )
-            {
+            if ("java-sources".equals(middle)) {
                 classifier = "sources";
-            }
-            else if ( "javadocs".equals( middle ) )
-            {
+            } else if ("javadocs".equals(middle)) {
                 classifier = "javadoc";
-            }
-            else if ( "ejbs".equals( middle )
-                && ( n.endsWith( "client.jar" ) || n.endsWith( "client.jar.sha1" ) || n.endsWith( "client.jar.md5" ) ) )
-            {
+            } else if ("ejbs".equals(middle)
+                    && (n.endsWith("client.jar") || n.endsWith("client.jar.sha1") || n.endsWith("client.jar.md5"))) {
                 classifier = "client";
             }
 
             boolean checksum = false;
             Gav.HashType checksumType = null;
-            if ( s.endsWith( ".md5" ) )
-            {
+            if (s.endsWith(".md5")) {
                 checksum = true;
                 checksumType = Gav.HashType.md5;
-                s = s.substring( 0, s.length() - 4 );
-            }
-            else if ( s.endsWith( ".sha1" ) )
-            {
+                s = s.substring(0, s.length() - 4);
+            } else if (s.endsWith(".sha1")) {
                 checksum = true;
                 checksumType = Gav.HashType.sha1;
-                s = s.substring( 0, s.length() - 5 );
+                s = s.substring(0, s.length() - 5);
             }
 
-            if ( s.endsWith( "maven-metadata.xml" ) )
-            {
+            if (s.endsWith("maven-metadata.xml")) {
                 return null;
             }
 
-            String ext = s.substring( s.lastIndexOf( '.' ) + 1 );
+            String ext = s.substring(s.lastIndexOf('.') + 1);
 
-            Matcher m = PAT1.matcher( n );
-            if ( m.matches() )
-            {
-                String a = m.group( 1 );
-                String version = m.group( 2 );
-                if ( classifier != null )
-                {
-                    version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
+            Matcher m = PAT1.matcher(n);
+            if (m.matches()) {
+                String a = m.group(1);
+                String version = m.group(2);
+                if (classifier != null) {
+                    version = version.substring(0, version.length() - (classifier.length() + 1));
                 }
 
-                return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType, false,
-                    null );
-            }
-            else
-            {
-                m = PAT2.matcher( n );
-                if ( m.matches() )
-                {
-                    String a = m.group( 1 );
-                    String version = m.group( 2 );
-                    if ( classifier != null )
-                    {
-                        version = version.substring( 0, version.length() - ( classifier.length() + 1 ) );
+                return new Gav(g, a, version, classifier, ext, null, null, n, checksum, checksumType, false, null);
+            } else {
+                m = PAT2.matcher(n);
+                if (m.matches()) {
+                    String a = m.group(1);
+                    String version = m.group(2);
+                    if (classifier != null) {
+                        version = version.substring(0, version.length() - (classifier.length() + 1));
                     }
 
-                    return new Gav( g, a, version, classifier, ext, null, null, n, checksum, checksumType,
-                        false, null );
-                }
-                else
-                {
+                    return new Gav(g, a, version, classifier, ext, null, null, n, checksum, checksumType, false, null);
+                } else {
                     return null;
                 }
             }
-        }
-        catch ( IndexOutOfBoundsException e )
-        {
+        } catch (IndexOutOfBoundsException e) {
             return null;
         }
     }
@@ -147,62 +119,50 @@ public class M1GavCalculator
     /**
      * // XXX this is not accurate, m1 is using packaging as an artifact folder name.
      */
-    public String gavToPath( Gav gav )
-    {
-        StringBuilder path = new StringBuilder( "/" );
+    public String gavToPath(Gav gav) {
+        StringBuilder path = new StringBuilder("/");
 
-        path.append( gav.getGroupId() );
+        path.append(gav.getGroupId());
 
-        path.append( "/" );
+        path.append("/");
 
-        if ( gav.getClassifier() == null )
-        {
-            path.append( gav.getExtension() );
-        }
-        else
-        {
-            if ( gav.getClassifier().startsWith( "source" ) )
-            {
-                path.append( "java-source" );
-            }
-            else if ( gav.getClassifier().startsWith( "client" ) )
-            {
-                path.append( "ejb" );
-            }
-            else
-            {
-                path.append( gav.getClassifier() );
+        if (gav.getClassifier() == null) {
+            path.append(gav.getExtension());
+        } else {
+            if (gav.getClassifier().startsWith("source")) {
+                path.append("java-source");
+            } else if (gav.getClassifier().startsWith("client")) {
+                path.append("ejb");
+            } else {
+                path.append(gav.getClassifier());
             }
         }
-        path.append( "s" );
+        path.append("s");
 
-        path.append( "/" );
+        path.append("/");
 
-        path.append( gav.getArtifactId() );
+        path.append(gav.getArtifactId());
 
-        path.append( "-" );
+        path.append("-");
 
-        path.append( gav.getVersion() );
+        path.append(gav.getVersion());
 
-        if ( gav.getClassifier() != null )
-        {
-            path.append( "-" );
+        if (gav.getClassifier() != null) {
+            path.append("-");
 
-            path.append( gav.getClassifier() );
+            path.append(gav.getClassifier());
         }
 
-        path.append( "." );
+        path.append(".");
 
-        path.append( gav.getExtension() );
+        path.append(gav.getExtension());
 
-        if ( gav.isHash() )
-        {
-            path.append( "." );
+        if (gav.isHash()) {
+            path.append(".");
 
-            path.append( gav.getHashType().toString() );
+            path.append(gav.getHashType().toString());
         }
 
         return path.toString();
     }
-
 }

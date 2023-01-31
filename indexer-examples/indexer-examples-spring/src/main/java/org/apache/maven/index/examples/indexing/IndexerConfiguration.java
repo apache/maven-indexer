@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.indexing;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,17 +16,19 @@ package org.apache.maven.index.examples.indexing;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.index.Indexer;
-import org.apache.maven.index.Scanner;
-import org.apache.maven.index.context.IndexCreator;
+package org.apache.maven.index.examples.indexing;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.maven.index.Indexer;
+import org.apache.maven.index.Scanner;
+import org.apache.maven.index.context.IndexCreator;
 
 /**
  * A simple configuration holder class.
@@ -38,8 +38,7 @@ import java.util.Map;
  */
 @Named
 @Singleton
-public class IndexerConfiguration
-{
+public class IndexerConfiguration {
 
     private Indexer indexer;
 
@@ -47,48 +46,38 @@ public class IndexerConfiguration
 
     private Map<String, IndexCreator> indexers;
 
-
     @Inject
-    public IndexerConfiguration( Indexer indexer, Scanner scanner, Map<String, IndexCreator> indexers )
-    {
+    public IndexerConfiguration(Indexer indexer, Scanner scanner, Map<String, IndexCreator> indexers) {
         this.indexer = indexer;
         this.scanner = scanner;
         this.indexers = indexers;
     }
 
-    public List<IndexCreator> getIndexersAsList()
-    {
-        return indexers == null ? new ArrayList<>( 0 ) : new ArrayList<>( indexers.values() );
+    public List<IndexCreator> getIndexersAsList() {
+        return indexers == null ? new ArrayList<>(0) : new ArrayList<>(indexers.values());
     }
 
-    public Indexer getIndexer()
-    {
+    public Indexer getIndexer() {
         return indexer;
     }
 
-    public void setIndexer( Indexer indexer )
-    {
+    public void setIndexer(Indexer indexer) {
         this.indexer = indexer;
     }
 
-    public Scanner getScanner()
-    {
+    public Scanner getScanner() {
         return scanner;
     }
 
-    public void setScanner( Scanner scanner )
-    {
+    public void setScanner(Scanner scanner) {
         this.scanner = scanner;
     }
 
-    public Map<String, IndexCreator> getIndexers()
-    {
+    public Map<String, IndexCreator> getIndexers() {
         return indexers;
     }
 
-    public void setIndexers( Map<String, IndexCreator> indexers )
-    {
+    public void setIndexers(Map<String, IndexCreator> indexers) {
         this.indexers = indexers;
     }
-
 }

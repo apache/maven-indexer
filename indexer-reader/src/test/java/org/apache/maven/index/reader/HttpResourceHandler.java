@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,54 +32,39 @@ import static java.util.Objects.requireNonNull;
  * A trivial HTTP {@link ResourceHandler} that uses {@link URI} to fetch remote content. This implementation does not
  * handle any advanced cases, like redirects, authentication, etc.
  */
-public class HttpResourceHandler
-        implements ResourceHandler
-{
-    private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
+public class HttpResourceHandler implements ResourceHandler {
+    private final HttpClient client =
+            HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
     private final URI root;
 
-    public HttpResourceHandler( final URI root )
-    {
-        this.root = requireNonNull( root );
+    public HttpResourceHandler(final URI root) {
+        this.root = requireNonNull(root);
     }
 
-    public Resource locate( final String name )
-    {
-        return new HttpResource( name );
+    public Resource locate(final String name) {
+        return new HttpResource(name);
     }
 
-    private class HttpResource
-            implements Resource
-    {
+    private class HttpResource implements Resource {
         private final String name;
 
-        private HttpResource( final String name )
-        {
+        private HttpResource(final String name) {
             this.name = name;
         }
 
-        public InputStream read() throws IOException
-        {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri( root.resolve( name ) )
-                    .GET()
-                    .build();
-            try
-            {
-                HttpResponse<InputStream> response = client.send( request, HttpResponse.BodyHandlers.ofInputStream() );
-                if ( response.statusCode() == HttpURLConnection.HTTP_OK )
-                {
+        public InputStream read() throws IOException {
+            HttpRequest request =
+                    HttpRequest.newBuilder().uri(root.resolve(name)).GET().build();
+            try {
+                HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+                if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                     return response.body();
+                } else {
+                    throw new IOException("Unexpected response: " + response);
                 }
-                else
-                {
-                    throw new IOException( "Unexpected response: " + response );
-                }
-            }
-            catch ( InterruptedException e )
-            {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                throw new IOException( e );
+                throw new IOException(e);
             }
         }
     }

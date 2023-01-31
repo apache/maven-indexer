@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,53 +29,41 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiReader;
 import org.apache.lucene.search.IndexSearcher;
 
-public class NexusIndexMultiReader
-{
+public class NexusIndexMultiReader {
     private final List<IndexingContext> contexts;
 
     private List<IndexSearcher> searchers;
 
-    public NexusIndexMultiReader( final Collection<IndexingContext> contexts )
-    {
-        this.contexts = Collections.unmodifiableList( new ArrayList<>( contexts ) );
+    public NexusIndexMultiReader(final Collection<IndexingContext> contexts) {
+        this.contexts = Collections.unmodifiableList(new ArrayList<>(contexts));
     }
 
-    public synchronized IndexReader acquire()
-        throws IOException
-    {
-        if ( searchers != null )
-        {
+    public synchronized IndexReader acquire() throws IOException {
+        if (searchers != null) {
             release();
-            throw new IllegalStateException( "acquire() called 2nd time without release() in between!" );
+            throw new IllegalStateException("acquire() called 2nd time without release() in between!");
         }
         this.searchers = new ArrayList<>();
-        final ArrayList<IndexReader> contextReaders = new ArrayList<>( contexts.size() );
-        for ( IndexingContext ctx : contexts )
-        {
+        final ArrayList<IndexReader> contextReaders = new ArrayList<>(contexts.size());
+        for (IndexingContext ctx : contexts) {
             final IndexSearcher indexSearcher = ctx.acquireIndexSearcher();
-            searchers.add( indexSearcher );
-            contextReaders.add( indexSearcher.getIndexReader() );
+            searchers.add(indexSearcher);
+            contextReaders.add(indexSearcher.getIndexReader());
         }
-        return new MultiReader( contextReaders.toArray( new IndexReader[contextReaders.size()] ) );
+        return new MultiReader(contextReaders.toArray(new IndexReader[contextReaders.size()]));
     }
 
-    public synchronized void release()
-        throws IOException
-    {
-        if ( searchers != null )
-        {
+    public synchronized void release() throws IOException {
+        if (searchers != null) {
             final Iterator<IndexingContext> ic = contexts.iterator();
             final Iterator<IndexSearcher> is = searchers.iterator();
 
-            while ( ic.hasNext() && is.hasNext() )
-            {
-                ic.next().releaseIndexSearcher( is.next() );
+            while (ic.hasNext() && is.hasNext()) {
+                ic.next().releaseIndexSearcher(is.next());
             }
 
-            if ( ic.hasNext() || is.hasNext() )
-            {
-                throw new IllegalStateException( "Context and IndexSearcher mismatch: " + contexts + " vs "
-                    + searchers );
+            if (ic.hasNext() || is.hasNext()) {
+                throw new IllegalStateException("Context and IndexSearcher mismatch: " + contexts + " vs " + searchers);
             }
         }
 
@@ -86,11 +73,10 @@ public class NexusIndexMultiReader
     /**
      * Watch out with this method, as it's use depends on (if you control it at all) was {@link #acquire()} method
      * invoked at all or not. Returns {@code null} if not, otherwise the list of acquired searchers. Not thread safe.
-     * 
+     *
      * @return
      */
-    public synchronized List<IndexSearcher> getAcquiredSearchers()
-    {
+    public synchronized List<IndexSearcher> getAcquiredSearchers() {
         return searchers;
     }
 }
