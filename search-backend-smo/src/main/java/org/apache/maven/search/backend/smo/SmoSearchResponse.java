@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,14 +16,14 @@ package org.apache.maven.search.backend.smo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo;
 
 import org.apache.maven.search.SearchResponse;
 
 /**
  * The SMO search response.
  */
-public interface SmoSearchResponse extends SearchResponse
-{
+public interface SmoSearchResponse extends SearchResponse {
     /**
      * Returns the full search URI (base + params) that was used for this search, never {@code null}.
      */

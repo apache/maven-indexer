@@ -1,5 +1,3 @@
-package org.apache.maven.index.treeview;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.treeview;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.treeview;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.treeview;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,9 +25,7 @@ import java.util.List;
 /**
  * Base set of functionality for the TreeNode that all implementations will need.
  */
-public abstract class AbstractTreeNode
-    implements TreeNode
-{
+public abstract class AbstractTreeNode implements TreeNode {
     /**
      * The type of node.
      */
@@ -80,12 +77,11 @@ public abstract class AbstractTreeNode
 
     /**
      * Constructor that takes an IndexTreeView implementation and a TreeNodeFactory implementation;
-     * 
+     *
      * @param tview
      * @param request
      */
-    public AbstractTreeNode( IndexTreeView tview, TreeViewRequest request )
-    {
+    public AbstractTreeNode(IndexTreeView tview, TreeViewRequest request) {
         this.treeView = tview;
 
         this.request = request;
@@ -93,161 +89,145 @@ public abstract class AbstractTreeNode
 
     /**
      * Get the type of node.
-     * 
+     *
      * @return Type
      */
-    public Type getType()
-    {
-        return Type.valueOf( type );
+    public Type getType() {
+        return Type.valueOf(type);
     }
 
     /**
      * Set the type of node.
-     * 
+     *
      * @param type
      */
-    public void setType( Type type )
-    {
+    public void setType(Type type) {
         this.type = type.name();
     }
 
     /**
      * Get flag that determines if the node is a leaf.
-     * 
+     *
      * @return boolean
      */
-    public boolean isLeaf()
-    {
+    public boolean isLeaf() {
         return leaf;
     }
 
     /**
      * Set flag that determines if the node is a leaf.
-     * 
+     *
      * @param leaf
      */
-    public void setLeaf( boolean leaf )
-    {
+    public void setLeaf(boolean leaf) {
         this.leaf = leaf;
     }
 
     /**
      * Get the name of the node.
-     * 
+     *
      * @return String
      */
-    public String getNodeName()
-    {
+    public String getNodeName() {
         return nodeName;
     }
 
     /**
      * Set the name of the node.
-     * 
+     *
      * @param nodeName
      */
-    public void setNodeName( String nodeName )
-    {
+    public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
 
     /**
      * Get the path of the node.
-     * 
+     *
      * @return String
      */
-    public String getPath()
-    {
+    public String getPath() {
         return path;
     }
 
     /**
      * Set the path of the node.
-     * 
+     *
      * @param path
      */
-    public void setPath( String path )
-    {
+    public void setPath(String path) {
         this.path = path;
     }
 
     /**
      * Get the group id of this node.
-     * 
+     *
      * @return String
      */
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return groupId;
     }
 
     /**
      * Set the group id of this node.
-     * 
+     *
      * @param groupId
      */
-    public void setGroupId( String groupId )
-    {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
     /**
      * Get the artifact id of this node.
-     * 
+     *
      * @return String
      */
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
     /**
      * Set the artifact id of this node.
-     * 
+     *
      * @param artifactId
      */
-    public void setArtifactId( String artifactId )
-    {
+    public void setArtifactId(String artifactId) {
         this.artifactId = artifactId;
     }
 
     /**
      * Get the version of this node.
-     * 
+     *
      * @return String
      */
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
     /**
      * Set the version of this node.
-     * 
+     *
      * @param version
      */
-    public void setVersion( String version )
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
     /**
      * Get the repository id that this node is stored in.
-     * 
+     *
      * @return String
      */
-    public String getRepositoryId()
-    {
+    public String getRepositoryId() {
         return repositoryId;
     }
 
     /**
      * Set the repository id that this node is stored in.
-     * 
+     *
      * @param repositoryId
      */
-    public void setRepositoryId( String repositoryId )
-    {
+    public void setRepositoryId(String repositoryId) {
         this.repositoryId = repositoryId;
     }
 
@@ -255,13 +235,11 @@ public abstract class AbstractTreeNode
      * Get the children of this node. If this is a leaf node, null will be returned. This will NOT perform any actions
      * on the index to retrieve the children, will only return children that have already been loaded via the
      * listChildren method.
-     * 
+     *
      * @return List<TreeNode>
      */
-    public List<TreeNode> getChildren()
-    {
-        if ( children == null && !isLeaf() )
-        {
+    public List<TreeNode> getChildren() {
+        if (children == null && !isLeaf()) {
             children = new ArrayList<>();
         }
 
@@ -271,18 +249,18 @@ public abstract class AbstractTreeNode
     /**
      * Get the children of this node. If this is a leaf node, null will be returned. This will use the index to retrieve
      * the list of child nodes.
-     * 
+     *
      * @return List<TreeNode>
      */
-    public List<TreeNode> listChildren()
-        throws IOException
-    {
-        if ( !isLeaf() && getChildren().isEmpty() && !isLeaf() )
-        {
-            children =
-                treeView.listNodes(
-                    new TreeViewRequest( request.getFactory(), getPath(), request.getFieldHints(),
-                        request.getArtifactInfoFilter(), request.getIndexingContext() ) ).getChildren();
+    public List<TreeNode> listChildren() throws IOException {
+        if (!isLeaf() && getChildren().isEmpty() && !isLeaf()) {
+            children = treeView.listNodes(new TreeViewRequest(
+                            request.getFactory(),
+                            getPath(),
+                            request.getFieldHints(),
+                            request.getArtifactInfoFilter(),
+                            request.getIndexingContext()))
+                    .getChildren();
         }
 
         return children;
@@ -290,16 +268,12 @@ public abstract class AbstractTreeNode
 
     /**
      * Find a TreeNode based upon a path and Type check.
-     * 
+     *
      * @return TreeNode
      */
-    public TreeNode findChildByPath( String path, Type type )
-        throws IOException
-    {
-        for ( TreeNode child : getChildren() )
-        {
-            if ( path.equals( child.getPath() ) && type.equals( child.getType() ) )
-            {
+    public TreeNode findChildByPath(String path, Type type) throws IOException {
+        for (TreeNode child : getChildren()) {
+            if (path.equals(child.getPath()) && type.equals(child.getType())) {
                 return child;
             }
         }

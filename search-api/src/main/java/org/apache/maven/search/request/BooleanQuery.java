@@ -1,5 +1,3 @@
-package org.apache.maven.search.request;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,52 +16,46 @@ package org.apache.maven.search.request;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.request;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Boolean query.
  */
-public abstract class BooleanQuery extends Query
-{
+public abstract class BooleanQuery extends Query {
     private final Query left;
 
     private final Query right;
 
-    protected BooleanQuery( Query left, String op, Query right )
-    {
-        super( op );
-        this.left = requireNonNull( left );
-        this.right = requireNonNull( right );
+    protected BooleanQuery(Query left, String op, Query right) {
+        super(op);
+        this.left = requireNonNull(left);
+        this.right = requireNonNull(right);
     }
 
     /**
      * Returns left term of this boolean query, never {@code null}.
      */
-    public Query getLeft()
-    {
+    public Query getLeft() {
         return left;
     }
 
     /**
      * Returns right term of this boolean query, never {@code null}.
      */
-    public Query getRight()
-    {
+    public Query getRight() {
         return right;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getLeft() + " " + getValue() + " " + getRight();
     }
 
-    public static final class And extends BooleanQuery
-    {
-        private And( Query left, Query right )
-        {
-            super( left, "AND", right );
+    public static final class And extends BooleanQuery {
+        private And(Query left, Query right) {
+            super(left, "AND", right);
         }
     }
 
@@ -71,16 +63,13 @@ public abstract class BooleanQuery extends Query
      * Creates Logical AND query (requires presence of all queries) out of passed in queries (at least 2 or more
      * should be given).
      */
-    public static BooleanQuery and( Query left, Query... rights )
-    {
-        if ( rights.length == 0 )
-        {
-            throw new IllegalArgumentException( "one or more on right needed" );
+    public static BooleanQuery and(Query left, Query... rights) {
+        if (rights.length == 0) {
+            throw new IllegalArgumentException("one or more on right needed");
         }
         BooleanQuery result = null;
-        for ( Query right : rights )
-        {
-            result = new And( result == null ? left : result, right );
+        for (Query right : rights) {
+            result = new And(result == null ? left : result, right);
         }
         return result;
     }

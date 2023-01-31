@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.BufferedOutputStream;
 import java.io.DataOutput;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -43,11 +43,10 @@ import org.apache.maven.index.context.IndexingContext;
 
 /**
  * An index data writer used to write transfer index format.
- * 
+ *
  * @author Eugene Kuleshov
  */
-public class IndexDataWriter
-{
+public class IndexDataWriter {
     static final int VERSION = 1;
 
     static final int F_INDEXED = 1;
@@ -66,33 +65,27 @@ public class IndexDataWriter
 
     private boolean descriptorWritten;
 
-    public IndexDataWriter( OutputStream os )
-        throws IOException
-    {
-        bos = new BufferedOutputStream( os, 1024 * 8 );
-        gos = new GZIPOutputStream( bos, 1024 * 2 );
-        dos = new DataOutputStream( gos );
+    public IndexDataWriter(OutputStream os) throws IOException {
+        bos = new BufferedOutputStream(os, 1024 * 8);
+        gos = new GZIPOutputStream(bos, 1024 * 2);
+        dos = new DataOutputStream(gos);
 
         this.descriptorWritten = false;
     }
 
-    public int write( IndexingContext context, IndexReader indexReader, List<Integer> docIndexes )
-        throws IOException
-    {
-        writeHeader( context );
+    public int write(IndexingContext context, IndexReader indexReader, List<Integer> docIndexes) throws IOException {
+        writeHeader(context);
 
-        int n = writeDocuments( indexReader, docIndexes );
+        int n = writeDocuments(indexReader, docIndexes);
 
-        writeGroupFields( context );
+        writeGroupFields(context);
 
         close();
 
         return n;
     }
 
-    public void close()
-        throws IOException
-    {
+    public void close() throws IOException {
         dos.flush();
 
         gos.flush();
@@ -101,64 +94,53 @@ public class IndexDataWriter
         bos.flush();
     }
 
-    public void writeHeader( IndexingContext context )
-        throws IOException
-    {
-        dos.writeByte( VERSION );
+    public void writeHeader(IndexingContext context) throws IOException {
+        dos.writeByte(VERSION);
 
         Date timestamp = context.getTimestamp();
-        dos.writeLong( timestamp == null ? -1 : timestamp.getTime() );
+        dos.writeLong(timestamp == null ? -1 : timestamp.getTime());
     }
 
-    public void writeGroupFields( IndexingContext context )
-        throws IOException
-    {
+    public void writeGroupFields(IndexingContext context) throws IOException {
         {
-            List<IndexableField> allGroupsFields = new ArrayList<>( 2 );
-            allGroupsFields.add( new Field( ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE,
-                                            IndexerField.KEYWORD_STORED ) );
-            allGroupsFields.add( new StoredField( ArtifactInfo.ALL_GROUPS_LIST,
-                    ArtifactInfo.lst2str( context.getAllGroups() ), IndexerField.KEYWORD_STORED ) );
-            writeDocumentFields( allGroupsFields );
+            List<IndexableField> allGroupsFields = new ArrayList<>(2);
+            allGroupsFields.add(
+                    new Field(ArtifactInfo.ALL_GROUPS, ArtifactInfo.ALL_GROUPS_VALUE, IndexerField.KEYWORD_STORED));
+            allGroupsFields.add(new StoredField(
+                    ArtifactInfo.ALL_GROUPS_LIST,
+                    ArtifactInfo.lst2str(context.getAllGroups()),
+                    IndexerField.KEYWORD_STORED));
+            writeDocumentFields(allGroupsFields);
         }
 
         {
-            List<IndexableField> rootGroupsFields = new ArrayList<>( 2 );
-            rootGroupsFields.add( new Field( ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE,
-                                             IndexerField.KEYWORD_STORED ) );
-            rootGroupsFields.add( new StoredField( ArtifactInfo.ROOT_GROUPS_LIST,
-                    ArtifactInfo.lst2str( context.getRootGroups() ), IndexerField.KEYWORD_STORED ) );
-            writeDocumentFields( rootGroupsFields );
+            List<IndexableField> rootGroupsFields = new ArrayList<>(2);
+            rootGroupsFields.add(
+                    new Field(ArtifactInfo.ROOT_GROUPS, ArtifactInfo.ROOT_GROUPS_VALUE, IndexerField.KEYWORD_STORED));
+            rootGroupsFields.add(new StoredField(
+                    ArtifactInfo.ROOT_GROUPS_LIST,
+                    ArtifactInfo.lst2str(context.getRootGroups()),
+                    IndexerField.KEYWORD_STORED));
+            writeDocumentFields(rootGroupsFields);
         }
     }
 
-    public int writeDocuments( IndexReader r, List<Integer> docIndexes )
-        throws IOException
-    {
+    public int writeDocuments(IndexReader r, List<Integer> docIndexes) throws IOException {
         int n = 0;
-        Bits liveDocs = MultiBits.getLiveDocs( r );
+        Bits liveDocs = MultiBits.getLiveDocs(r);
 
-        if ( docIndexes == null )
-        {
-            for ( int i = 0; i < r.maxDoc(); i++ )
-            {
-                if ( liveDocs == null || liveDocs.get( i ) )
-                {
-                    if ( writeDocument( r.document( i ) ) )
-                    {
+        if (docIndexes == null) {
+            for (int i = 0; i < r.maxDoc(); i++) {
+                if (liveDocs == null || liveDocs.get(i)) {
+                    if (writeDocument(r.document(i))) {
                         n++;
                     }
                 }
             }
-        }
-        else
-        {
-            for ( int i : docIndexes )
-            {
-                if ( liveDocs == null || liveDocs.get( i ) )
-                {
-                    if ( writeDocument( r.document( i ) ) )
-                    {
+        } else {
+            for (int i : docIndexes) {
+                if (liveDocs == null || liveDocs.get(i)) {
+                    if (writeDocument(r.document(i))) {
                         n++;
                     }
                 }
@@ -168,130 +150,100 @@ public class IndexDataWriter
         return n;
     }
 
-    public boolean writeDocument( final Document document )
-        throws IOException
-    {
+    public boolean writeDocument(final Document document) throws IOException {
         List<IndexableField> fields = document.getFields();
 
-        List<IndexableField> storedFields = new ArrayList<>( fields.size() );
+        List<IndexableField> storedFields = new ArrayList<>(fields.size());
 
-        for ( IndexableField field : fields )
-        {
-            if ( DefaultIndexingContext.FLD_DESCRIPTOR.equals( field.name() ) )
-            {
-                if ( descriptorWritten )
-                {
+        for (IndexableField field : fields) {
+            if (DefaultIndexingContext.FLD_DESCRIPTOR.equals(field.name())) {
+                if (descriptorWritten) {
                     return false;
-                }
-                else
-                {
+                } else {
                     descriptorWritten = true;
                 }
             }
 
-            if ( field.fieldType().stored() )
-            {
-                storedFields.add( field );
+            if (field.fieldType().stored()) {
+                storedFields.add(field);
             }
         }
 
-        writeDocumentFields( storedFields );
+        writeDocumentFields(storedFields);
 
         return true;
     }
 
-    public void writeDocumentFields( List<IndexableField> fields )
-        throws IOException
-    {
-        dos.writeInt( fields.size() );
+    public void writeDocumentFields(List<IndexableField> fields) throws IOException {
+        dos.writeInt(fields.size());
 
-        for ( IndexableField field : fields )
-        {
-            writeField( field );
+        for (IndexableField field : fields) {
+            writeField(field);
         }
     }
 
-    public void writeField( IndexableField field )
-        throws IOException
-    {
-        int flags = ( field.fieldType().indexOptions() != IndexOptions.NONE  ? F_INDEXED : 0 ) //
-            + ( field.fieldType().tokenized() ? F_TOKENIZED : 0 ) //
-            + ( field.fieldType().stored() ? F_STORED : 0 ); //
+    public void writeField(IndexableField field) throws IOException {
+        int flags = (field.fieldType().indexOptions() != IndexOptions.NONE ? F_INDEXED : 0) //
+                + (field.fieldType().tokenized() ? F_TOKENIZED : 0) //
+                + (field.fieldType().stored() ? F_STORED : 0); //
         // + ( false ? F_COMPRESSED : 0 ); // Compressed not supported anymore
 
         String name = field.name();
         String value = field.stringValue();
 
-        dos.write( flags );
-        dos.writeUTF( name );
-        writeUTF( value, dos );
+        dos.write(flags);
+        dos.writeUTF(name);
+        writeUTF(value, dos);
     }
 
-    private static void writeUTF( String str, DataOutput out )
-        throws IOException
-    {
+    private static void writeUTF(String str, DataOutput out) throws IOException {
         int strlen = str.length();
         int utflen = 0;
         int c;
 
         // use charAt instead of copying String to char array
-        for ( int i = 0; i < strlen; i++ )
-        {
-            c = str.charAt( i );
-            if ( ( c >= 0x0001 ) && ( c <= 0x007F ) )
-            {
+        for (int i = 0; i < strlen; i++) {
+            c = str.charAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
                 utflen++;
-            }
-            else if ( c > 0x07FF )
-            {
+            } else if (c > 0x07FF) {
                 utflen += 3;
-            }
-            else
-            {
+            } else {
                 utflen += 2;
             }
         }
 
         // TODO optimize storing int value
-        out.writeInt( utflen );
+        out.writeInt(utflen);
 
         byte[] bytearr = new byte[utflen];
 
         int count = 0;
 
         int i = 0;
-        for ( ; i < strlen; i++ )
-        {
-            c = str.charAt( i );
-            if ( !( ( c >= 0x0001 ) && ( c <= 0x007F ) ) )
-            {
+        for (; i < strlen; i++) {
+            c = str.charAt(i);
+            if (!((c >= 0x0001) && (c <= 0x007F))) {
                 break;
             }
             bytearr[count++] = (byte) c;
         }
 
-        for ( ; i < strlen; i++ )
-        {
-            c = str.charAt( i );
-            if ( ( c >= 0x0001 ) && ( c <= 0x007F ) )
-            {
+        for (; i < strlen; i++) {
+            c = str.charAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
                 bytearr[count++] = (byte) c;
 
-            }
-            else if ( c > 0x07FF )
-            {
-                bytearr[count++] = (byte) ( 0xE0 | ( ( c >> 12 ) & 0x0F ) );
-                bytearr[count++] = (byte) ( 0x80 | ( ( c >> 6 ) & 0x3F ) );
-                bytearr[count++] = (byte) ( 0x80 | ( ( c ) & 0x3F ) );
-            }
-            else
-            {
-                bytearr[count++] = (byte) ( 0xC0 | ( ( c >> 6 ) & 0x1F ) );
-                bytearr[count++] = (byte) ( 0x80 | ( ( c ) & 0x3F ) );
+            } else if (c > 0x07FF) {
+                bytearr[count++] = (byte) (0xE0 | ((c >> 12) & 0x0F));
+                bytearr[count++] = (byte) (0x80 | ((c >> 6) & 0x3F));
+                bytearr[count++] = (byte) (0x80 | ((c) & 0x3F));
+            } else {
+                bytearr[count++] = (byte) (0xC0 | ((c >> 6) & 0x1F));
+                bytearr[count++] = (byte) (0x80 | ((c) & 0x3F));
             }
         }
 
-        out.write( bytearr, 0, utflen );
+        out.write(bytearr, 0, utflen);
     }
-
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,7 @@ import java.util.List;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 
-public class AbstractSearchRequest
-{
+public class AbstractSearchRequest {
     /**
      * Constant for denoting undefined value for result count.
      */
@@ -65,68 +63,57 @@ public class AbstractSearchRequest
      */
     private boolean luceneExplain = false;
 
-    public AbstractSearchRequest( Query query )
-    {
-        this( query, null );
+    public AbstractSearchRequest(Query query) {
+        this(query, null);
     }
 
-    public AbstractSearchRequest( Query query, List<IndexingContext> contexts )
-    {
+    public AbstractSearchRequest(Query query, List<IndexingContext> contexts) {
         this.query = query;
 
-        if ( contexts != null )
-        {
-            getContexts().addAll( contexts );
+        if (contexts != null) {
+            getContexts().addAll(contexts);
         }
 
         this.count = UNDEFINED;
     }
 
-    public Query getQuery()
-    {
+    public Query getQuery() {
         return query;
     }
 
-    public void setQuery( Query query )
-    {
+    public void setQuery(Query query) {
         this.query = query;
     }
 
-    public List<IndexingContext> getContexts()
-    {
-        if ( contexts == null )
-        {
+    public List<IndexingContext> getContexts() {
+        if (contexts == null) {
             contexts = new ArrayList<>();
         }
 
         return contexts;
     }
 
-    public void setContexts( List<IndexingContext> contexts )
-    {
+    public void setContexts(List<IndexingContext> contexts) {
         this.contexts = contexts;
     }
 
     /**
      * Returns the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
-     * 
+     *
      * @return
      */
-    public int getCount()
-    {
+    public int getCount() {
         return count;
     }
 
     /**
      * Sets the "count" of wanted results. See {@link #UNDEFINED} and {@link #count}.
-     * 
+     *
      * @param count
      */
-    public void setCount( int count )
-    {
-        if ( UNDEFINED != count && count < 1 )
-        {
-            throw new IllegalArgumentException( "Count cannot be less than 1!" );
+    public void setCount(int count) {
+        if (UNDEFINED != count && count < 1) {
+            throw new IllegalArgumentException("Count cannot be less than 1!");
         }
 
         this.count = count;
@@ -134,82 +121,70 @@ public class AbstractSearchRequest
 
     /**
      * Returns true if hits are limited.
-     * 
+     *
      * @return
      * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
-    public boolean isHitLimited()
-    {
+    public boolean isHitLimited() {
         return false;
     }
 
     /**
      * Gets the hit limit. Since 4.1.0 does nothing, always returns -1 (was "no hit limit").
-     * 
+     *
      * @return
      * @deprecated always returns -1 (no hit limit), since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
-    public int getResultHitLimit()
-    {
+    public int getResultHitLimit() {
         return -1;
     }
 
     /**
      * Sets the hit limit. Since 4.1.0 does nothing.
-     * 
+     *
      * @param resultHitLimit
      * @deprecated does nothing, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
-    public void setResultHitLimit( int resultHitLimit )
-    {
+    public void setResultHitLimit(int resultHitLimit) {
         // noop
     }
 
-    public ArtifactInfoFilter getArtifactInfoFilter()
-    {
+    public ArtifactInfoFilter getArtifactInfoFilter() {
         return artifactInfoFilter;
     }
 
-    public void setArtifactInfoFilter( ArtifactInfoFilter artifactInfoFilter )
-    {
+    public void setArtifactInfoFilter(ArtifactInfoFilter artifactInfoFilter) {
         this.artifactInfoFilter = artifactInfoFilter;
     }
 
-    public ArtifactInfoPostprocessor getArtifactInfoPostprocessor()
-    {
+    public ArtifactInfoPostprocessor getArtifactInfoPostprocessor() {
         return artifactInfoPostprocessor;
     }
 
-    public void setArtifactInfoPostprocessor( ArtifactInfoPostprocessor artifactInfoPostprocessor )
-    {
+    public void setArtifactInfoPostprocessor(ArtifactInfoPostprocessor artifactInfoPostprocessor) {
         this.artifactInfoPostprocessor = artifactInfoPostprocessor;
     }
 
-    public List<MatchHighlightRequest> getMatchHighlightRequests()
-    {
-        if ( matchHighlightRequests == null )
-        {
+    public List<MatchHighlightRequest> getMatchHighlightRequests() {
+        if (matchHighlightRequests == null) {
             matchHighlightRequests = new ArrayList<>();
         }
 
         return matchHighlightRequests;
     }
 
-    public void setMatchHighlightRequests( List<MatchHighlightRequest> matchHighlightRequests )
-    {
+    public void setMatchHighlightRequests(List<MatchHighlightRequest> matchHighlightRequests) {
         this.matchHighlightRequests = matchHighlightRequests;
     }
 
-    public boolean isLuceneExplain()
-    {
+    public boolean isLuceneExplain() {
         return luceneExplain;
     }
 
-    public void setLuceneExplain( boolean luceneExplain )
-    {
+    public void setLuceneExplain(boolean luceneExplain) {
         this.luceneExplain = luceneExplain;
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -33,60 +32,44 @@ import java.io.OutputStream;
  * A trivial {@link File} directory handler that does not perform any locking or extra bits, and just serves up files
  * by name from specified existing directory.
  */
-public class DirectoryResourceHandler
-        implements WritableResourceHandler
-{
+public class DirectoryResourceHandler implements WritableResourceHandler {
     private final File rootDirectory;
 
-    public DirectoryResourceHandler( final File rootDirectory )
-    {
-        if ( rootDirectory == null )
-        {
-            throw new NullPointerException( "null rootDirectory" );
+    public DirectoryResourceHandler(final File rootDirectory) {
+        if (rootDirectory == null) {
+            throw new NullPointerException("null rootDirectory");
         }
-        if ( !rootDirectory.isDirectory() )
-        {
-            throw new IllegalArgumentException( "rootDirectory exists and is not a directory" );
+        if (!rootDirectory.isDirectory()) {
+            throw new IllegalArgumentException("rootDirectory exists and is not a directory");
         }
         this.rootDirectory = rootDirectory;
     }
 
-    public File getRootDirectory()
-    {
+    public File getRootDirectory() {
         return rootDirectory;
     }
 
-    public WritableResource locate( final String name )
-    {
-        return new FileResource( new File( rootDirectory, name ) );
+    public WritableResource locate(final String name) {
+        return new FileResource(new File(rootDirectory, name));
     }
 
-    private static class FileResource
-            implements WritableResource
-    {
+    private static class FileResource implements WritableResource {
         private final File file;
 
-        private FileResource( final File file )
-        {
+        private FileResource(final File file) {
             this.file = file;
         }
 
-        public InputStream read() throws IOException
-        {
-            try
-            {
-                return new BufferedInputStream( new FileInputStream( file ) );
-            }
-            catch ( FileNotFoundException e )
-            {
+        public InputStream read() throws IOException {
+            try {
+                return new BufferedInputStream(new FileInputStream(file));
+            } catch (FileNotFoundException e) {
                 return null;
             }
         }
 
-        public OutputStream write() throws IOException
-        {
-            return new BufferedOutputStream( new FileOutputStream( file ) );
+        public OutputStream write() throws IOException {
+            return new BufferedOutputStream(new FileOutputStream(file));
         }
     }
-
 }

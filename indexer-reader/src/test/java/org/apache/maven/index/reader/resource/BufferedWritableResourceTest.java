@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 
@@ -26,19 +25,18 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Test;
 
-public class BufferedWritableResourceTest
-{
+public class BufferedWritableResourceTest {
     private Mockery context = new Mockery();
 
     @Test
-    public void close() throws IOException
-    {
-        final WritableResource resourceHandler = context.mock( WritableResource.class );
-        context.checking( new Expectations()
-        {{
-            oneOf( resourceHandler ).close();
-        }} );
-        new BufferedWritableResource( resourceHandler ).close();
+    public void close() throws IOException {
+        final WritableResource resourceHandler = context.mock(WritableResource.class);
+        context.checking(new Expectations() {
+            {
+                oneOf(resourceHandler).close();
+            }
+        });
+        new BufferedWritableResource(resourceHandler).close();
         context.assertIsSatisfied();
     }
 }

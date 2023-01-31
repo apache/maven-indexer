@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.services.impl;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,15 @@ package org.apache.maven.index.examples.services.impl;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples.services.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.ArtifactInfo;
@@ -31,136 +38,112 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author mtodorov
  */
 @Component
-public class ArtifactIndexingServiceImpl
-    implements ArtifactIndexingService
-{
+public class ArtifactIndexingServiceImpl implements ArtifactIndexingService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( ArtifactIndexingServiceImpl.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArtifactIndexingServiceImpl.class);
 
     @Autowired
     private RepositoryIndexManager repositoryIndexManager;
 
-
     @Override
-    public void addToIndex( String repositoryId, File artifactFile, String groupId, String artifactId, String version,
-                            String extension, String classifier )
-        throws IOException
-    {
-        final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex( repositoryId );
+    public void addToIndex(
+            String repositoryId,
+            File artifactFile,
+            String groupId,
+            String artifactId,
+            String version,
+            String extension,
+            String classifier)
+            throws IOException {
+        final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex(repositoryId);
 
-        indexer.addArtifactToIndex( repositoryId, artifactFile, groupId, artifactId, version, extension, classifier );
+        indexer.addArtifactToIndex(repositoryId, artifactFile, groupId, artifactId, version, extension, classifier);
     }
 
     @Override
-    public void deleteFromIndex( String repositoryId, String groupId, String artifactId, String version,
-                                 String extension, String classifier )
-        throws IOException
-    {
-        final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex( repositoryId );
-        if ( indexer != null )
-        {
-            indexer.delete( Arrays.asList(
-                new ArtifactInfo( repositoryId, groupId, artifactId, version, classifier, extension ) ) );
+    public void deleteFromIndex(
+            String repositoryId, String groupId, String artifactId, String version, String extension, String classifier)
+            throws IOException {
+        final RepositoryIndexer indexer = repositoryIndexManager.getRepositoryIndex(repositoryId);
+        if (indexer != null) {
+            indexer.delete(
+                    Arrays.asList(new ArtifactInfo(repositoryId, groupId, artifactId, version, classifier, extension)));
         }
     }
 
     @Override
-    public SearchResults search( SearchRequest searchRequest )
-        throws IOException, ParseException
-    {
+    public SearchResults search(SearchRequest searchRequest) throws IOException, ParseException {
         SearchResults searchResults = new SearchResults();
 
         final String repositoryId = searchRequest.getRepository();
 
-        if ( repositoryId != null && !repositoryId.isEmpty() )
-        {
-            LOGGER.debug( "Repository: {}", repositoryId );
+        if (repositoryId != null && !repositoryId.isEmpty()) {
+            LOGGER.debug("Repository: {}", repositoryId);
 
             final Map<String, Collection<ArtifactInfo>> resultsMap =
-                getResultsMap( repositoryId, searchRequest.getQuery() );
+                    getResultsMap(repositoryId, searchRequest.getQuery());
 
-            if ( !resultsMap.isEmpty() )
-            {
-                searchResults.setResults( resultsMap );
+            if (!resultsMap.isEmpty()) {
+                searchResults.setResults(resultsMap);
             }
 
-            if ( LOGGER.isDebugEnabled() )
-            {
+            if (LOGGER.isDebugEnabled()) {
                 int results = resultsMap.entrySet().iterator().next().getValue().size();
 
-                LOGGER.debug( "Results: {}", results );
+                LOGGER.debug("Results: {}", results);
             }
-        }
-        else
-        {
+        } else {
             Map<String, Collection<ArtifactInfo>> resultsMap = new LinkedHashMap<>();
-            for ( String repoId : repositoryIndexManager.getIndexes().keySet() )
-            {
-                LOGGER.debug( "Repository: {}", repoId );
+            for (String repoId : repositoryIndexManager.getIndexes().keySet()) {
+                LOGGER.debug("Repository: {}", repoId);
 
-                final RepositoryIndexer repositoryIndex = repositoryIndexManager.getRepositoryIndex( repoId );
-                if ( repositoryIndex != null )
-                {
+                final RepositoryIndexer repositoryIndex = repositoryIndexManager.getRepositoryIndex(repoId);
+                if (repositoryIndex != null) {
                     final Set<ArtifactInfo> artifactInfoResults =
-                        repositoryIndexManager.getRepositoryIndex( repoId ).search( searchRequest.getQuery() );
+                            repositoryIndexManager.getRepositoryIndex(repoId).search(searchRequest.getQuery());
 
-                    if ( !artifactInfoResults.isEmpty() )
-                    {
-                        resultsMap.put( repoId, artifactInfoResults );
+                    if (!artifactInfoResults.isEmpty()) {
+                        resultsMap.put(repoId, artifactInfoResults);
                     }
 
-                    LOGGER.debug( "Results: {}", artifactInfoResults.size() );
+                    LOGGER.debug("Results: {}", artifactInfoResults.size());
                 }
             }
 
-            searchResults.setResults( resultsMap );
+            searchResults.setResults(resultsMap);
         }
 
         return searchResults;
     }
 
     @Override
-    public boolean contains( SearchRequest searchRequest )
-        throws IOException, ParseException
-    {
-        return !getResultsMap( searchRequest.getRepository(), searchRequest.getQuery() ).isEmpty();
+    public boolean contains(SearchRequest searchRequest) throws IOException, ParseException {
+        return !getResultsMap(searchRequest.getRepository(), searchRequest.getQuery())
+                .isEmpty();
     }
 
-    public Map<String, Collection<ArtifactInfo>> getResultsMap( String repositoryId, String query )
-        throws IOException, ParseException
-    {
+    public Map<String, Collection<ArtifactInfo>> getResultsMap(String repositoryId, String query)
+            throws IOException, ParseException {
         Map<String, Collection<ArtifactInfo>> resultsMap = new LinkedHashMap<>();
         final Set<ArtifactInfo> artifactInfoResults =
-            repositoryIndexManager.getRepositoryIndex( repositoryId ).search( query );
+                repositoryIndexManager.getRepositoryIndex(repositoryId).search(query);
 
-        if ( !artifactInfoResults.isEmpty() )
-        {
-            resultsMap.put( repositoryId, artifactInfoResults );
+        if (!artifactInfoResults.isEmpty()) {
+            resultsMap.put(repositoryId, artifactInfoResults);
         }
 
         return resultsMap;
     }
 
-    public RepositoryIndexManager getRepositoryIndexManager()
-    {
+    public RepositoryIndexManager getRepositoryIndexManager() {
         return repositoryIndexManager;
     }
 
-    public void setRepositoryIndexManager( RepositoryIndexManager repositoryIndexManager )
-    {
+    public void setRepositoryIndexManager(RepositoryIndexManager repositoryIndexManager) {
         this.repositoryIndexManager = repositoryIndexManager;
     }
-
 }

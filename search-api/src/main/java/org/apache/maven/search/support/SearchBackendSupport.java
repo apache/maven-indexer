@@ -1,5 +1,3 @@
-package org.apache.maven.search.support;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.support;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.support;
 
 import org.apache.maven.search.SearchBackend;
 
@@ -26,33 +25,28 @@ import static java.util.Objects.requireNonNull;
 /**
  * A search backend support class.
  */
-public abstract class SearchBackendSupport implements SearchBackend
-{
+public abstract class SearchBackendSupport implements SearchBackend {
     private final String backendId;
 
     private final String repositoryId;
 
-    protected SearchBackendSupport( String backendId, String repositoryId )
-    {
-        this.backendId = requireNonNull( backendId );
-        this.repositoryId = requireNonNull( repositoryId );
+    protected SearchBackendSupport(String backendId, String repositoryId) {
+        this.backendId = requireNonNull(backendId);
+        this.repositoryId = requireNonNull(repositoryId);
     }
 
     @Override
-    public String getBackendId()
-    {
+    public String getBackendId() {
         return backendId;
     }
 
     @Override
-    public String getRepositoryId()
-    {
+    public String getRepositoryId() {
         return repositoryId;
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         // override if needed
     }
 }

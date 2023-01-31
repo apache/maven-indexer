@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,63 +47,54 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Eugene Kuleshov
  */
-public class IndexDataTest
-    extends AbstractRepoNexusIndexerTest
-{
+public class IndexDataTest extends AbstractRepoNexusIndexerTest {
     private Directory newDir;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
+    protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         indexDir = new ByteBuffersDirectory();
 
-        context =
-            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
 
         // assertNull( context.getTimestamp() ); // unknown upon creation
 
-        nexusIndexer.scan( context );
+        nexusIndexer.scan(context);
 
         Date timestamp = context.getTimestamp();
 
-        assertNotNull( timestamp );
+        assertNotNull(timestamp);
 
         // save and restore index to be used by common tests
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        IndexDataWriter dw = new IndexDataWriter( bos );
+        IndexDataWriter dw = new IndexDataWriter(bos);
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
-        try
-        {
-            dw.write( context, indexSearcher.getIndexReader(), null );
-        } finally
-        {
-            context.releaseIndexSearcher( indexSearcher );
+        try {
+            dw.write(context, indexSearcher.getIndexReader(), null);
+        } finally {
+            context.releaseIndexSearcher(indexSearcher);
         }
 
-        ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
+        ByteArrayInputStream is = new ByteArrayInputStream(bos.toByteArray());
 
         newDir = new ByteBuffersDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, 1, newDir, context ).getTimestamp();
+        Date newTimestamp =
+                DefaultIndexUpdater.unpackIndexData(is, 1, newDir, context).getTimestamp();
 
-        assertEquals( timestamp, newTimestamp );
+        assertEquals(timestamp, newTimestamp);
 
-        context.replace( newDir );
+        context.replace(newDir);
     }
 
     @Test
-    public void testEmptyContext()
-        throws Exception
-    {
+    public void testEmptyContext() throws Exception {
         indexDir = new ByteBuffersDirectory();
 
-        context =
-            nexusIndexer.addIndexingContext( "test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS );
+        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
 
-        assertNull( context.getTimestamp() ); // unknown upon creation
+        assertNull(context.getTimestamp()); // unknown upon creation
 
         // save and restore index to be used by common tests
         // the point is that this is virgin context, and timestamp is null,
@@ -112,66 +102,57 @@ public class IndexDataTest
 
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-        IndexDataWriter dw = new IndexDataWriter( bos );
+        IndexDataWriter dw = new IndexDataWriter(bos);
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
-        try
-        {
-            dw.write( context, indexSearcher.getIndexReader(), null );
-        }finally
-        {
-            context.releaseIndexSearcher( indexSearcher );
+        try {
+            dw.write(context, indexSearcher.getIndexReader(), null);
+        } finally {
+            context.releaseIndexSearcher(indexSearcher);
         }
 
-        ByteArrayInputStream is = new ByteArrayInputStream( bos.toByteArray() );
+        ByteArrayInputStream is = new ByteArrayInputStream(bos.toByteArray());
 
         newDir = new ByteBuffersDirectory();
 
-        Date newTimestamp = DefaultIndexUpdater.unpackIndexData( is, 1, newDir, context ).getTimestamp();
+        Date newTimestamp =
+                DefaultIndexUpdater.unpackIndexData(is, 1, newDir, context).getTimestamp();
 
-        assertEquals( null, newTimestamp );
+        assertEquals(null, newTimestamp);
 
-        context.replace( newDir );
+        context.replace(newDir);
     }
 
     @Test
-    public void testData()
-        throws Exception
-    {
+    public void testData() throws Exception {
         IndexReader r1 = context.acquireIndexSearcher().getIndexReader();
 
-        Map<String, ArtifactInfo> r1map = readIndex( r1 );
+        Map<String, ArtifactInfo> r1map = readIndex(r1);
 
-        IndexReader r2 = DirectoryReader.open( newDir );
+        IndexReader r2 = DirectoryReader.open(newDir);
 
-        Map<String, ArtifactInfo> r2map = readIndex( r2 );
+        Map<String, ArtifactInfo> r2map = readIndex(r2);
 
-        for ( Entry<String, ArtifactInfo> e : r1map.entrySet() )
-        {
+        for (Entry<String, ArtifactInfo> e : r1map.entrySet()) {
             String key = e.getKey();
-            assertTrue( "Expected for find " + key, r2map.containsKey( key ) );
+            assertTrue("Expected for find " + key, r2map.containsKey(key));
         }
 
-        assertEquals( r1map.size(), r2map.size() );
+        assertEquals(r1map.size(), r2map.size());
     }
 
-    private Map<String, ArtifactInfo> readIndex( IndexReader r1 )
-        throws CorruptIndexException, IOException
-    {
+    private Map<String, ArtifactInfo> readIndex(IndexReader r1) throws CorruptIndexException, IOException {
         Map<String, ArtifactInfo> map = new HashMap<>();
 
-        for ( int i = 0; i < r1.maxDoc(); i++ )
-        {
-            Document document = r1.document( i );
+        for (int i = 0; i < r1.maxDoc(); i++) {
+            Document document = r1.document(i);
 
-            ArtifactInfo ai = IndexUtils.constructArtifactInfo( document, context );
+            ArtifactInfo ai = IndexUtils.constructArtifactInfo(document, context);
 
-            if ( ai != null )
-            {
-                map.put( ai.getUinfo(), ai );
+            if (ai != null) {
+                map.put(ai.getUinfo(), ai);
             }
         }
 
         return map;
     }
-
 }

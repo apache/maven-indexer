@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,12 +39,10 @@ import org.apache.maven.index.artifact.M2GavCalculator;
 /**
  * A merged indexing context that offers read only "view" on multiple other indexing contexts merged and presented as
  * one. Usable for searching and publishing, but all write operations are basically noop.
- * 
+ *
  * @author cstamas
  */
-public class MergedIndexingContext
-    extends AbstractIndexingContext
-{
+public class MergedIndexingContext extends AbstractIndexingContext {
     private final String id;
 
     private final String repositoryId;
@@ -62,10 +59,14 @@ public class MergedIndexingContext
 
     private boolean searchable;
 
-    private MergedIndexingContext( ContextMemberProvider membersProvider, String id, String repositoryId,
-                                   File repository, Directory indexDirectory, boolean searchable )
-        throws IOException
-    {
+    private MergedIndexingContext(
+            ContextMemberProvider membersProvider,
+            String id,
+            String repositoryId,
+            File repository,
+            Directory indexDirectory,
+            boolean searchable)
+            throws IOException {
         this.id = id;
         this.repositoryId = repositoryId;
         this.repository = repository;
@@ -73,84 +74,78 @@ public class MergedIndexingContext
         this.gavCalculator = new M2GavCalculator();
         this.directory = indexDirectory;
         this.searchable = searchable;
-        setIndexDirectoryFile( null );
+        setIndexDirectoryFile(null);
     }
 
-    public MergedIndexingContext( String id, String repositoryId, File repository, File indexDirectoryFile,
-                                  boolean searchable, ContextMemberProvider membersProvider )
-        throws IOException
-    {
-        this( membersProvider, id, repositoryId, repository, FSDirectory.open( indexDirectoryFile.toPath() ),
-              searchable );
+    public MergedIndexingContext(
+            String id,
+            String repositoryId,
+            File repository,
+            File indexDirectoryFile,
+            boolean searchable,
+            ContextMemberProvider membersProvider)
+            throws IOException {
+        this(membersProvider, id, repositoryId, repository, FSDirectory.open(indexDirectoryFile.toPath()), searchable);
 
-        setIndexDirectoryFile( indexDirectoryFile );
+        setIndexDirectoryFile(indexDirectoryFile);
     }
 
     @Deprecated
-    public MergedIndexingContext( String id, String repositoryId, File repository, Directory indexDirectory,
-                                  boolean searchable, ContextMemberProvider membersProvider )
-        throws IOException
-    {
-        this( membersProvider, id, repositoryId, repository, indexDirectory, searchable );
+    public MergedIndexingContext(
+            String id,
+            String repositoryId,
+            File repository,
+            Directory indexDirectory,
+            boolean searchable,
+            ContextMemberProvider membersProvider)
+            throws IOException {
+        this(membersProvider, id, repositoryId, repository, indexDirectory, searchable);
 
-        if ( indexDirectory instanceof FSDirectory )
-        {
-            setIndexDirectoryFile( ( (FSDirectory) indexDirectory ).getDirectory().toFile() );
+        if (indexDirectory instanceof FSDirectory) {
+            setIndexDirectoryFile(((FSDirectory) indexDirectory).getDirectory().toFile());
         }
     }
 
-    public Collection<IndexingContext> getMembers()
-    {
+    public Collection<IndexingContext> getMembers() {
         return membersProvider.getMembers();
     }
 
-    public String getId()
-    {
+    public String getId() {
         return id;
     }
 
-    public String getRepositoryId()
-    {
+    public String getRepositoryId() {
         return repositoryId;
     }
 
-    public File getRepository()
-    {
+    public File getRepository() {
         return repository;
     }
 
-    public String getRepositoryUrl()
-    {
+    public String getRepositoryUrl() {
         return null;
     }
 
-    public String getIndexUpdateUrl()
-    {
+    public String getIndexUpdateUrl() {
         return null;
     }
 
-    public boolean isSearchable()
-    {
+    public boolean isSearchable() {
         return searchable;
     }
 
-    public void setSearchable( boolean searchable )
-    {
+    public void setSearchable(boolean searchable) {
         this.searchable = searchable;
     }
 
-    public Date getTimestamp()
-    {
+    public Date getTimestamp() {
         Date ts = null;
 
-        for ( IndexingContext ctx : getMembers() )
-        {
+        for (IndexingContext ctx : getMembers()) {
             Date cts = ctx.getTimestamp();
 
-            if ( cts != null )
-            {
-                if ( ts == null || cts.after( ts ) )
-                {
+            if (cts != null) {
+                if (ts == null || cts.after(ts)) {
                     ts = cts;
                 }
             }
@@ -159,144 +154,103 @@ public class MergedIndexingContext
         return ts;
     }
 
-    public void updateTimestamp()
-        throws IOException
-    {
+    public void updateTimestamp() throws IOException {
         // noop
     }
 
-    public void updateTimestamp( boolean save )
-        throws IOException
-    {
+    public void updateTimestamp(boolean save) throws IOException {
         // noop
     }
 
-    public void updateTimestamp( boolean save, Date date )
-        throws IOException
-    {
+    public void updateTimestamp(boolean save, Date date) throws IOException {
         // noop
     }
 
-    public int getSize()
-        throws IOException
-    {
+    public int getSize() throws IOException {
         int size = 0;
 
-        for ( IndexingContext ctx : getMembers() )
-        {
+        for (IndexingContext ctx : getMembers()) {
             size += ctx.getSize();
         }
 
         return size;
     }
 
-    public IndexSearcher acquireIndexSearcher()
-        throws IOException
-    {
-        final NexusIndexMultiReader mr = new NexusIndexMultiReader( getMembers() );
-        return new NexusIndexMultiSearcher( mr );
+    public IndexSearcher acquireIndexSearcher() throws IOException {
+        final NexusIndexMultiReader mr = new NexusIndexMultiReader(getMembers());
+        return new NexusIndexMultiSearcher(mr);
     }
 
-    public void releaseIndexSearcher( IndexSearcher indexSearcher )
-        throws IOException
-    {
-        if ( indexSearcher instanceof NexusIndexMultiSearcher )
-        {
-            ( (NexusIndexMultiSearcher) indexSearcher ).release();
+    public void releaseIndexSearcher(IndexSearcher indexSearcher) throws IOException {
+        if (indexSearcher instanceof NexusIndexMultiSearcher) {
+            ((NexusIndexMultiSearcher) indexSearcher).release();
+        } else {
+            throw new IllegalArgumentException(String.format(
+                    "Illegal argument to merged idexing context: it emits class %s but and cannot release class %s!",
+                    NexusIndexMultiSearcher.class.getName(),
+                    indexSearcher.getClass().getName()));
         }
-        else
-        {
-            throw new IllegalArgumentException( String.format(
-                "Illegal argument to merged idexing context: it emits class %s but and cannot release class %s!",
-                NexusIndexMultiSearcher.class.getName(), indexSearcher.getClass().getName() ) );
-        }
-
     }
 
-    public IndexWriter getIndexWriter()
-        throws IOException
-    {
-        throw new UnsupportedOperationException( getClass().getName() + " indexing context is read-only!" );
+    public IndexWriter getIndexWriter() throws IOException {
+        throw new UnsupportedOperationException(getClass().getName() + " indexing context is read-only!");
     }
 
-    public List<IndexCreator> getIndexCreators()
-    {
+    public List<IndexCreator> getIndexCreators() {
         HashSet<IndexCreator> creators = new HashSet<>();
 
-        for ( IndexingContext ctx : getMembers() )
-        {
-            creators.addAll( ctx.getIndexCreators() );
+        for (IndexingContext ctx : getMembers()) {
+            creators.addAll(ctx.getIndexCreators());
         }
 
-        return new ArrayList<>( creators );
+        return new ArrayList<>(creators);
     }
 
-    public Analyzer getAnalyzer()
-    {
+    public Analyzer getAnalyzer() {
         return new NexusAnalyzer();
     }
 
-    public void commit()
-        throws IOException
-    {
+    public void commit() throws IOException {
         // noop
     }
 
-    public void rollback()
-        throws IOException
-    {
+    public void rollback() throws IOException {
         // noop
     }
 
-    public void optimize()
-        throws IOException
-    {
+    public void optimize() throws IOException {
         // noop
     }
 
-    public void close( boolean deleteFiles )
-        throws IOException
-    {
+    public void close(boolean deleteFiles) throws IOException {
         // noop
     }
 
-    public void purge()
-        throws IOException
-    {
+    public void purge() throws IOException {
         // noop
     }
 
-    public void merge( Directory directory )
-        throws IOException
-    {
+    public void merge(Directory directory) throws IOException {
         // noop
     }
 
-    public void merge( Directory directory, DocumentFilter filter )
-        throws IOException
-    {
+    public void merge(Directory directory, DocumentFilter filter) throws IOException {
         // noop
     }
 
-    public void replace( Directory directory )
-        throws IOException
-    {
+    public void replace(Directory directory) throws IOException {
         // noop
     }
 
-    public void replace( Directory directory, Set<String> allGroups, Set<String> rootGroups )
-        throws IOException
-    {
+    public void replace(Directory directory, Set<String> allGroups, Set<String> rootGroups) throws IOException {
         // noop
     }
 
-    public Directory getIndexDirectory()
-    {
+    public Directory getIndexDirectory() {
         return directory;
     }
 
-    public File getIndexDirectoryFile()
-    {
+    public File getIndexDirectoryFile() {
         return directoryFile;
     }
 
@@ -304,67 +258,49 @@ public class MergedIndexingContext
      * Sets index location. As usually index is persistent (is on disk), this will point to that value, but in
      * some circumstances (ie, using RAMDisk for index), this will point to an existing tmp directory.
      */
-    protected void setIndexDirectoryFile( File dir )
-        throws IOException
-    {
-        if ( dir == null )
-        {
+    protected void setIndexDirectoryFile(File dir) throws IOException {
+        if (dir == null) {
             // best effort, to have a directory through the life of a ctx
-            this.directoryFile = Files.createTempDirectory( "mindexer-ctx" + id ).toFile();
+            this.directoryFile = Files.createTempDirectory("mindexer-ctx" + id).toFile();
             this.directoryFile.deleteOnExit();
-        }
-        else
-        {
+        } else {
             this.directoryFile = dir;
         }
     }
 
-    public GavCalculator getGavCalculator()
-    {
+    public GavCalculator getGavCalculator() {
         return gavCalculator;
     }
 
-    public void setAllGroups( Collection<String> groups )
-        throws IOException
-    {
+    public void setAllGroups(Collection<String> groups) throws IOException {
         // noop
     }
 
-    public Set<String> getAllGroups()
-        throws IOException
-    {
+    public Set<String> getAllGroups() throws IOException {
         HashSet<String> result = new HashSet<>();
 
-        for ( IndexingContext ctx : getMembers() )
-        {
-            result.addAll( ctx.getAllGroups() );
+        for (IndexingContext ctx : getMembers()) {
+            result.addAll(ctx.getAllGroups());
         }
 
         return result;
     }
 
-    public void setRootGroups( Collection<String> groups )
-        throws IOException
-    {
+    public void setRootGroups(Collection<String> groups) throws IOException {
         // noop
     }
 
-    public Set<String> getRootGroups()
-        throws IOException
-    {
+    public Set<String> getRootGroups() throws IOException {
         HashSet<String> result = new HashSet<>();
 
-        for ( IndexingContext ctx : getMembers() )
-        {
-            result.addAll( ctx.getRootGroups() );
+        for (IndexingContext ctx : getMembers()) {
+            result.addAll(ctx.getRootGroups());
         }
 
         return result;
     }
 
-    public void rebuildGroups()
-        throws IOException
-    {
+    public void rebuildGroups() throws IOException {
         // noop
     }
 }

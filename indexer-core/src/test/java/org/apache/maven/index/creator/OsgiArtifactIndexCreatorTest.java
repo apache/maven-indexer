@@ -1,5 +1,3 @@
-package org.apache.maven.index.creator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,12 +16,15 @@ package org.apache.maven.index.creator;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.creator;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.FlatSearchRequest;
@@ -33,7 +34,6 @@ import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
-import org.apache.maven.index.AbstractTestSupport;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
@@ -45,228 +45,225 @@ import static org.junit.Assert.assertThat;
 /**
  * @author Olivier Lamy
  */
-public class OsgiArtifactIndexCreatorTest
-    extends AbstractTestSupport
-{
+public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     public static final String CORE_4_1_0_SHA256 = "3f71f30d5245ab0c0bcb5261afedbbdcb0549bb36e536345279b616924b0ea4a";
-    public static final String CORE_4_1_0_PROVIDED_CAPABILITY = "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.FeaturesService\"," +
-            "osgi.service;effective:=active;objectClass=\"org.eclipse.equinox.region.RegionDigraph\"," +
-            "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.RegionDigraphPersistence\"";
+    public static final String CORE_4_1_0_PROVIDED_CAPABILITY =
+            "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.FeaturesService\","
+                    + "osgi.service;effective:=active;objectClass=\"org.eclipse.equinox.region.RegionDigraph\","
+                    + "osgi.service;effective:=active;objectClass=\"org.apache.karaf.features.RegionDigraphPersistence\"";
     static final String INDEX_ID = "osgi-test1";
     protected IndexCreator indexCreator;
     private NexusIndexer nexusIndexer;
 
     @Override
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
 
-        indexCreator = this.lookup( IndexCreator.class, OsgiArtifactIndexCreator.ID );
+        indexCreator = this.lookup(IndexCreator.class, OsgiArtifactIndexCreator.ID);
 
-        nexusIndexer = this.lookup( NexusIndexer.class );
+        nexusIndexer = this.lookup(NexusIndexer.class);
     }
 
     @Test
-    public void testAssertIndexCreatorComponentExists()
-        throws Exception
-    {
-        assertNotNull( indexCreator );
+    public void testAssertIndexCreatorComponentExists() throws Exception {
+        assertNotNull(indexCreator);
     }
 
     @Test
-    public void testPopulateArtifactInfo()
-        throws Exception
-    {
-        File artifact = new File( getBasedir(),
-                                  "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.jar" );
+    public void testPopulateArtifactInfo() throws Exception {
+        File artifact = new File(
+                getBasedir(),
+                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.jar");
 
-        File pom = new File( getBasedir(),
-                             "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.pom" );
+        File pom = new File(
+                getBasedir(),
+                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.pom");
 
-        ArtifactInfo artifactInfo =
-            new ArtifactInfo( "test", "org.apache.karaf.features", "org.apache.karaf.features.command", "2.2.2", null, "jar" );
+        ArtifactInfo artifactInfo = new ArtifactInfo(
+                "test", "org.apache.karaf.features", "org.apache.karaf.features.command", "2.2.2", null, "jar");
 
-        ArtifactContext artifactContext = new ArtifactContext( pom, artifact, null, artifactInfo, null );
+        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
 
-        indexCreator.populateArtifactInfo( artifactContext );
+        indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNotNull( "bundleSymbolicName", artifactContext.getArtifactInfo().getBundleSymbolicName() );
+        assertNotNull("bundleSymbolicName", artifactContext.getArtifactInfo().getBundleSymbolicName());
 
-        assertNotNull( "bundleVersion", artifactContext.getArtifactInfo().getBundleVersion() );
+        assertNotNull("bundleVersion", artifactContext.getArtifactInfo().getBundleVersion());
 
-        assertNotNull( "bundleExportPackage", artifactContext.getArtifactInfo().getBundleExportPackage() );
-
-        assertEquals( "org.apache.karaf.features.command", artifactContext.getArtifactInfo().getBundleSymbolicName() );
-
-        assertEquals( "2.2.2", artifactContext.getArtifactInfo().getBundleVersion() );
+        assertNotNull("bundleExportPackage", artifactContext.getArtifactInfo().getBundleExportPackage());
 
         assertEquals(
-            "org.apache.karaf.features.command.completers;uses:=\"org.apache.karaf.features,org.apache.karaf.shell.console,org.apache.karaf.shell.console.completer\";version=\"2.2.2\",org.apache.karaf.features.command;uses:=\"org.apache.felix.gogo.commands,org.apache.karaf.features,org.apache.karaf.shell.console,org.osgi.framework,org.apache.felix.service.command\";version=\"2.2.2\"",
-            artifactContext.getArtifactInfo().getBundleExportPackage() );
+                "org.apache.karaf.features.command",
+                artifactContext.getArtifactInfo().getBundleSymbolicName());
+
+        assertEquals("2.2.2", artifactContext.getArtifactInfo().getBundleVersion());
+
+        assertEquals(
+                "org.apache.karaf.features.command.completers;uses:=\"org.apache.karaf.features,org.apache.karaf.shell.console,org.apache.karaf.shell.console.completer\";version=\"2.2.2\",org.apache.karaf.features.command;uses:=\"org.apache.felix.gogo.commands,org.apache.karaf.features,org.apache.karaf.shell.console,org.osgi.framework,org.apache.felix.service.command\";version=\"2.2.2\"",
+                artifactContext.getArtifactInfo().getBundleExportPackage());
 
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
-        assertEquals( "This bundle provides the Karaf shell commands to manipulate features.", ai.getBundleDescription() );
-        assertEquals( "Apache Karaf :: Features :: Command", ai.getBundleName() );
-        assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense() );
-        assertEquals( "http://www.apache.org/", ai.getBundleDocUrl() );
+        assertEquals(
+                "This bundle provides the Karaf shell commands to manipulate features.", ai.getBundleDescription());
+        assertEquals("Apache Karaf :: Features :: Command", ai.getBundleName());
+        assertEquals("http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense());
+        assertEquals("http://www.apache.org/", ai.getBundleDocUrl());
 
         assertEquals(
-            "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
-            ai.getBundleImportPackage() );
+                "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
+                ai.getBundleImportPackage());
     }
 
     @Test
     public void testPopulateFragmentHost() throws Exception {
-        File artifact = new File(getBasedir(),
-                "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
+        File artifact =
+                new File(getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
 
-        File pom = new File(getBasedir(),
-                "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom");
-        ArtifactInfo artifactInfo =
-                new ArtifactInfo("test", "org.slf4j", "slf4j-simple", "1.7.7", null,"jar");
+        File pom =
+                new File(getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom");
+        ArtifactInfo artifactInfo = new ArtifactInfo("test", "org.slf4j", "slf4j-simple", "1.7.7", null, "jar");
 
         ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
         indexCreator.populateArtifactInfo(artifactContext);
         assertEquals("slf4j.api", artifactInfo.getBundleFragmentHost());
-
     }
 
     @Test
     public void testPopulateCapabilityAndSha256() throws Exception {
-        File artifact = new File(getBasedir(),
+        File artifact = new File(
+                getBasedir(),
                 "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar");
 
-        File pom = new File(getBasedir(),
+        File pom = new File(
+                getBasedir(),
                 "src/test/repo-with-osgi/org/apache/karaf/features/oorg.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.pom");
 
-        ArtifactInfo artifactInfo =
-                new ArtifactInfo("test", "org.apache.karaf.features", "org.apache.karaf.features.core", "4.1.0", null,"jar");
+        ArtifactInfo artifactInfo = new ArtifactInfo(
+                "test", "org.apache.karaf.features", "org.apache.karaf.features.core", "4.1.0", null, "jar");
 
         ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
-
 
         ArtifactInfo ai = artifactContext.getArtifactInfo();
         assertEquals("org.apache.karaf.features.core", ai.getBundleSymbolicName());
 
         assertEquals("4.1.0", ai.getBundleVersion());
 
+        assertEquals(CORE_4_1_0_PROVIDED_CAPABILITY, ai.getBundleProvideCapability());
         assertEquals(
-                CORE_4_1_0_PROVIDED_CAPABILITY,
-                ai.getBundleProvideCapability());
-        assertEquals("osgi.service;effective:=active;filter:=\"(objectClass=org.osgi.service.cm.ConfigurationAdmin)\"," +
-                        "osgi.service;effective:=active;filter:=\"(&(objectClass=org.osgi.service.url.URLStreamHandlerService)(url.handler.protocol=mvn))\"," +
-                        "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.8))\"",
+                "osgi.service;effective:=active;filter:=\"(objectClass=org.osgi.service.cm.ConfigurationAdmin)\","
+                        + "osgi.service;effective:=active;filter:=\"(&(objectClass=org.osgi.service.url.URLStreamHandlerService)(url.handler.protocol=mvn))\","
+                        + "osgi.ee;filter:=\"(&(osgi.ee=JavaSE)(version=1.8))\"",
                 ai.getBundleRequireCapability());
         assertEquals(CORE_4_1_0_SHA256, ai.getSha256());
-
     }
 
-    private void indexOSGIRepo()
-        throws Exception
-    {
+    private void indexOSGIRepo() throws Exception {
 
-        File repo = new File( getBasedir(), "src/test/repo-with-osgi" );
+        File repo = new File(getBasedir(), "src/test/repo-with-osgi");
 
-        File repoIndexDir = new File( getBasedir(), "target/test/repo-with-osgi/.index/" );
+        File repoIndexDir = new File(getBasedir(), "target/test/repo-with-osgi/.index/");
 
-        if ( repoIndexDir.exists() )
-        {
-            FileUtils.deleteDirectory( repoIndexDir );
+        if (repoIndexDir.exists()) {
+            FileUtils.deleteDirectory(repoIndexDir);
         }
 
         repoIndexDir.mkdirs();
 
-        List<IndexCreator> indexCreators =
-            Arrays.asList( new MinimalArtifactInfoIndexCreator(), new JarFileContentsIndexCreator(),
-                                         new MavenPluginArtifactInfoIndexCreator(), new OsgiArtifactIndexCreator() );
+        List<IndexCreator> indexCreators = Arrays.asList(
+                new MinimalArtifactInfoIndexCreator(),
+                new JarFileContentsIndexCreator(),
+                new MavenPluginArtifactInfoIndexCreator(),
+                new OsgiArtifactIndexCreator());
 
-        IndexingContext indexingContext =
-            nexusIndexer.addIndexingContext( INDEX_ID, INDEX_ID, repo, repoIndexDir, "http://www.apache.org",
-                                             "http://www.apache.org/.index", indexCreators );
-        indexingContext.setSearchable( true );
-        nexusIndexer.scan( indexingContext, false );
-
-
+        IndexingContext indexingContext = nexusIndexer.addIndexingContext(
+                INDEX_ID,
+                INDEX_ID,
+                repo,
+                repoIndexDir,
+                "http://www.apache.org",
+                "http://www.apache.org/.index",
+                indexCreators);
+        indexingContext.setSearchable(true);
+        nexusIndexer.scan(indexingContext, false);
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearch()
-        throws Exception
-    {
+    public void testIndexOSGIRepoThenSearch() throws Exception {
 
-        try
-        {
+        try {
             indexOSGIRepo();
 
             BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.command" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.SYMBOLIC_NAME,
+                                    new StringSearchExpression("org.apache.karaf.features.command")),
+                            Occur.MUST)
+                    .build();
 
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
             // here only one results !
-            assertEquals( 1, response.getResults().size() );
+            assertEquals(1, response.getResults().size());
 
             q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.SYMBOLIC_NAME, new StringSearchExpression("org.apache.karaf.features.core")),
+                            Occur.MUST)
+                    .build();
 
-            request = new FlatSearchRequest( q );
-            response = nexusIndexer.searchFlat( request );
+            request = new FlatSearchRequest(q);
+            response = nexusIndexer.searchFlat(request);
 
             // here two results !
             assertEquals(3, response.getResults().size());
-        }
-        finally
-        {
-            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
+        } finally {
+            nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
         }
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithVersion()
-        throws Exception
-    {
-
-        indexOSGIRepo();
-
-        try
-        {
-
-            BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.SYMBOLIC_NAME, new StringSearchExpression( "org.apache.karaf.features.core" ) ), Occur.MUST )
-                .add( nexusIndexer.constructQuery( OSGI.VERSION, new StringSearchExpression( "2.2.1" ) ), Occur.MUST )
-                .build();
-
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
-
-            // here only one results as we use version
-            assertEquals( 1, response.getResults().size() );
-        }
-        finally
-        {
-            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
-        }
-
-    }
-
-    @Test
-    public void testIndexOSGIRepoThenSearchWithSha256()
-            throws Exception {
+    public void testIndexOSGIRepoThenSearchWithVersion() throws Exception {
 
         indexOSGIRepo();
 
         try {
 
             BooleanQuery q = new BooleanQuery.Builder()
-                .add(nexusIndexer.constructQuery( OSGI.SHA256, new StringSearchExpression(CORE_4_1_0_SHA256)), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.SYMBOLIC_NAME, new StringSearchExpression("org.apache.karaf.features.core")),
+                            Occur.MUST)
+                    .add(nexusIndexer.constructQuery(OSGI.VERSION, new StringSearchExpression("2.2.1")), Occur.MUST)
+                    .build();
+
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
+
+            // here only one results as we use version
+            assertEquals(1, response.getResults().size());
+        } finally {
+            nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
+        }
+    }
+
+    @Test
+    public void testIndexOSGIRepoThenSearchWithSha256() throws Exception {
+
+        indexOSGIRepo();
+
+        try {
+
+            BooleanQuery q = new BooleanQuery.Builder()
+                    .add(
+                            nexusIndexer.constructQuery(OSGI.SHA256, new StringSearchExpression(CORE_4_1_0_SHA256)),
+                            Occur.MUST)
+                    .build();
 
             FlatSearchRequest request = new FlatSearchRequest(q);
             FlatSearchResponse response = nexusIndexer.searchFlat(request);
@@ -280,89 +277,84 @@ public class OsgiArtifactIndexCreatorTest
         } finally {
             nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
         }
-
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithExportPackage()
-        throws Exception
-    {
+    public void testIndexOSGIRepoThenSearchWithExportPackage() throws Exception {
 
         indexOSGIRepo();
 
-        try
-        {
+        try {
             BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.EXPORT_PACKAGE, new StringSearchExpression( "org.apache.karaf.features.command.completers" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.EXPORT_PACKAGE,
+                                    new StringSearchExpression("org.apache.karaf.features.command.completers")),
+                            Occur.MUST)
+                    .build();
 
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
-            //System.out.println("results with export package query " + response.getResults() );
-            assertEquals( 1, response.getResults().size() );
+            // System.out.println("results with export package query " + response.getResults() );
+            assertEquals(1, response.getResults().size());
 
             ArtifactInfo ai = response.getResults().iterator().next();
 
-            assertEquals( "org.apache.karaf.features", ai.getGroupId() );
-            assertEquals( "org.apache.karaf.features.command", ai.getArtifactId() );
-            assertEquals( "2.2.2", ai.getVersion() );
-            assertEquals( "org.apache.karaf.features.command", ai.getBundleSymbolicName() );
-            assertEquals( "2.2.2", ai.getBundleVersion() );
-
-            assertEquals( "This bundle provides the Karaf shell commands to manipulate features.",
-                          ai.getBundleDescription() );
-            assertEquals( "Apache Karaf :: Features :: Command", ai.getBundleName() );
-            assertEquals( "http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense() );
-            assertEquals( "http://www.apache.org/", ai.getBundleDocUrl() );
+            assertEquals("org.apache.karaf.features", ai.getGroupId());
+            assertEquals("org.apache.karaf.features.command", ai.getArtifactId());
+            assertEquals("2.2.2", ai.getVersion());
+            assertEquals("org.apache.karaf.features.command", ai.getBundleSymbolicName());
+            assertEquals("2.2.2", ai.getBundleVersion());
 
             assertEquals(
-                "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
-                ai.getBundleImportPackage() );
+                    "This bundle provides the Karaf shell commands to manipulate features.", ai.getBundleDescription());
+            assertEquals("Apache Karaf :: Features :: Command", ai.getBundleName());
+            assertEquals("http://www.apache.org/licenses/LICENSE-2.0.txt", ai.getBundleLicense());
+            assertEquals("http://www.apache.org/", ai.getBundleDocUrl());
 
-        }
-        finally
-        {
-            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
-        }
+            assertEquals(
+                    "javax.management,javax.management.loading,org.apache.felix.gogo.commands;version=\"[0.6,1)\",org.apache.felix.service.command;status=provisional;version=\"[0.6,1)\",org.apache.karaf.features;version=\"[2.2,3)\",org.apache.karaf.shell.console;version=\"[2.2,3)\",org.apache.karaf.shell.console.completer;version=\"[2.2,3)\",org.osgi.framework;version=\"[1.5,2)\",org.osgi.service.blueprint;version=\"[1.0.0,2.0.0)\"",
+                    ai.getBundleImportPackage());
 
+        } finally {
+            nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
+        }
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithExportService()
-        throws Exception
-    {
+    public void testIndexOSGIRepoThenSearchWithExportService() throws Exception {
 
         indexOSGIRepo();
 
-        try
-        {
+        try {
             BooleanQuery q = new BooleanQuery.Builder()
-                .add( nexusIndexer.constructQuery( OSGI.EXPORT_SERVICE, new StringSearchExpression( "org.apache.felix.bundlerepository.RepositoryAdmin" ) ), Occur.MUST )
-                .build();
+                    .add(
+                            nexusIndexer.constructQuery(
+                                    OSGI.EXPORT_SERVICE,
+                                    new StringSearchExpression("org.apache.felix.bundlerepository.RepositoryAdmin")),
+                            Occur.MUST)
+                    .build();
 
-            FlatSearchRequest request = new FlatSearchRequest( q );
-            FlatSearchResponse response = nexusIndexer.searchFlat( request );
+            FlatSearchRequest request = new FlatSearchRequest(q);
+            FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
-            //System.out.println("results with export package query " + response.getResults() );
+            // System.out.println("results with export package query " + response.getResults() );
             assertThat(response.getResults().size(), is(1));
 
             ArtifactInfo ai = response.getResults().iterator().next();
-            //System.out.println( "ai " + ai );
+            // System.out.println( "ai " + ai );
 
-            assertEquals( "org.apache.felix", ai.getGroupId() );
-            assertEquals( "org.apache.felix.bundlerepository", ai.getArtifactId() );
-            assertEquals( "1.6.6", ai.getVersion() );
-            assertEquals( "bundle", ai.getPackaging() );
-            assertEquals( "org.apache.felix.bundlerepository", ai.getBundleSymbolicName() );
-            assertEquals( "1.6.6", ai.getBundleVersion() );
+            assertEquals("org.apache.felix", ai.getGroupId());
+            assertEquals("org.apache.felix.bundlerepository", ai.getArtifactId());
+            assertEquals("1.6.6", ai.getVersion());
+            assertEquals("bundle", ai.getPackaging());
+            assertEquals("org.apache.felix.bundlerepository", ai.getBundleSymbolicName());
+            assertEquals("1.6.6", ai.getBundleVersion());
 
+        } finally {
+            nexusIndexer.getIndexingContexts().get(INDEX_ID).close(true);
         }
-        finally
-        {
-            nexusIndexer.getIndexingContexts().get( INDEX_ID ).close( true );
-        }
-
     }
 
     // Export-Service: org.apache.felix.bundlerepository.RepositoryAdmin,org.osgi.service.obr.RepositoryAdmin

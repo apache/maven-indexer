@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,13 +29,11 @@ import org.apache.lucene.store.FSDirectory;
  * example, MMapDirectory used by default on 64 bit Linux JDK results in heavy operating system swap with certain Linux
  * configuration and host application can choose NIOFSDirectory to avoid the problem.
  */
-public interface FSDirectoryFactory
-{
+public interface FSDirectoryFactory {
     /**
      * Default implementation that lets Lucene choose FSDirectory implementation.
      */
-    FSDirectoryFactory DEFAULT = indexDir -> FSDirectory.open( indexDir.toPath() );
+    FSDirectoryFactory DEFAULT = indexDir -> FSDirectory.open(indexDir.toPath());
 
-    FSDirectory open( File indexDir )
-        throws IOException;
+    FSDirectory open(File indexDir) throws IOException;
 }

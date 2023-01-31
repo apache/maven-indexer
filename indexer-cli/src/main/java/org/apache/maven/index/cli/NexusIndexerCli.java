@@ -1,5 +1,3 @@
-package org.apache.maven.index.cli;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.cli;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.cli;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -77,8 +76,7 @@ import static java.util.Objects.requireNonNull;
  * {@link org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator} and
  * {@link org.apache.maven.index.creator.JarFileContentsIndexCreator}.
  */
-public class NexusIndexerCli
-{
+public class NexusIndexerCli {
 
     // Generic command line options
 
@@ -114,87 +112,64 @@ public class NexusIndexerCli
 
     private Options options;
 
-    public static void main( String[] args )
-    {
-        System.exit( new NexusIndexerCli().execute( args ) );
+    public static void main(String[] args) {
+        System.exit(new NexusIndexerCli().execute(args));
     }
 
     /**
      * Visible for testing.
      */
-    int execute( String[] args )
-    {
+    int execute(String[] args) {
         CommandLine cli;
 
-        try
-        {
-            cli =  new DefaultParser().parse( buildCliOptions(), cleanArgs( args ) );
-        }
-        catch ( ParseException e )
-        {
-            System.err.println( "Unable to parse command line options: " + e.getMessage() );
+        try {
+            cli = new DefaultParser().parse(buildCliOptions(), cleanArgs(args));
+        } catch (ParseException e) {
+            System.err.println("Unable to parse command line options: " + e.getMessage());
 
             displayHelp();
 
             return 1;
         }
 
-        boolean debug = cli.hasOption( DEBUG );
+        boolean debug = cli.hasOption(DEBUG);
 
-        if ( cli.hasOption( HELP ) )
-        {
+        if (cli.hasOption(HELP)) {
             displayHelp();
 
             return 0;
         }
 
-        if ( cli.hasOption( VERSION ) )
-        {
+        if (cli.hasOption(VERSION)) {
             showVersion();
 
             return 0;
-        }
-        else if ( debug )
-        {
+        } else if (debug) {
             showVersion();
         }
 
-        final Module app = Main.wire(
-                BeanScanning.INDEX
-        );
+        final Module app = Main.wire(BeanScanning.INDEX);
 
-        Components components =
-                Guice.createInjector( app ).getInstance( Components.class );
+        Components components = Guice.createInjector(app).getInstance(Components.class);
 
-        if ( cli.hasOption( UNPACK ) )
-        {
-            try
-            {
-                return unpack( cli, components );
-            }
-            catch ( Exception e )
-            {
-                e.printStackTrace( System.err );
+        if (cli.hasOption(UNPACK)) {
+            try {
+                return unpack(cli, components);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
                 return 1;
             }
-        }
-        else if ( cli.hasOption( INDEX ) && cli.hasOption( REPO ) )
-        {
-            try
-            {
-                return index( cli, components );
-            }
-            catch ( Exception e )
-            {
-                e.printStackTrace( System.err );
+        } else if (cli.hasOption(INDEX) && cli.hasOption(REPO)) {
+            try {
+                return index(cli, components);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
                 return 1;
             }
-        }
-        else
-        {
+        } else {
             System.out.println();
-            System.out.println( "Use either unpack (\"" + UNPACK + "\") or index (\"" + INDEX + "\" and \"" + REPO
-                    + "\") options, but none has been found!" );
+            System.out.println("Use either unpack (\"" + UNPACK + "\") or index (\"" + INDEX + "\" and \"" + REPO
+                    + "\") options, but none has been found!");
             System.out.println();
             displayHelp();
             return 1;
@@ -204,105 +179,131 @@ public class NexusIndexerCli
     /**
      * Visible for testing.
      */
-    Options buildCliOptions()
-    {
+    Options buildCliOptions() {
         this.options = new Options();
 
-        options.addOption( Option.builder( QUIET ).longOpt( "quiet" )
-                .desc( "Quiet output - only show errors" ).build() );
+        options.addOption(Option.builder(QUIET)
+                .longOpt("quiet")
+                .desc("Quiet output - only show errors")
+                .build());
 
-        options.addOption( Option.builder( DEBUG ).longOpt( "debug" )
-                .desc( "Produce execution debug output" ).build() );
+        options.addOption(Option.builder(DEBUG)
+                .longOpt("debug")
+                .desc("Produce execution debug output")
+                .build());
 
-        options.addOption( Option.builder( VERSION ).longOpt( "version" )
-                .desc( "Display version information" ).build() );
+        options.addOption(Option.builder(VERSION)
+                .longOpt("version")
+                .desc("Display version information")
+                .build());
 
-        options.addOption( Option.builder( HELP ).longOpt( "help" )
-                .desc( "Display help information" ).build() );
+        options.addOption(Option.builder(HELP)
+                .longOpt("help")
+                .desc("Display help information")
+                .build());
 
+        options.addOption(Option.builder(INDEX)
+                .longOpt("index")
+                .argName("path")
+                .hasArg()
+                .desc("Path to the index folder")
+                .build());
 
-        options.addOption( Option.builder( INDEX ).longOpt( "index" ).argName( "path" ).hasArg()
-                .desc( "Path to the index folder" ).build() );
+        options.addOption(Option.builder(TARGET_DIR)
+                .longOpt("destination")
+                .argName("path")
+                .hasArg()
+                .desc("Target folder")
+                .build());
 
-        options.addOption( Option.builder( TARGET_DIR ).longOpt( "destination" ).argName( "path" ).hasArg()
-                .desc( "Target folder" ).build() );
+        options.addOption(Option.builder(REPO)
+                .longOpt("repository")
+                .argName("path")
+                .hasArg()
+                .desc("Path to the Maven repository")
+                .build());
 
-        options.addOption( Option.builder( REPO ).longOpt( "repository" ).argName( "path" ).hasArg()
-                .desc( "Path to the Maven repository" ).build() );
+        options.addOption(Option.builder(NAME)
+                .longOpt("name")
+                .argName("string")
+                .hasArg()
+                .desc("Repository name")
+                .build());
 
-        options.addOption( Option.builder( NAME ).longOpt( "name" ).argName( "string" ).hasArg()
-                .desc( "Repository name" ).build() );
+        options.addOption(Option.builder(CREATE_INCREMENTAL_CHUNKS)
+                .longOpt("chunks")
+                .desc("Create incremental chunks")
+                .build());
 
-        options.addOption( Option.builder( CREATE_INCREMENTAL_CHUNKS ).longOpt( "chunks" )
-                .desc( "Create incremental chunks" ).build() );
+        options.addOption(Option.builder(INCREMENTAL_CHUNK_KEEP_COUNT)
+                .longOpt("keep")
+                .argName("num")
+                .hasArg()
+                .desc("Number of incremental chunks to keep")
+                .build());
 
-        options.addOption( Option.builder( INCREMENTAL_CHUNK_KEEP_COUNT ).longOpt( "keep" ).argName( "num" ).hasArg()
-                .desc( "Number of incremental chunks to keep" ).build() );
+        options.addOption(Option.builder(CREATE_FILE_CHECKSUMS)
+                .longOpt("checksums")
+                .desc("Create checksums for all files (sha1, md5)")
+                .build());
 
-        options.addOption( Option.builder( CREATE_FILE_CHECKSUMS ).longOpt( "checksums" )
-                .desc( "Create checksums for all files (sha1, md5)" ).build() );
+        options.addOption(Option.builder(TYPE)
+                .longOpt("type")
+                .argName("type")
+                .hasArg()
+                .desc("Indexer type (default, min, full or comma separated list of custom types)")
+                .build());
 
-        options.addOption( Option.builder( TYPE ).longOpt( "type" ).argName( "type" ).hasArg()
-                .desc( "Indexer type (default, min, full or comma separated list of custom types)" ).build() );
-
-        options.addOption( Option.builder( UNPACK ).longOpt( "unpack" )
-                .desc( "Unpack an index file" ).build() );
+        options.addOption(Option.builder(UNPACK)
+                .longOpt("unpack")
+                .desc("Unpack an index file")
+                .build());
 
         return options;
     }
 
-    private String[] cleanArgs( String[] args )
-    {
+    private String[] cleanArgs(String[] args) {
         List<String> cleaned = new ArrayList<>();
 
         StringBuilder currentArg = null;
 
-        for ( String arg : args )
-        {
+        for (String arg : args) {
             boolean addedToBuffer = false;
 
-            if ( arg.startsWith( "\"" ) )
-            {
+            if (arg.startsWith("\"")) {
                 // if we're in the process of building up another arg, push it and start over.
                 // this is for the case: "-Dfoo=bar "-Dfoo2=bar two" (note the first unterminated quote)
-                if ( currentArg != null )
-                {
-                    cleaned.add( currentArg.toString() );
+                if (currentArg != null) {
+                    cleaned.add(currentArg.toString());
                 }
 
                 // start building an argument here.
-                currentArg = new StringBuilder( arg.substring( 1 ) );
+                currentArg = new StringBuilder(arg.substring(1));
 
                 addedToBuffer = true;
             }
 
             // this has to be a separate "if" statement, to capture the case of: "-Dfoo=bar"
-            if ( arg.endsWith( "\"" ) )
-            {
-                String cleanArgPart = arg.substring( 0, arg.length() - 1 );
+            if (arg.endsWith("\"")) {
+                String cleanArgPart = arg.substring(0, arg.length() - 1);
 
                 // if we're building an argument, keep doing so.
-                if ( currentArg != null )
-                {
+                if (currentArg != null) {
                     // if this is the case of "-Dfoo=bar", then we need to adjust the buffer.
-                    if ( addedToBuffer )
-                    {
-                        currentArg.setLength( currentArg.length() - 1 );
+                    if (addedToBuffer) {
+                        currentArg.setLength(currentArg.length() - 1);
                     }
                     // otherwise, we trim the trailing " and append to the buffer.
-                    else
-                    {
+                    else {
                         // TODO: introducing a space here...not sure what else to do but collapse whitespace
-                        currentArg.append( ' ' ).append( cleanArgPart );
+                        currentArg.append(' ').append(cleanArgPart);
                     }
 
                     // we're done with this argument, so add it.
-                    cleaned.add( currentArg.toString() );
-                }
-                else
-                {
+                    cleaned.add(currentArg.toString());
+                } else {
                     // this is a simple argument...just add it.
-                    cleaned.add( cleanArgPart );
+                    cleaned.add(cleanArgPart);
                 }
 
                 // the currentArg MUST be finished when this completes.
@@ -315,141 +316,118 @@ public class NexusIndexerCli
             // buffer, then append it with a preceding space...again, not sure what else to
             // do other than collapse whitespace.
             // NOTE: The case of a trailing quote is handled by nullifying the arg buffer.
-            if ( !addedToBuffer )
-            {
+            if (!addedToBuffer) {
                 // append to the argument we're building, collapsing whitespace to a single space.
-                if ( currentArg != null )
-                {
-                    currentArg.append( ' ' ).append( arg );
+                if (currentArg != null) {
+                    currentArg.append(' ').append(arg);
                 }
                 // this is a loner, just add it directly.
-                else
-                {
-                    cleaned.add( arg );
+                else {
+                    cleaned.add(arg);
                 }
             }
         }
 
         // clean up.
-        if ( currentArg != null )
-        {
-            cleaned.add( currentArg.toString() );
+        if (currentArg != null) {
+            cleaned.add(currentArg.toString());
         }
 
         int cleanedSz = cleaned.size();
         String[] cleanArgs;
 
-        if ( cleanedSz == 0 )
-        {
+        if (cleanedSz == 0) {
             // if we didn't have any arguments to clean, simply pass the original array through
             cleanArgs = args;
-        }
-        else
-        {
-            cleanArgs = cleaned.toArray( new String[cleanedSz] );
+        } else {
+            cleanArgs = cleaned.toArray(new String[cleanedSz]);
         }
 
         return cleanArgs;
     }
 
-    private void displayHelp()
-    {
+    private void displayHelp() {
         System.out.println();
 
         HelpFormatter formatter = new HelpFormatter();
 
-        formatter.printHelp( "nexus-indexer [options]", "\nOptions:", options, "\n" );
+        formatter.printHelp("nexus-indexer [options]", "\nOptions:", options, "\n");
     }
 
-    private void showVersion()
-    {
+    private void showVersion() {
         InputStream is;
 
-        try
-        {
+        try {
             Properties properties = new Properties();
 
-            is = getClass().getClassLoader().getResourceAsStream(
-                    "META-INF/maven/org.apache.maven.indexer/indexer-core/pom.properties" );
+            is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("META-INF/maven/org.apache.maven.indexer/indexer-core/pom.properties");
 
-            if ( is == null )
-            {
-                System.err.println( "Unable determine version from JAR file." );
+            if (is == null) {
+                System.err.println("Unable determine version from JAR file.");
 
                 return;
             }
 
-            properties.load( is );
+            properties.load(is);
 
-            if ( properties.getProperty( "builtOn" ) != null )
-            {
-                System.out.println( "Version: " + properties.getProperty( "version", "unknown" )
-                        + " built on " + properties.getProperty( "builtOn" ) );
+            if (properties.getProperty("builtOn") != null) {
+                System.out.println("Version: " + properties.getProperty("version", "unknown") + " built on "
+                        + properties.getProperty("builtOn"));
+            } else {
+                System.out.println("Version: " + properties.getProperty("version", "unknown"));
             }
-            else
-            {
-                System.out.println( "Version: " + properties.getProperty( "version", "unknown" ) );
-            }
-        }
-        catch ( IOException e )
-        {
-            System.err.println( "Unable determine version from JAR file: " + e.getMessage() );
+        } catch (IOException e) {
+            System.err.println("Unable determine version from JAR file: " + e.getMessage());
         }
     }
 
-    private int index( final CommandLine cli, Components components )
-            throws IOException, UnsupportedExistingLuceneIndexException
-    {
-        String indexDirectoryName = cli.getOptionValue( INDEX );
+    private int index(final CommandLine cli, Components components)
+            throws IOException, UnsupportedExistingLuceneIndexException {
+        String indexDirectoryName = cli.getOptionValue(INDEX);
 
-        File indexFolder = new File( indexDirectoryName );
+        File indexFolder = new File(indexDirectoryName);
 
-        String outputDirectoryName = cli.getOptionValue( TARGET_DIR, "." );
+        String outputDirectoryName = cli.getOptionValue(TARGET_DIR, ".");
 
-        File outputFolder = new File( outputDirectoryName );
+        File outputFolder = new File(outputDirectoryName);
 
-        File repositoryFolder = new File( cli.getOptionValue( REPO ) );
+        File repositoryFolder = new File(cli.getOptionValue(REPO));
 
-        String repositoryName = cli.getOptionValue( NAME, indexFolder.getName() );
+        String repositoryName = cli.getOptionValue(NAME, indexFolder.getName());
 
-        List<IndexCreator> indexers = getIndexers( cli, components );
+        List<IndexCreator> indexers = getIndexers(cli, components);
 
-        boolean createChecksums = cli.hasOption( CREATE_FILE_CHECKSUMS );
+        boolean createChecksums = cli.hasOption(CREATE_FILE_CHECKSUMS);
 
-        boolean createIncrementalChunks = cli.hasOption( CREATE_INCREMENTAL_CHUNKS );
+        boolean createIncrementalChunks = cli.hasOption(CREATE_INCREMENTAL_CHUNKS);
 
-        boolean debug = cli.hasOption( DEBUG );
+        boolean debug = cli.hasOption(DEBUG);
 
-        boolean quiet = cli.hasOption( QUIET );
+        boolean quiet = cli.hasOption(QUIET);
 
-        Integer chunkCount = cli.hasOption( INCREMENTAL_CHUNK_KEEP_COUNT )
-                ? Integer.parseInt( cli.getOptionValue( INCREMENTAL_CHUNK_KEEP_COUNT ) )
+        Integer chunkCount = cli.hasOption(INCREMENTAL_CHUNK_KEEP_COUNT)
+                ? Integer.parseInt(cli.getOptionValue(INCREMENTAL_CHUNK_KEEP_COUNT))
                 : null;
 
-        if ( !quiet )
-        {
-            System.err.printf( "Repository Folder: %s\n", repositoryFolder.getAbsolutePath() );
-            System.err.printf( "Index Folder:      %s\n", indexFolder.getAbsolutePath() );
-            System.err.printf( "Output Folder:     %s\n", outputFolder.getAbsolutePath() );
-            System.err.printf( "Repository name:   %s\n", repositoryName );
-            System.err.printf( "Indexers: %s\n", indexers );
+        if (!quiet) {
+            System.err.printf("Repository Folder: %s\n", repositoryFolder.getAbsolutePath());
+            System.err.printf("Index Folder:      %s\n", indexFolder.getAbsolutePath());
+            System.err.printf("Output Folder:     %s\n", outputFolder.getAbsolutePath());
+            System.err.printf("Repository name:   %s\n", repositoryName);
+            System.err.printf("Indexers: %s\n", indexers);
 
-            if ( createChecksums )
-            {
-                System.err.print( "Will create checksum files for all published files (sha1, md5).\n" );
-            }
-            else
-            {
-                System.err.print( "Will not create checksum files.\n" );
+            if (createChecksums) {
+                System.err.print("Will create checksum files for all published files (sha1, md5).\n");
+            } else {
+                System.err.print("Will not create checksum files.\n");
             }
 
-            if ( createIncrementalChunks )
-            {
-                System.err.print( "Will create incremental chunks for changes, along with baseline file.\n" );
-            }
-            else
-            {
-                System.err.print( "Will create baseline file.\n" );
+            if (createIncrementalChunks) {
+                System.err.print("Will create incremental chunks for changes, along with baseline file.\n");
+            } else {
+                System.err.print("Will create baseline file.\n");
             }
         }
 
@@ -462,173 +440,136 @@ public class NexusIndexerCli
                 indexFolder, // index folder
                 null, // repositoryUrl
                 null, // index update url
-                indexers );
+                indexers);
 
-        try
-        {
-            ArtifactScanningListener listener = new IndexerListener( context, debug, quiet );
+        try {
+            ArtifactScanningListener listener = new IndexerListener(context, debug, quiet);
 
-            components.indexer.scan( context, listener, true );
+            components.indexer.scan(context, listener, true);
 
             IndexSearcher indexSearcher = context.acquireIndexSearcher();
 
-            try
-            {
+            try {
                 IndexPackingRequest request =
-                        new IndexPackingRequest( context, indexSearcher.getIndexReader(), outputFolder );
+                        new IndexPackingRequest(context, indexSearcher.getIndexReader(), outputFolder);
 
-                request.setCreateChecksumFiles( createChecksums );
+                request.setCreateChecksumFiles(createChecksums);
 
-                request.setCreateIncrementalChunks( createIncrementalChunks );
+                request.setCreateIncrementalChunks(createIncrementalChunks);
 
-                request.setFormats( List.of( IndexFormat.FORMAT_V1 ) );
+                request.setFormats(List.of(IndexFormat.FORMAT_V1));
 
-                if ( chunkCount != null )
-                {
-                    request.setMaxIndexChunks( chunkCount );
+                if (chunkCount != null) {
+                    request.setMaxIndexChunks(chunkCount);
                 }
 
-                packIndex( components.packer, request, debug, quiet );
-            }
-            finally
-            {
-                context.releaseIndexSearcher( indexSearcher );
+                packIndex(components.packer, request, debug, quiet);
+            } finally {
+                context.releaseIndexSearcher(indexSearcher);
             }
 
-            if ( !quiet )
-            {
-                printStats( tstart );
+            if (!quiet) {
+                printStats(tstart);
             }
-        }
-        finally
-        {
-            components.indexer.removeIndexingContext( context, false );
+        } finally {
+            components.indexer.removeIndexingContext(context, false);
         }
         return 0;
     }
 
-    private int unpack( CommandLine cli, Components components )
-            throws IOException
-    {
-        final String indexDirectoryName = cli.getOptionValue( INDEX, "." );
-        final File indexFolder = new File( indexDirectoryName ).getCanonicalFile();
-        final File indexArchive = new File( indexFolder, IndexingContext.INDEX_FILE_PREFIX + ".gz" );
+    private int unpack(CommandLine cli, Components components) throws IOException {
+        final String indexDirectoryName = cli.getOptionValue(INDEX, ".");
+        final File indexFolder = new File(indexDirectoryName).getCanonicalFile();
+        final File indexArchive = new File(indexFolder, IndexingContext.INDEX_FILE_PREFIX + ".gz");
 
-        final String outputDirectoryName = cli.getOptionValue( TARGET_DIR, "." );
-        final File outputFolder = new File( outputDirectoryName ).getCanonicalFile();
+        final String outputDirectoryName = cli.getOptionValue(TARGET_DIR, ".");
+        final File outputFolder = new File(outputDirectoryName).getCanonicalFile();
 
-        final boolean quiet = cli.hasOption( QUIET );
-        if ( !quiet )
-        {
-            System.err.printf( "Index Folder:      %s\n", indexFolder.getAbsolutePath() );
-            System.err.printf( "Output Folder:     %s\n", outputFolder.getAbsolutePath() );
+        final boolean quiet = cli.hasOption(QUIET);
+        if (!quiet) {
+            System.err.printf("Index Folder:      %s\n", indexFolder.getAbsolutePath());
+            System.err.printf("Output Folder:     %s\n", outputFolder.getAbsolutePath());
         }
 
         long tstart = System.currentTimeMillis();
 
-        final List<IndexCreator> indexers = getIndexers( cli, components );
+        final List<IndexCreator> indexers = getIndexers(cli, components);
 
-
-        try ( BufferedInputStream is = new BufferedInputStream( new FileInputStream( indexArchive ) ); //
-              FSDirectory directory = FSDirectory.open( outputFolder.toPath() ) )
-        {
-            DefaultIndexUpdater.unpackIndexData( is, 4, directory, (IndexingContext) Proxy.newProxyInstance(
-                    getClass().getClassLoader(), new Class[] {IndexingContext.class}, new PartialImplementation()
-                    {
-                        public List<IndexCreator> getIndexCreators()
-                        {
+        try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(indexArchive)); //
+                FSDirectory directory = FSDirectory.open(outputFolder.toPath())) {
+            DefaultIndexUpdater.unpackIndexData(is, 4, directory, (IndexingContext) Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class[] {IndexingContext.class}, new PartialImplementation() {
+                        public List<IndexCreator> getIndexCreators() {
                             return indexers;
                         }
-                    } )
-
-            );
+                    }));
         }
 
-        if ( !quiet )
-        {
-            printStats( tstart );
+        if (!quiet) {
+            printStats(tstart);
         }
         return 0;
     }
 
-    private List<IndexCreator> getIndexers( final CommandLine cli, Components components )
-    {
+    private List<IndexCreator> getIndexers(final CommandLine cli, Components components) {
         String type = "default";
 
-        if ( cli.hasOption( TYPE ) )
-        {
-            type = cli.getOptionValue( TYPE );
+        if (cli.hasOption(TYPE)) {
+            type = cli.getOptionValue(TYPE);
         }
 
         List<IndexCreator> indexers = new ArrayList<>(); // NexusIndexer.DEFAULT_INDEX;
 
-        if ( "default".equals( type ) )
-        {
-            indexers.add( requireNonNull( components.allIndexCreators.get( "min" ) ) );
-            indexers.add( requireNonNull( components.allIndexCreators.get( "jarContent" ) ) );
-        }
-        else if ( "full".equals( type ) )
-        {
-            indexers.addAll( components.allIndexCreators.values() );
-        }
-        else
-        {
-            for ( String name : type.split( "," ) )
-            {
-                indexers.add( requireNonNull( components.allIndexCreators.get( name ) ) );
+        if ("default".equals(type)) {
+            indexers.add(requireNonNull(components.allIndexCreators.get("min")));
+            indexers.add(requireNonNull(components.allIndexCreators.get("jarContent")));
+        } else if ("full".equals(type)) {
+            indexers.addAll(components.allIndexCreators.values());
+        } else {
+            for (String name : type.split(",")) {
+                indexers.add(requireNonNull(components.allIndexCreators.get(name)));
             }
         }
         return indexers;
     }
 
-    private void packIndex( IndexPacker packer, IndexPackingRequest request, boolean debug, boolean quiet )
-    {
-        try
-        {
-            packer.packIndex( request );
-        }
-        catch ( IOException e )
-        {
-            if ( !quiet )
-            {
-                System.err.printf( "Cannot zip index: %s\n", e.getMessage() );
+    private void packIndex(IndexPacker packer, IndexPackingRequest request, boolean debug, boolean quiet) {
+        try {
+            packer.packIndex(request);
+        } catch (IOException e) {
+            if (!quiet) {
+                System.err.printf("Cannot zip index: %s\n", e.getMessage());
 
-                if ( debug )
-                {
+                if (debug) {
                     e.printStackTrace();
                 }
             }
         }
     }
 
-    private void printStats( final long startTimeInMillis )
-    {
+    private void printStats(final long startTimeInMillis) {
         long t = System.currentTimeMillis() - startTimeInMillis;
 
-        long s = TimeUnit.MILLISECONDS.toSeconds( t );
-        if ( t > TimeUnit.MINUTES.toMillis( 1 ) )
-        {
-            long m = TimeUnit.MILLISECONDS.toMinutes( t );
+        long s = TimeUnit.MILLISECONDS.toSeconds(t);
+        if (t > TimeUnit.MINUTES.toMillis(1)) {
+            long m = TimeUnit.MILLISECONDS.toMinutes(t);
 
-            System.err.printf( "Total time:   %d min %d sec\n", m, s - ( m * 60 ) );
-        }
-        else
-        {
-            System.err.printf( "Total time:   %d sec\n", s );
+            System.err.printf("Total time:   %d min %d sec\n", m, s - (m * 60));
+        } else {
+            System.err.printf("Total time:   %d sec\n", s);
         }
 
         Runtime r = Runtime.getRuntime();
 
-        System.err.printf( "Final memory: %dM/%dM\n", //
-                ( r.totalMemory() - r.freeMemory() ) / MB, r.totalMemory() / MB );
+        System.err.printf(
+                "Final memory: %dM/%dM\n", //
+                (r.totalMemory() - r.freeMemory()) / MB, r.totalMemory() / MB);
     }
 
     /**
      * Scanner listener
      */
-    private static final class IndexerListener
-            implements ArtifactScanningListener
-    {
+    private static final class IndexerListener implements ArtifactScanningListener {
         private final IndexingContext context;
 
         private final boolean debug;
@@ -639,55 +580,47 @@ public class NexusIndexerCli
 
         private int count;
 
-        IndexerListener( IndexingContext context, boolean debug, boolean quiet )
-        {
+        IndexerListener(IndexingContext context, boolean debug, boolean quiet) {
             this.context = context;
             this.debug = debug;
             this.quiet = quiet;
         }
 
         @Override
-        public void scanningStarted( IndexingContext context )
-        {
-            if ( !quiet )
-            {
-                System.err.println( "Scanning started" );
+        public void scanningStarted(IndexingContext context) {
+            if (!quiet) {
+                System.err.println("Scanning started");
             }
         }
 
         @Override
-        public void artifactDiscovered( ArtifactContext ac )
-        {
+        public void artifactDiscovered(ArtifactContext ac) {
             count++;
 
             long t = System.currentTimeMillis();
 
             ArtifactInfo ai = ac.getArtifactInfo();
 
-            if ( !quiet && debug && "maven-plugin".equals( ai.getPackaging() ) )
-            {
-                System.err.printf( "Plugin: %s:%s:%s - %s %s\n", //
-                        ai.getGroupId(), ai.getArtifactId(), ai.getVersion(), ai.getPrefix(), "" + ai.getGoals() );
+            if (!quiet && debug && "maven-plugin".equals(ai.getPackaging())) {
+                System.err.printf(
+                        "Plugin: %s:%s:%s - %s %s\n", //
+                        ai.getGroupId(), ai.getArtifactId(), ai.getVersion(), ai.getPrefix(), "" + ai.getGoals());
             }
 
-            if ( !quiet && ( debug || ( t - ts ) > 2000L ) )
-            {
-                System.err.printf( "  %6d %s\n", count, formatFile( ac.getPom() ) );
+            if (!quiet && (debug || (t - ts) > 2000L)) {
+                System.err.printf("  %6d %s\n", count, formatFile(ac.getPom()));
                 ts = t;
             }
         }
 
         @Override
-        public void artifactError( ArtifactContext ac, Exception e )
-        {
-            if ( !quiet )
-            {
-                System.err.printf( "! %6d %s - %s\n", count, formatFile( ac.getPom() ), e.getMessage() );
+        public void artifactError(ArtifactContext ac, Exception e) {
+            if (!quiet) {
+                System.err.printf("! %6d %s - %s\n", count, formatFile(ac.getPom()), e.getMessage());
 
-                System.err.printf( "         %s\n", formatFile( ac.getArtifact() ) );
+                System.err.printf("         %s\n", formatFile(ac.getArtifact()));
 
-                if ( debug )
-                {
+                if (debug) {
                     e.printStackTrace();
                 }
             }
@@ -695,25 +628,22 @@ public class NexusIndexerCli
             ts = System.currentTimeMillis();
         }
 
-        private String formatFile( File file )
-        {
-            return file.getAbsolutePath().substring( context.getRepository().getAbsolutePath().length() + 1 );
+        private String formatFile(File file) {
+            return file.getAbsolutePath()
+                    .substring(context.getRepository().getAbsolutePath().length() + 1);
         }
 
         @Override
-        public void scanningFinished( IndexingContext context, ScanningResult result )
-        {
-            if ( !quiet )
-            {
-                if ( result.hasExceptions() )
-                {
-                    System.err.printf( "Scanning errors:   %s\n", result.getExceptions().size() );
+        public void scanningFinished(IndexingContext context, ScanningResult result) {
+            if (!quiet) {
+                if (result.hasExceptions()) {
+                    System.err.printf(
+                            "Scanning errors:   %s\n", result.getExceptions().size());
                 }
 
-                System.err.printf( "Artifacts added:   %s\n", result.getTotalFiles() );
-                System.err.printf( "Artifacts deleted: %s\n", result.getDeletedFiles() );
+                System.err.printf("Artifacts added:   %s\n", result.getTotalFiles());
+                System.err.printf("Artifacts deleted: %s\n", result.getDeletedFiles());
             }
         }
     }
-
 }

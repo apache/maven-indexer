@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 
@@ -30,46 +29,37 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-737 */
-public class Nexus737NexusIndexerTest
-    extends AbstractNexusIndexerTest
-{
-    protected File repo = new File( getBasedir(), "src/test/nexus-658" );
+public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
+    protected File repo = new File(getBasedir(), "src/test/nexus-658");
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
+    protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         context =
-            nexusIndexer.addIndexingContext( "nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS );
-        nexusIndexer.scan( context );
+                nexusIndexer.addIndexingContext("nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS);
+        nexusIndexer.scan(context);
     }
 
     @Test
-    public void testValidateUINFOs()
-        throws Exception
-    {
+    public void testValidateUINFOs() throws Exception {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
         Bits liveDocs = MultiBits.getLiveDocs(reader);
 
         int foundCount = 0;
 
-        for ( int i = 0; i < reader.maxDoc(); i++ )
-        {
-            if (liveDocs == null || liveDocs.get(i) )
-            {
-                Document document = reader.document( i );
+        for (int i = 0; i < reader.maxDoc(); i++) {
+            if (liveDocs == null || liveDocs.get(i)) {
+                Document document = reader.document(i);
 
-                String uinfo = document.get( ArtifactInfo.UINFO );
+                String uinfo = document.get(ArtifactInfo.UINFO);
 
-                if ( "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA|jar".equals( uinfo )
-                    || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|zip".equals( uinfo )
-                    || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|tar.gz".equals( uinfo ) )
-                {
+                if ("org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|NA|jar".equals(uinfo)
+                        || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|zip".equals(uinfo)
+                        || "org.sonatype.nexus|nexus-webapp|1.0.0-SNAPSHOT|bundle|tar.gz".equals(uinfo)) {
                     foundCount++;
                 }
             }
         }
 
-        assertEquals( foundCount, 3 );
+        assertEquals(foundCount, 3);
     }
 }

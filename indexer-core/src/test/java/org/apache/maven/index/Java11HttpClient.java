@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,47 +31,34 @@ import org.apache.maven.index.updater.ResourceFetcher;
 /**
  * {@link ResourceFetcher} backed by Java11 HttpClient to be used in tests.
  */
-public class Java11HttpClient implements ResourceFetcher
-{
-    private final HttpClient client = HttpClient.newBuilder().followRedirects( HttpClient.Redirect.NEVER ).build();
+public class Java11HttpClient implements ResourceFetcher {
+    private final HttpClient client =
+            HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
 
     private URI uri;
 
     @Override
-    public void connect( String id, String url )
-    {
-        this.uri = URI.create( url + "/" );
+    public void connect(String id, String url) {
+        this.uri = URI.create(url + "/");
     }
 
     @Override
-    public void disconnect()
-    {
-
-    }
+    public void disconnect() {}
 
     @Override
-    public InputStream retrieve( String name ) throws IOException
-    {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri( uri.resolve( name ) )
-                .GET()
-                .build();
-        try
-        {
-            HttpResponse<InputStream> response = client.send( request, HttpResponse.BodyHandlers.ofInputStream() );
-            if ( response.statusCode() == HttpURLConnection.HTTP_OK )
-            {
+    public InputStream retrieve(String name) throws IOException {
+        HttpRequest request =
+                HttpRequest.newBuilder().uri(uri.resolve(name)).GET().build();
+        try {
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 return response.body();
+            } else {
+                throw new IOException("Unexpected response: " + response);
             }
-            else
-            {
-                throw new IOException( "Unexpected response: " + response );
-            }
-        }
-        catch ( InterruptedException e )
-        {
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IOException( e );
+            throw new IOException(e);
         }
     }
 }

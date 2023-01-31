@@ -1,5 +1,3 @@
-package org.apache.maven.index.util;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.util;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.util;
 
 import javax.inject.Inject;
 
@@ -26,16 +25,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.AbstractTestSupport;
+import org.apache.maven.index.context.IndexCreator;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class IndexCreatorSorterTest
-    extends AbstractTestSupport
-{
+public class IndexCreatorSorterTest extends AbstractTestSupport {
     @Inject
     private List<IndexCreator> creators;
 
@@ -43,91 +40,83 @@ public class IndexCreatorSorterTest
     private Map<String, IndexCreator> creatorMap;
 
     @Test
-    public void testLookupList()
-        throws Exception
-    {
-        final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( creators );
+    public void testLookupList() throws Exception {
+        final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort(creators);
 
         // we are interested in IDs only
         final List<String> sortedCreatorIds = new ArrayList<>();
-        for ( IndexCreator creator : sortedCreators )
-        {
-            sortedCreatorIds.add( creator.getId() );
+        for (IndexCreator creator : sortedCreators) {
+            sortedCreatorIds.add(creator.getId());
         }
 
         // ensure we fulfil some basic conditions
-        assertTrue( "min should be present", sortedCreatorIds.contains( "min" ) );
-        assertTrue( "maven-plugin should be present", sortedCreatorIds.contains( "maven-plugin" ) );
-        assertTrue( "maven-archetype should be present", sortedCreatorIds.contains( "maven-archetype" ) );
+        assertTrue("min should be present", sortedCreatorIds.contains("min"));
+        assertTrue("maven-plugin should be present", sortedCreatorIds.contains("maven-plugin"));
+        assertTrue("maven-archetype should be present", sortedCreatorIds.contains("maven-archetype"));
 
         // currently, both "maven-plugin" and "maven-archetype" creator depend on "min" creator
-        assertTrue( "maven-archetype depends on min",
-            sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-archetype" ) );
-        assertTrue( "maven-plugin depends on min",
-            sortedCreatorIds.indexOf( "min" ) < sortedCreatorIds.indexOf( "maven-plugin" ) );
+        assertTrue(
+                "maven-archetype depends on min",
+                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-archetype"));
+        assertTrue(
+                "maven-plugin depends on min",
+                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-plugin"));
     }
 
     @Test
-    public void testLookupListWithSpoofedCreator()
-        throws Exception
-    {
-        List<IndexCreator> myIndexCreators = new ArrayList<>( creators );
+    public void testLookupListWithSpoofedCreator() throws Exception {
+        List<IndexCreator> myIndexCreators = new ArrayList<>(creators);
 
         // now we add spoofs to it, this one depends on ALL creators. Note: we add it as 1st intentionally
-        myIndexCreators.add( 0,
-            new SpoofIndexCreator( "depend-on-all", new ArrayList<>( creatorMap.keySet() ) ) );
+        myIndexCreators.add(0, new SpoofIndexCreator("depend-on-all", new ArrayList<>(creatorMap.keySet())));
 
         // now we add spoofs to it, this one depends on only one, the "depend-on-all" creator Note: we add it as 1st
         // intentionally
-        myIndexCreators.add( 0, new SpoofIndexCreator( "last", Arrays.asList( "depend-on-all" ) ) );
+        myIndexCreators.add(0, new SpoofIndexCreator("last", Arrays.asList("depend-on-all")));
 
-        final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( myIndexCreators );
+        final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort(myIndexCreators);
 
         // we are interested in IDs only
         final List<String> sortedCreatorIds = new ArrayList<>();
-        for ( IndexCreator creator : sortedCreators )
-        {
-            sortedCreatorIds.add( creator.getId() );
+        for (IndexCreator creator : sortedCreators) {
+            sortedCreatorIds.add(creator.getId());
         }
 
         // ensure we fulfil some basic conditions
-        assertTrue( "min should be present", sortedCreatorIds.contains( "min" ) );
-        assertTrue( "maven-plugin should be present", sortedCreatorIds.contains( "maven-plugin" ) );
-        assertTrue( "maven-archetype should be present", sortedCreatorIds.contains( "maven-archetype" ) );
-        assertTrue( "depend-on-all should be present", sortedCreatorIds.contains( "depend-on-all" ) );
-        assertTrue( "last should be present", sortedCreatorIds.contains( "last" ) );
+        assertTrue("min should be present", sortedCreatorIds.contains("min"));
+        assertTrue("maven-plugin should be present", sortedCreatorIds.contains("maven-plugin"));
+        assertTrue("maven-archetype should be present", sortedCreatorIds.contains("maven-archetype"));
+        assertTrue("depend-on-all should be present", sortedCreatorIds.contains("depend-on-all"));
+        assertTrue("last should be present", sortedCreatorIds.contains("last"));
 
         // "last" has to be last
-        assertTrue( "last creator should be last",
-            sortedCreatorIds.indexOf( "last" ) == sortedCreatorIds.size() - 1 );
-        assertTrue( "depend-on-all should be next to last",
-            sortedCreatorIds.indexOf( "depend-on-all" ) == sortedCreatorIds.size() - 2 );
+        assertTrue("last creator should be last", sortedCreatorIds.indexOf("last") == sortedCreatorIds.size() - 1);
+        assertTrue(
+                "depend-on-all should be next to last",
+                sortedCreatorIds.indexOf("depend-on-all") == sortedCreatorIds.size() - 2);
     }
 
     @Test
-    public void testLookupListWithNonExistentCreatorDependency()
-        throws Exception
-    {
-        List<IndexCreator> myCreators = new ArrayList<>( creators );
+    public void testLookupListWithNonExistentCreatorDependency() throws Exception {
+        List<IndexCreator> myCreators = new ArrayList<>(creators);
         // now we add spoofs to it, this one depends on non existent creator. Note: we add it as 1st intentionally
-        myCreators.add( 0,
-            new SpoofIndexCreator( "non-satisfyable", Arrays.asList( "this-creator-i-depend-on-does-not-exists" ) ) );
+        myCreators.add(
+                0, new SpoofIndexCreator("non-satisfyable", Arrays.asList("this-creator-i-depend-on-does-not-exists")));
 
-        try
-        {
-            final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort( myCreators );
+        try {
+            final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort(myCreators);
 
-            fail( "IndexCreator list is not satisfyable!" );
-        }
-        catch ( IllegalArgumentException e )
-        {
+            fail("IndexCreator list is not satisfyable!");
+        } catch (IllegalArgumentException e) {
             // good, check message
             final String message = e.getMessage();
 
-            assertTrue( "Exception message should mention the problematic creator's ID",
-                message.contains( "non-satisfyable" ) );
-            assertTrue( "Exception message should mention the missing creator's ID",
-                message.contains( "this-creator-i-depend-on-does-not-exists" ) );
+            assertTrue(
+                    "Exception message should mention the problematic creator's ID",
+                    message.contains("non-satisfyable"));
+            assertTrue(
+                    "Exception message should mention the missing creator's ID",
+                    message.contains("this-creator-i-depend-on-does-not-exists"));
         }
     }
 }

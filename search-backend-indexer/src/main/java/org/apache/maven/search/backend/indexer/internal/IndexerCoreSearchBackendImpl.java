@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.indexer.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.indexer.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.indexer.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,31 +47,29 @@ import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
 import org.apache.maven.search.request.Field;
+import org.apache.maven.search.request.FieldQuery;
 import org.apache.maven.search.request.Paging;
 import org.apache.maven.search.support.SearchBackendSupport;
-import org.apache.maven.search.request.FieldQuery;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * An engine to perform search trough single repository index (endpoint).
  */
-public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implements IndexerCoreSearchBackend
-{
+public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implements IndexerCoreSearchBackend {
     private static final Map<Field, org.apache.maven.index.Field> FIELD_TRANSLATION;
 
-    static
-    {
+    static {
         HashMap<Field, org.apache.maven.index.Field> map = new HashMap<>();
-        map.put( MAVEN.GROUP_ID, org.apache.maven.index.MAVEN.GROUP_ID );
-        map.put( MAVEN.ARTIFACT_ID, org.apache.maven.index.MAVEN.ARTIFACT_ID );
-        map.put( MAVEN.VERSION, org.apache.maven.index.MAVEN.VERSION );
-        map.put( MAVEN.CLASSIFIER, org.apache.maven.index.MAVEN.CLASSIFIER );
-        map.put( MAVEN.PACKAGING, org.apache.maven.index.MAVEN.PACKAGING );
-        map.put( MAVEN.CLASS_NAME, org.apache.maven.index.MAVEN.CLASSNAMES );
-        map.put( MAVEN.FQ_CLASS_NAME, org.apache.maven.index.MAVEN.CLASSNAMES );
-        map.put( MAVEN.SHA1, org.apache.maven.index.MAVEN.SHA1 );
-        FIELD_TRANSLATION = Collections.unmodifiableMap( map );
+        map.put(MAVEN.GROUP_ID, org.apache.maven.index.MAVEN.GROUP_ID);
+        map.put(MAVEN.ARTIFACT_ID, org.apache.maven.index.MAVEN.ARTIFACT_ID);
+        map.put(MAVEN.VERSION, org.apache.maven.index.MAVEN.VERSION);
+        map.put(MAVEN.CLASSIFIER, org.apache.maven.index.MAVEN.CLASSIFIER);
+        map.put(MAVEN.PACKAGING, org.apache.maven.index.MAVEN.PACKAGING);
+        map.put(MAVEN.CLASS_NAME, org.apache.maven.index.MAVEN.CLASSNAMES);
+        map.put(MAVEN.FQ_CLASS_NAME, org.apache.maven.index.MAVEN.CLASSNAMES);
+        map.put(MAVEN.SHA1, org.apache.maven.index.MAVEN.SHA1);
+        FIELD_TRANSLATION = Collections.unmodifiableMap(map);
     }
 
     private final Indexer indexer;
@@ -82,145 +79,131 @@ public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implement
     /**
      * Creates backend instance using provided indexer and context.
      */
-    public IndexerCoreSearchBackendImpl( Indexer indexer, IndexingContext indexingContext )
-    {
-        super( indexingContext.getId(), indexingContext.getRepositoryId() );
-        this.indexer = requireNonNull( indexer );
+    public IndexerCoreSearchBackendImpl(Indexer indexer, IndexingContext indexingContext) {
+        super(indexingContext.getId(), indexingContext.getRepositoryId());
+        this.indexer = requireNonNull(indexer);
         this.indexingContext = indexingContext;
     }
 
     @Override
-    public IndexingContext getIndexingContext()
-    {
+    public IndexingContext getIndexingContext() {
         return indexingContext;
     }
 
     @Override
-    public IndexerCoreSearchResponse search( SearchRequest searchRequest ) throws IOException
-    {
+    public IndexerCoreSearchResponse search(SearchRequest searchRequest) throws IOException {
         Paging paging = searchRequest.getPaging();
         int totalHitsCount;
-        List<ArtifactInfo> artifactInfos = new ArrayList<>( paging.getPageSize() );
-        List<Record> page = new ArrayList<>( paging.getPageSize() );
+        List<ArtifactInfo> artifactInfos = new ArrayList<>(paging.getPageSize());
+        List<Record> page = new ArrayList<>(paging.getPageSize());
 
         // if GA present in query: doing flat, otherwise grouped search to mimic SMO
         HashSet<Field> searchedFields = new HashSet<>();
-        Query query = toQuery( searchedFields, searchRequest.getQuery() );
-        if ( searchedFields.contains( MAVEN.SHA1 ) || ( searchedFields.contains( MAVEN.GROUP_ID )
-                && searchedFields.contains( MAVEN.ARTIFACT_ID ) ) )
-        {
-            if ( !searchedFields.contains( MAVEN.CLASSIFIER ) )
-            {
-                query = new BooleanQuery.Builder().add( new BooleanClause( query, BooleanClause.Occur.MUST ) )
-                        .add( indexer.constructQuery( org.apache.maven.index.MAVEN.CLASSIFIER,
-                                        new SourcedSearchExpression( org.apache.maven.index.Field.NOT_PRESENT ) ),
-                                BooleanClause.Occur.MUST_NOT ).build();
+        Query query = toQuery(searchedFields, searchRequest.getQuery());
+        if (searchedFields.contains(MAVEN.SHA1)
+                || (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID))) {
+            if (!searchedFields.contains(MAVEN.CLASSIFIER)) {
+                query = new BooleanQuery.Builder()
+                        .add(new BooleanClause(query, BooleanClause.Occur.MUST))
+                        .add(
+                                indexer.constructQuery(
+                                        org.apache.maven.index.MAVEN.CLASSIFIER,
+                                        new SourcedSearchExpression(org.apache.maven.index.Field.NOT_PRESENT)),
+                                BooleanClause.Occur.MUST_NOT)
+                        .build();
             }
             IteratorSearchRequest iteratorSearchRequest =
-                    new IteratorSearchRequest( query, Collections.singletonList( indexingContext ) );
-            iteratorSearchRequest.setCount( paging.getPageSize() );
-            iteratorSearchRequest.setStart( paging.getPageSize() * paging.getPageOffset() );
+                    new IteratorSearchRequest(query, Collections.singletonList(indexingContext));
+            iteratorSearchRequest.setCount(paging.getPageSize());
+            iteratorSearchRequest.setStart(paging.getPageSize() * paging.getPageOffset());
 
-            try ( IteratorSearchResponse iteratorSearchResponse = indexer.searchIterator( iteratorSearchRequest ) )
-            {
+            try (IteratorSearchResponse iteratorSearchResponse = indexer.searchIterator(iteratorSearchRequest)) {
                 totalHitsCount = iteratorSearchResponse.getTotalHitsCount();
-                StreamSupport.stream( iteratorSearchResponse.iterator().spliterator(), false )
-                        .sorted( ArtifactInfo.VERSION_COMPARATOR ).forEach( ai ->
-                        {
-                            artifactInfos.add( ai );
-                            page.add( convert( ai, null ) );
-                        } );
+                StreamSupport.stream(iteratorSearchResponse.iterator().spliterator(), false)
+                        .sorted(ArtifactInfo.VERSION_COMPARATOR)
+                        .forEach(ai -> {
+                            artifactInfos.add(ai);
+                            page.add(convert(ai, null));
+                        });
             }
-            return new IndexerCoreSearchResponseImpl( searchRequest, totalHitsCount, page, query, artifactInfos );
-        }
-        else
-        {
+            return new IndexerCoreSearchResponseImpl(searchRequest, totalHitsCount, page, query, artifactInfos);
+        } else {
             GroupedSearchRequest groupedSearchRequest =
-                    new GroupedSearchRequest( query, new GAGrouping(), indexingContext );
+                    new GroupedSearchRequest(query, new GAGrouping(), indexingContext);
 
-            try ( GroupedSearchResponse groupedSearchResponse = indexer.searchGrouped( groupedSearchRequest ) )
-            {
+            try (GroupedSearchResponse groupedSearchResponse = indexer.searchGrouped(groupedSearchRequest)) {
                 totalHitsCount = groupedSearchResponse.getResults().size();
                 groupedSearchResponse.getResults().values().stream()
-                        .skip( (long) paging.getPageSize() * paging.getPageOffset() ).limit( paging.getPageSize() )
-                        .forEach( aig ->
-                        {
+                        .skip((long) paging.getPageSize() * paging.getPageOffset())
+                        .limit(paging.getPageSize())
+                        .forEach(aig -> {
                             ArtifactInfo ai = aig.getArtifactInfos().iterator().next();
-                            artifactInfos.add( ai );
-                            page.add( convert( ai, aig.getArtifactInfos().size() ) );
-                        } );
+                            artifactInfos.add(ai);
+                            page.add(convert(ai, aig.getArtifactInfos().size()));
+                        });
             }
-            return new IndexerCoreSearchResponseImpl( searchRequest, totalHitsCount, page, query, artifactInfos );
+            return new IndexerCoreSearchResponseImpl(searchRequest, totalHitsCount, page, query, artifactInfos);
         }
     }
 
-    private Query toQuery( HashSet<Field> searchedFields, org.apache.maven.search.request.Query query )
-    {
-        if ( query instanceof org.apache.maven.search.request.BooleanQuery.And )
-        {
-            org.apache.maven.search.request.BooleanQuery bq =
-                    (org.apache.maven.search.request.BooleanQuery) query;
-            return new BooleanQuery.Builder().add(
-                            new BooleanClause( toQuery( searchedFields, bq.getLeft() ), BooleanClause.Occur.MUST ) )
-                    .add( new BooleanClause( toQuery( searchedFields, bq.getRight() ), BooleanClause.Occur.MUST ) )
+    private Query toQuery(HashSet<Field> searchedFields, org.apache.maven.search.request.Query query) {
+        if (query instanceof org.apache.maven.search.request.BooleanQuery.And) {
+            org.apache.maven.search.request.BooleanQuery bq = (org.apache.maven.search.request.BooleanQuery) query;
+            return new BooleanQuery.Builder()
+                    .add(new BooleanClause(toQuery(searchedFields, bq.getLeft()), BooleanClause.Occur.MUST))
+                    .add(new BooleanClause(toQuery(searchedFields, bq.getRight()), BooleanClause.Occur.MUST))
                     .build();
-        }
-        else if ( query instanceof FieldQuery )
-        {
-            FieldQuery fq =
-                    (FieldQuery) query;
-            org.apache.maven.index.Field icFieldName = FIELD_TRANSLATION.get( fq.getField() );
-            if ( icFieldName != null )
-            {
-                searchedFields.add( fq.getField() );
-                if ( fq.getValue().endsWith( "*" ) )
-                {
-                    return indexer.constructQuery( icFieldName, fq.getValue(), SearchType.SCORED );
+        } else if (query instanceof FieldQuery) {
+            FieldQuery fq = (FieldQuery) query;
+            org.apache.maven.index.Field icFieldName = FIELD_TRANSLATION.get(fq.getField());
+            if (icFieldName != null) {
+                searchedFields.add(fq.getField());
+                if (fq.getValue().endsWith("*")) {
+                    return indexer.constructQuery(icFieldName, fq.getValue(), SearchType.SCORED);
+                } else {
+                    return indexer.constructQuery(icFieldName, fq.getValue(), SearchType.EXACT);
                 }
-                else
-                {
-                    return indexer.constructQuery( icFieldName, fq.getValue(), SearchType.EXACT );
-                }
-            }
-            else
-            {
-                throw new IllegalArgumentException( "Unsupported Indexer field: " + fq.getField() );
+            } else {
+                throw new IllegalArgumentException("Unsupported Indexer field: " + fq.getField());
             }
         }
-        return new BooleanQuery.Builder().add( new BooleanClause(
-                indexer.constructQuery( org.apache.maven.index.MAVEN.GROUP_ID, query.getValue(), SearchType.SCORED ),
-                BooleanClause.Occur.SHOULD ) ).add( new BooleanClause(
-                indexer.constructQuery( org.apache.maven.index.MAVEN.ARTIFACT_ID, query.getValue(), SearchType.SCORED ),
-                BooleanClause.Occur.SHOULD ) ).add( new BooleanClause(
-                indexer.constructQuery( org.apache.maven.index.MAVEN.NAME, query.getValue(), SearchType.SCORED ),
-                BooleanClause.Occur.SHOULD ) ).build();
+        return new BooleanQuery.Builder()
+                .add(new BooleanClause(
+                        indexer.constructQuery(
+                                org.apache.maven.index.MAVEN.GROUP_ID, query.getValue(), SearchType.SCORED),
+                        BooleanClause.Occur.SHOULD))
+                .add(new BooleanClause(
+                        indexer.constructQuery(
+                                org.apache.maven.index.MAVEN.ARTIFACT_ID, query.getValue(), SearchType.SCORED),
+                        BooleanClause.Occur.SHOULD))
+                .add(new BooleanClause(
+                        indexer.constructQuery(org.apache.maven.index.MAVEN.NAME, query.getValue(), SearchType.SCORED),
+                        BooleanClause.Occur.SHOULD))
+                .build();
     }
 
-    private Record convert( ArtifactInfo ai, /* nullable */ Integer versionCount )
-    {
+    private Record convert(ArtifactInfo ai, /* nullable */ Integer versionCount) {
         HashMap<Field, Object> result = new HashMap<>();
 
-        mayPut( result, MAVEN.GROUP_ID, ai.getGroupId() );
-        mayPut( result, MAVEN.ARTIFACT_ID, ai.getArtifactId() );
-        mayPut( result, MAVEN.VERSION, ai.getVersion() );
-        mayPut( result, MAVEN.PACKAGING, ai.getPackaging() );
-        mayPut( result, MAVEN.CLASSIFIER, ai.getClassifier() );
-        mayPut( result, MAVEN.FILE_EXTENSION, ai.getFileExtension() );
+        mayPut(result, MAVEN.GROUP_ID, ai.getGroupId());
+        mayPut(result, MAVEN.ARTIFACT_ID, ai.getArtifactId());
+        mayPut(result, MAVEN.VERSION, ai.getVersion());
+        mayPut(result, MAVEN.PACKAGING, ai.getPackaging());
+        mayPut(result, MAVEN.CLASSIFIER, ai.getClassifier());
+        mayPut(result, MAVEN.FILE_EXTENSION, ai.getFileExtension());
 
-        mayPut( result, MAVEN.VERSION_COUNT, versionCount );
+        mayPut(result, MAVEN.VERSION_COUNT, versionCount);
 
-        mayPut( result, MAVEN.HAS_SOURCE, ai.getSourcesExists() == ArtifactAvailability.PRESENT );
-        mayPut( result, MAVEN.HAS_JAVADOC, ai.getJavadocExists() == ArtifactAvailability.PRESENT );
-        mayPut( result, MAVEN.HAS_GPG_SIGNATURE, ai.getSignatureExists() == ArtifactAvailability.PRESENT );
+        mayPut(result, MAVEN.HAS_SOURCE, ai.getSourcesExists() == ArtifactAvailability.PRESENT);
+        mayPut(result, MAVEN.HAS_JAVADOC, ai.getJavadocExists() == ArtifactAvailability.PRESENT);
+        mayPut(result, MAVEN.HAS_GPG_SIGNATURE, ai.getSignatureExists() == ArtifactAvailability.PRESENT);
 
-        return new Record( getBackendId(), getRepositoryId(), ai.getUinfo(), ai.getLastModified(), result );
+        return new Record(getBackendId(), getRepositoryId(), ai.getUinfo(), ai.getLastModified(), result);
     }
 
-    private static void mayPut( Map<Field, Object> result, Field fieldName, /* nullable */ Object value )
-    {
-        if ( value != null )
-        {
-            result.put( fieldName, value );
+    private static void mayPut(Map<Field, Object> result, Field fieldName, /* nullable */ Object value) {
+        if (value != null) {
+            result.put(fieldName, value);
         }
     }
 }

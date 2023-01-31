@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -45,9 +44,7 @@ import static org.apache.maven.index.reader.Utils.storeProperties;
  *
  * @since 5.1.2
  */
-public class IndexWriter
-        implements Closeable
-{
+public class IndexWriter implements Closeable {
     private static final int INDEX_V1 = 1;
 
     private final AtomicBoolean closed;
@@ -62,36 +59,30 @@ public class IndexWriter
 
     private final String nextChunkName;
 
-    public IndexWriter( final WritableResourceHandler local,
-                        final String indexId,
-                        final boolean incrementalSupported )
-            throws IOException
-    {
-        requireNonNull( local, "local resource handler null" );
-        requireNonNull( indexId, "indexId null" );
-        this.closed = new AtomicBoolean( false );
+    public IndexWriter(final WritableResourceHandler local, final String indexId, final boolean incrementalSupported)
+            throws IOException {
+        requireNonNull(local, "local resource handler null");
+        requireNonNull(indexId, "indexId null");
+        this.closed = new AtomicBoolean(false);
         this.local = local;
-        Properties indexProperties = loadProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ) );
-        if ( incrementalSupported && indexProperties != null )
-        {
+        Properties indexProperties = loadProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"));
+        if (incrementalSupported && indexProperties != null) {
             this.localIndexProperties = indexProperties;
             // existing index, this is incremental publish, and we will add new chunk
-            String localIndexId = localIndexProperties.getProperty( "nexus.index.id" );
-            if ( localIndexId == null || !localIndexId.equals( indexId ) )
-            {
+            String localIndexId = localIndexProperties.getProperty("nexus.index.id");
+            if (localIndexId == null || !localIndexId.equals(indexId)) {
                 throw new IllegalArgumentException(
-                        "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId );
+                        "index already exists and indexId mismatch or unreadable: " + localIndexId + ", " + indexId);
             }
             this.incremental = true;
             this.nextChunkCounter = calculateNextChunkCounter();
             this.nextChunkName = Utils.INDEX_FILE_PREFIX + "." + nextChunkCounter + ".gz";
-        }
-        else
-        {
+        } else {
             // non-existing index, create published index from scratch
             this.localIndexProperties = new Properties();
-            this.localIndexProperties.setProperty( "nexus.index.id", indexId );
-            this.localIndexProperties.setProperty( "nexus.index.chain-id", UUID.randomUUID().toString() );
+            this.localIndexProperties.setProperty("nexus.index.id", indexId);
+            this.localIndexProperties.setProperty(
+                    "nexus.index.chain-id", UUID.randomUUID().toString());
             this.incremental = false;
             this.nextChunkCounter = null;
             this.nextChunkName = Utils.INDEX_FILE_PREFIX + ".gz";
@@ -101,9 +92,8 @@ public class IndexWriter
     /**
      * Returns the index context ID that published index has set.
      */
-    public String getIndexId()
-    {
-        return localIndexProperties.getProperty( "nexus.index.id" );
+    public String getIndexId() {
+        return localIndexProperties.getProperty("nexus.index.id");
     }
 
     /**
@@ -111,28 +101,22 @@ public class IndexWriter
      * words,returns {@code null} when {@link #isIncremental()} returns {@code false}. After this writer is closed, the
      * return value is updated to "now" (in {@link #close() method}.
      */
-    public Date getPublishedTimestamp()
-    {
-        try
-        {
-            String timestamp = localIndexProperties.getProperty( "nexus.index.timestamp" );
-            if ( timestamp != null )
-            {
-                return Utils.INDEX_DATE_FORMAT.parse( timestamp );
+    public Date getPublishedTimestamp() {
+        try {
+            String timestamp = localIndexProperties.getProperty("nexus.index.timestamp");
+            if (timestamp != null) {
+                return Utils.INDEX_DATE_FORMAT.parse(timestamp);
             }
             return null;
-        }
-        catch ( ParseException e )
-        {
-            throw new RuntimeException( "Corrupt date", e );
+        } catch (ParseException e) {
+            throw new RuntimeException("Corrupt date", e);
         }
     }
 
     /**
      * Returns {@code true} if incremental publish is about to happen.
      */
-    public boolean isIncremental()
-    {
+    public boolean isIncremental() {
         return incremental;
     }
 
@@ -140,36 +124,29 @@ public class IndexWriter
      * Returns the chain id of published index. If {@link #isIncremental()} is {@code false}, this is the newly
      * generated chain ID.
      */
-    public String getChainId()
-    {
-        return localIndexProperties.getProperty( "nexus.index.chain-id" );
+    public String getChainId() {
+        return localIndexProperties.getProperty("nexus.index.chain-id");
     }
 
     /**
      * Returns the next chunk name about to be published.
      */
-    public String getNextChunkName()
-    {
+    public String getNextChunkName() {
         return nextChunkName;
     }
 
     /**
      * Writes out the record iterator and returns the written record count.
      */
-    public int writeChunk( final Iterator<Map<String, String>> iterator )
-            throws IOException
-    {
+    public int writeChunk(final Iterator<Map<String, String>> iterator) throws IOException {
         int written;
 
-        try ( WritableResource writableResource = local.locate( nextChunkName ) )
-        {
-            try ( ChunkWriter chunkWriter = new ChunkWriter( nextChunkName, writableResource.write(), INDEX_V1,
-                    new Date() ) )
-            {
-                written = chunkWriter.writeChunk( iterator );
+        try (WritableResource writableResource = local.locate(nextChunkName)) {
+            try (ChunkWriter chunkWriter =
+                    new ChunkWriter(nextChunkName, writableResource.write(), INDEX_V1, new Date())) {
+                written = chunkWriter.writeChunk(iterator);
             }
-            if ( incremental )
-            {
+            if (incremental) {
                 // TODO: update main gz file
             }
             return written;
@@ -183,23 +160,15 @@ public class IndexWriter
      * this class should be closed manually.
      */
     @Override
-    public void close()
-            throws IOException
-    {
-        if ( closed.compareAndSet( false, true ) )
-        {
-            try
-            {
-                if ( incremental )
-                {
-                    localIndexProperties.setProperty( "nexus.index.last-incremental", nextChunkCounter );
+    public void close() throws IOException {
+        if (closed.compareAndSet(false, true)) {
+            try {
+                if (incremental) {
+                    localIndexProperties.setProperty("nexus.index.last-incremental", nextChunkCounter);
                 }
-                localIndexProperties.setProperty( "nexus.index.timestamp",
-                        Utils.INDEX_DATE_FORMAT.format( new Date() ) );
-                storeProperties( local.locate( Utils.INDEX_FILE_PREFIX + ".properties" ), localIndexProperties );
-            }
-            finally
-            {
+                localIndexProperties.setProperty("nexus.index.timestamp", Utils.INDEX_DATE_FORMAT.format(new Date()));
+                storeProperties(local.locate(Utils.INDEX_FILE_PREFIX + ".properties"), localIndexProperties);
+            } finally {
                 local.close();
             }
         }
@@ -208,15 +177,11 @@ public class IndexWriter
     /**
      * Calculates the chunk names that needs to be fetched.
      */
-    private String calculateNextChunkCounter()
-    {
-        String lastChunkCounter = localIndexProperties.getProperty( "nexus.index.last-incremental" );
-        if ( lastChunkCounter != null )
-        {
-            return String.valueOf( Integer.parseInt( lastChunkCounter ) + 1 );
-        }
-        else
-        {
+    private String calculateNextChunkCounter() {
+        String lastChunkCounter = localIndexProperties.getProperty("nexus.index.last-incremental");
+        if (lastChunkCounter != null) {
+            return String.valueOf(Integer.parseInt(lastChunkCounter) + 1);
+        } else {
             return "1";
         }
     }

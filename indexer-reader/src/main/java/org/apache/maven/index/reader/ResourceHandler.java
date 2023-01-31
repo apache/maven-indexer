@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -30,28 +29,22 @@ import java.io.InputStream;
  *
  * @since 5.1.2
  */
-public interface ResourceHandler
-    extends Closeable
-{
+public interface ResourceHandler extends Closeable {
     /**
      * Handle of content.
      */
-    interface Resource
-        extends Closeable
-    {
+    interface Resource extends Closeable {
         /**
          * Returns the {@link InputStream} stream of the resource, if exists, {@code null} otherwise. The stream should
          * be closed by caller, otherwise resource leaks might be introduced.
          */
-        InputStream read()
-            throws IOException;
+        InputStream read() throws IOException;
 
         /**
          * Default close method is no-op, override if implementation requires.
          */
         @Override
-        default void close() throws IOException
-        {
+        default void close() throws IOException {
             // nothing
         }
     }
@@ -61,14 +54,13 @@ public interface ResourceHandler
      *
      * @param name Resource name, guaranteed to be non-{@code null} and is FS and URL safe string.
      */
-    Resource locate( String name ) throws IOException;
+    Resource locate(String name) throws IOException;
 
     /**
      * Default close method is no-op, override if implementation requires.
      */
     @Override
-    default void close() throws IOException
-    {
+    default void close() throws IOException {
         // nothing
     }
 }

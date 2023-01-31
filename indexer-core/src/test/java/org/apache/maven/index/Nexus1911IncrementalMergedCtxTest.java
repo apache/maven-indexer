@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,40 +16,34 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 import java.util.Collections;
 
 import org.apache.maven.index.context.IndexingContext;
 
-public class Nexus1911IncrementalMergedCtxTest
-    extends Nexus1911IncrementalTest
-{
+public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest {
     IndexingContext member;
 
     File indexMergedDir;
 
     @Override
-    public void setUp()
-        throws Exception
-    {
+    public void setUp() throws Exception {
         super.setUp();
 
         member = context;
 
-        indexMergedDir = super.getDirectory( "index/nexus-1911-merged" );
+        indexMergedDir = super.getDirectory("index/nexus-1911-merged");
         indexMergedDir.mkdirs();
 
-        context =
-            indexer.addMergedIndexingContext( "merged", "merged", member.getRepository(), indexMergedDir, false,
-                Collections.singletonList( member ) );
+        context = indexer.addMergedIndexingContext(
+                "merged", "merged", member.getRepository(), indexMergedDir, false, Collections.singletonList(member));
     }
 
     @Override
-    public void tearDown()
-        throws Exception
-    {
-        indexer.removeIndexingContext( context, true );
+    public void tearDown() throws Exception {
+        indexer.removeIndexingContext(context, true);
 
         context = member;
 

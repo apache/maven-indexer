@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -40,68 +39,58 @@ import static org.hamcrest.core.IsEqual.equalTo;
 /**
  * UT for {@link RecordCompactor} and {@link RecordExpander}.
  */
-public class TransformTest
-        extends TestSupport
-{
+public class TransformTest extends TestSupport {
     @Test
-    public void decorateAndTransform() throws IOException
-    {
+    public void decorateAndTransform() throws IOException {
         final String indexId = "test";
-        final Record r1 = new Record( Type.ARTIFACT_ADD, artifactMap( "org.apache" ) );
-        final Record r2 = new Record( Type.ARTIFACT_ADD, artifactMap( "org.foo" ) );
-        final Record r3 = new Record( Type.ARTIFACT_ADD, artifactMap( "com.bar" ) );
+        final Record r1 = new Record(Type.ARTIFACT_ADD, artifactMap("org.apache"));
+        final Record r2 = new Record(Type.ARTIFACT_ADD, artifactMap("org.foo"));
+        final Record r3 = new Record(Type.ARTIFACT_ADD, artifactMap("com.bar"));
 
         Iterable<Map<String, String>> iterable = StreamSupport.stream(
-                        decorate( Arrays.asList( r1, r2, r3 ), indexId ).spliterator(), false )
-                .map( compactFunction )
-                .collect( Collectors.toList() );
+                        decorate(Arrays.asList(r1, r2, r3), indexId).spliterator(), false)
+                .map(compactFunction)
+                .collect(Collectors.toList());
 
         ;
-        try ( WritableResourceHandler writableResourceHandler = createWritableResourceHandler() )
-        {
-            try ( IndexWriter indexWriter = new IndexWriter(
-                    writableResourceHandler,
-                    indexId,
-                    false
-            ) )
-            {
-                indexWriter.writeChunk( iterable.iterator() );
+        try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
+            try (IndexWriter indexWriter = new IndexWriter(writableResourceHandler, indexId, false)) {
+                indexWriter.writeChunk(iterable.iterator());
                 indexWriter.close();
             }
 
-            try ( IndexReader indexReader = new IndexReader( null, writableResourceHandler ) )
-            {
-                assertThat( indexReader.getChunkNames(),
-                        equalTo( List.of( "nexus-maven-repository-index.gz" ) ) );
+            try (IndexReader indexReader = new IndexReader(null, writableResourceHandler)) {
+                assertThat(indexReader.getChunkNames(), equalTo(List.of("nexus-maven-repository-index.gz")));
                 ChunkReader chunkReader = indexReader.iterator().next();
-                final Map<Type, List<Record>> recordTypes = loadRecordsByType( chunkReader );
-                assertThat( recordTypes.get( Type.DESCRIPTOR ).size(), equalTo( 1 ) );
-                assertThat( recordTypes.get( Type.ROOT_GROUPS ).size(), equalTo( 1 ) );
-                assertThat( recordTypes.get( Type.ALL_GROUPS ).size(), equalTo( 1 ) );
-                assertThat( recordTypes.get( Type.ARTIFACT_ADD ).size(), equalTo( 3 ) );
-                assertThat( recordTypes.get( Type.ARTIFACT_REMOVE ), nullValue() );
+                final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
+                assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
+                assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
+                assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
+                assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(3));
+                assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
 
-                assertThat( recordTypes.get( Type.ROOT_GROUPS ).get( 0 ).get( Record.ROOT_GROUPS ),
-                        equalTo( new String[] {"com", "org"} ) );
-                assertThat( recordTypes.get( Type.ALL_GROUPS ).get( 0 ).get( Record.ALL_GROUPS ),
-                        equalTo( new String[] {"com.bar", "org.apache", "org.foo"} ) );
+                assertThat(
+                        recordTypes.get(Type.ROOT_GROUPS).get(0).get(Record.ROOT_GROUPS),
+                        equalTo(new String[] {"com", "org"}));
+                assertThat(
+                        recordTypes.get(Type.ALL_GROUPS).get(0).get(Record.ALL_GROUPS),
+                        equalTo(new String[] {"com.bar", "org.apache", "org.foo"}));
             }
         }
     }
 
-    private Map<EntryKey, Object> artifactMap( final String groupId )
-    {
+    private Map<EntryKey, Object> artifactMap(final String groupId) {
         final HashMap<EntryKey, Object> result = new HashMap<>();
-        result.put( Record.GROUP_ID, groupId );
-        result.put( Record.ARTIFACT_ID, "artifact" );
-        result.put( Record.VERSION, "1.0" );
-        result.put( Record.PACKAGING, "jar" );
-        result.put( Record.FILE_MODIFIED, System.currentTimeMillis() );
-        result.put( Record.FILE_SIZE, 123L );
-        result.put( Record.FILE_EXTENSION, "jar" );
-        result.put( Record.HAS_SOURCES, Boolean.FALSE );
-        result.put( Record.HAS_JAVADOC, Boolean.FALSE );
-        result.put( Record.HAS_SIGNATURE, Boolean.FALSE );
+        result.put(Record.GROUP_ID, groupId);
+        result.put(Record.ARTIFACT_ID, "artifact");
+        result.put(Record.VERSION, "1.0");
+        result.put(Record.PACKAGING, "jar");
+        result.put(Record.FILE_MODIFIED, System.currentTimeMillis());
+        result.put(Record.FILE_SIZE, 123L);
+        result.put(Record.FILE_EXTENSION, "jar");
+        result.put(Record.HAS_SOURCES, Boolean.FALSE);
+        result.put(Record.HAS_JAVADOC, Boolean.FALSE);
+        result.put(Record.HAS_SIGNATURE, Boolean.FALSE);
         return result;
     }
 }

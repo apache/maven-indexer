@@ -1,5 +1,3 @@
-package org.apache.maven.search.request;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,12 +16,12 @@ package org.apache.maven.search.request;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.request;
 
 /**
  * Paging.
  */
-public final class Paging
-{
+public final class Paging {
     private final int pageSize;
 
     private final int pageOffset;
@@ -31,15 +29,12 @@ public final class Paging
     /**
      * Creates paging instance with given page size (must be greater than 0) and page offset (must be non-negative).
      */
-    public Paging( int pageSize, int pageOffset )
-    {
-        if ( pageSize < 1 )
-        {
-            throw new IllegalArgumentException( "pageSize" );
+    public Paging(int pageSize, int pageOffset) {
+        if (pageSize < 1) {
+            throw new IllegalArgumentException("pageSize");
         }
-        if ( pageOffset < 0 )
-        {
-            throw new IllegalArgumentException( "pageOffset" );
+        if (pageOffset < 0) {
+            throw new IllegalArgumentException("pageOffset");
         }
         this.pageSize = pageSize;
         this.pageOffset = pageOffset;
@@ -48,38 +43,33 @@ public final class Paging
     /**
      * Creates paging instance with given page size (must be grater than 0) and 0 page offset.
      */
-    public Paging( int pageSize )
-    {
-        this( pageSize, 0 );
+    public Paging(int pageSize) {
+        this(pageSize, 0);
     }
 
     /**
      * Returns the page size: positive integer, never zero or less.
      */
-    public int getPageSize()
-    {
+    public int getPageSize() {
         return pageSize;
     }
 
     /**
      * Returns the page offset: a zero or a positive integer.
      */
-    public int getPageOffset()
-    {
+    public int getPageOffset() {
         return pageOffset;
     }
 
     /**
      * Creates "next page" instance relative to this instance.
      */
-    public Paging nextPage()
-    {
-        return new Paging( pageSize, pageOffset + 1 );
+    public Paging nextPage() {
+        return new Paging(pageSize, pageOffset + 1);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getClass().getSimpleName() + "{pageSize=" + pageSize + ", pageOffset=" + pageOffset + "}";
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index.archetype;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.archetype;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,13 +16,14 @@ package org.apache.maven.index.archetype;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.archetype;
+
+import javax.inject.Inject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.inject.Inject;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.archetype.catalog.Archetype;
@@ -43,74 +42,60 @@ import org.slf4j.LoggerFactory;
  * Support class to implement {@code org.apache.maven.archetype.source.ArchetypeDataSource} interface. Extend this class
  * to suit your needs.
  */
-public abstract class AbstractArchetypeDataSource
-{
+public abstract class AbstractArchetypeDataSource {
 
-    private final Logger logger = LoggerFactory.getLogger( getClass() );
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected Logger getLogger()
-    {
+    protected Logger getLogger() {
         return logger;
     }
 
     private final Indexer indexer;
 
-
     @Inject
-    protected AbstractArchetypeDataSource( Indexer indexer )
-    {
+    protected AbstractArchetypeDataSource(Indexer indexer) {
         this.indexer = indexer;
     }
 
-    public ArchetypeCatalog getArchetypeCatalog( final Properties properties )
-    {
+    public ArchetypeCatalog getArchetypeCatalog(final Properties properties) {
         final ArchetypeCatalog catalog = new ArchetypeCatalog();
-        try
-        {
+        try {
             final Map<String, String> repositories = getRepositoryMap();
-            final Query pq =
-                indexer.constructQuery( MAVEN.PACKAGING, new SourcedSearchExpression( "maven-archetype" ) );
-            final FlatSearchRequest searchRequest = new FlatSearchRequest( pq );
-            searchRequest.setContexts( getIndexingContexts() );
-            final FlatSearchResponse searchResponse = indexer.searchFlat( searchRequest );
-            for ( ArtifactInfo info : searchResponse.getResults() )
-            {
+            final Query pq = indexer.constructQuery(MAVEN.PACKAGING, new SourcedSearchExpression("maven-archetype"));
+            final FlatSearchRequest searchRequest = new FlatSearchRequest(pq);
+            searchRequest.setContexts(getIndexingContexts());
+            final FlatSearchResponse searchResponse = indexer.searchFlat(searchRequest);
+            for (ArtifactInfo info : searchResponse.getResults()) {
                 Archetype archetype = new Archetype();
-                archetype.setGroupId( info.getGroupId() );
-                archetype.setArtifactId( info.getArtifactId() );
-                archetype.setVersion( info.getVersion() );
-                archetype.setDescription( info.getDescription() );
-                archetype.setRepository( repositories.get( info.getRepository() ) );
-                catalog.addArchetype( archetype );
+                archetype.setGroupId(info.getGroupId());
+                archetype.setArtifactId(info.getArtifactId());
+                archetype.setVersion(info.getVersion());
+                archetype.setDescription(info.getDescription());
+                archetype.setRepository(repositories.get(info.getRepository()));
+                catalog.addArchetype(archetype);
             }
-        }
-        catch ( Exception ex )
-        {
-            getLogger().error( "Unable to retrieve archetypes", ex );
+        } catch (Exception ex) {
+            getLogger().error("Unable to retrieve archetypes", ex);
         }
 
         return catalog;
     }
 
-    private Map<String, String> getRepositoryMap()
-    {
+    private Map<String, String> getRepositoryMap() {
         // can't cache this because indexes can be changed
         Map<String, String> repositories = new HashMap<>();
 
-        for ( IndexingContext context : getIndexingContexts() )
-        {
+        for (IndexingContext context : getIndexingContexts()) {
             String repositoryUrl = context.getRepositoryUrl();
-            if ( repositoryUrl != null )
-            {
-                repositories.put( context.getId(), repositoryUrl );
+            if (repositoryUrl != null) {
+                repositories.put(context.getId(), repositoryUrl);
             }
         }
 
         return repositories;
     }
 
-    public void updateCatalog( Properties properties, Archetype archetype )
-    {
+    public void updateCatalog(Properties properties, Archetype archetype) {
         // TODO maybe update index
     }
 

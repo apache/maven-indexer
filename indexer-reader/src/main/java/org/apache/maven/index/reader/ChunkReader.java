@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.Closeable;
 import java.io.DataInput;
@@ -40,9 +39,7 @@ import java.util.zip.GZIPInputStream;
  *
  * @since 5.1.2
  */
-public class ChunkReader
-        implements Closeable, Iterable<Map<String, String>>
-{
+public class ChunkReader implements Closeable, Iterable<Map<String, String>> {
     private final String chunkName;
 
     private final DataInputStream dataInputStream;
@@ -51,37 +48,31 @@ public class ChunkReader
 
     private final Date timestamp;
 
-    public ChunkReader( final String chunkName,
-                        final InputStream inputStream )
-            throws IOException
-    {
+    public ChunkReader(final String chunkName, final InputStream inputStream) throws IOException {
         this.chunkName = chunkName.trim();
-        this.dataInputStream = new DataInputStream( new GZIPInputStream( inputStream, 2 * 1024 ) );
-        this.version = ( (int) dataInputStream.readByte() ) & 0xff;
-        this.timestamp = new Date( dataInputStream.readLong() );
+        this.dataInputStream = new DataInputStream(new GZIPInputStream(inputStream, 2 * 1024));
+        this.version = ((int) dataInputStream.readByte()) & 0xff;
+        this.timestamp = new Date(dataInputStream.readLong());
     }
 
     /**
      * Returns the chunk name.
      */
-    public String getName()
-    {
+    public String getName() {
         return chunkName;
     }
 
     /**
      * Returns index version. All releases so far always returned {@code 1}.
      */
-    public int getVersion()
-    {
+    public int getVersion() {
         return version;
     }
 
     /**
      * Returns the index timestamp of last update of the index.
      */
-    public Date getTimestamp()
-    {
+    public Date getTimestamp() {
         return timestamp;
     }
 
@@ -89,15 +80,11 @@ public class ChunkReader
      * Returns the {@link Record} iterator.
      */
     @Override
-    public Iterator<Map<String, String>> iterator()
-    {
-        try
-        {
-            return new IndexIterator( dataInputStream );
-        }
-        catch ( IOException e )
-        {
-            throw new RuntimeException( "error", e );
+    public Iterator<Map<String, String>> iterator() {
+        try {
+            return new IndexIterator(dataInputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("error", e);
         }
     }
 
@@ -105,41 +92,32 @@ public class ChunkReader
      * Closes this reader and it's underlying input.
      */
     @Override
-    public void close()
-            throws IOException
-    {
+    public void close() throws IOException {
         dataInputStream.close();
     }
 
     /**
      * Low memory footprint index iterator that incrementally parses the underlying stream.
      */
-    private static class IndexIterator
-            implements Iterator<Map<String, String>>
-    {
+    private static class IndexIterator implements Iterator<Map<String, String>> {
         private final DataInputStream dataInputStream;
 
         private Map<String, String> nextRecord;
 
-        private IndexIterator( final DataInputStream dataInputStream )
-                throws IOException
-        {
+        private IndexIterator(final DataInputStream dataInputStream) throws IOException {
             this.dataInputStream = dataInputStream;
             this.nextRecord = nextRecord();
         }
 
         @Override
-        public boolean hasNext()
-        {
+        public boolean hasNext() {
             return nextRecord != null;
         }
 
         @Override
-        public Map<String, String> next()
-        {
-            if ( nextRecord == null )
-            {
-                throw new NoSuchElementException( "chunk depleted" );
+        public Map<String, String> next() {
+            if (nextRecord == null) {
+                throw new NoSuchElementException("chunk depleted");
             }
             Map<String, String> result = nextRecord;
             nextRecord = nextRecord();
@@ -147,20 +125,15 @@ public class ChunkReader
         }
 
         @Override
-        public void remove()
-        {
-            throw new UnsupportedOperationException( "remove" );
+        public void remove() {
+            throw new UnsupportedOperationException("remove");
         }
 
-        private Map<String, String> nextRecord()
-        {
-            try
-            {
-                return readRecord( dataInputStream );
-            }
-            catch ( IOException e )
-            {
-                throw new RuntimeException( "read error", e );
+        private Map<String, String> nextRecord() {
+            try {
+                return readRecord(dataInputStream);
+            } catch (IOException e) {
+                throw new RuntimeException("read error", e);
             }
         }
     }
@@ -168,76 +141,59 @@ public class ChunkReader
     /**
      * Reads and returns next record from the underlying stream, or {@code null} if no more records.
      */
-    private static Map<String, String> readRecord( final DataInput dataInput )
-            throws IOException
-    {
+    private static Map<String, String> readRecord(final DataInput dataInput) throws IOException {
         int fieldCount;
-        try
-        {
+        try {
             fieldCount = dataInput.readInt();
-        }
-        catch ( EOFException ex )
-        {
+        } catch (EOFException ex) {
             return null; // no more documents
         }
 
         Map<String, String> recordMap = new HashMap<>();
-        for ( int i = 0; i < fieldCount; i++ )
-        {
-            readField( recordMap, dataInput );
+        for (int i = 0; i < fieldCount; i++) {
+            readField(recordMap, dataInput);
         }
         return recordMap;
     }
 
-    private static void readField( final Map<String, String> record, final DataInput dataInput )
-            throws IOException
-    {
+    private static void readField(final Map<String, String> record, final DataInput dataInput) throws IOException {
         dataInput.readByte(); // flags: neglect them
         String name = dataInput.readUTF();
-        String value = readUTF( dataInput );
-        record.put( name, value );
+        String value = readUTF(dataInput);
+        record.put(name, value);
     }
 
-    private static String readUTF( final DataInput dataInput )
-            throws IOException
-    {
+    private static String readUTF(final DataInput dataInput) throws IOException {
         int utflen = dataInput.readInt();
 
         byte[] bytearr;
         char[] chararr;
 
-        try
-        {
+        try {
             bytearr = new byte[utflen];
             chararr = new char[utflen];
-        }
-        catch ( OutOfMemoryError e )
-        {
-            throw new IOException( "Index data content is corrupt", e );
+        } catch (OutOfMemoryError e) {
+            throw new IOException("Index data content is corrupt", e);
         }
 
         int c, char2, char3;
         int count = 0;
         int chararrCount = 0;
 
-        dataInput.readFully( bytearr, 0, utflen );
+        dataInput.readFully(bytearr, 0, utflen);
 
-        while ( count < utflen )
-        {
+        while (count < utflen) {
             c = bytearr[count] & 0xff;
-            if ( c > 127 )
-            {
+            if (c > 127) {
                 break;
             }
             count++;
             chararr[chararrCount++] = (char) c;
         }
 
-        while ( count < utflen )
-        {
+        while (count < utflen) {
             c = bytearr[count] & 0xff;
-            switch ( c >> 4 )
-            {
+            switch (c >> 4) {
                 case 0:
                 case 1:
                 case 2:
@@ -255,42 +211,37 @@ public class ChunkReader
                 case 13:
                     /* 110x xxxx 10xx xxxx */
                     count += 2;
-                    if ( count > utflen )
-                    {
-                        throw new UTFDataFormatException( "malformed input: partial character at end" );
+                    if (count > utflen) {
+                        throw new UTFDataFormatException("malformed input: partial character at end");
                     }
                     char2 = bytearr[count - 1];
-                    if ( ( char2 & 0xC0 ) != 0x80 )
-                    {
-                        throw new UTFDataFormatException( "malformed input around byte " + count );
+                    if ((char2 & 0xC0) != 0x80) {
+                        throw new UTFDataFormatException("malformed input around byte " + count);
                     }
-                    chararr[chararrCount++] = (char) ( ( ( c & 0x1F ) << 6 ) | ( char2 & 0x3F ) );
+                    chararr[chararrCount++] = (char) (((c & 0x1F) << 6) | (char2 & 0x3F));
                     break;
 
                 case 14:
                     /* 1110 xxxx 10xx xxxx 10xx xxxx */
                     count += 3;
-                    if ( count > utflen )
-                    {
-                        throw new UTFDataFormatException( "malformed input: partial character at end" );
+                    if (count > utflen) {
+                        throw new UTFDataFormatException("malformed input: partial character at end");
                     }
                     char2 = bytearr[count - 2];
                     char3 = bytearr[count - 1];
-                    if ( ( ( char2 & 0xC0 ) != 0x80 ) || ( ( char3 & 0xC0 ) != 0x80 ) )
-                    {
-                        throw new UTFDataFormatException( "malformed input around byte " + ( count - 1 ) );
+                    if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80)) {
+                        throw new UTFDataFormatException("malformed input around byte " + (count - 1));
                     }
-                    chararr[chararrCount++] =
-                            (char) ( ( ( c & 0x0F ) << 12 ) | ( ( char2 & 0x3F ) << 6 ) | ( char3 & 0x3F ) );
+                    chararr[chararrCount++] = (char) (((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | (char3 & 0x3F));
                     break;
 
                 default:
                     /* 10xx xxxx, 1111 xxxx */
-                    throw new UTFDataFormatException( "malformed input around byte " + count );
+                    throw new UTFDataFormatException("malformed input around byte " + count);
             }
         }
 
         // The number of chars produced may be less than utflen
-        return new String( chararr, 0, chararrCount );
+        return new String(chararr, 0, chararrCount);
     }
 }

@@ -1,5 +1,3 @@
-package org.apache.maven.index.cli;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.cli;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.cli;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,8 +30,7 @@ import org.apache.maven.index.packer.IndexPacker;
 
 @Named
 @Singleton
-public class Components
-{
+public class Components {
     @Inject
     Map<String, IndexCreator> allIndexCreators;
 

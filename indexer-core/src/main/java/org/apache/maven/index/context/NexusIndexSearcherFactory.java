@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import java.io.IOException;
 
@@ -25,19 +24,14 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherFactory;
 
-public class NexusIndexSearcherFactory
-    extends SearcherFactory
-{
+public class NexusIndexSearcherFactory extends SearcherFactory {
     private final IndexingContext context;
 
-    public NexusIndexSearcherFactory( final IndexingContext context )
-    {
+    public NexusIndexSearcherFactory(final IndexingContext context) {
         this.context = context;
     }
 
-    public IndexSearcher newSearcher( final IndexReader reader )
-        throws IOException
-    {
-        return new NexusIndexSearcher( context, reader );
+    public IndexSearcher newSearcher(final IndexReader reader) throws IOException {
+        return new NexusIndexSearcher(context, reader);
     }
 }

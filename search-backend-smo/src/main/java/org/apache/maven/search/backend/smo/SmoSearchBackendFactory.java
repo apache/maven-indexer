@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.smo;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo;
 
 import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
 import org.apache.maven.search.backend.smo.internal.SmoSearchTransportSupplier;
@@ -25,8 +24,7 @@ import org.apache.maven.search.backend.smo.internal.SmoSearchTransportSupplier;
 /**
  * The SMO search backend factory.
  */
-public class SmoSearchBackendFactory
-{
+public class SmoSearchBackendFactory {
     public static final String DEFAULT_BACKEND_ID = "central-smo";
 
     public static final String DEFAULT_REPOSITORY_ID = "central";
@@ -36,20 +34,16 @@ public class SmoSearchBackendFactory
     /**
      * Creates "default" SMO search backend suitable for most use cases.
      */
-    public SmoSearchBackend createDefault()
-    {
-        return create( DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI,
-                new SmoSearchTransportSupplier().get() );
+    public SmoSearchBackend createDefault() {
+        return create(
+                DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new SmoSearchTransportSupplier().get());
     }
 
     /**
      * Creates SMO search backend using provided parameters.
      */
-    public SmoSearchBackend create( String backendId,
-                                    String repositoryId,
-                                    String smoUri,
-                                    SmoSearchTransport transportSupport )
-    {
-        return new SmoSearchBackendImpl( backendId, repositoryId, smoUri, transportSupport );
+    public SmoSearchBackend create(
+            String backendId, String repositoryId, String smoUri, SmoSearchTransport transportSupport) {
+        return new SmoSearchBackendImpl(backendId, repositoryId, smoUri, transportSupport);
     }
 }

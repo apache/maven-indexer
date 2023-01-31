@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,37 +16,36 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 import java.util.Objects;
 
 /**
  * An immutable value class representing unique artifact coordinates.
- * 
+ *
  * @author cstamas
  * @author jvanzyl
  */
-public class Gav
-{
+public class Gav {
     /**
      * Enumeration representing Maven artifact hash types
      */
-    public enum HashType
-    {
-        sha1, md5, sha256, sha512
+    public enum HashType {
+        sha1,
+        md5,
+        sha256,
+        sha512
     }
 
     /**
      * Enumeration representing Maven artifact signature types
      */
-    public enum SignatureType
-    {
+    public enum SignatureType {
         gpg;
 
         @Override
-        public String toString()
-        {
-            if ( this == SignatureType.gpg )
-            {
+        public String toString() {
+            if (this == SignatureType.gpg) {
                 return "asc";
             }
             return "unknown-signature-type";
@@ -83,33 +80,35 @@ public class Gav
 
     private final SignatureType signatureType;
 
-    public Gav( String groupId, String artifactId, String version )
-    {
-        this( groupId, artifactId, version, null, null, null, null, null, false, null, false, null );
+    public Gav(String groupId, String artifactId, String version) {
+        this(groupId, artifactId, version, null, null, null, null, null, false, null, false, null);
     }
 
-    public Gav( String groupId, String artifactId, String version, String classifier, String extension,
-                Integer snapshotBuildNumber, Long snapshotTimeStamp, String name, boolean hash, HashType hashType,
-                boolean signature, SignatureType signatureType )
-    {
+    public Gav(
+            String groupId,
+            String artifactId,
+            String version,
+            String classifier,
+            String extension,
+            Integer snapshotBuildNumber,
+            Long snapshotTimeStamp,
+            String name,
+            boolean hash,
+            HashType hashType,
+            boolean signature,
+            SignatureType signatureType) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
-        this.snapshot = VersionUtils.isSnapshot( version );
+        this.snapshot = VersionUtils.isSnapshot(version);
 
-        if ( !snapshot )
-        {
+        if (!snapshot) {
             this.baseVersion = null;
-        }
-        else
-        {
-            if ( version.contains( "SNAPSHOT" ) )
-            {
+        } else {
+            if (version.contains("SNAPSHOT")) {
                 // this is not a timestamped version
                 this.baseVersion = null;
-            }
-            else
-            {
+            } else {
                 // this is a timestamped version (verified against pattern, see above)
                 // we have XXXXXX-YYYYMMDD.HHMMSS-B
                 // but XXXXXX may contain "-" too!
@@ -124,15 +123,12 @@ public class Gav
                 // else
                 // {
                 // trim the part of 'YYYYMMDD.HHMMSS-BN
-                String tempBaseVersion = version.substring( 0, version.lastIndexOf( '-' ) );
-                tempBaseVersion = tempBaseVersion.substring( 0, tempBaseVersion.length() - 15 );
+                String tempBaseVersion = version.substring(0, version.lastIndexOf('-'));
+                tempBaseVersion = tempBaseVersion.substring(0, tempBaseVersion.length() - 15);
 
-                if ( tempBaseVersion.length() > 0 )
-                {
+                if (tempBaseVersion.length() > 0) {
                     this.baseVersion = tempBaseVersion + "SNAPSHOT";
-                }
-                else
-                {
+                } else {
                     this.baseVersion = "SNAPSHOT";
                 }
                 // }
@@ -150,108 +146,107 @@ public class Gav
         this.signatureType = signatureType;
     }
 
-    public String getGroupId()
-    {
+    public String getGroupId() {
         return groupId;
     }
 
-    public String getArtifactId()
-    {
+    public String getArtifactId() {
         return artifactId;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public String getBaseVersion()
-    {
-        if ( baseVersion == null )
-        {
+    public String getBaseVersion() {
+        if (baseVersion == null) {
             return getVersion();
-        }
-        else
-        {
+        } else {
             return baseVersion;
         }
     }
 
-    public String getClassifier()
-    {
+    public String getClassifier() {
         return classifier;
     }
 
-    public String getExtension()
-    {
+    public String getExtension() {
         return extension;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public boolean isSnapshot()
-    {
+    public boolean isSnapshot() {
         return snapshot;
     }
 
-    public Integer getSnapshotBuildNumber()
-    {
+    public Integer getSnapshotBuildNumber() {
         return snapshotBuildNumber;
     }
 
-    public Long getSnapshotTimeStamp()
-    {
+    public Long getSnapshotTimeStamp() {
         return snapshotTimeStamp;
     }
 
-    public boolean isHash()
-    {
+    public boolean isHash() {
         return hash;
     }
 
-    public HashType getHashType()
-    {
+    public HashType getHashType() {
         return hashType;
     }
 
-    public boolean isSignature()
-    {
+    public boolean isSignature() {
         return signature;
     }
 
-    public SignatureType getSignatureType()
-    {
+    public SignatureType getSignatureType() {
         return signatureType;
     }
 
     @Override
-    public boolean equals( Object o )
-    {
-        if ( this == o )
-        {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() )
-        {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
         Gav gav = (Gav) o;
-        return snapshot == gav.snapshot && hash == gav.hash && signature == gav.signature && Objects.equals( groupId,
-                gav.groupId ) && Objects.equals( artifactId, gav.artifactId ) && Objects.equals( version,
-                gav.version ) && Objects.equals( baseVersion, gav.baseVersion ) && Objects.equals( classifier,
-                gav.classifier ) && Objects.equals( extension, gav.extension ) && Objects.equals( snapshotBuildNumber,
-                gav.snapshotBuildNumber ) && Objects.equals( snapshotTimeStamp,
-                gav.snapshotTimeStamp ) && Objects.equals( name,
-                gav.name ) && hashType == gav.hashType && signatureType == gav.signatureType;
+        return snapshot == gav.snapshot
+                && hash == gav.hash
+                && signature == gav.signature
+                && Objects.equals(groupId, gav.groupId)
+                && Objects.equals(artifactId, gav.artifactId)
+                && Objects.equals(version, gav.version)
+                && Objects.equals(baseVersion, gav.baseVersion)
+                && Objects.equals(classifier, gav.classifier)
+                && Objects.equals(extension, gav.extension)
+                && Objects.equals(snapshotBuildNumber, gav.snapshotBuildNumber)
+                && Objects.equals(snapshotTimeStamp, gav.snapshotTimeStamp)
+                && Objects.equals(name, gav.name)
+                && hashType == gav.hashType
+                && signatureType == gav.signatureType;
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hash( groupId, artifactId, version, baseVersion, classifier, extension, snapshotBuildNumber,
-                snapshotTimeStamp, name, snapshot, hash, hashType, signature, signatureType );
+    public int hashCode() {
+        return Objects.hash(
+                groupId,
+                artifactId,
+                version,
+                baseVersion,
+                classifier,
+                extension,
+                snapshotBuildNumber,
+                snapshotTimeStamp,
+                name,
+                snapshot,
+                hash,
+                hashType,
+                signature,
+                signatureType);
     }
 }

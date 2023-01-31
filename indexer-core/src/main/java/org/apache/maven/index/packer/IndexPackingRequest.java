@@ -1,5 +1,3 @@
-package org.apache.maven.index.packer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.packer;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.packer;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.packer;
 
 import java.io.File;
 import java.util.Arrays;
@@ -31,8 +30,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * An index packing request.
  */
-public class IndexPackingRequest
-{
+public class IndexPackingRequest {
     public static final int MAX_CHUNKS = 30;
 
     private final IndexingContext context;
@@ -51,13 +49,12 @@ public class IndexPackingRequest
 
     private Collection<IndexFormat> formats;
 
-    public IndexPackingRequest( final IndexingContext context, final IndexReader indexReader, final File targetDir )
-    {
-        this.context = requireNonNull( context );
+    public IndexPackingRequest(final IndexingContext context, final IndexReader indexReader, final File targetDir) {
+        this.context = requireNonNull(context);
 
-        this.indexReader = requireNonNull( indexReader );
+        this.indexReader = requireNonNull(indexReader);
 
-        this.targetDir = requireNonNull( targetDir );
+        this.targetDir = requireNonNull(targetDir);
 
         this.createIncrementalChunks = true;
 
@@ -67,85 +64,71 @@ public class IndexPackingRequest
 
         this.useTargetProperties = false;
 
-        this.formats = Arrays.asList( IndexFormat.FORMAT_V1 );
+        this.formats = Arrays.asList(IndexFormat.FORMAT_V1);
     }
 
-    public IndexingContext getContext()
-    {
+    public IndexingContext getContext() {
         return context;
     }
 
-    public IndexReader getIndexReader()
-    {
+    public IndexReader getIndexReader() {
         return indexReader;
     }
 
     /**
      * Sets index formats to be created
      */
-    public void setFormats( Collection<IndexFormat> formats )
-    {
+    public void setFormats(Collection<IndexFormat> formats) {
         this.formats = formats;
     }
 
     /**
      * Returns index formats to be created.
      */
-    public Collection<IndexFormat> getFormats()
-    {
+    public Collection<IndexFormat> getFormats() {
         return formats;
     }
 
-    public File getTargetDir()
-    {
+    public File getTargetDir() {
         return targetDir;
     }
 
-    public boolean isCreateIncrementalChunks()
-    {
+    public boolean isCreateIncrementalChunks() {
         return createIncrementalChunks;
     }
 
-    public void setCreateIncrementalChunks( boolean createIncrementalChunks )
-    {
+    public void setCreateIncrementalChunks(boolean createIncrementalChunks) {
         this.createIncrementalChunks = createIncrementalChunks;
     }
 
-    public boolean isCreateChecksumFiles()
-    {
+    public boolean isCreateChecksumFiles() {
         return createChecksumFiles;
     }
 
-    public void setCreateChecksumFiles( boolean createChecksumFiles )
-    {
+    public void setCreateChecksumFiles(boolean createChecksumFiles) {
         this.createChecksumFiles = createChecksumFiles;
     }
 
-    public int getMaxIndexChunks()
-    {
+    public int getMaxIndexChunks() {
         return maxIndexChunks;
     }
 
-    public void setMaxIndexChunks( int maxIndexChunks )
-    {
+    public void setMaxIndexChunks(int maxIndexChunks) {
         this.maxIndexChunks = maxIndexChunks;
     }
 
-    public boolean isUseTargetProperties()
-    {
+    public boolean isUseTargetProperties() {
         return useTargetProperties;
     }
 
-    public void setUseTargetProperties( boolean useTargetProperties )
-    {
+    public void setUseTargetProperties(boolean useTargetProperties) {
         this.useTargetProperties = useTargetProperties;
     }
 
     /**
      * Index format enumeration.
      */
-    public enum IndexFormat
-    {
+    public enum IndexFormat {
         FORMAT_V1
     }
 }

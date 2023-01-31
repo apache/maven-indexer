@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.smo.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,31 +31,23 @@ import org.apache.maven.search.backend.smo.SmoSearchTransport;
 /**
  * {@link java.net.HttpURLConnection} backed transport.
  */
-public class UrlConnectionSmoSearchTransport implements SmoSearchTransport
-{
+public class UrlConnectionSmoSearchTransport implements SmoSearchTransport {
     @Override
-    public String fetch( String serviceUri, Map<String, String> headers ) throws IOException
-    {
-        HttpURLConnection httpConnection = (HttpURLConnection) new URL( serviceUri ).openConnection();
-        httpConnection.setInstanceFollowRedirects( false );
-        for ( Map.Entry<String, String> entry : headers.entrySet() )
-        {
-            httpConnection.setRequestProperty( entry.getKey(), entry.getValue() );
+    public String fetch(String serviceUri, Map<String, String> headers) throws IOException {
+        HttpURLConnection httpConnection = (HttpURLConnection) new URL(serviceUri).openConnection();
+        httpConnection.setInstanceFollowRedirects(false);
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            httpConnection.setRequestProperty(entry.getKey(), entry.getValue());
         }
         int httpCode = httpConnection.getResponseCode();
-        if ( httpCode == HttpURLConnection.HTTP_OK )
-        {
-            try ( InputStream inputStream = httpConnection.getInputStream() )
-            {
-                try ( Scanner scanner = new Scanner( inputStream, StandardCharsets.UTF_8.name() ) )
-                {
-                    return scanner.useDelimiter( "\\A" ).next();
+        if (httpCode == HttpURLConnection.HTTP_OK) {
+            try (InputStream inputStream = httpConnection.getInputStream()) {
+                try (Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name())) {
+                    return scanner.useDelimiter("\\A").next();
                 }
             }
-        }
-        else
-        {
-            throw new IOException( "Unexpected response code: " + httpCode );
+        } else {
+            throw new IOException("Unexpected response code: " + httpCode);
         }
     }
 }

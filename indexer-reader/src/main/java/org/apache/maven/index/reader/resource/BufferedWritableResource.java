@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -30,30 +29,25 @@ import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
  * Wraps {@link WritableResource}s so that they return {@link BufferedInputStream}s and {@link
  * BufferedOutputStream}s.
  */
-public class BufferedWritableResource extends BufferedResource implements WritableResource
-{
+public class BufferedWritableResource extends BufferedResource implements WritableResource {
     private final WritableResource resource;
 
-    public BufferedWritableResource( WritableResource resource )
-    {
-        super( resource );
+    public BufferedWritableResource(WritableResource resource) {
+        super(resource);
         this.resource = resource;
     }
 
     @Override
-    public OutputStream write() throws IOException
-    {
+    public OutputStream write() throws IOException {
         OutputStream out = resource.write();
-        if ( out == null )
-        {
+        if (out == null) {
             return null;
         }
-        return new BufferedOutputStream( out );
+        return new BufferedOutputStream(out);
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         resource.close();
     }
 }

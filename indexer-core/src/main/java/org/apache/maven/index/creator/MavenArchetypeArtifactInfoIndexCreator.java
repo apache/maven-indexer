@@ -1,5 +1,3 @@
-package org.apache.maven.index.creator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.creator;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,9 +16,11 @@ package org.apache.maven.index.creator;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,86 +37,74 @@ import org.apache.maven.index.IndexerField;
  * inspected JAR is an Archetype. Since packaging is already handled by Minimal creator, this Creator only alters the
  * supplied ArtifactInfo packaging field during processing, but does not interferes with Lucene document fill-up or the
  * ArtifactInfo fill-up (the update* methods are empty).
- * 
+ *
  * @author cstamas
  */
 @Singleton
-@Named( MavenArchetypeArtifactInfoIndexCreator.ID )
-public class MavenArchetypeArtifactInfoIndexCreator
-    extends AbstractIndexCreator
-{
+@Named(MavenArchetypeArtifactInfoIndexCreator.ID)
+public class MavenArchetypeArtifactInfoIndexCreator extends AbstractIndexCreator {
     public static final String ID = "maven-archetype";
 
     private static final String MAVEN_ARCHETYPE_PACKAGING = "maven-archetype";
 
-    private static final String[] ARCHETYPE_XML_LOCATIONS =
-        { "META-INF/maven/archetype.xml", "META-INF/archetype.xml", "META-INF/maven/archetype-metadata.xml" };
+    private static final String[] ARCHETYPE_XML_LOCATIONS = {
+        "META-INF/maven/archetype.xml", "META-INF/archetype.xml", "META-INF/maven/archetype-metadata.xml"
+    };
 
-    public MavenArchetypeArtifactInfoIndexCreator()
-    {
-        super( ID, Arrays.asList( MinimalArtifactInfoIndexCreator.ID ) );
+    public MavenArchetypeArtifactInfoIndexCreator() {
+        super(ID, Arrays.asList(MinimalArtifactInfoIndexCreator.ID));
     }
 
-    public void populateArtifactInfo( ArtifactContext ac )
-    {
+    public void populateArtifactInfo(ArtifactContext ac) {
         File artifact = ac.getArtifact();
 
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && artifact.isFile() && !MAVEN_ARCHETYPE_PACKAGING.equals( ai.getPackaging() )
-            && artifact.getName().endsWith( ".jar" ) )
-        {
+        if (artifact != null
+                && artifact.isFile()
+                && !MAVEN_ARCHETYPE_PACKAGING.equals(ai.getPackaging())
+                && artifact.getName().endsWith(".jar")) {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
 
             // check for maven archetype, since Archetypes seems to not have consistent packaging,
             // and depending on the contents of the JAR, this call will override the packaging to "maven-archetype"!
-            checkMavenArchetype( ai, artifact );
+            checkMavenArchetype(ai, artifact);
         }
     }
 
     /**
      * Archetypes that are added will have their packaging types set correctly (to maven-archetype)
-     * 
+     *
      * @param ai
      * @param artifact
      */
-    private void checkMavenArchetype( ArtifactInfo ai, File artifact )
-    {
-        try ( ZipFile zipFile = new ZipFile( artifact ) )
-        {
-            for ( String path : ARCHETYPE_XML_LOCATIONS )
-            {
-                if ( zipFile.getEntry( path ) != null )
-                {
-                    ai.setPackaging( MAVEN_ARCHETYPE_PACKAGING );
+    private void checkMavenArchetype(ArtifactInfo ai, File artifact) {
+        try (ZipFile zipFile = new ZipFile(artifact)) {
+            for (String path : ARCHETYPE_XML_LOCATIONS) {
+                if (zipFile.getEntry(path) != null) {
+                    ai.setPackaging(MAVEN_ARCHETYPE_PACKAGING);
 
                     return;
                 }
             }
-        }
-        catch ( Exception e )
-        {
-            if ( getLogger().isDebugEnabled() )
-            {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to exception:", e );
-            }
-            else
-            {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e.getMessage() );
+        } catch (Exception e) {
+            if (getLogger().isDebugEnabled()) {
+                getLogger()
+                        .info("Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to exception:", e);
+            } else {
+                getLogger()
+                        .info("Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to "
+                                + e.getMessage());
             }
         }
     }
 
-    public void updateDocument( ArtifactInfo ai, Document doc )
-    {
+    public void updateDocument(ArtifactInfo ai, Document doc) {
         // nothing to update, minimal will maintain it.
     }
 
-    public boolean updateArtifactInfo( Document doc, ArtifactInfo ai )
-    {
+    public boolean updateArtifactInfo(Document doc, ArtifactInfo ai) {
         // nothing to update, minimal will maintain it.
 
         return false;
@@ -125,13 +113,11 @@ public class MavenArchetypeArtifactInfoIndexCreator
     // ==
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return ID;
     }
 
-    public Collection<IndexerField> getIndexerFields()
-    {
+    public Collection<IndexerField> getIndexerFields() {
         // it does not "add" any new field, it actually updates those already maintained by minimal creator.
         return Collections.emptyList();
     }

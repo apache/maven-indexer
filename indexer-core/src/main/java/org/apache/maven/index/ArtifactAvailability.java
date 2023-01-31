@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,46 +16,41 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 /**
  * Enumeration provides values indicating artifact availability
  */
-public enum ArtifactAvailability
-{
+public enum ArtifactAvailability {
     /**
      * Artifact is not present locally
      */
-    NOT_PRESENT( 0 ),
+    NOT_PRESENT(0),
 
     /**
      * Artifact is present locally
      */
-    PRESENT( 1 ),
+    PRESENT(1),
 
     /**
      * Artifact is not available
      */
-    NOT_AVAILABLE( 2 );
+    NOT_AVAILABLE(2);
 
     private final int n;
 
-    ArtifactAvailability( int n )
-    {
+    ArtifactAvailability(int n) {
         this.n = n;
     }
 
     @Override
-    public String toString()
-    {
-        return Integer.toString( n );
+    public String toString() {
+        return Integer.toString(n);
     }
 
-    public static ArtifactAvailability fromString( String s )
-    {
-        try
-        {
-            switch ( Integer.parseInt( s ) )
-            {
+    public static ArtifactAvailability fromString(String s) {
+        try {
+            switch (Integer.parseInt(s)) {
                 case 1:
                     return PRESENT;
                 case 2:
@@ -65,9 +58,7 @@ public enum ArtifactAvailability
                 default:
                     return NOT_PRESENT;
             }
-        }
-        catch ( NumberFormatException ex )
-        {
+        } catch (NumberFormatException ex) {
             return NOT_PRESENT;
         }
     }

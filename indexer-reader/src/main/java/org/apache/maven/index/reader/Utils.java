@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,11 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.index.reader.Record.EntryKey;
-import org.apache.maven.index.reader.Record.Type;
-import org.apache.maven.index.reader.ResourceHandler.Resource;
-import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
+package org.apache.maven.index.reader;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,15 +29,18 @@ import java.util.Properties;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.maven.index.reader.Record.EntryKey;
+import org.apache.maven.index.reader.Record.Type;
+import org.apache.maven.index.reader.ResourceHandler.Resource;
+import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
+
 /**
  * Reusable code snippets and constants.
  *
  * @since 5.1.2
  */
-public final class Utils
-{
-    private Utils()
-    {
+public final class Utils {
+    private Utils() {
         // nothing
     }
 
@@ -51,10 +48,9 @@ public final class Utils
 
     public static final DateFormat INDEX_DATE_FORMAT;
 
-    static
-    {
-        INDEX_DATE_FORMAT = new SimpleDateFormat( "yyyyMMddHHmmss.SSS Z" );
-        INDEX_DATE_FORMAT.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
+    static {
+        INDEX_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss.SSS Z");
+        INDEX_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     public static final String FIELD_SEPARATOR = "|";
@@ -65,23 +61,19 @@ public final class Utils
 
     public static final String INFO = "i";
 
-    public static final Pattern FS_PATTERN = Pattern.compile( Pattern.quote( FIELD_SEPARATOR ) );
+    public static final Pattern FS_PATTERN = Pattern.compile(Pattern.quote(FIELD_SEPARATOR));
 
     /**
      * Creates and loads {@link Properties} from provided {@link Resource} if exists, and closes the resource. If not
      * exists, returns {@code null}.
      */
-    public static Properties loadProperties( final Resource resource )
-        throws IOException
-    {
-        try ( InputStream inputStream = resource.read() )
-        {
-            if ( inputStream == null )
-            {
+    public static Properties loadProperties(final Resource resource) throws IOException {
+        try (InputStream inputStream = resource.read()) {
+            if (inputStream == null) {
                 return null;
             }
             final Properties properties = new Properties();
-            properties.load( inputStream );
+            properties.load(inputStream);
             return properties;
         }
     }
@@ -89,14 +81,11 @@ public final class Utils
     /**
      * Saves {@link Properties} to provided {@link WritableResource} and closes the resource.
      */
-    public static void storeProperties( final WritableResource writableResource, final Properties properties )
-        throws IOException
-    {
-        try ( writableResource )
-        {
-            try ( OutputStream outputStream = writableResource.write() )
-            {
-                properties.store( outputStream, "Maven Indexer Writer" );
+    public static void storeProperties(final WritableResource writableResource, final Properties properties)
+            throws IOException {
+        try (writableResource) {
+            try (OutputStream outputStream = writableResource.write()) {
+                properties.store(outputStream, "Maven Indexer Writer");
             }
         }
     }
@@ -104,58 +93,51 @@ public final class Utils
     /**
      * Creates a record of type {@link Type#DESCRIPTOR}.
      */
-    public static Record descriptor( final String repoId )
-    {
+    public static Record descriptor(final String repoId) {
         HashMap<EntryKey, Object> entries = new HashMap<>();
-        entries.put( Record.REPOSITORY_ID, repoId );
-        return new Record( Type.DESCRIPTOR, entries );
+        entries.put(Record.REPOSITORY_ID, repoId);
+        return new Record(Type.DESCRIPTOR, entries);
     }
 
     /**
      * Creates a record of type {@link Type#ALL_GROUPS}.
      */
-    public static Record allGroups( final Collection<String> allGroups )
-    {
+    public static Record allGroups(final Collection<String> allGroups) {
         HashMap<EntryKey, Object> entries = new HashMap<>();
-        entries.put( Record.ALL_GROUPS, allGroups.toArray( new String[0] ) );
-        return new Record( Type.ALL_GROUPS, entries );
+        entries.put(Record.ALL_GROUPS, allGroups.toArray(new String[0]));
+        return new Record(Type.ALL_GROUPS, entries);
     }
 
     /**
      * Creates a record of type {@link Type#ROOT_GROUPS}.
      */
-    public static Record rootGroups( final Collection<String> rootGroups )
-    {
+    public static Record rootGroups(final Collection<String> rootGroups) {
         HashMap<EntryKey, Object> entries = new HashMap<>();
-        entries.put( Record.ROOT_GROUPS, rootGroups.toArray( new String[0] ) );
-        return new Record( Type.ROOT_GROUPS, entries );
+        entries.put(Record.ROOT_GROUPS, rootGroups.toArray(new String[0]));
+        return new Record(Type.ROOT_GROUPS, entries);
     }
 
     /**
      * Helper to translate the "NA" (not available) input into {@code null} value.
      */
-    public static String renvl( final String v )
-    {
-        return NOT_AVAILABLE.equals( v ) ? null : v;
+    public static String renvl(final String v) {
+        return NOT_AVAILABLE.equals(v) ? null : v;
     }
 
     /**
      * Helper to translate {@code null} into "NA" (not available) value.
      */
-    public static String nvl( final String v )
-    {
+    public static String nvl(final String v) {
         return v == null ? NOT_AVAILABLE : v;
     }
 
     /**
      * Returns the "root group" of given groupId.
      */
-    public static String rootGroup( final String groupId )
-    {
-        int n = groupId.indexOf( '.' );
-        if ( n > -1 )
-        {
-            return groupId.substring( 0, n );
+    public static String rootGroup(final String groupId) {
+        int n = groupId.indexOf('.');
+        if (n > -1) {
+            return groupId.substring(0, n);
         }
         return groupId;
     }

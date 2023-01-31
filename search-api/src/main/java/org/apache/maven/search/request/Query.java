@@ -1,5 +1,3 @@
-package org.apache.maven.search.request;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,40 +16,36 @@ package org.apache.maven.search.request;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.request;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Query.
  */
-public class Query
-{
+public class Query {
     private final String queryString;
 
-    protected Query( String queryString )
-    {
-        this.queryString = requireNonNull( queryString );
+    protected Query(String queryString) {
+        this.queryString = requireNonNull(queryString);
     }
 
     /**
      * Returns the query string value, never {@code null}.
      */
-    public String getValue()
-    {
+    public String getValue() {
         return queryString;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getValue();
     }
 
     /**
      * Creates a plain query.
      */
-    public static Query query( String queryString )
-    {
-        return new Query( queryString );
+    public static Query query(String queryString) {
+        return new Query(queryString);
     }
 }

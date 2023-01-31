@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 /**
  * Utility methods for basic "detection" of artifact kind in M1 repository.
@@ -25,39 +24,34 @@ package org.apache.maven.index.artifact;
  * @deprecated Maven1 support to be dropped.
  */
 @Deprecated
-public class M1ArtifactRecognizer
-{
+public class M1ArtifactRecognizer {
     /**
      * Is this item M1 Checksum?
      */
-    public static boolean isChecksum( String path )
-    {
-        return path.endsWith( ".sha1" ) || path.endsWith( ".md5" );
+    public static boolean isChecksum(String path) {
+        return path.endsWith(".sha1") || path.endsWith(".md5");
     }
 
     /**
      * Is this item M1 POM?
      */
-    public static boolean isPom( String path )
-    {
-        return path.endsWith( ".pom" ) || path.endsWith( ".pom.sha1" ) || path.endsWith( ".pom.md5" );
+    public static boolean isPom(String path) {
+        return path.endsWith(".pom") || path.endsWith(".pom.sha1") || path.endsWith(".pom.md5");
     }
 
     /**
      * Is this item M1 snapshot?
      */
-    public static boolean isSnapshot( String path )
-    {
-        return path.contains( "SNAPSHOT" );
+    public static boolean isSnapshot(String path) {
+        return path.contains("SNAPSHOT");
     }
 
     /**
      * Is this item M1 metadata? There is no such!
      */
-    public static boolean isMetadata( String path )
-    {
-        return path.endsWith( "maven-metadata.xml" ) || path.endsWith( "maven-metadata.xml.sha1" )
-            || path.endsWith( "maven-metadata.xml.md5" );
+    public static boolean isMetadata(String path) {
+        return path.endsWith("maven-metadata.xml")
+                || path.endsWith("maven-metadata.xml.sha1")
+                || path.endsWith("maven-metadata.xml.md5");
     }
-
 }

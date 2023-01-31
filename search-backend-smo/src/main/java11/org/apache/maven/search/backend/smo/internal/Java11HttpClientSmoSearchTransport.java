@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.smo.internal;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.smo.internal;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.smo.internal;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

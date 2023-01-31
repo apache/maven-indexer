@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,10 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,26 +28,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class PathWritableResourceHandlerTest
-{
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+public class PathWritableResourceHandlerTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
-    public void locate() throws IOException
-    {
-        WritableResource test = new PathWritableResourceHandler( folder.getRoot().toPath() )
-                .locate( "test.txt" );
-        assertNull( test.read() );
-        try ( OutputStream out = test.write() )
-        {
-            out.write( 'a' );
+    public void locate() throws IOException {
+        WritableResource test = new PathWritableResourceHandler(folder.getRoot().toPath()).locate("test.txt");
+        assertNull(test.read());
+        try (OutputStream out = test.write()) {
+            out.write('a');
         }
-        try ( InputStream in = test.read() )
-        {
-            assertEquals( 'a', in.read() );
+        try (InputStream in = test.read()) {
+            assertEquals('a', in.read());
         }
-        assertArrayEquals( new byte[] {'a'},
-                Files.readAllBytes( folder.getRoot().toPath().resolve( "test.txt" ) ) );
+        assertArrayEquals(
+                new byte[] {'a'}, Files.readAllBytes(folder.getRoot().toPath().resolve("test.txt")));
     }
 }

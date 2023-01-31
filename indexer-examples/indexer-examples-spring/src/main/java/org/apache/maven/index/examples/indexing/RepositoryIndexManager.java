@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.indexing;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,16 +16,18 @@ package org.apache.maven.index.examples.indexing;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples.indexing;
+
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
+
+import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 /**
  * This class represents a mapping between repositoryId-s and their respective indexes.
@@ -36,10 +36,9 @@ import java.util.Map;
  */
 @Singleton
 @Component
-public class RepositoryIndexManager
-{
+public class RepositoryIndexManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger( RepositoryIndexManager.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger(RepositoryIndexManager.class);
 
     /**
      * K: repositoryId
@@ -47,9 +46,7 @@ public class RepositoryIndexManager
      */
     private Map<String, RepositoryIndexer> indexes = new LinkedHashMap<>();
 
-
-    public RepositoryIndexManager()
-    {
+    public RepositoryIndexManager() {
         // no op
     }
 
@@ -60,50 +57,39 @@ public class RepositoryIndexManager
      * This method is of particular importance, as you should close the indexes properly.
      */
     @PreDestroy
-    private void close()
-    {
-        for ( String repositoryId : indexes.keySet() )
-        {
-            try
-            {
-                final RepositoryIndexer repositoryIndexer = indexes.get( repositoryId );
+    private void close() {
+        for (String repositoryId : indexes.keySet()) {
+            try {
+                final RepositoryIndexer repositoryIndexer = indexes.get(repositoryId);
 
-                LOGGER.debug( "Closing indexer for " + repositoryIndexer.getRepositoryId() + "..." );
+                LOGGER.debug("Closing indexer for " + repositoryIndexer.getRepositoryId() + "...");
 
                 repositoryIndexer.close();
 
-                LOGGER.debug( "Closed indexer for " + repositoryIndexer.getRepositoryId() + "." );
-            }
-            catch ( IOException e )
-            {
-                LOGGER.error( e.getMessage(), e );
+                LOGGER.debug("Closed indexer for " + repositoryIndexer.getRepositoryId() + ".");
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }
 
-    public Map<String, RepositoryIndexer> getIndexes()
-    {
+    public Map<String, RepositoryIndexer> getIndexes() {
         return indexes;
     }
 
-    public void setIndexes( Map<String, RepositoryIndexer> indexes )
-    {
+    public void setIndexes(Map<String, RepositoryIndexer> indexes) {
         this.indexes = indexes;
     }
 
-    public RepositoryIndexer getRepositoryIndex( String repositoryId )
-    {
-        return indexes.get( repositoryId );
+    public RepositoryIndexer getRepositoryIndex(String repositoryId) {
+        return indexes.get(repositoryId);
     }
 
-    public RepositoryIndexer addRepositoryIndex( String repositoryId, RepositoryIndexer value )
-    {
-        return indexes.put( repositoryId, value );
+    public RepositoryIndexer addRepositoryIndex(String repositoryId, RepositoryIndexer value) {
+        return indexes.put(repositoryId, value);
     }
 
-    public RepositoryIndexer removeRepositoryIndex( String repositoryId )
-    {
-        return indexes.remove( repositoryId );
+    public RepositoryIndexer removeRepositoryIndex(String repositoryId) {
+        return indexes.remove(repositoryId);
     }
-
 }

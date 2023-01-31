@@ -1,5 +1,3 @@
-package org.apache.maven.search.support;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.support;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.support;
 
 import java.util.List;
 
@@ -30,48 +29,41 @@ import static java.util.Objects.requireNonNull;
 /**
  * A search response support class.
  */
-public abstract class SearchResponseSupport implements SearchResponse
-{
+public abstract class SearchResponseSupport implements SearchResponse {
     private final SearchRequest searchRequest;
 
     private final int totalHits;
 
     private final List<Record> page;
 
-    protected SearchResponseSupport( SearchRequest searchRequest, int totalHits, List<Record> page )
-    {
-        this.searchRequest = requireNonNull( searchRequest );
+    protected SearchResponseSupport(SearchRequest searchRequest, int totalHits, List<Record> page) {
+        this.searchRequest = requireNonNull(searchRequest);
         this.totalHits = totalHits;
-        this.page = requireNonNull( page );
+        this.page = requireNonNull(page);
     }
 
     @Override
-    public SearchRequest getSearchRequest()
-    {
+    public SearchRequest getSearchRequest() {
         return searchRequest;
     }
 
     @Override
-    public int getTotalHits()
-    {
+    public int getTotalHits() {
         return totalHits;
     }
 
     @Override
-    public int getCurrentHits()
-    {
+    public int getCurrentHits() {
         return page.size();
     }
 
     @Override
-    public List<Record> getPage()
-    {
+    public List<Record> getPage() {
         return page;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getClass().getSimpleName() + "{" + "searchRequest=" + searchRequest + ", totalHits=" + totalHits
                 + ", page=" + page + '}';
     }

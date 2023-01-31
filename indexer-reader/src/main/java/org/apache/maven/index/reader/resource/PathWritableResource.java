@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader.resource;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader.resource;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,37 +32,28 @@ import static java.util.Objects.requireNonNull;
 /**
  * A {@link WritableResource} that represents a {@link Path}.
  */
-public class PathWritableResource implements WritableResource
-{
+public class PathWritableResource implements WritableResource {
     private final Path path;
 
-    public PathWritableResource( Path path )
-    {
-        requireNonNull( path, "path cannot be null" );
+    public PathWritableResource(Path path) {
+        requireNonNull(path, "path cannot be null");
         this.path = path;
     }
 
     @Override
-    public OutputStream write() throws IOException
-    {
-        return Files.newOutputStream( path );
+    public OutputStream write() throws IOException {
+        return Files.newOutputStream(path);
     }
 
     @Override
-    public InputStream read() throws IOException
-    {
-        try
-        {
-            return Files.newInputStream( path );
-        }
-        catch ( NoSuchFileException e )
-        {
+    public InputStream read() throws IOException {
+        try {
+            return Files.newInputStream(path);
+        } catch (NoSuchFileException e) {
             return null;
         }
     }
 
     @Override
-    public void close() throws IOException
-    {
-    }
+    public void close() throws IOException {}
 }

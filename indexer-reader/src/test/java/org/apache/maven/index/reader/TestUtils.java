@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.util.Map;
 import java.util.TreeSet;
@@ -36,10 +35,8 @@ import static org.apache.maven.index.reader.Utils.rootGroups;
 /**
  * Helpers to transform records from one to another representation, and, some helpers for publishing using Guava.
  */
-public final class TestUtils
-{
-    private TestUtils()
-    {
+public final class TestUtils {
+    private TestUtils() {
         // nothing
     }
 
@@ -58,46 +55,35 @@ public final class TestUtils
      * stream, by adding the {@link Type#DESCRIPTOR}, {@link Type#ROOT_GROUPS} and {@link Type#ALL_GROUPS} special
      * records.
      */
-    public static Iterable<Record> decorate( final Iterable<Record> iterable,
-                                             final String repoId )
-    {
+    public static Iterable<Record> decorate(final Iterable<Record> iterable, final String repoId) {
         final TreeSet<String> allGroupsSet = new TreeSet<>();
         final TreeSet<String> rootGroupsSet = new TreeSet<>();
         return Stream.concat(
-                Stream.of( descriptor( repoId ) ),
-                Stream.concat(
-                        StreamSupport.stream( iterable.spliterator(), false ),
+                        Stream.of(descriptor(repoId)),
                         Stream.concat(
-                                Stream.of( allGroups( allGroupsSet ) ),
-                                // placeholder, will be recreated at the end with proper content
-                                Stream.of( rootGroups( rootGroupsSet ) )
+                                StreamSupport.stream(iterable.spliterator(), false),
+                                Stream.concat(
+                                        Stream.of(allGroups(allGroupsSet)),
+                                        // placeholder, will be recreated at the end with proper content
+                                        Stream.of(rootGroups(rootGroupsSet))))
+                        // placeholder, will be recreated at the end with proper content
                         )
-                )
-                // placeholder, will be recreated at the end with proper content
-        ).map( rec ->
-        {
-            if ( Type.DESCRIPTOR == rec.getType() )
-            {
-                return rec;
-            }
-            else if ( Type.ALL_GROUPS == rec.getType() )
-            {
-                return allGroups( allGroupsSet );
-            }
-            else if ( Type.ROOT_GROUPS == rec.getType() )
-            {
-                return rootGroups( rootGroupsSet );
-            }
-            else
-            {
-                final String groupId = rec.getString( Record.GROUP_ID );
-                if ( groupId != null )
-                {
-                    allGroupsSet.add( groupId );
-                    rootGroupsSet.add( rootGroup( groupId ) );
-                }
-                return rec;
-            }
-        } ).collect( Collectors.toList() );
+                .map(rec -> {
+                    if (Type.DESCRIPTOR == rec.getType()) {
+                        return rec;
+                    } else if (Type.ALL_GROUPS == rec.getType()) {
+                        return allGroups(allGroupsSet);
+                    } else if (Type.ROOT_GROUPS == rec.getType()) {
+                        return rootGroups(rootGroupsSet);
+                    } else {
+                        final String groupId = rec.getString(Record.GROUP_ID);
+                        if (groupId != null) {
+                            allGroupsSet.add(groupId);
+                            rootGroupsSet.add(rootGroup(groupId));
+                        }
+                        return rec;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 }

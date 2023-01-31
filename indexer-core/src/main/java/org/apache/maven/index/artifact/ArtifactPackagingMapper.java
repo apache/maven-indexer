@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,29 +16,29 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 import java.io.File;
 
 /**
  * A utility component that resolves POM packaging to artifact extension. Different implementations may provide
  * different means to do it.
- * 
+ *
  * @author cstamas
  */
-public interface ArtifactPackagingMapper
-{
+public interface ArtifactPackagingMapper {
     /**
      * Returns the extension belonging to given packaging, like "jar" for "jar", "jar" for "ear", etc.
-     * 
+     *
      * @param packaging
      * @return
      */
-    String getExtensionForPackaging( String packaging );
+    String getExtensionForPackaging(String packaging);
 
     /**
      * Sets the file to source the user provided mappings from, and resets the mappings, forcing it to reload the file.
-     * 
+     *
      * @param file
      */
-    void setPropertiesFile( File file );
+    void setPropertiesFile(File file);
 }

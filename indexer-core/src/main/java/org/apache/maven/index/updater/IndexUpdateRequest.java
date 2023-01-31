@@ -1,5 +1,3 @@
-package org.apache.maven.index.updater;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.updater;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.updater;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.updater;
 
 import java.io.File;
 
@@ -27,12 +26,11 @@ import org.apache.maven.index.fs.Locker;
 
 /**
  * Request to update indexes.
- * 
+ *
  * @author Eugene Kuleshov
  * @author cstamas
  */
-public class IndexUpdateRequest
-{
+public class IndexUpdateRequest {
     private final IndexingContext context;
 
     private final ResourceFetcher resourceFetcher;
@@ -40,7 +38,7 @@ public class IndexUpdateRequest
     private DocumentFilter documentFilter;
 
     private boolean forceFullUpdate;
-    
+
     private boolean incrementalOnly;
 
     private File indexTempDir;
@@ -57,8 +55,7 @@ public class IndexUpdateRequest
 
     private int threads;
 
-    public IndexUpdateRequest( final IndexingContext context, final ResourceFetcher resourceFetcher )
-    {
+    public IndexUpdateRequest(final IndexingContext context, final ResourceFetcher resourceFetcher) {
         assert context != null : "Context to be updated cannot be null!";
         assert resourceFetcher != null : "ResourceFetcher has to be provided!";
 
@@ -69,113 +66,91 @@ public class IndexUpdateRequest
         this.threads = 1;
     }
 
-    public IndexingContext getIndexingContext()
-    {
+    public IndexingContext getIndexingContext() {
         return context;
     }
 
-    public ResourceFetcher getResourceFetcher()
-    {
+    public ResourceFetcher getResourceFetcher() {
         return resourceFetcher;
     }
 
-    public DocumentFilter getDocumentFilter()
-    {
+    public DocumentFilter getDocumentFilter() {
         return documentFilter;
     }
 
-    public void setDocumentFilter( DocumentFilter documentFilter )
-    {
+    public void setDocumentFilter(DocumentFilter documentFilter) {
         this.documentFilter = documentFilter;
     }
 
-    public void setForceFullUpdate( boolean forceFullUpdate )
-    {
+    public void setForceFullUpdate(boolean forceFullUpdate) {
         this.forceFullUpdate = forceFullUpdate;
     }
 
-    public boolean isForceFullUpdate()
-    {
+    public boolean isForceFullUpdate() {
         return forceFullUpdate;
     }
-    
-    public boolean isIncrementalOnly()
-    {
+
+    public boolean isIncrementalOnly() {
         return incrementalOnly;
     }
 
-    public void setIncrementalOnly( boolean incrementalOnly )
-    {
+    public void setIncrementalOnly(boolean incrementalOnly) {
         this.incrementalOnly = incrementalOnly;
     }
 
-    public File getLocalIndexCacheDir()
-    {
+    public File getLocalIndexCacheDir() {
         return localIndexCacheDir;
     }
 
-    public void setLocalIndexCacheDir( File dir )
-    {
+    public void setLocalIndexCacheDir(File dir) {
         this.localIndexCacheDir = dir;
     }
 
-    public Locker getLocker()
-    {
+    public Locker getLocker() {
         return locker;
     }
 
-    public void setLocker( Locker locker )
-    {
+    public void setLocker(Locker locker) {
         this.locker = locker;
     }
 
-    public void setOffline( boolean offline )
-    {
+    public void setOffline(boolean offline) {
         this.offline = offline;
     }
 
-    public boolean isOffline()
-    {
+    public boolean isOffline() {
         return offline;
     }
 
-    public void setCacheOnly( boolean cacheOnly )
-    {
+    public void setCacheOnly(boolean cacheOnly) {
         this.cacheOnly = cacheOnly;
     }
 
-    public boolean isCacheOnly()
-    {
+    public boolean isCacheOnly() {
         return cacheOnly;
     }
 
-    public void setFSDirectoryFactory( FSDirectoryFactory factory )
-    {
+    public void setFSDirectoryFactory(FSDirectoryFactory factory) {
         this.directoryFactory = factory;
     }
 
-    public FSDirectoryFactory getFSDirectoryFactory()
-    {
+    public FSDirectoryFactory getFSDirectoryFactory() {
         return directoryFactory != null ? directoryFactory : FSDirectoryFactory.DEFAULT;
     }
 
-    public void setIndexTempDir( File indexTempDir )
-    {
+    public void setIndexTempDir(File indexTempDir) {
         this.indexTempDir = indexTempDir;
     }
 
-    public File getIndexTempDir()
-    {
+    public File getIndexTempDir() {
         return indexTempDir;
     }
 
-    public int getThreads()
-    {
+    public int getThreads() {
         return threads;
     }
 
-    public void setThreads( int threads )
-    {
+    public void setThreads(int threads) {
         this.threads = threads;
     }
 }

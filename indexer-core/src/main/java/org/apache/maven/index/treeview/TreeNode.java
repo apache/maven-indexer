@@ -1,5 +1,3 @@
-package org.apache.maven.index.treeview;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.treeview;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,54 +16,54 @@ package org.apache.maven.index.treeview;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.treeview;
 
 import java.io.IOException;
 import java.util.List;
 
-public interface TreeNode
-{
-    enum Type
-    {
-        G, A, V, artifact
+public interface TreeNode {
+    enum Type {
+        G,
+        A,
+        V,
+        artifact
     }
 
     Type getType();
 
-    void setType( Type t );
+    void setType(Type t);
 
     boolean isLeaf();
 
-    void setLeaf( boolean leaf );
+    void setLeaf(boolean leaf);
 
     String getNodeName();
 
-    void setNodeName( String name );
+    void setNodeName(String name);
 
     String getPath();
 
-    void setPath( String path );
+    void setPath(String path);
 
     String getGroupId();
 
-    void setGroupId( String groupId );
+    void setGroupId(String groupId);
 
     String getArtifactId();
 
-    void setArtifactId( String artifactId );
+    void setArtifactId(String artifactId);
 
     String getVersion();
 
-    void setVersion( String version );
+    void setVersion(String version);
 
     String getRepositoryId();
 
-    void setRepositoryId( String repositoryId );
+    void setRepositoryId(String repositoryId);
 
     List<TreeNode> getChildren();
 
-    List<TreeNode> listChildren()
-        throws IOException;
+    List<TreeNode> listChildren() throws IOException;
 
-    TreeNode findChildByPath( String path, Type type )
-        throws IOException;
+    TreeNode findChildByPath(String path, Type type) throws IOException;
 }

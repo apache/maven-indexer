@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.indexer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.indexer;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.indexer;
 
 import java.util.List;
 
@@ -28,8 +27,7 @@ import org.apache.maven.search.SearchResponse;
 /**
  * The Indexer Core search response.
  */
-public interface IndexerCoreSearchResponse extends SearchResponse
-{
+public interface IndexerCoreSearchResponse extends SearchResponse {
     /**
      * Returns the Lucene query used to create this response, never {@code null}.
      */

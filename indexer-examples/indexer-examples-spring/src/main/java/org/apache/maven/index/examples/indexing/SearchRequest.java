@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.indexing;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,49 +16,41 @@ package org.apache.maven.index.examples.indexing;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples.indexing;
 
 /**
  * This class holds the details of the search request.
  *
  * @author mtodorov
  */
-public class SearchRequest
-{
+public class SearchRequest {
 
     private String repository;
 
     private String query;
 
-
-    public SearchRequest()
-    {
+    public SearchRequest() {
         // no op
     }
 
-    public SearchRequest( String repository, String query )
-    {
+    public SearchRequest(String repository, String query) {
         this.repository = repository;
         this.query = query;
     }
 
-    public String getRepository()
-    {
+    public String getRepository() {
         return repository;
     }
 
-    public void setRepository( String repository )
-    {
+    public void setRepository(String repository) {
         this.repository = repository;
     }
 
-    public String getQuery()
-    {
+    public String getQuery() {
         return query;
     }
 
-    public void setQuery( String query )
-    {
+    public void setQuery(String query) {
         this.query = query;
     }
-
 }

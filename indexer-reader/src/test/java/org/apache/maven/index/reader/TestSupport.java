@@ -1,5 +1,3 @@
-package org.apache.maven.index.reader;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.index.reader;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.reader;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,8 +38,7 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Test support.
  */
-public class TestSupport
-{
+public class TestSupport {
     @Rule
     public TestName testName = new TestName();
 
@@ -52,10 +50,9 @@ public class TestSupport
      * Creates the temp directory and list for resource handlers.
      */
     @Before
-    public void setup()
-            throws IOException
-    {
-        this.tempDir = Files.createTempDirectory( getClass().getSimpleName() + ".temp" ).toFile();
+    public void setup() throws IOException {
+        this.tempDir =
+                Files.createTempDirectory(getClass().getSimpleName() + ".temp").toFile();
         this.directoryResourceHandlers = new ArrayList<>();
     }
 
@@ -63,11 +60,8 @@ public class TestSupport
      * Closes all the registered resources handlers and deletes the temp directory.
      */
     @After
-    public void cleanup()
-            throws IOException
-    {
-        for ( DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers )
-        {
+    public void cleanup() throws IOException {
+        for (DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers) {
             directoryResourceHandler.close();
         }
         // delete(tempDir);
@@ -76,10 +70,8 @@ public class TestSupport
     /**
      * Creates a temp file within {@link #tempDir} with given name.
      */
-    protected File createTempFile( final String name )
-            throws IOException
-    {
-        File file = new File( tempDir, name );
+    protected File createTempFile(final String name) throws IOException {
+        File file = new File(tempDir, name);
         file.deleteOnExit();
         return file;
     }
@@ -87,20 +79,17 @@ public class TestSupport
     /**
      * Creates a temp directory within {@link #tempDir}.
      */
-    protected File createTempDirectory()
-            throws IOException
-    {
-        return Files.createTempDirectory( tempDir.toPath(), testName.getMethodName() + "-dir" ).toFile();
+    protected File createTempDirectory() throws IOException {
+        return Files.createTempDirectory(tempDir.toPath(), testName.getMethodName() + "-dir")
+                .toFile();
     }
 
     /**
      * Creates an empty {@link DirectoryResourceHandler}.
      */
-    protected WritableResourceHandler createWritableResourceHandler()
-            throws IOException
-    {
-        DirectoryResourceHandler result = new DirectoryResourceHandler( createTempDirectory() );
-        directoryResourceHandlers.add( result );
+    protected WritableResourceHandler createWritableResourceHandler() throws IOException {
+        DirectoryResourceHandler result = new DirectoryResourceHandler(createTempDirectory());
+        directoryResourceHandlers.add(result);
         return result;
     }
 
@@ -108,58 +97,45 @@ public class TestSupport
      * Creates a "test" {@link ResourceHandler} that contains predefined files, is mapped to test resources under given
      * name.
      */
-    protected DirectoryResourceHandler testResourceHandler( final String name )
-            throws IOException
-    {
-        DirectoryResourceHandler result = new DirectoryResourceHandler( new File( "src/test/resources/" + name ) );
-        directoryResourceHandlers.add( result );
+    protected DirectoryResourceHandler testResourceHandler(final String name) throws IOException {
+        DirectoryResourceHandler result = new DirectoryResourceHandler(new File("src/test/resources/" + name));
+        directoryResourceHandlers.add(result);
         return result;
     }
 
     /**
      * Consumes {@link ChunkReader} and creates a map "by type" with records.
      */
-    protected Map<Type, List<Record>> loadRecordsByType( final ChunkReader chunkReader )
-            throws IOException
-    {
+    protected Map<Type, List<Record>> loadRecordsByType(final ChunkReader chunkReader) throws IOException {
         HashMap<Type, List<Record>> stat = new HashMap<>();
-        try ( chunkReader )
-        {
-            assertThat( chunkReader.getVersion(), equalTo( 1 ) );
+        try (chunkReader) {
+            assertThat(chunkReader.getVersion(), equalTo(1));
             final RecordExpander recordExpander = new RecordExpander();
-            for ( Map<String, String> rec : chunkReader )
-            {
-                final Record record = recordExpander.apply( rec );
-                if ( !stat.containsKey( record.getType() ) )
-                {
-                    stat.put( record.getType(), new ArrayList<>() );
+            for (Map<String, String> rec : chunkReader) {
+                final Record record = recordExpander.apply(rec);
+                if (!stat.containsKey(record.getType())) {
+                    stat.put(record.getType(), new ArrayList<>());
                 }
-                stat.get( record.getType() ).add( record );
+                stat.get(record.getType()).add(record);
             }
         }
         return stat;
     }
 
-
     /**
      * Consumes {@link ChunkReader} and creates a map "by type" with record type counts.
      */
-    protected Map<Type, Integer> countRecordsByType( final ChunkReader chunkReader )
-            throws IOException
-    {
+    protected Map<Type, Integer> countRecordsByType(final ChunkReader chunkReader) throws IOException {
         HashMap<Type, Integer> stat = new HashMap<>();
-        try ( chunkReader )
-        {
-            assertThat( chunkReader.getVersion(), equalTo( 1 ) );
+        try (chunkReader) {
+            assertThat(chunkReader.getVersion(), equalTo(1));
             final RecordExpander recordExpander = new RecordExpander();
-            for ( Map<String, String> rec : chunkReader )
-            {
-                final Record record = recordExpander.apply( rec );
-                if ( !stat.containsKey( record.getType() ) )
-                {
-                    stat.put( record.getType(), 0 );
+            for (Map<String, String> rec : chunkReader) {
+                final Record record = recordExpander.apply(rec);
+                if (!stat.containsKey(record.getType())) {
+                    stat.put(record.getType(), 0);
                 }
-                stat.put( record.getType(), stat.get( record.getType() ) + 1 );
+                stat.put(record.getType(), stat.get(record.getType()) + 1);
             }
         }
         return stat;

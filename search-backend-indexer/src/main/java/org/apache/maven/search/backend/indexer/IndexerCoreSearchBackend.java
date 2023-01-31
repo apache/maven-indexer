@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.indexer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.indexer;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.indexer;
 
 import java.io.IOException;
 
@@ -28,10 +27,9 @@ import org.apache.maven.search.SearchRequest;
 /**
  * The Indexer Core search backend.
  */
-public interface IndexerCoreSearchBackend extends SearchBackend
-{
+public interface IndexerCoreSearchBackend extends SearchBackend {
     @Override
-    IndexerCoreSearchResponse search( SearchRequest searchRequest ) throws IOException;
+    IndexerCoreSearchResponse search(SearchRequest searchRequest) throws IOException;
 
     /**
      * Returns the {@link IndexingContext} used by this search backend, never {@code null}.

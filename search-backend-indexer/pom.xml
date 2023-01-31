@@ -29,9 +29,7 @@ under the License.
   <artifactId>search-backend-indexer</artifactId>
 
   <name>Maven :: Search API Indexer Backend</name>
-  <description>
-    Indexer Search Backend implemented by Indexer Core.
-  </description>
+  <description>Indexer Search Backend implemented by Indexer Core.</description>
 
   <dependencies>
     <dependency>

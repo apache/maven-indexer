@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.services;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,34 +16,37 @@ package org.apache.maven.index.examples.services;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.examples.services;
+
+import java.io.File;
+import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.examples.indexing.SearchRequest;
 import org.apache.maven.index.examples.indexing.SearchResults;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * A simple indexing and search service.
  *
  * @author mtodorov
  */
-public interface ArtifactIndexingService
-{
+public interface ArtifactIndexingService {
 
-    void addToIndex( String repositoryId, File artifactFile, String groupId, String artifactId, String version,
-                     String extension, String classifier )
-        throws IOException;
+    void addToIndex(
+            String repositoryId,
+            File artifactFile,
+            String groupId,
+            String artifactId,
+            String version,
+            String extension,
+            String classifier)
+            throws IOException;
 
-    void deleteFromIndex( String repositoryId, String groupId, String artifactId, String version, String extension,
-                          String classifier )
-        throws IOException;
+    void deleteFromIndex(
+            String repositoryId, String groupId, String artifactId, String version, String extension, String classifier)
+            throws IOException;
 
-    SearchResults search( SearchRequest searchRequest )
-        throws IOException, ParseException;
+    SearchResults search(SearchRequest searchRequest) throws IOException, ParseException;
 
-    boolean contains( SearchRequest searchRequest )
-        throws IOException, ParseException;
-
+    boolean contains(SearchRequest searchRequest) throws IOException, ParseException;
 }

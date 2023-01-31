@@ -1,5 +1,3 @@
-package org.apache.maven.search;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search;
 
 import org.apache.maven.search.request.Paging;
 import org.apache.maven.search.request.Query;
@@ -27,8 +26,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * A search request to perform search: defines paging and query.
  */
-public final class SearchRequest
-{
+public final class SearchRequest {
     private final Paging paging;
 
     private final Query query;
@@ -36,47 +34,41 @@ public final class SearchRequest
     /**
      * Creates a request with given {@link Query} instance and default page size of 50.
      */
-    public SearchRequest( Query query )
-    {
-        this( new Paging( 50 ), query );
+    public SearchRequest(Query query) {
+        this(new Paging(50), query);
     }
 
     /**
      * Creates a request with given {@link Query} and {@link Paging}.
      */
-    public SearchRequest( Paging paging, Query query )
-    {
-        this.paging = requireNonNull( paging );
-        this.query = requireNonNull( query );
+    public SearchRequest(Paging paging, Query query) {
+        this.paging = requireNonNull(paging);
+        this.query = requireNonNull(query);
     }
 
     /**
      * The {@link Paging} of this request: defines page size and page offset, never {@code null}.
      */
-    public Paging getPaging()
-    {
+    public Paging getPaging() {
         return paging;
     }
 
     /**
      * The {@link Query} of this request, never {@code null}.
      */
-    public Query getQuery()
-    {
+    public Query getQuery() {
         return query;
     }
 
     /**
      * Returns a new {@link SearchRequest} instance for "next page" relative to this instance, never {@code null}.
      */
-    public SearchRequest nextPage()
-    {
-        return new SearchRequest( paging.nextPage(), query );
+    public SearchRequest nextPage() {
+        return new SearchRequest(paging.nextPage(), query);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getClass().getSimpleName() + "{" + "paging=" + paging + ", query=" + query + '}';
     }
 }

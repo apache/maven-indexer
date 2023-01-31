@@ -1,5 +1,3 @@
-package org.apache.maven.search.request;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,45 +16,40 @@ package org.apache.maven.search.request;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.request;
 
 import static java.util.Objects.requireNonNull;
 
 /**
  * Field query.
  */
-public class FieldQuery extends Query
-{
+public class FieldQuery extends Query {
     private final Field field;
 
-    protected FieldQuery( Field field, String queryString )
-    {
-        super( queryString );
-        if ( !field.isSearchable() )
-        {
-            throw new IllegalArgumentException( "Field is not searchable: " + field );
+    protected FieldQuery(Field field, String queryString) {
+        super(queryString);
+        if (!field.isSearchable()) {
+            throw new IllegalArgumentException("Field is not searchable: " + field);
         }
-        this.field = requireNonNull( field );
+        this.field = requireNonNull(field);
     }
 
     /**
      * Returns the field, never {@code null}.
      */
-    public Field getField()
-    {
+    public Field getField() {
         return field;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getField().getFieldName() + ":" + getValue();
     }
 
     /**
      * Creates a field query using given {@link Field} and query string.
      */
-    public static FieldQuery fieldQuery( Field fieldName, String query )
-    {
-        return new FieldQuery( fieldName, query );
+    public static FieldQuery fieldQuery(Field fieldName, String query) {
+        return new FieldQuery(fieldName, query);
     }
 }

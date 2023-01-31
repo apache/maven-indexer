@@ -1,5 +1,3 @@
-package org.apache.maven.index.incremental;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.incremental;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,22 +16,20 @@ package org.apache.maven.index.incremental;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.index.packer.IndexPackingRequest;
-import org.apache.maven.index.updater.IndexUpdateRequest;
+package org.apache.maven.index.incremental;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-public interface IncrementalHandler
-{
-    List<Integer> getIncrementalUpdates( IndexPackingRequest request, Properties properties )
-        throws IOException;
+import org.apache.maven.index.packer.IndexPackingRequest;
+import org.apache.maven.index.updater.IndexUpdateRequest;
 
-    List<String> loadRemoteIncrementalUpdates( IndexUpdateRequest request, Properties localProperties,
-                                               Properties remoteProperties )
-        throws IOException;
+public interface IncrementalHandler {
+    List<Integer> getIncrementalUpdates(IndexPackingRequest request, Properties properties) throws IOException;
 
-    void initializeProperties( Properties properties );
+    List<String> loadRemoteIncrementalUpdates(
+            IndexUpdateRequest request, Properties localProperties, Properties remoteProperties) throws IOException;
+
+    void initializeProperties(Properties properties);
 }

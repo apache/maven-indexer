@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,14 +16,15 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.lucene.analysis.Analyzer;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
@@ -46,12 +45,10 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
 
 /**
  * Default implementation of IteratorResultSet. TODO: there is too much of logic, refactor this!
- * 
+ *
  * @author cstamas
  */
-public class DefaultIteratorResultSet
-    implements IteratorResultSet
-{
+public class DefaultIteratorResultSet implements IteratorResultSet {
     private final IteratorSearchRequest searchRequest;
 
     private final NexusIndexMultiSearcher indexSearcher;
@@ -80,11 +77,12 @@ public class DefaultIteratorResultSet
 
     private ArtifactInfo ai;
 
-    protected DefaultIteratorResultSet( final IteratorSearchRequest request,
-                                        final NexusIndexMultiSearcher indexSearcher,
-                                        final List<IndexingContext> contexts, final TopDocs hits )
-        throws IOException
-    {
+    protected DefaultIteratorResultSet(
+            final IteratorSearchRequest request,
+            final NexusIndexMultiSearcher indexSearcher,
+            final List<IndexingContext> contexts,
+            final TopDocs hits)
+            throws IOException {
         this.searchRequest = request;
 
         this.indexSearcher = indexSearcher;
@@ -97,11 +95,10 @@ public class DefaultIteratorResultSet
             // this is good to do as we have NexusIndexMultiSearcher passed in contructor, so it is already open, hence
             // #acquire() already invoked on underlying NexusIndexMultiReader
             final List<IndexSearcher> acquiredSearchers =
-                indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
-            for ( int i = 0; i < contexts.size(); i++ )
-            {
+                    indexSearcher.getNexusIndexMultiReader().getAcquiredSearchers();
+            for (int i = 0; i < contexts.size(); i++) {
                 starts[i] = maxDoc;
-                maxDoc += acquiredSearchers.get( i ).getIndexReader().maxDoc(); // compute maxDocs
+                maxDoc += acquiredSearchers.get(i).getIndexReader().maxDoc(); // compute maxDocs
             }
             starts[contexts.size()] = maxDoc;
         }
@@ -113,20 +110,18 @@ public class DefaultIteratorResultSet
         this.matchHighlightRequests = request.getMatchHighlightRequests();
 
         List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<>();
-        for ( MatchHighlightRequest hr : request.getMatchHighlightRequests() )
-        {
-            Query rewrittenQuery = hr.getQuery().rewrite( indexSearcher.getIndexReader() );
-            matchHighlightRequests.add( new MatchHighlightRequest( hr.getField(), rewrittenQuery,
-                                                                   hr.getHighlightMode() ) );
+        for (MatchHighlightRequest hr : request.getMatchHighlightRequests()) {
+            Query rewrittenQuery = hr.getQuery().rewrite(indexSearcher.getIndexReader());
+            matchHighlightRequests.add(new MatchHighlightRequest(hr.getField(), rewrittenQuery, hr.getHighlightMode()));
         }
 
         this.hits = hits;
 
         this.from = request.getStart();
 
-        this.count =
-            ( request.getCount() == AbstractSearchRequest.UNDEFINED ? hits.scoreDocs.length : Math.min(
-                request.getCount(), hits.scoreDocs.length ) );
+        this.count = (request.getCount() == AbstractSearchRequest.UNDEFINED
+                ? hits.scoreDocs.length
+                : Math.min(request.getCount(), hits.scoreDocs.length));
 
         this.pointer = from;
 
@@ -136,35 +131,26 @@ public class DefaultIteratorResultSet
 
         ai = createNextAi();
 
-        if ( ai == null )
-        {
+        if (ai == null) {
             cleanUp();
         }
     }
 
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         return ai != null;
     }
 
-    public ArtifactInfo next()
-    {
+    public ArtifactInfo next() {
         ArtifactInfo result = ai;
 
-        try
-        {
+        try {
             ai = createNextAi();
-        }
-        catch ( IOException e )
-        {
+        } catch (IOException e) {
             ai = null;
 
-            throw new IllegalStateException( "Cannot fetch next ArtifactInfo!", e );
-        }
-        finally
-        {
-            if ( ai == null )
-            {
+            throw new IllegalStateException("Cannot fetch next ArtifactInfo!", e);
+        } finally {
+            if (ai == null) {
                 cleanUp();
             }
         }
@@ -172,36 +158,30 @@ public class DefaultIteratorResultSet
         return result;
     }
 
-    public void remove()
-    {
-        throw new UnsupportedOperationException( "Method not supported on " + getClass().getName() );
+    public void remove() {
+        throw new UnsupportedOperationException(
+                "Method not supported on " + getClass().getName());
     }
 
-    public Iterator<ArtifactInfo> iterator()
-    {
+    public Iterator<ArtifactInfo> iterator() {
         return this;
     }
 
-    public void close()
-    {
+    public void close() {
         cleanUp();
     }
 
-    public int getTotalProcessedArtifactInfoCount()
-    {
+    public int getTotalProcessedArtifactInfoCount() {
         return processedArtifactInfoCount;
     }
 
     @Override
-    public void finalize()
-        throws Throwable
-    {
+    public void finalize() throws Throwable {
         super.finalize();
 
-        if ( !cleanedUp )
-        {
-            System.err.println( "#WARNING: Lock leaking from " + getClass().getName() + " for query "
-                + searchRequest.getQuery().toString() );
+        if (!cleanedUp) {
+            System.err.println("#WARNING: Lock leaking from " + getClass().getName() + " for query "
+                    + searchRequest.getQuery().toString());
 
             cleanUp();
         }
@@ -209,9 +189,7 @@ public class DefaultIteratorResultSet
 
     // ==
 
-    protected ArtifactInfo createNextAi()
-        throws IOException
-    {
+    protected ArtifactInfo createNextAi() throws IOException {
         ArtifactInfo result = null;
 
         // we should stop if:
@@ -219,46 +197,43 @@ public class DefaultIteratorResultSet
         // b) pointer advanced over more documents that user requested
         // c) pointer advanced over more documents that hits has
         // or we found what we need
-        while ( ( result == null ) && ( pointer < maxRecPointer ) && ( pointer < hits.scoreDocs.length ) )
-        {
-            Document doc = indexSearcher.doc( hits.scoreDocs[pointer].doc );
+        while ((result == null) && (pointer < maxRecPointer) && (pointer < hits.scoreDocs.length)) {
+            Document doc = indexSearcher.doc(hits.scoreDocs[pointer].doc);
 
-            IndexingContext context = getIndexingContextForPointer( doc, hits.scoreDocs[pointer].doc );
+            IndexingContext context = getIndexingContextForPointer(doc, hits.scoreDocs[pointer].doc);
 
-            result = IndexUtils.constructArtifactInfo( doc, context );
+            result = IndexUtils.constructArtifactInfo(doc, context);
 
-            if ( result != null )
-            {
+            if (result != null) {
                 // WARNING: NOT FOR PRODUCTION SYSTEMS, THIS IS VERY COSTLY OPERATION
                 // For debugging only!!!
-                if ( searchRequest.isLuceneExplain() )
-                {
-                    result.getAttributes().put( Explanation.class.getName(),
-                        indexSearcher.explain( searchRequest.getQuery(), hits.scoreDocs[pointer].doc ).toString() );
+                if (searchRequest.isLuceneExplain()) {
+                    result.getAttributes()
+                            .put(
+                                    Explanation.class.getName(),
+                                    indexSearcher
+                                            .explain(searchRequest.getQuery(), hits.scoreDocs[pointer].doc)
+                                            .toString());
                 }
 
-                result.setLuceneScore( hits.scoreDocs[pointer].score );
+                result.setLuceneScore(hits.scoreDocs[pointer].score);
 
-                result.setRepository( context.getRepositoryId() );
+                result.setRepository(context.getRepositoryId());
 
-                result.setContext( context.getId() );
+                result.setContext(context.getId());
 
-                if ( filter != null )
-                {
-                    if ( !filter.accepts( context, result ) )
-                    {
+                if (filter != null) {
+                    if (!filter.accepts(context, result)) {
                         result = null;
                     }
                 }
 
-                if ( result != null && postprocessor != null )
-                {
-                    postprocessor.postprocess( context, result );
+                if (result != null && postprocessor != null) {
+                    postprocessor.postprocess(context, result);
                 }
 
-                if ( result != null && matchHighlightRequests.size() > 0 )
-                {
-                    calculateHighlights( context, doc, result );
+                if (result != null && matchHighlightRequests.size() > 0) {
+                    calculateHighlights(context, doc, result);
                 }
             }
 
@@ -271,20 +246,15 @@ public class DefaultIteratorResultSet
 
     private volatile boolean cleanedUp = false;
 
-    protected synchronized void cleanUp()
-    {
-        if ( cleanedUp )
-        {
+    protected synchronized void cleanUp() {
+        if (cleanedUp) {
             return;
         }
 
-        try
-        {
+        try {
             indexSearcher.release();
-        }
-        catch ( IOException e )
-        {
-            throw new IllegalStateException( e );
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
         }
 
         this.cleanedUp = true;
@@ -292,37 +262,31 @@ public class DefaultIteratorResultSet
 
     /**
      * Creates the MatchHighlights and adds them to ArtifactInfo if found/can.
-     * 
+     *
      * @param context
      * @param d
      * @param ai
      */
-    protected void calculateHighlights( IndexingContext context, Document d, ArtifactInfo ai )
-        throws IOException
-    {
+    protected void calculateHighlights(IndexingContext context, Document d, ArtifactInfo ai) throws IOException {
         IndexerField field;
 
         String text;
 
         List<String> highlightFragment;
 
-        for ( MatchHighlightRequest hr : matchHighlightRequests )
-        {
-            field = selectStoredIndexerField( hr.getField() );
+        for (MatchHighlightRequest hr : matchHighlightRequests) {
+            field = selectStoredIndexerField(hr.getField());
 
-            if ( field != null )
-            {
-                text = ai.getFieldValue( field.getOntology() );
+            if (field != null) {
+                text = ai.getFieldValue(field.getOntology());
 
-                if ( text != null )
-                {
-                    highlightFragment = highlightField( context, hr, field, text );
+                if (text != null) {
+                    highlightFragment = highlightField(context, hr, field, text);
 
-                    if ( highlightFragment != null && highlightFragment.size() > 0 )
-                    {
-                        MatchHighlight matchHighlight = new MatchHighlight( hr.getField(), highlightFragment );
+                    if (highlightFragment != null && highlightFragment.size() > 0) {
+                        MatchHighlight matchHighlight = new MatchHighlight(hr.getField(), highlightFragment);
 
-                        ai.getMatchHighlights().add( matchHighlight );
+                        ai.getMatchHighlights().add(matchHighlight);
                     }
                 }
             }
@@ -331,26 +295,24 @@ public class DefaultIteratorResultSet
 
     /**
      * Select a STORED IndexerField assigned to passed in Field.
-     * 
+     *
      * @param field
      * @return
      */
-    protected IndexerField selectStoredIndexerField( Field field )
-    {
+    protected IndexerField selectStoredIndexerField(Field field) {
         // hack here
-        if ( MAVEN.CLASSNAMES.equals( field ) )
-        {
+        if (MAVEN.CLASSNAMES.equals(field)) {
             return JarFileContentsIndexCreator.FLD_CLASSNAMES;
-        }
-        else
-        {
-            return field.getIndexerFields().isEmpty() ? null : field.getIndexerFields().iterator().next();
+        } else {
+            return field.getIndexerFields().isEmpty()
+                    ? null
+                    : field.getIndexerFields().iterator().next();
         }
     }
 
     /**
      * Returns a string that contains match fragment highlighted in style as user requested.
-     * 
+     *
      * @param context
      * @param hr
      * @param field
@@ -358,101 +320,80 @@ public class DefaultIteratorResultSet
      * @return
      * @throws IOException
      */
-    protected List<String> highlightField( IndexingContext context, MatchHighlightRequest hr, IndexerField field,
-                                           String text )
-        throws IOException
-    {
+    protected List<String> highlightField(
+            IndexingContext context, MatchHighlightRequest hr, IndexerField field, String text) throws IOException {
         // exception with classnames
-        if ( MAVEN.CLASSNAMES.equals( field.getOntology() ) )
-        {
-            text = text.replace( '/', '.' ).replaceAll( "^\\.", "" ).replaceAll( "\n\\.", "\n" );
+        if (MAVEN.CLASSNAMES.equals(field.getOntology())) {
+            text = text.replace('/', '.').replaceAll("^\\.", "").replaceAll("\n\\.", "\n");
         }
-        
+
         Analyzer analyzer = context.getAnalyzer();
-        TokenStream baseTokenStream = analyzer.tokenStream( field.getKey(), new StringReader( text ) );
-        
-        CachingTokenFilter tokenStream = new CachingTokenFilter( baseTokenStream );
+        TokenStream baseTokenStream = analyzer.tokenStream(field.getKey(), new StringReader(text));
+
+        CachingTokenFilter tokenStream = new CachingTokenFilter(baseTokenStream);
 
         Formatter formatter;
 
-        if ( MatchHighlightMode.HTML.equals( hr.getHighlightMode() ) )
-        {
+        if (MatchHighlightMode.HTML.equals(hr.getHighlightMode())) {
             formatter = new SimpleHTMLFormatter();
-        }
-        else
-        {
+        } else {
             tokenStream.reset();
             tokenStream.end();
             tokenStream.close();
-            throw new UnsupportedOperationException( "Hightlight more \"" + hr.getHighlightMode().toString()
-                + "\" is not supported!" );
+            throw new UnsupportedOperationException(
+                    "Hightlight more \"" + hr.getHighlightMode().toString() + "\" is not supported!");
         }
 
-        List<String> bestFragments = getBestFragments( hr.getQuery(), formatter, tokenStream, text, 3 );
-        
+        List<String> bestFragments = getBestFragments(hr.getQuery(), formatter, tokenStream, text, 3);
+
         return bestFragments;
     }
 
-    protected final List<String> getBestFragments( Query query, Formatter formatter, TokenStream tokenStream,
-                                                   String text, int maxNumFragments )
-        throws IOException
-    {
-        Highlighter highlighter = new Highlighter( formatter, new CleaningEncoder(), new QueryScorer( query ) );
+    protected final List<String> getBestFragments(
+            Query query, Formatter formatter, TokenStream tokenStream, String text, int maxNumFragments)
+            throws IOException {
+        Highlighter highlighter = new Highlighter(formatter, new CleaningEncoder(), new QueryScorer(query));
 
-        highlighter.setTextFragmenter( new OneLineFragmenter() );
+        highlighter.setTextFragmenter(new OneLineFragmenter());
 
-        maxNumFragments = Math.max( 1, maxNumFragments ); // sanity check
+        maxNumFragments = Math.max(1, maxNumFragments); // sanity check
 
         TextFragment[] frag;
         // Get text
-        ArrayList<String> fragTexts = new ArrayList<>( maxNumFragments );
+        ArrayList<String> fragTexts = new ArrayList<>(maxNumFragments);
 
-        try
-        {
-            frag = highlighter.getBestTextFragments( tokenStream, text, false, maxNumFragments );
+        try {
+            frag = highlighter.getBestTextFragments(tokenStream, text, false, maxNumFragments);
 
-            for ( TextFragment textFragment : frag )
-            {
-                if ( ( textFragment != null ) && ( textFragment.getScore() > 0 ) )
-                {
-                    fragTexts.add( textFragment.toString() );
+            for (TextFragment textFragment : frag) {
+                if ((textFragment != null) && (textFragment.getScore() > 0)) {
+                    fragTexts.add(textFragment.toString());
                 }
             }
-        }
-        catch ( InvalidTokenOffsetsException e )
-        {
+        } catch (InvalidTokenOffsetsException e) {
             // empty?
         }
 
         return fragTexts;
     }
 
-    protected IndexingContext getIndexingContextForPointer( Document doc, int docPtr )
-    {
-        return contexts.get( readerIndex( docPtr, this.starts, this.contexts.size() ) );
+    protected IndexingContext getIndexingContextForPointer(Document doc, int docPtr) {
+        return contexts.get(readerIndex(docPtr, this.starts, this.contexts.size()));
     }
 
-    private static int readerIndex( int n, int[] starts, int numSubReaders )
-    { // find reader for doc n:
+    private static int readerIndex(int n, int[] starts, int numSubReaders) { // find reader for doc n:
         int lo = 0; // search starts array
         int hi = numSubReaders - 1; // for first element less
 
-        while ( hi >= lo )
-        {
-            int mid = ( lo + hi ) >>> 1;
+        while (hi >= lo) {
+            int mid = (lo + hi) >>> 1;
             int midValue = starts[mid];
-            if ( n < midValue )
-            {
+            if (n < midValue) {
                 hi = mid - 1;
-            }
-            else if ( n > midValue )
-            {
+            } else if (n > midValue) {
                 lo = mid + 1;
-            }
-            else
-            { // found a match
-                while ( mid + 1 < numSubReaders && starts[mid + 1] == midValue )
-                {
+            } else { // found a match
+                while (mid + 1 < numSubReaders && starts[mid + 1] == midValue) {
                     mid++; // scan to last match
                 }
                 return mid;

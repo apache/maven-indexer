@@ -1,5 +1,3 @@
-package org.apache.maven.index.creator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.creator;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,21 +16,20 @@ package org.apache.maven.index.creator;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.creator;
 
 import org.apache.lucene.document.Document;
 import org.apache.maven.index.ArtifactInfo;
 
 /**
  * A legacy document updater used to produce legacy Lucene index documents.
- * 
+ *
  * @author Eugene Kuleshov
  */
-public interface LegacyDocumentUpdater
-{
+public interface LegacyDocumentUpdater {
 
     /**
      * Update a legacy Lucene <code>Document</code> from the <code>ArtifactInfo</code>.
      */
-    void updateLegacyDocument( ArtifactInfo ai, Document doc );
-
+    void updateLegacyDocument(ArtifactInfo ai, Document doc);
 }

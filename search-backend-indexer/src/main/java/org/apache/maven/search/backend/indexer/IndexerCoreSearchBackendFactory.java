@@ -1,5 +1,3 @@
-package org.apache.maven.search.backend.indexer;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +16,7 @@ package org.apache.maven.search.backend.indexer;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.search.backend.indexer;
 
 import org.apache.maven.index.Indexer;
 import org.apache.maven.index.context.IndexingContext;
@@ -28,20 +27,17 @@ import static java.util.Objects.requireNonNull;
 /**
  * The Indexer Core search backend factory.
  */
-public class IndexerCoreSearchBackendFactory
-{
+public class IndexerCoreSearchBackendFactory {
     private final Indexer indexer;
 
-    public IndexerCoreSearchBackendFactory( Indexer indexer )
-    {
-        this.indexer = requireNonNull( indexer, "indexer cannot be null" );
+    public IndexerCoreSearchBackendFactory(Indexer indexer) {
+        this.indexer = requireNonNull(indexer, "indexer cannot be null");
     }
 
     /**
      * Creates {@link IndexerCoreSearchBackend} instance using passed in context.
      */
-    public IndexerCoreSearchBackend createIndexerCoreSearchBackend( IndexingContext indexingContext )
-    {
-        return new IndexerCoreSearchBackendImpl( indexer, indexingContext );
+    public IndexerCoreSearchBackend createIndexerCoreSearchBackend(IndexingContext indexingContext) {
+        return new IndexerCoreSearchBackendImpl(indexer, indexingContext);
     }
 }

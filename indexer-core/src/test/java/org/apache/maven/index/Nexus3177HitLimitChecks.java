@@ -1,5 +1,3 @@
-package org.apache.maven.index;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index;
 
 import java.io.File;
 import java.util.Set;
@@ -31,37 +30,30 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class Nexus3177HitLimitChecks
-    extends AbstractNexusIndexerTest
-{
-    protected File repo = new File( getBasedir(), "src/test/repo" );
+public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
+    protected File repo = new File(getBasedir(), "src/test/repo");
 
     protected Directory secondIndexDir = new ByteBuffersDirectory();
 
     protected IndexingContext secondContext;
 
     @Override
-    protected void prepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
-        context =
-            nexusIndexer.addIndexingContext( "nexus-3177", "nexus-3177", repo, indexDir, null, null, DEFAULT_CREATORS );
+    protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
+        context = nexusIndexer.addIndexingContext(
+                "nexus-3177", "nexus-3177", repo, indexDir, null, null, DEFAULT_CREATORS);
 
-        secondContext =
-            nexusIndexer.addIndexingContext( "nexus-3177b", "nexus-3177b", repo, secondIndexDir, null, null,
-                DEFAULT_CREATORS );
+        secondContext = nexusIndexer.addIndexingContext(
+                "nexus-3177b", "nexus-3177b", repo, secondIndexDir, null, null, DEFAULT_CREATORS);
 
-        nexusIndexer.scan( context );
-        nexusIndexer.scan( secondContext );
+        nexusIndexer.scan(context);
+        nexusIndexer.scan(secondContext);
     }
 
     @Override
-    protected void unprepareNexusIndexer( NexusIndexer nexusIndexer )
-        throws Exception
-    {
-        super.unprepareNexusIndexer( nexusIndexer );
+    protected void unprepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
+        super.unprepareNexusIndexer(nexusIndexer);
 
-        nexusIndexer.removeIndexingContext( secondContext, false );
+        nexusIndexer.removeIndexingContext(secondContext, false);
     }
 
     // ===================================================================
@@ -73,37 +65,33 @@ public class Nexus3177HitLimitChecks
     // but the two test explicitly testing LIMIT_EXCEEDED were just removed/commented out.
 
     @Test
-    public void testHitLimitNotReachedSingleContext()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    public void testHitLimitNotReachedSingleContext() throws Exception {
+        WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setCount( 5 );
+        FlatSearchRequest request = new FlatSearchRequest(q);
+        request.setCount(5);
         // request.setResultHitLimit( 5 );
-        request.getContexts().add( context );
+        request.getContexts().add(context);
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
+        FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 4, r.size() );
-        assertEquals( r.toString(), 4, response.getTotalHitsCount() );
+        assertEquals(r.toString(), 4, r.size());
+        assertEquals(r.toString(), 4, response.getTotalHitsCount());
     }
 
     @Test
-    public void testHitLimitEqualSingleContext()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    public void testHitLimitEqualSingleContext() throws Exception {
+        WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setCount( 4 );
+        FlatSearchRequest request = new FlatSearchRequest(q);
+        request.setCount(4);
         // request.setResultHitLimit( 4 );
-        request.getContexts().add( context );
+        request.getContexts().add(context);
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
+        FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 4, r.size() );
-        assertEquals( r.toString(), 4, response.getTotalHitsCount() );
+        assertEquals(r.toString(), 4, r.size());
+        assertEquals(r.toString(), 4, response.getTotalHitsCount());
     }
 
     // See NOTE above
@@ -123,41 +111,37 @@ public class Nexus3177HitLimitChecks
     // }
 
     @Test
-    public void testHitLimitNotReachedMultipleContexts()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    public void testHitLimitNotReachedMultipleContexts() throws Exception {
+        WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setCount( 9 );
+        FlatSearchRequest request = new FlatSearchRequest(q);
+        request.setCount(9);
         // request.setResultHitLimit( 9 );
-        request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
-        request.getContexts().add( context );
-        request.getContexts().add( secondContext );
+        request.setArtifactInfoComparator(ArtifactInfo.REPOSITORY_VERSION_COMPARATOR);
+        request.getContexts().add(context);
+        request.getContexts().add(secondContext);
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
+        FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 8, r.size() );
-        assertEquals( r.toString(), 8, response.getTotalHitsCount() );
+        assertEquals(r.toString(), 8, r.size());
+        assertEquals(r.toString(), 8, response.getTotalHitsCount());
     }
 
     @Test
-    public void testHitLimitEqualMultipleContexts()
-        throws Exception
-    {
-        WildcardQuery q = new WildcardQuery( new Term( ArtifactInfo.UINFO, "*testng*" ) );
+    public void testHitLimitEqualMultipleContexts() throws Exception {
+        WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
-        FlatSearchRequest request = new FlatSearchRequest( q );
-        request.setCount( 8 );
+        FlatSearchRequest request = new FlatSearchRequest(q);
+        request.setCount(8);
         // request.setResultHitLimit( 8 );
-        request.setArtifactInfoComparator( ArtifactInfo.REPOSITORY_VERSION_COMPARATOR );
-        request.getContexts().add( context );
-        request.getContexts().add( secondContext );
+        request.setArtifactInfoComparator(ArtifactInfo.REPOSITORY_VERSION_COMPARATOR);
+        request.getContexts().add(context);
+        request.getContexts().add(secondContext);
 
-        FlatSearchResponse response = nexusIndexer.searchFlat( request );
+        FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals( r.toString(), 8, r.size() );
-        assertEquals( r.toString(), 8, response.getTotalHitsCount() );
+        assertEquals(r.toString(), 8, r.size());
+        assertEquals(r.toString(), 8, response.getTotalHitsCount());
     }
 
     // See NOTE above

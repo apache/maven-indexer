@@ -1,5 +1,3 @@
-package org.apache.maven.index.artifact;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,23 +16,21 @@ package org.apache.maven.index.artifact;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.artifact;
 
 import java.util.regex.Pattern;
 
 /**
  * Utility methods for working with artifact version strings.
  */
-public class VersionUtils
-{
+public class VersionUtils {
 
     private static final String SNAPSHOT_VERSION = "SNAPSHOT";
 
-    private static final Pattern VERSION_FILE_PATTERN =
-        Pattern.compile(
-            "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$|^([0-9]{8}.[0-9]{6})-([0-9]+)$|^(.*)([0-9]{8}.[0-9]{6})-([0-9]+)$" );
+    private static final Pattern VERSION_FILE_PATTERN = Pattern.compile(
+            "^(.*)-([0-9]{8}.[0-9]{6})-([0-9]+)$|^([0-9]{8}.[0-9]{6})-([0-9]+)$|^(.*)([0-9]{8}.[0-9]{6})-([0-9]+)$");
 
-    public static boolean isSnapshot( String version )
-    {
-        return VERSION_FILE_PATTERN.matcher( version ).matches() || version.endsWith( SNAPSHOT_VERSION );
+    public static boolean isSnapshot(String version) {
+        return VERSION_FILE_PATTERN.matcher(version).matches() || version.endsWith(SNAPSHOT_VERSION);
     }
 }

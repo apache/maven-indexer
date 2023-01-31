@@ -1,5 +1,3 @@
-package org.apache.maven.index.creator;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.creator;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,9 +16,11 @@ package org.apache.maven.index.creator;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -44,114 +44,102 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  * A Maven Plugin index creator used to provide information about Maven Plugins. It will collect the plugin prefix and
  * the goals the plugin provides. Also, the Lucene document and the returned ArtifactInfo will be correctly filled with
  * these information.
- * 
+ *
  * @author cstamas
  */
 @Singleton
-@Named( MavenPluginArtifactInfoIndexCreator.ID )
-public class MavenPluginArtifactInfoIndexCreator
-    extends AbstractIndexCreator
-{
+@Named(MavenPluginArtifactInfoIndexCreator.ID)
+public class MavenPluginArtifactInfoIndexCreator extends AbstractIndexCreator {
     public static final String ID = "maven-plugin";
 
     private static final String MAVEN_PLUGIN_PACKAGING = "maven-plugin";
 
-    public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField( MAVEN.PLUGIN_PREFIX, IndexerFieldVersion.V1,
-        "px", "MavenPlugin prefix (as keyword, stored)", IndexerField.KEYWORD_STORED );
+    public static final IndexerField FLD_PLUGIN_PREFIX = new IndexerField(
+            MAVEN.PLUGIN_PREFIX,
+            IndexerFieldVersion.V1,
+            "px",
+            "MavenPlugin prefix (as keyword, stored)",
+            IndexerField.KEYWORD_STORED);
 
-    public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField( MAVEN.PLUGIN_GOALS, IndexerFieldVersion.V1,
-        "gx", "MavenPlugin goals (as keyword, stored)", IndexerField.ANALYZED_STORED );
+    public static final IndexerField FLD_PLUGIN_GOALS = new IndexerField(
+            MAVEN.PLUGIN_GOALS,
+            IndexerFieldVersion.V1,
+            "gx",
+            "MavenPlugin goals (as keyword, stored)",
+            IndexerField.ANALYZED_STORED);
 
-    public MavenPluginArtifactInfoIndexCreator()
-    {
-        super( ID, Arrays.asList( MinimalArtifactInfoIndexCreator.ID ) );
+    public MavenPluginArtifactInfoIndexCreator() {
+        super(ID, Arrays.asList(MinimalArtifactInfoIndexCreator.ID));
     }
 
-    public void populateArtifactInfo( ArtifactContext ac )
-    {
+    public void populateArtifactInfo(ArtifactContext ac) {
         File artifact = ac.getArtifact();
 
         ArtifactInfo ai = ac.getArtifactInfo();
 
         // we need the file to perform these checks, and those may be only JARs
-        if ( artifact != null && MAVEN_PLUGIN_PACKAGING.equals( ai.getPackaging() )
-            && artifact.getName().endsWith( ".jar" ) )
-        {
+        if (artifact != null
+                && MAVEN_PLUGIN_PACKAGING.equals(ai.getPackaging())
+                && artifact.getName().endsWith(".jar")) {
             // TODO: recheck, is the following true? "Maven plugins and Maven Archetypes can be only JARs?"
 
             // 1st, check for maven plugin
-            checkMavenPlugin( ai, artifact );
+            checkMavenPlugin(ai, artifact);
         }
     }
 
-    private void checkMavenPlugin( ArtifactInfo ai, File artifact )
-    {
-        try ( ZipFile zipFile = new ZipFile( artifact ) )
-        {
+    private void checkMavenPlugin(ArtifactInfo ai, File artifact) {
+        try (ZipFile zipFile = new ZipFile(artifact)) {
             final String pluginDescriptorPath = "META-INF/maven/plugin.xml";
-            ZipEntry zipEntry = zipFile.getEntry( pluginDescriptorPath );
-            if ( zipEntry != null )
-            {
-                try ( InputStream is = new BufferedInputStream( zipFile.getInputStream( zipEntry ) ) )
-                {
+            ZipEntry zipEntry = zipFile.getEntry(pluginDescriptorPath);
+            if (zipEntry != null) {
+                try (InputStream is = new BufferedInputStream(zipFile.getInputStream(zipEntry))) {
                     // here the reader is closed
-                    Xpp3Dom plexusConfig =
-                        Xpp3DomBuilder.build( new InputStreamReader( is ) );
+                    Xpp3Dom plexusConfig = Xpp3DomBuilder.build(new InputStreamReader(is));
 
-                    ai.setPrefix( plexusConfig.getChild( "goalPrefix" ).getValue() );
+                    ai.setPrefix(plexusConfig.getChild("goalPrefix").getValue());
 
-                    ai.setGoals( new ArrayList<>() );
+                    ai.setGoals(new ArrayList<>());
 
-                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild( "mojos" ).getChildren( "mojo" );
+                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild("mojos").getChildren("mojo");
 
-                    for ( Xpp3Dom mojoConfig : mojoConfigs )
-                    {
-                        ai.getGoals().add( mojoConfig.getChild( "goal" ).getValue() );
+                    for (Xpp3Dom mojoConfig : mojoConfigs) {
+                        ai.getGoals().add(mojoConfig.getChild("goal").getValue());
                     }
                 }
             }
-        }
-        catch ( Exception e )
-        {
-            if ( getLogger().isDebugEnabled() )
-            {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to exception:", e );
-            }
-            else
-            {
-                getLogger().info(
-                    "Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to " + e.getMessage() );
+        } catch (Exception e) {
+            if (getLogger().isDebugEnabled()) {
+                getLogger()
+                        .info("Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to exception:", e);
+            } else {
+                getLogger()
+                        .info("Failed to parse Maven artifact " + artifact.getAbsolutePath() + " due to "
+                                + e.getMessage());
             }
         }
     }
 
-    public void updateDocument( ArtifactInfo ai, Document doc )
-    {
-        if ( ai.getPrefix() != null )
-        {
-            doc.add( FLD_PLUGIN_PREFIX.toField( ai.getPrefix() ) );
+    public void updateDocument(ArtifactInfo ai, Document doc) {
+        if (ai.getPrefix() != null) {
+            doc.add(FLD_PLUGIN_PREFIX.toField(ai.getPrefix()));
         }
 
-        if ( ai.getGoals() != null )
-        {
-            doc.add( FLD_PLUGIN_GOALS.toField( ArtifactInfo.lst2str( ai.getGoals() ) ) );
+        if (ai.getGoals() != null) {
+            doc.add(FLD_PLUGIN_GOALS.toField(ArtifactInfo.lst2str(ai.getGoals())));
         }
     }
 
-    public boolean updateArtifactInfo( Document doc, ArtifactInfo ai )
-    {
+    public boolean updateArtifactInfo(Document doc, ArtifactInfo ai) {
         boolean res = false;
 
-        if ( "maven-plugin".equals( ai.getPackaging() ) )
-        {
-            ai.setPrefix( doc.get( ArtifactInfo.PLUGIN_PREFIX ) );
+        if ("maven-plugin".equals(ai.getPackaging())) {
+            ai.setPrefix(doc.get(ArtifactInfo.PLUGIN_PREFIX));
 
-            String goals = doc.get( ArtifactInfo.PLUGIN_GOALS );
+            String goals = doc.get(ArtifactInfo.PLUGIN_GOALS);
 
-            if ( goals != null )
-            {
-                ai.setGoals( ArtifactInfo.str2lst( goals ) );
+            if (goals != null) {
+                ai.setGoals(ArtifactInfo.str2lst(goals));
             }
 
             res = true;
@@ -161,13 +149,11 @@ public class MavenPluginArtifactInfoIndexCreator
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return ID;
     }
 
-    public Collection<IndexerField> getIndexerFields()
-    {
-        return Arrays.asList( FLD_PLUGIN_GOALS, FLD_PLUGIN_PREFIX );
+    public Collection<IndexerField> getIndexerFields() {
+        return Arrays.asList(FLD_PLUGIN_GOALS, FLD_PLUGIN_PREFIX);
     }
 }

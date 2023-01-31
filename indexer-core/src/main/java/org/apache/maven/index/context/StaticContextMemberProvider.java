@@ -1,5 +1,3 @@
-package org.apache.maven.index.context;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -9,7 +7,7 @@ package org.apache.maven.index.context;
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0    
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -18,6 +16,7 @@ package org.apache.maven.index.context;
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.maven.index.context;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,28 +25,23 @@ import java.util.List;
 
 /**
  * A simple "static" context member provider, when the members are known in advance.
- * 
+ *
  * @author cstamas
  */
-public class StaticContextMemberProvider
-    implements ContextMemberProvider
-{
+public class StaticContextMemberProvider implements ContextMemberProvider {
     private final List<IndexingContext> members;
 
-    public StaticContextMemberProvider( Collection<IndexingContext> members )
-    {
+    public StaticContextMemberProvider(Collection<IndexingContext> members) {
         ArrayList<IndexingContext> m = new ArrayList<>();
 
-        if ( members != null )
-        {
-            m.addAll( members );
+        if (members != null) {
+            m.addAll(members);
         }
 
-        this.members = Collections.unmodifiableList( m );
+        this.members = Collections.unmodifiableList(m);
     }
 
-    public List<IndexingContext> getMembers()
-    {
+    public List<IndexingContext> getMembers() {
         return members;
     }
 }

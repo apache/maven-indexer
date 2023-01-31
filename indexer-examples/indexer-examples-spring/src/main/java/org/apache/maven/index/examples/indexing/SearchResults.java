@@ -1,5 +1,3 @@
-package org.apache.maven.index.examples.indexing;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,20 +16,20 @@ package org.apache.maven.index.examples.indexing;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.index.ArtifactInfo;
+package org.apache.maven.index.examples.indexing;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.maven.index.ArtifactInfo;
 
 /**
  * This is a convenience class for holding search results mapped by repository.
  *
  * @author mtodorov
  */
-public class SearchResults
-{
+public class SearchResults {
 
     /**
      * K: repositoryId
@@ -39,20 +37,15 @@ public class SearchResults
      */
     private Map<String, Collection<ArtifactInfo>> results = new LinkedHashMap<>();
 
-
-    public SearchResults()
-    {
+    public SearchResults() {
         // no op
     }
 
-    public Map<String, Collection<ArtifactInfo>> getResults()
-    {
+    public Map<String, Collection<ArtifactInfo>> getResults() {
         return results;
     }
 
-    public void setResults( Map<String, Collection<ArtifactInfo>> results )
-    {
+    public void setResults(Map<String, Collection<ArtifactInfo>> results) {
         this.results = results;
     }
-
 }
