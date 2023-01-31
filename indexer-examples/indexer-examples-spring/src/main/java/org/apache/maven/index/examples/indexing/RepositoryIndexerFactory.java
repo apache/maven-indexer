@@ -29,6 +29,7 @@ import org.apache.maven.index.Indexer;
 import org.apache.maven.index.Scanner;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
+import org.springframework.stereotype.Component;
 
 /**
  * A factory for pre-configured RepositoryIndexers.
@@ -36,6 +37,7 @@ import org.apache.maven.index.context.IndexingContext;
  * @author mtodorov
  */
 @Singleton
+@Component
 public class RepositoryIndexerFactory {
 
     private IndexerConfiguration indexerConfiguration;
