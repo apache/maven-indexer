@@ -27,7 +27,7 @@ jobs:
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v2
     with:
       ff-run: false
-      maven_version: 3.8.6
+      maven_version: 3.8.7
       jdk-matrix: '[ "17" ]'
 
 

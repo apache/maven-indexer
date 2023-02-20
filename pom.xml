@@ -95,7 +95,7 @@ under the License.
     <javaVersion>11</javaVersion>
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
-    <minimalMavenBuildVersion>3.8.6</minimalMavenBuildVersion>
+    <minimalMavenBuildVersion>3.8.7</minimalMavenBuildVersion>
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
@@ -104,14 +104,14 @@ under the License.
 
     <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
-    <lucene.version>9.4.2</lucene.version>
-    <maven.version>3.8.6</maven.version>
-    <resolver.version>1.9.2</resolver.version>
+    <lucene.version>9.5.0</lucene.version>
+    <maven.version>3.8.7</maven.version>
+    <resolver.version>1.9.4</resolver.version>
     <archetype.version>3.2.1</archetype.version>
-    <surefire.version>3.0.0-M7</surefire.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <surefire.version>3.0.0-M8</surefire.version>
+    <slf4j.version>2.0.6</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-    <project.build.outputTimestamp>2022-11-08T14:20:48Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2023-01-31T17:00:00Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
@@ -275,6 +275,18 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <!-- remove once parent POM updated -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
+        <plugin>
+          <!-- remove once parent POM updated -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>3.1.0</version>
+        </plugin>
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>

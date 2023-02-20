@@ -33,7 +33,7 @@ under the License.
   <description>This module contains Maven Indexer usage examples for integration with Spring.</description>
 
   <properties>
-    <version.spring>5.3.23</version.spring>
+    <version.spring>5.3.25</version.spring>
   </properties>
 
   <dependencies>
