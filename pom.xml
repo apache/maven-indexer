@@ -266,7 +266,7 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.49.v20220914</version>
+        <version>11.0.14</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
