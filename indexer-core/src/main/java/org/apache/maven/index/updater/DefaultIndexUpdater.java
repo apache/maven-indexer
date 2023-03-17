@@ -181,7 +181,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
             Set<String> allGroups;
             if (remoteIndexFile.endsWith(".gz")) {
                 IndexDataReadResult result =
-                        unpackIndexData(is, updateRequest.getThreads(), directory, updateRequest.getIndexingContext());
+                        unpackIndexData(is, updateRequest, directory, updateRequest.getIndexingContext());
                 timestamp = result.getTimestamp();
                 rootGroups = result.getRootGroups();
                 allGroups = result.getAllGroups();
@@ -191,9 +191,9 @@ public class DefaultIndexUpdater implements IndexUpdater {
                         "The legacy format is no longer supported " + "by this version of maven-indexer.");
             }
 
-            if (updateRequest.getDocumentFilter() != null) {
-                filterDirectory(directory, updateRequest.getDocumentFilter());
-            }
+            //            if (updateRequest.getDocumentFilter() != null) {
+            //                filterDirectory(directory, updateRequest.getDocumentFilter());
+            //            }
 
             if (merge) {
                 updateRequest.getIndexingContext().merge(directory);
@@ -233,7 +233,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
                     continue;
                 }
 
-                Document d = r.document(i);
+                Document d = r.storedFields().document(i);
 
                 if (!filter.accept(d)) {
                     boolean success = w.tryDeleteDocument(r, i) != -1;
@@ -318,15 +318,27 @@ public class DefaultIndexUpdater implements IndexUpdater {
     public static IndexDataReadResult unpackIndexData(
             final InputStream is, final int threads, final Directory d, final IndexingContext context)
             throws IOException {
+        return unpackIndexData(d, new IndexDataReader(is, threads), context);
+    }
+
+    /**
+     * @param is an input stream to unpack index data from
+     * @param request IndexUpdateRequest for configuration
+     * @param d
+     * @param context
+     */
+    public static IndexDataReadResult unpackIndexData(
+            final InputStream is, final IndexUpdateRequest request, final Directory d, final IndexingContext context)
+            throws IOException {
+        return unpackIndexData(d, new IndexDataReader(is, request), context);
+    }
+
+    private static IndexDataReadResult unpackIndexData(
+            final Directory d, IndexDataReader dr, final IndexingContext context) throws IOException {
         IndexWriterConfig config = new IndexWriterConfig(new NexusAnalyzer());
         config.setUseCompoundFile(false);
-        NexusIndexWriter w = new NexusIndexWriter(d, config);
-        try {
-            IndexDataReader dr = new IndexDataReader(is, threads);
-
+        try (NexusIndexWriter w = new NexusIndexWriter(d, config)) {
             return dr.readIndex(w, context);
-        } finally {
-            IndexUtils.close(w);
         }
     }
 
