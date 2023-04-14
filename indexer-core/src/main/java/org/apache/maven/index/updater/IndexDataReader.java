@@ -85,7 +85,7 @@ public class IndexDataReader {
         this(
                 is,
                 request.getIndexTempDir() != null ? request.getIndexTempDir().toPath() : null,
-                request.getDocumentFilter(),
+                request.getExtractionFilter(),
                 request.getFSDirectoryFactory(),
                 request.getThreads());
     }

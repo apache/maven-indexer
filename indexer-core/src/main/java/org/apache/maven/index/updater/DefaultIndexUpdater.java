@@ -191,9 +191,9 @@ public class DefaultIndexUpdater implements IndexUpdater {
                         "The legacy format is no longer supported " + "by this version of maven-indexer.");
             }
 
-            //            if (updateRequest.getDocumentFilter() != null) {
-            //                filterDirectory(directory, updateRequest.getDocumentFilter());
-            //            }
+            if (updateRequest.getDocumentFilter() != null) {
+                filterDirectory(directory, updateRequest.getDocumentFilter());
+            }
 
             if (merge) {
                 updateRequest.getIndexingContext().merge(directory);
