@@ -23,3 +23,14 @@ github:
     - build-management
     - maven-indexer
     - maven
+  enabled_merge_buttons:
+    squash: true
+    merge: false
+    rebase: true
+  autolink_jira:
+    - MINDEXER
+notifications:
+  commits: commits@maven.apache.org
+  issues: issues@maven.apache.org
+  pullrequests: issues@maven.apache.org
+  jira_options: link label comment
