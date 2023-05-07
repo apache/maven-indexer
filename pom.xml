@@ -95,8 +95,8 @@ under the License.
     <javaVersion>11</javaVersion>
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
-    <minimalMavenBuildVersion>3.8.7</minimalMavenBuildVersion>
-    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
+    <minimalMavenBuildVersion>[3.8.7,)</minimalMavenBuildVersion>
+    <minimalJavaBuildVersion>[17.0.6,18)</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
@@ -108,7 +108,7 @@ under the License.
     <maven.version>3.8.7</maven.version>
     <resolver.version>1.9.5</resolver.version>
     <archetype.version>3.2.1</archetype.version>
-    <surefire.version>3.0.0-M8</surefire.version>
+    <surefire.version>3.0.0</surefire.version>
     <slf4j.version>2.0.6</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2023-02-24T15:25:24Z</project.build.outputTimestamp>
@@ -279,18 +279,18 @@ under the License.
           <!-- remove once parent POM updated -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <!-- remove once parent POM updated -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.0</version>
+          <version>3.1.1</version>
         </plugin>
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
-          <version>2.5.0</version>
+          <version>2.6.0</version>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
           </configuration>
