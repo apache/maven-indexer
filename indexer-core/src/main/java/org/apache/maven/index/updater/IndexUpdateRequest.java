@@ -37,6 +37,8 @@ public class IndexUpdateRequest {
 
     private DocumentFilter documentFilter;
 
+    private DocumentFilter extractionFilter;
+
     private boolean forceFullUpdate;
 
     private boolean incrementalOnly;
@@ -80,6 +82,14 @@ public class IndexUpdateRequest {
 
     public void setDocumentFilter(DocumentFilter documentFilter) {
         this.documentFilter = documentFilter;
+    }
+
+    public DocumentFilter getExtractionFilter() {
+        return extractionFilter;
+    }
+
+    public void setExtractionFilter(DocumentFilter extractionFilter) {
+        this.extractionFilter = extractionFilter;
     }
 
     public void setForceFullUpdate(boolean forceFullUpdate) {

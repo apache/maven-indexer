@@ -27,11 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,6 +51,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusAnalyzer;
@@ -65,7 +68,9 @@ public class IndexDataReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexDataReader.class);
 
     private final DataInputStream dis;
-
+    private final Path tempStorage;
+    private final DocumentFilter filter;
+    private final FSDirectoryFactory factory;
     private final int threads;
 
     public IndexDataReader(final InputStream is) throws IOException {
@@ -73,10 +78,33 @@ public class IndexDataReader {
     }
 
     public IndexDataReader(final InputStream is, final int threads) throws IOException {
+        this(is, null, null, null, threads);
+    }
+
+    public IndexDataReader(final InputStream is, final IndexUpdateRequest request) throws IOException {
+        this(
+                is,
+                request.getIndexTempDir() != null ? request.getIndexTempDir().toPath() : null,
+                request.getExtractionFilter(),
+                request.getFSDirectoryFactory(),
+                request.getThreads());
+    }
+
+    public IndexDataReader(
+            final InputStream is,
+            final Path tempStorage,
+            final DocumentFilter filter,
+            final FSDirectoryFactory factory,
+            final int threads)
+            throws IOException {
         if (threads < 1) {
             throw new IllegalArgumentException("Reader threads must be greater than zero: " + threads);
         }
+        this.tempStorage = Objects.requireNonNullElse(tempStorage, Path.of(System.getProperty("java.io.tmpdir")));
+        this.factory = Objects.requireNonNullElse(factory, FSDirectoryFactory.DEFAULT);
+        this.filter = filter;
         this.threads = threads;
+
         // MINDEXER-13
         // LightweightHttpWagon may have performed automatic decompression
         // Handle it transparently
@@ -248,7 +276,8 @@ public class IndexDataReader {
     }
 
     private FSDirectory tempDirectory(final String name) throws IOException {
-        return FSDirectory.open(Files.createTempDirectory(name + ".dir"));
+        return factory.open(
+                Files.createTempDirectory(tempStorage, name + ".dir").toFile());
     }
 
     private IndexWriter tempWriter(final FSDirectory directory) throws IOException {
@@ -266,10 +295,11 @@ public class IndexDataReader {
             throws IOException {
         ArtifactInfo ai = IndexUtils.constructArtifactInfo(doc, context);
         if (ai != null) {
-            indexWriter.addDocument(IndexUtils.updateDocument(doc, context, false, ai));
-
-            rootGroups.add(ai.getRootGroup());
-            allGroups.add(ai.getGroupId());
+            if (filter == null || filter.accept(doc)) {
+                indexWriter.addDocument(IndexUtils.updateDocument(doc, context, false, ai));
+                rootGroups.add(ai.getRootGroup());
+                allGroups.add(ai.getGroupId());
+            }
         } else {
             // these two fields are automatically handled in code above
             if (doc.getField(ArtifactInfo.ALL_GROUPS) == null && doc.getField(ArtifactInfo.ROOT_GROUPS) == null) {
