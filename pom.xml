@@ -366,6 +366,8 @@ under the License.
                 <exclude>.git/**</exclude>
                 <exclude>.idea/**</exclude>
                 <exclude>**/*.iml</exclude>
+                <exclude>nbactions.xml</exclude>
+                <exclude>nb-configuration.xml</exclude>
                 <!-- exlude some test resources from rat analysis -->
                 <exclude>src/test/**/*.sha1</exclude>
                 <exclude>src/test/**/*.md5</exclude>
