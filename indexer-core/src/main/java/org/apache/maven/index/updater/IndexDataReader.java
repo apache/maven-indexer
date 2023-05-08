@@ -31,8 +31,10 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -40,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.lucene.document.Document;
@@ -182,9 +185,10 @@ public class IndexDataReader {
         ArrayBlockingQueue<Document> queue = new ArrayBlockingQueue<>(10000);
 
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        ArrayList<Exception> errors = new ArrayList<>();
-        ArrayList<FSDirectory> siloDirectories = new ArrayList<>(threads);
-        ArrayList<IndexWriter> siloWriters = new ArrayList<>(threads);
+        List<Throwable> errors = Collections.synchronizedList(new ArrayList<>());
+        List<FSDirectory> siloDirectories = new ArrayList<>(threads);
+        List<IndexWriter> siloWriters = new ArrayList<>(threads);
+        AtomicBoolean stopEarly = new AtomicBoolean(false);
         LOGGER.debug("Creating {} silo writer threads...", threads);
         for (int i = 0; i < threads; i++) {
             final int silo = i;
@@ -201,8 +205,12 @@ public class IndexDataReader {
                                 break;
                             }
                             addToIndex(doc, context, siloWriters.get(silo), rootGroups, allGroups);
-                        } catch (InterruptedException | IOException e) {
+                        } catch (Throwable e) {
                             errors.add(e);
+                            if (stopEarly.compareAndSet(false, true)) {
+                                queue.clear(); // unblock producer
+                                executorService.shutdownNow(); // unblock consumers
+                            }
                             break;
                         }
                     }
@@ -215,7 +223,7 @@ public class IndexDataReader {
         LOGGER.debug("Loading up documents into silos");
         try {
             Document doc;
-            while ((doc = readDocument()) != null) {
+            while (!stopEarly.get() && (doc = readDocument()) != null) {
                 queue.put(doc);
                 n++;
             }
@@ -232,9 +240,15 @@ public class IndexDataReader {
         }
 
         if (!errors.isEmpty()) {
-            IOException exception = new IOException("Error during load of index");
-            errors.forEach(exception::addSuppressed);
-            throw exception;
+            if (errors.stream().allMatch(ex -> ex instanceof IOException || ex instanceof InterruptedException)) {
+                IOException exception = new IOException("Error during load of index");
+                errors.forEach(exception::addSuppressed);
+                throw exception;
+            } else {
+                RuntimeException exception = new RuntimeException("Error during load of index");
+                errors.forEach(exception::addSuppressed);
+                throw exception;
+            }
         }
 
         LOGGER.debug("Silos loaded...");

@@ -17,6 +17,10 @@ target/
 *.iml
 .idea/
 
+# NetBeans
+nbactions.xml
+nb-configuration.xml
+
 # Other
 .svn/
 bin/
