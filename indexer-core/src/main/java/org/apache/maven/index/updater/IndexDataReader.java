@@ -351,12 +351,15 @@ public class IndexDataReader {
         final Field uinfoField = (Field) doc.getField(ArtifactInfo.UINFO);
         final String info = doc.get(ArtifactInfo.INFO);
         if (uinfoField != null && info != null && !info.isEmpty()) {
-            final String[] splitInfo = ArtifactInfo.FS_PATTERN.split(info);
-            if (splitInfo.length > 6) {
-                final String extension = splitInfo[6];
-                final String uinfoString = uinfoField.stringValue();
-                if (uinfoString.endsWith(ArtifactInfo.FS + ArtifactInfo.NA)) {
-                    uinfoField.setStringValue(uinfoString + ArtifactInfo.FS + ArtifactInfo.nvl(extension));
+            String uinfoString = uinfoField.stringValue();
+            if (uinfoString.endsWith(ArtifactInfo.FS + ArtifactInfo.NA)) {
+                int elem = 0;
+                for (int i = -1; (i = info.indexOf(ArtifactInfo.FS, i + 1)) != -1; ) {
+                    if (++elem == 6) { // extension is field 6
+                        String extension = info.substring(i + 1);
+                        uinfoField.setStringValue(uinfoString + ArtifactInfo.FS + ArtifactInfo.nvl(extension));
+                        break;
+                    }
                 }
             }
         }

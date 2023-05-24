@@ -57,6 +57,15 @@ import org.codehaus.plexus.util.StringUtils;
 @Singleton
 @Named(MinimalArtifactInfoIndexCreator.ID)
 public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implements LegacyDocumentUpdater {
+
+    private static final char FS = ArtifactInfo.FS.charAt(0);
+
+    static {
+        if (ArtifactInfo.FS.length() != 1) {
+            throw new IllegalStateException("field format changed");
+        }
+    }
+
     public static final String ID = "min";
 
     /**
@@ -164,6 +173,7 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         super(ID);
     }
 
+    @Override
     public void populateArtifactInfo(ArtifactContext ac) {
         File artifact = ac.getArtifact();
 
@@ -269,6 +279,7 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         return FileUtils.getExtension(artifactFileName);
     }
 
+    @Override
     public void updateDocument(ArtifactInfo ai, Document doc) {
         String info = ArtifactInfo.nvl(ai.getPackaging())
                 + ArtifactInfo.FS
@@ -317,6 +328,7 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         }
     }
 
+    @Override
     public void updateLegacyDocument(ArtifactInfo ai, Document doc) {
         updateDocument(ai, doc);
 
@@ -333,24 +345,37 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         doc.add(new Field(ArtifactInfo.GROUP_ID, ai.getGroupId(), IndexerField.KEYWORD_NOT_STORED));
     }
 
+    @Override
     public boolean updateArtifactInfo(Document doc, ArtifactInfo ai) {
         boolean res = false;
 
         String uinfo = doc.get(ArtifactInfo.UINFO);
 
         if (uinfo != null) {
-            String[] r = ArtifactInfo.FS_PATTERN.split(uinfo);
 
-            ai.setGroupId(r[0]);
+            int start = 0;
+            int end = uinfo.indexOf(FS);
+            ai.setGroupId(uinfo.substring(start, end));
 
-            ai.setArtifactId(r[1]);
+            start = end + 1;
+            end = uinfo.indexOf(FS, start);
+            ai.setArtifactId(uinfo.substring(start, end));
 
-            ai.setVersion(r[2]);
+            start = end + 1;
+            end = uinfo.indexOf(FS, start);
+            ai.setVersion(uinfo.substring(start, end));
 
-            ai.setClassifier(ArtifactInfo.renvl(r[3]));
+            start = end + 1;
+            end = uinfo.indexOf(FS, start);
+            if (end == -1) {
+                end = uinfo.length();
+            }
+            ai.setClassifier(ArtifactInfo.renvl(uinfo.substring(start, end)));
 
-            if (r.length > 4) {
-                ai.setFileExtension(r[4]);
+            if (end != uinfo.length()) {
+                start = end + 1;
+                end = uinfo.length();
+                ai.setFileExtension(uinfo.substring(start, end));
             }
 
             res = true;
@@ -359,22 +384,38 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         String info = doc.get(ArtifactInfo.INFO);
 
         if (info != null) {
-            String[] r = ArtifactInfo.FS_PATTERN.split(info);
 
-            ai.setPackaging(ArtifactInfo.renvl(r[0]));
+            int start = 0;
+            int end = info.indexOf(FS);
+            ai.setPackaging(ArtifactInfo.renvl(info.substring(start, end)));
 
-            ai.setLastModified(Long.parseLong(r[1]));
+            start = end + 1;
+            end = info.indexOf(FS, start);
+            ai.setLastModified(Long.parseLong(info.substring(start, end)));
 
-            ai.setSize(Long.parseLong(r[2]));
+            start = end + 1;
+            end = info.indexOf(FS, start);
+            ai.setSize(Long.parseLong(info.substring(start, end)));
 
-            ai.setSourcesExists(ArtifactAvailability.fromString(r[3]));
+            start = end + 1;
+            end = info.indexOf(FS, start);
+            ai.setSourcesExists(ArtifactAvailability.fromString(info.substring(start, end)));
 
-            ai.setJavadocExists(ArtifactAvailability.fromString(r[4]));
+            start = end + 1;
+            end = info.indexOf(FS, start);
+            ai.setJavadocExists(ArtifactAvailability.fromString(info.substring(start, end)));
 
-            ai.setSignatureExists(ArtifactAvailability.fromString(r[5]));
+            start = end + 1;
+            end = info.indexOf(FS, start);
+            if (end == -1) {
+                end = info.length();
+            }
+            ai.setSignatureExists(ArtifactAvailability.fromString(info.substring(start, end)));
 
-            if (r.length > 6) {
-                ai.setFileExtension(r[6]);
+            if (end != info.length()) {
+                start = end + 1;
+                end = info.length();
+                ai.setFileExtension(info.substring(start, end));
             } else {
                 if (ai.getClassifier() != null //
                         || "pom".equals(ai.getPackaging()) //
@@ -429,6 +470,7 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
         return ID;
     }
 
+    @Override
     public Collection<IndexerField> getIndexerFields() {
         return Arrays.asList(
                 FLD_INFO,
