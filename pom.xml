@@ -102,7 +102,7 @@ under the License.
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
     <checkstyle.violation.ignore>MagicNumber,ParameterNumber,MethodLength,JavadocType,AvoidNestedBlocks,InterfaceIsType</checkstyle.violation.ignore>
 
-    <eclipse-sisu.version>0.3.5</eclipse-sisu.version>
+    <eclipse-sisu.version>0.9.0.M2</eclipse-sisu.version>
     <guice.version>5.1.0</guice.version>
     <lucene.version>9.6.0</lucene.version>
     <maven.version>3.9.1</maven.version>
@@ -266,7 +266,7 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.49.v20220914</version>
+        <version>9.4.51.v20230217</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
