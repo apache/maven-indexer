@@ -44,6 +44,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
@@ -335,7 +336,7 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
                     storeDescriptor();
                 } else {
                     // good, we have one descriptor as should
-                    Document descriptor = indexSearcher.doc(collector.topDocs().scoreDocs[0].doc);
+                    Document descriptor = indexSearcher.storedFields().document(collector.topDocs().scoreDocs[0].doc);
                     String[] h = StringUtils.split(descriptor.get(FLD_IDXINFO), ArtifactInfo.FS);
                     // String version = h[0];
                     String repoId = h[1];
@@ -587,27 +588,33 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
     }
 
     public synchronized void merge(Directory directory, DocumentFilter filter) throws IOException {
+        merge(directory, null, null, null);
+    }
+
+    public synchronized void merge(
+            Directory directory, DocumentFilter filter, Set<String> allGroups, Set<String> rootGroups)
+            throws IOException {
         final IndexSearcher s = acquireIndexSearcher();
         try {
             final IndexWriter w = getIndexWriter();
             try (IndexReader directoryReader = DirectoryReader.open(directory)) {
-                TopScoreDocCollector collector;
                 int numDocs = directoryReader.maxDoc();
 
                 Bits liveDocs = MultiBits.getLiveDocs(directoryReader);
+                StoredFields storedFields = directoryReader.storedFields();
                 for (int i = 0; i < numDocs; i++) {
                     if (liveDocs != null && !liveDocs.get(i)) {
                         continue;
                     }
 
-                    Document d = directoryReader.document(i);
+                    Document d = storedFields.document(i);
                     if (filter != null && !filter.accept(d)) {
                         continue;
                     }
 
                     String uinfo = d.get(ArtifactInfo.UINFO);
                     if (uinfo != null) {
-                        collector = TopScoreDocCollector.create(1, Integer.MAX_VALUE);
+                        TopScoreDocCollector collector = TopScoreDocCollector.create(1, 1);
                         s.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
                         if (collector.getTotalHits() == 0) {
                             w.addDocument(IndexUtils.updateDocument(d, this, false));
@@ -628,8 +635,16 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
             } finally {
                 commit();
             }
-
-            rebuildGroups();
+            if (allGroups == null && rootGroups == null) {
+                rebuildGroups();
+            } else {
+                if (rootGroups != null) {
+                    this.rootGroups.get().addAll(rootGroups);
+                }
+                if (allGroups != null) {
+                    this.allGroups.get().addAll(allGroups);
+                }
+            }
             Date mergedTimestamp = IndexUtils.getTimestamp(directory);
 
             if (getTimestamp() != null && mergedTimestamp != null && mergedTimestamp.after(getTimestamp())) {
@@ -675,20 +690,22 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
 
             int numDocs = r.maxDoc();
             Bits liveDocs = MultiBits.getLiveDocs(r);
+            StoredFields storedFields = r.storedFields();
 
             for (int i = 0; i < numDocs; i++) {
                 if (liveDocs != null && !liveDocs.get(i)) {
                     continue;
                 }
 
-                Document d = r.document(i);
+                Document d = storedFields.document(i);
 
                 String uinfo = d.get(ArtifactInfo.UINFO);
 
                 if (uinfo != null) {
-                    ArtifactInfo info = IndexUtils.constructArtifactInfo(d, this);
-                    rootGroups.add(info.getRootGroup());
-                    allGroups.add(info.getGroupId());
+                    String group = uinfo.substring(0, uinfo.indexOf(ArtifactInfo.FS));
+                    int n = group.indexOf('.');
+                    rootGroups.add(n > -1 ? group.substring(0, n) : group);
+                    allGroups.add(group);
                 }
             }
 
@@ -717,9 +734,9 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
         rootGroups.set(new HashSet<>(groups));
     }
 
-    private final AtomicReference<HashSet<String>> rootGroups = new AtomicReference<>(new HashSet<>());
+    private final AtomicReference<Set<String>> rootGroups = new AtomicReference<>(new HashSet<>());
 
-    private final AtomicReference<HashSet<String>> allGroups = new AtomicReference<>(new HashSet<>());
+    private final AtomicReference<Set<String>> allGroups = new AtomicReference<>(new HashSet<>());
 
     @Override
     public String toString() {

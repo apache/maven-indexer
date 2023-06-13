@@ -244,6 +244,14 @@ public interface IndexingContext {
     void merge(Directory directory, DocumentFilter filter) throws IOException;
 
     /**
+     * Merges content of given Lucene directory with this context, but filters out the unwanted ones and adds the groups to the context.
+     *
+     * @param directory - the directory to merge
+     */
+    void merge(Directory directory, DocumentFilter filter, Set<String> allGroups, Set<String> rootGroups)
+            throws IOException;
+
+    /**
      * Replaces the Lucene index with the one from supplied directory.
      *
      * @param directory

@@ -238,6 +238,11 @@ public class MergedIndexingContext extends AbstractIndexingContext {
         // noop
     }
 
+    public void merge(Directory directory, DocumentFilter filter, Set<String> allGroups, Set<String> rootGroups)
+            throws IOException {
+        // noop
+    }
+
     public void replace(Directory directory) throws IOException {
         // noop
     }

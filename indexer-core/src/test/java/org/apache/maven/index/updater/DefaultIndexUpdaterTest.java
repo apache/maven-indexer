@@ -42,6 +42,7 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.SearchType;
+import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.jmock.Expectations;
@@ -486,9 +487,19 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
                 will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
                 // could create index archive there and verify that it is merged correctly
 
-                oneOf(tempContext).merge(with(any(Directory.class)));
+                oneOf(tempContext)
+                        .merge(
+                                with(any(Directory.class)),
+                                with(aNull(DocumentFilter.class)),
+                                with(any(Set.class)),
+                                with(any(Set.class)));
 
-                oneOf(tempContext).merge(with(any(Directory.class)));
+                oneOf(tempContext)
+                        .merge(
+                                with(any(Directory.class)),
+                                with(aNull(DocumentFilter.class)),
+                                with(any(Set.class)),
+                                with(any(Set.class)));
 
                 oneOf(mockFetcher).disconnect();
             }

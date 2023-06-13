@@ -52,6 +52,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.DocumentFilter;
@@ -196,7 +197,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
             }
 
             if (merge) {
-                updateRequest.getIndexingContext().merge(directory);
+                updateRequest.getIndexingContext().merge(directory, null, allGroups, rootGroups);
             } else {
                 updateRequest.getIndexingContext().replace(directory, allGroups, rootGroups);
             }
@@ -227,13 +228,14 @@ public class DefaultIndexUpdater implements IndexUpdater {
             Bits liveDocs = MultiBits.getLiveDocs(r);
 
             int numDocs = r.maxDoc();
+            StoredFields storedFields = r.storedFields();
 
             for (int i = 0; i < numDocs; i++) {
                 if (liveDocs != null && !liveDocs.get(i)) {
                     continue;
                 }
 
-                Document d = r.storedFields().document(i);
+                Document d = storedFields.document(i);
 
                 if (!filter.accept(d)) {
                     boolean success = w.tryDeleteDocument(r, i) != -1;
