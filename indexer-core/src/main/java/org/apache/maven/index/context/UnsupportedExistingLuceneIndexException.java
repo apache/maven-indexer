@@ -27,6 +27,7 @@ package org.apache.maven.index.context;
  * @deprecated The deprecated {@link org.apache.maven.index.NexusIndexer} uses this exception. Use
  * {@link org.apache.maven.index.Indexer} instead.
  */
+@Deprecated
 public class UnsupportedExistingLuceneIndexException extends Exception {
     private static final long serialVersionUID = -3206758653346308322L;
 

@@ -30,6 +30,7 @@ import org.apache.maven.index.context.IndexingContext;
  * @author cstamas
  * @deprecated Use {@link UniqueArtifactFilterPostprocessor} instead.
  */
+@Deprecated
 public class UniqueGAArtifactFilterPostprocessor implements ArtifactInfoFilter {
     private static final String VERSION_LATEST = "LATEST";
 

@@ -48,6 +48,7 @@ public class AbstractSearchResponse implements Closeable {
      * @return
      * @deprecated use {@link #getTotalHitsCount()} instead.
      */
+    @Deprecated
     public int getTotalHits() {
         return getTotalHitsCount();
     }
@@ -82,6 +83,7 @@ public class AbstractSearchResponse implements Closeable {
      * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
+    @Deprecated
     public boolean isHitLimitExceeded() {
         return false;
     }

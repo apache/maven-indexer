@@ -126,6 +126,7 @@ public class AbstractSearchRequest {
      * @deprecated always returns false, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
+    @Deprecated
     public boolean isHitLimited() {
         return false;
     }
@@ -137,6 +138,7 @@ public class AbstractSearchRequest {
      * @deprecated always returns -1 (no hit limit), since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
+    @Deprecated
     public int getResultHitLimit() {
         return -1;
     }
@@ -148,6 +150,7 @@ public class AbstractSearchRequest {
      * @deprecated does nothing, since 4.1.0 there is no notion of hit limit
      * @see http://jira.codehaus.org/browse/MINDEXER-14
      */
+    @Deprecated
     public void setResultHitLimit(int resultHitLimit) {
         // noop
     }

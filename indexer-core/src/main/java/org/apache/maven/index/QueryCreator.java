@@ -60,6 +60,7 @@ public interface QueryCreator {
      * @throws ParseException if query parsing is unsuccessful.
      * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
+    @Deprecated
     Query constructQuery(Field field, String query, SearchType type) throws ParseException;
 
     /**
@@ -71,5 +72,6 @@ public interface QueryCreator {
      * @return query if successfully parsed, or null.
      * @deprecated Use {@link #constructQuery(Field, SearchExpression)} instead.
      */
+    @Deprecated
     Query constructQuery(String field, String query);
 }
