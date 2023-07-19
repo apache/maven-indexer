@@ -67,6 +67,7 @@ under the License.
     <module>search-api</module>
     <module>search-backend-indexer</module>
     <module>search-backend-smo</module>
+    <module>search-backend-remoterepository</module>
   </modules>
 
   <scm>

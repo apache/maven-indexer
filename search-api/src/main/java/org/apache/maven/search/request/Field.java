@@ -18,6 +18,7 @@
  */
 package org.apache.maven.search.request;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
@@ -108,6 +109,19 @@ public abstract class Field {
         @Override
         public Boolean getFieldValue(Map<Field, Object> record) {
             return (Boolean) record.get(this);
+        }
+    }
+
+    /**
+     * @since 7.0.4
+     */
+    public static class InstantField extends Field {
+        public InstantField(String fieldName, boolean searchable) {
+            super(fieldName, searchable);
+        }
+
+        public Instant getFieldValue(Map<Field, Object> record) {
+            return (Instant) record.get(this);
         }
     }
 }
