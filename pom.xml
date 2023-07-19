@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>39</version>
+    <version>40</version>
     <relativePath />
   </parent>
 
@@ -275,18 +275,6 @@ under the License.
   <build>
     <pluginManagement>
       <plugins>
-        <plugin>
-          <!-- remove once parent POM updated -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>3.1.1</version>
-        </plugin>
-        <plugin>
-          <!-- remove once parent POM updated -->
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>3.1.1</version>
-        </plugin>
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
