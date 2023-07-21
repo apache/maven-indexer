@@ -36,13 +36,14 @@ import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchBackend;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
+import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchTransport;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.Field;
 import org.apache.maven.search.request.FieldQuery;
 import org.apache.maven.search.request.Paging;
 import org.apache.maven.search.request.Query;
 import org.apache.maven.search.support.SearchBackendSupport;
-import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import static java.util.Objects.requireNonNull;
 
@@ -155,7 +156,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
     }
 
-    private int populateFromRaw(JsonObject raw, List<Record> page) {
+    private int populateFromRaw(Document raw, List<Record> page) {
         JsonObject response = raw.getAsJsonObject("response");
         Number numFound = response.get("numFound").getAsNumber();
 
@@ -166,7 +167,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return numFound.intValue();
     }
 
-    private Record convert(JsonObject doc) {
+    private Record convert(Document doc) {
         HashMap<Field, Object> result = new HashMap<>();
 
         mayPut(result, MAVEN.GROUP_ID, mayGet("g", doc));
