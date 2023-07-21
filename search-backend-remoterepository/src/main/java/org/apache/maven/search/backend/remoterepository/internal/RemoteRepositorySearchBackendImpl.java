@@ -20,13 +20,10 @@ package org.apache.maven.search.backend.remoterepository.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -37,13 +34,12 @@ import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchBackend;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchTransport;
-import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.Field;
-import org.apache.maven.search.request.FieldQuery;
-import org.apache.maven.search.request.Paging;
-import org.apache.maven.search.request.Query;
 import org.apache.maven.search.support.SearchBackendSupport;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 
 import static java.util.Objects.requireNonNull;
 
@@ -65,24 +61,32 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     private final String baseUri;
 
-    private final RemoteRepositorySearchTransport transportSupport;
+    private final RemoteRepositorySearchTransport transport;
 
     private final Map<String, String> commonHeaders;
+
+    private enum State {
+        G,
+        GA,
+        GAV,
+        GAVCE,
+        GAVCE1
+    }
 
     /**
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
      */
     public RemoteRepositorySearchBackendImpl(
-            String backendId, String repositoryId, String baseUri, RemoteRepositorySearchTransport transportSupport) {
+            String backendId, String repositoryId, String baseUri, RemoteRepositorySearchTransport transport) {
         super(backendId, repositoryId);
         this.baseUri = requireNonNull(baseUri);
-        this.transportSupport = requireNonNull(transportSupport);
+        this.transport = requireNonNull(transport);
 
         this.commonHeaders = new HashMap<>();
         this.commonHeaders.put(
                 "User-Agent",
                 "Apache-Maven-Search-RR/" + discoverVersion() + " "
-                        + transportSupport.getClass().getSimpleName());
+                        + transport.getClass().getSimpleName());
         this.commonHeaders.put("Accept", "application/json");
     }
 
@@ -109,104 +113,132 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     @Override
     public RemoteRepositorySearchResponse search(SearchRequest searchRequest) throws IOException {
-        String searchUri = toURI(searchRequest);
-        String payload = transportSupport.get(searchUri, commonHeaders);
-        JsonObject raw = JsonParser.parseString(payload).getAsJsonObject();
-        List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
-        int totalHits = populateFromRaw(raw, page);
-        return new SmoSearchResponseImpl(searchRequest, totalHits, page, searchUri, payload);
-    }
-
-    private String toURI(SearchRequest searchRequest) {
-        Paging paging = searchRequest.getPaging();
-        HashSet<Field> searchedFields = new HashSet<>();
-        String smoQuery = toSMOQuery(searchedFields, searchRequest.getQuery());
-        smoQuery += "&start=" + paging.getPageSize() * paging.getPageOffset();
-        smoQuery += "&rows=" + paging.getPageSize();
-        smoQuery += "&wt=json";
-        if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
-            smoQuery += "&core=gav";
-        }
-        return smoUri + "?q=" + smoQuery;
-    }
-
-    private String toSMOQuery(HashSet<Field> searchedFields, Query query) {
-        if (query instanceof BooleanQuery.And) {
-            BooleanQuery bq = (BooleanQuery) query;
-            return toSMOQuery(searchedFields, bq.getLeft()) + "%20AND%20" + toSMOQuery(searchedFields, bq.getRight());
-        } else if (query instanceof FieldQuery) {
-            FieldQuery fq = (FieldQuery) query;
-            String smoFieldName = FIELD_TRANSLATION.get(fq.getField());
-            if (smoFieldName != null) {
-                searchedFields.add(fq.getField());
-                return smoFieldName + ":" + encodeQueryParameterValue(fq.getValue());
-            } else {
-                throw new IllegalArgumentException("Unsupported SMO field: " + fq.getField());
+        Context context = new Context(searchRequest);
+        String uri = baseUri;
+        State state = null;
+        if (context.getGroupId() != null) {
+            uri += context.getGroupId().replace('.', '/') + "/";
+            state = State.G;
+            if (context.getArtifactId() != null) {
+                uri += context.getArtifactId() + "/";
+                state = State.GA;
+                if (context.getVersion() == null) {
+                    uri += "maven-metadata.xml";
+                } else {
+                    uri += context.getVersion() + "/";
+                    state = State.GAV;
+                    if (context.getFileExtension() != null) {
+                        // we go for actually specified artifact
+                        uri += context.getArtifactId() + "-" + context.getVersion();
+                        if (context.getClassifier() != null) {
+                            uri += "-" + context.getClassifier();
+                        }
+                        uri += "." + context.getFileExtension();
+                        state = State.GAVCE;
+                        if (context.getSha1() != null) {
+                            state = State.GAVCE1;
+                        }
+                    }
+                }
             }
         }
-        return encodeQueryParameterValue(query.getValue());
-    }
-
-    private String encodeQueryParameterValue(String parameterValue) {
-        try {
-            return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8.name())
-                    .replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+        if (state == null) {
+            throw new IllegalArgumentException("Unsupported Query: " + searchRequest.getQuery());
         }
-    }
 
-    private int populateFromRaw(Document raw, List<Record> page) {
-        JsonObject response = raw.getAsJsonObject("response");
-        Number numFound = response.get("numFound").getAsNumber();
-
-        JsonArray docs = response.getAsJsonArray("docs");
-        for (JsonElement doc : docs) {
-            page.add(convert((JsonObject) doc));
+        Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
+        Document document = null;
+        try (RemoteRepositorySearchTransport.Response response = transport.get(uri, commonHeaders)) {
+            if (response.getCode() == 200) {
+                document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
+            }
         }
-        return numFound.intValue();
+
+        if (document == null) {
+            return new RemoteRepositorySearchResponseImpl(searchRequest, 0, Collections.emptyList(), uri, null);
+        }
+
+        int totalHits = 0;
+        List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
+        switch (state) {
+            case G:
+                totalHits = populateG(context, document, page);
+                break;
+            case GA:
+                totalHits = populateGA(context, document, page);
+                break;
+            case GAV:
+                totalHits = populateGAV(context, document, page);
+                break;
+            case GAVCE:
+            case GAVCE1:
+                totalHits = populateGAVCE(context, document, context.getSha1(), page);
+                break;
+        }
+        return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
 
-    private Record convert(Document doc) {
+    private boolean accept(String href) {
+        return !href.contains("..") && !href.startsWith("maven-metadata.xml");
+    }
+
+    private int populateG(Context context, Document document, List<Record> page) {
+        // Index HTML page like this one:
+        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/
+        int result = 0;
+        Element contents = document.getElementById("contents");
+        if (contents != null) {
+            for (Element element : contents.getElementsByTag("a")) {
+                String href = element.attr("href");
+                if (accept(href)) {
+                    String artifactId = href.substring(0, href.length() - 1);
+                    page.add(create(context.getGroupId(), artifactId, null, null, null));
+                }
+            }
+        }
+        return result;
+    }
+
+    private int populateGA(Context context, Document document, List<Record> page) {
+        // Maven Metadata XML like this one:
+        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml
+        int result = 0;
+        Element metadata = document.getElementsByTag("metadata").first();
+        if (metadata != null) {
+            Element versioning = metadata.getElementsByTag("versioning").first();
+            if (versioning != null) {
+                Element versions = versioning.getElementsByTag("versions").first();
+                if (versions != null) {
+                    for (Element version : versions.getElementsByTag("version")) {
+                        page.add(create(context.getGroupId(), context.getArtifactId(), version.text(), null, null));
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private int populateGAV(Context context, Document document, List<Record> page) {
+        // Index HTML page like this one:
+        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/
+        return 0;
+    }
+
+    private int populateGAVCE(Context context, Document document, String sha1, List<Record> page) {
+        // Concrete file like this one:
+        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/search-api-7.0.3.pom
+        return 0;
+    }
+
+    private Record create(String groupId, String artifactId, String version, String classifier, String fileExtension) {
         HashMap<Field, Object> result = new HashMap<>();
 
-        mayPut(result, MAVEN.GROUP_ID, mayGet("g", doc));
-        mayPut(result, MAVEN.ARTIFACT_ID, mayGet("a", doc));
-        String version = mayGet("v", doc);
-        if (version == null) {
-            version = mayGet("latestVersion", doc);
-        }
+        mayPut(result, MAVEN.GROUP_ID, groupId);
+        mayPut(result, MAVEN.ARTIFACT_ID, artifactId);
         mayPut(result, MAVEN.VERSION, version);
-        mayPut(result, MAVEN.PACKAGING, mayGet("p", doc));
-        mayPut(result, MAVEN.CLASSIFIER, mayGet("l", doc));
-
-        // version count
-        Number versionCount = doc.has("versionCount") ? doc.get("versionCount").getAsNumber() : null;
-        if (versionCount != null) {
-            mayPut(result, MAVEN.VERSION_COUNT, versionCount.intValue());
-        }
-        // ec
-        JsonArray ec = doc.getAsJsonArray("ec");
-        if (ec != null) {
-            result.put(MAVEN.HAS_SOURCE, ec.contains(EC_SOURCE_JAR));
-            result.put(MAVEN.HAS_JAVADOC, ec.contains(EC_JAVADOC_JAR));
-            // result.put( MAVEN.HAS_GPG_SIGNATURE, ec.contains( ".jar.asc" ) );
-        }
-
-        return new Record(
-                getBackendId(),
-                getRepositoryId(),
-                doc.has("id") ? doc.get("id").getAsString() : null,
-                doc.has("timestamp") ? doc.get("timestamp").getAsLong() : null,
-                result);
-    }
-
-    private static final JsonPrimitive EC_SOURCE_JAR = new JsonPrimitive("-sources.jar");
-
-    private static final JsonPrimitive EC_JAVADOC_JAR = new JsonPrimitive("-javadoc.jar");
-
-    private static String mayGet(String field, JsonObject object) {
-        return object.has(field) ? object.get(field).getAsString() : null;
+        mayPut(result, MAVEN.CLASSIFIER, classifier);
+        mayPut(result, MAVEN.FILE_EXTENSION, fileExtension);
+        return new Record(getBackendId(), getRepositoryId(), null, null, result);
     }
 
     private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {

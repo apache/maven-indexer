@@ -30,12 +30,20 @@ import static java.util.Objects.requireNonNull;
 
 public class RemoteRepositorySearchResponseImpl extends SearchResponseSupport
         implements RemoteRepositorySearchResponse {
+
+    private final String uri;
     private final Document document;
 
     public RemoteRepositorySearchResponseImpl(
-            SearchRequest searchRequest, int totalHits, List<Record> page, Document document) {
+            SearchRequest searchRequest, int totalHits, List<Record> page, String uri, Document document) {
         super(searchRequest, totalHits, page);
-        this.document = requireNonNull(document);
+        this.uri = requireNonNull(uri);
+        this.document = document;
+    }
+
+    @Override
+    public String getUri() {
+        return uri;
     }
 
     @Override

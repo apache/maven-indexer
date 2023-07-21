@@ -34,7 +34,7 @@ public class RemoteRepositorySearchBackendFactory {
     /**
      * Creates "default" RR search backend against Maven Central suitable for most use cases.
      */
-    public RemoteRepositorySearchBackend createDefault() {
+    public static RemoteRepositorySearchBackend createDefault() {
         return create(
                 DEFAULT_BACKEND_ID,
                 DEFAULT_REPOSITORY_ID,
@@ -45,7 +45,7 @@ public class RemoteRepositorySearchBackendFactory {
     /**
      * Creates RR search backend using provided parameters.
      */
-    public RemoteRepositorySearchBackend create(
+    public static RemoteRepositorySearchBackend create(
             String backendId, String repositoryId, String baseUri, RemoteRepositorySearchTransport transport) {
         return new RemoteRepositorySearchBackendImpl(backendId, repositoryId, baseUri, transport);
     }

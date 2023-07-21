@@ -26,7 +26,12 @@ import org.jsoup.nodes.Document;
  */
 public interface RemoteRepositorySearchResponse extends SearchResponse {
     /**
-     * Returns the JSoup document.
+     * The URI that was tried to create {@link Document} from.
+     */
+    String getUri();
+
+    /**
+     * Returns the JSoup document, if exists or {@code null}.
      */
     Document getDocument();
 }
