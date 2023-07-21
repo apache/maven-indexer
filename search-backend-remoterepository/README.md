@@ -21,6 +21,10 @@ Note: this backend does NOT assume nor perform any kind of validation, so it is 
 caller to either ensure parameters are really G, A and V and to interpret results
 correctly.
 
+The queries MUST go from "least specific" to "most specific" (order does not matter,
+only the contents). Hence, it supports only G, A, V, C, E, SHA1, nothing more.
+At least G must be present in query. No field value support wildcards.
+
 Some example use cases:
 * "what is the latest version of GA?"
 * "what classifier exists for GAV?"
@@ -28,7 +32,6 @@ Some example use cases:
 
 It relies on following facts:
 * GA directories have maven-metadata.xml listing all Vs.
-* GAV directories, IF snapshot, have maven-metadata.xml otherwise have artifact files (subdirectories ignored).
 * uses external checksums found in remote repository (SHA1, MD5) if needed.
 
 Important notes:
