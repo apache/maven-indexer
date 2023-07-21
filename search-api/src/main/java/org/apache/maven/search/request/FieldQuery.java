@@ -28,9 +28,6 @@ public class FieldQuery extends Query {
 
     protected FieldQuery(Field field, String queryString) {
         super(queryString);
-        if (!field.isSearchable()) {
-            throw new IllegalArgumentException("Field is not searchable: " + field);
-        }
         this.field = requireNonNull(field);
     }
 

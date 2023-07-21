@@ -41,10 +41,13 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
 
     private static class ResponseImpl implements Response {
 
-        private final HttpResponse<InputStream> response;
+        private final HttpResponse<?> response;
 
-        private ResponseImpl(HttpResponse<InputStream> response) {
+        private final InputStream inputStream;
+
+        private ResponseImpl(HttpResponse<?> response, InputStream inputStream) {
             this.response = requireNonNull(response);
+            this.inputStream = inputStream;
         }
 
         @Override
@@ -62,14 +65,13 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
 
         @Override
         public InputStream getBody() {
-            return response.body();
+            return inputStream;
         }
 
         @Override
         public void close() throws IOException {
-            InputStream body = response.body();
-            if (body != null) {
-                body.close();
+            if (inputStream != null) {
+                inputStream.close();
             }
         }
     }
@@ -84,7 +86,25 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
         HttpRequest request = builder.build();
         try {
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
-            return new ResponseImpl(response);
+            return new ResponseImpl(response, response.body());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    public Response head(String serviceUri, Map<String, String> headers) throws IOException {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .uri(URI.create(serviceUri))
+                .method("HEAD", HttpRequest.BodyPublishers.noBody());
+        for (Map.Entry<String, String> header : headers.entrySet()) {
+            builder.header(header.getKey(), header.getValue());
+        }
+        HttpRequest request = builder.build();
+        try {
+            HttpResponse<Void> response = client.send(request, HttpResponse.BodyHandlers.discarding());
+            return new ResponseImpl(response, null);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException(e);

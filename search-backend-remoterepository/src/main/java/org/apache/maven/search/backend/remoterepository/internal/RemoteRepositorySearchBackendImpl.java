@@ -147,33 +147,39 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
 
         Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
-        Document document = null;
-        try (RemoteRepositorySearchTransport.Response response = transport.get(uri, commonHeaders)) {
-            if (response.getCode() == 200) {
-                document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
-            }
-        }
-
-        if (document == null) {
-            return new RemoteRepositorySearchResponseImpl(searchRequest, 0, Collections.emptyList(), uri, null);
-        }
-
         int totalHits = 0;
         List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
-        switch (state) {
-            case G:
-                totalHits = populateG(context, document, page);
-                break;
-            case GA:
-                totalHits = populateGA(context, document, page);
-                break;
-            case GAV:
-                totalHits = populateGAV(context, document, page);
-                break;
-            case GAVCE:
-            case GAVCE1:
-                totalHits = populateGAVCE(context, document, context.getSha1(), page);
-                break;
+        Document document = null;
+        if (state.ordinal() < State.GAVCE.ordinal()) {
+            try (RemoteRepositorySearchTransport.Response response = transport.get(uri, commonHeaders)) {
+                if (response.getCode() == 200) {
+                    document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
+                }
+            }
+
+            if (document == null) {
+                return new RemoteRepositorySearchResponseImpl(searchRequest, 0, Collections.emptyList(), uri, null);
+            }
+
+            switch (state) {
+                case G:
+                    totalHits = populateG(context, document, page);
+                    break;
+                case GA:
+                    totalHits = populateGA(context, document, page);
+                    break;
+                case GAV:
+                    totalHits = populateGAV(context, document, page);
+                    break;
+                default:
+                    throw new IllegalStateException("State" + state); // checkstyle
+            }
+        } else {
+            try (RemoteRepositorySearchTransport.Response response = transport.head(uri, commonHeaders)) {
+                if (response.getCode() == 200) {
+                    totalHits = populateGAVCE(context, response, context.getSha1(), page);
+                }
+            }
         }
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
@@ -224,10 +230,17 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return 0;
     }
 
-    private int populateGAVCE(Context context, Document document, String sha1, List<Record> page) {
+    private int populateGAVCE(
+            Context context, RemoteRepositorySearchTransport.Response response, String sha1, List<Record> page) {
         // Concrete file like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/search-api-7.0.3.pom
-        return 0;
+        page.add(create(
+                context.getGroupId(),
+                context.getArtifactId(),
+                context.getVersion(),
+                context.getClassifier(),
+                context.getFileExtension()));
+        return 1;
     }
 
     private Record create(String groupId, String artifactId, String version, String classifier, String fileExtension) {

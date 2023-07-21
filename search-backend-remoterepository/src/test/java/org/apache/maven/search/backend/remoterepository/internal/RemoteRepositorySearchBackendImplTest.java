@@ -133,6 +133,18 @@ public class RemoteRepositorySearchBackendImplTest {
     }
 
     @Test
+    public void gavce() throws IOException {
+        SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
+                FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
+                FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin"),
+                FieldQuery.fieldQuery(MAVEN.VERSION, "3.1.0"),
+                FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar")));
+        RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
+        dumpPage(searchResponse);
+    }
+
+    @Test
     public void sha1() throws IOException {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.SHA1, "8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12"));

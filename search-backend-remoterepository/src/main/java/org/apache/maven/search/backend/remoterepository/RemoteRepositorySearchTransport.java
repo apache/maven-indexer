@@ -42,4 +42,9 @@ public interface RemoteRepositorySearchTransport {
      * This method should issue a HTTP GET requests using {@code serviceUri} and return response.
      */
     Response get(String serviceUri, Map<String, String> headers) throws IOException;
+
+    /**
+     * This method should issue a HTTP HEAD requests using {@code serviceUri} and return response.
+     */
+    Response head(String serviceUri, Map<String, String> headers) throws IOException;
 }
