@@ -14,6 +14,8 @@ It supports:
 * "G" => list existing As of G (uses HTML parsing)
 * "G AND A" => list existing versions of GA (uses Maven Metadata)
 * "G AMD A AND V" => list existing artifacts for given GAV (uses HTML parsing)
+* "G AND A AND V AND E..." => existence check
+* "G AND A AND V AND E...+sha1" => existence and validity check
 
 Note: this backend does NOT assume nor perform any kind of validation, so it is up to
 caller to either ensure parameters are really G, A and V and to interpret results
@@ -22,6 +24,7 @@ correctly.
 Some example use cases:
 * "what is the latest version of GA?"
 * "what classifier exists for GAV?"
+* "is GAVCE accessible/synced to Maven Central"
 
 It relies on following facts:
 * GA directories have maven-metadata.xml listing all Vs.
