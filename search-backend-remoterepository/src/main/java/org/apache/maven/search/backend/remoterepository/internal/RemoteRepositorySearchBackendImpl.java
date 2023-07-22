@@ -18,14 +18,17 @@
  */
 package org.apache.maven.search.backend.remoterepository.internal;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.apache.maven.search.MAVEN;
@@ -44,21 +47,6 @@ import org.jsoup.parser.Parser;
 import static java.util.Objects.requireNonNull;
 
 public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport implements RemoteRepositorySearchBackend {
-    private static final Map<Field, String> FIELD_TRANSLATION;
-
-    static {
-        HashMap<Field, String> map = new HashMap<>();
-        map.put(MAVEN.GROUP_ID, "g");
-        map.put(MAVEN.ARTIFACT_ID, "a");
-        map.put(MAVEN.VERSION, "v");
-        map.put(MAVEN.CLASSIFIER, "l");
-        map.put(MAVEN.PACKAGING, "p");
-        map.put(MAVEN.CLASS_NAME, "c");
-        map.put(MAVEN.FQ_CLASS_NAME, "fc");
-        map.put(MAVEN.SHA1, "1");
-        FIELD_TRANSLATION = Collections.unmodifiableMap(map);
-    }
-
     private final String baseUri;
 
     private final RemoteRepositorySearchTransport transport;
@@ -177,38 +165,55 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         } else {
             try (RemoteRepositorySearchTransport.Response response = transport.head(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
-                    totalHits = populateGAVCE(context, response, context.getSha1(), page);
+                    totalHits = populateGAVCE(context, uri, response, context.getSha1(), page);
                 }
             }
         }
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
 
+    private boolean isChecksum(String name) {
+        return name.endsWith(".sha1") || name.endsWith(".md5") || name.endsWith(".sha256") || name.endsWith(".sha512");
+    }
+
+    private boolean isSignature(String name) {
+        return name.endsWith(".asc") || name.endsWith(".sigstore");
+    }
+
+    private boolean isMetadata(String name) {
+        return name.equals("maven-metadata.xml");
+    }
+
     private boolean accept(String href) {
-        return !href.contains("..") && !href.startsWith("maven-metadata.xml");
+        return !href.contains("..") && !isMetadata(href) && !isSignature(href) && !isChecksum(href);
+    }
+
+    private String nameInHref(Element element) {
+        String name = element.attr("href");
+        if (name.endsWith("/")) {
+            name = name.substring(0, name.length() - 1);
+        }
+        return name;
     }
 
     private int populateG(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/
-        int result = 0;
         Element contents = document.getElementById("contents");
         if (contents != null) {
             for (Element element : contents.getElementsByTag("a")) {
-                String href = element.attr("href");
-                if (accept(href)) {
-                    String artifactId = href.substring(0, href.length() - 1);
-                    page.add(create(context.getGroupId(), artifactId, null, null, null));
+                String name = nameInHref(element);
+                if (accept(name)) {
+                    page.add(create(context.getGroupId(), name, null, null, null));
                 }
             }
         }
-        return result;
+        return page.size();
     }
 
     private int populateGA(Context context, Document document, List<Record> page) {
         // Maven Metadata XML like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml
-        int result = 0;
         Element metadata = document.getElementsByTag("metadata").first();
         if (metadata != null) {
             Element versioning = metadata.getElementsByTag("versioning").first();
@@ -221,19 +226,72 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                 }
             }
         }
-        return result;
+        return page.size();
     }
 
     private int populateGAV(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/
-        return 0;
+        Element contents = document.getElementById("contents");
+        if (contents != null) {
+            for (Element element : contents.getElementsByTag("a")) {
+                String name = nameInHref(element);
+                if (accept(name)) {
+                    if (name.startsWith(context.getArtifactId())) {
+                        name = name.substring(context.getArtifactId().length() + 1);
+                        if (name.startsWith(context.getVersion())) {
+                            name = name.substring(context.getVersion().length() + 1);
+                            String ext = null;
+                            String classifier = null;
+                            if (name.contains(".")) {
+                                while (name.contains(".")) {
+                                    if (ext == null) {
+                                        ext = name.substring(name.lastIndexOf('.') + 1);
+                                    } else {
+                                        ext = name.substring(name.lastIndexOf('.') + 1) + "." + ext;
+                                    }
+                                    name = name.substring(0, name.lastIndexOf('.'));
+                                }
+                                classifier = name.isEmpty() ? null : name;
+                            } else {
+                                ext = name;
+                            }
+                            page.add(create(
+                                    context.getGroupId(),
+                                    context.getArtifactId(),
+                                    context.getVersion(),
+                                    classifier,
+                                    ext));
+                        }
+                    }
+                }
+            }
+        }
+        return page.size();
     }
 
     private int populateGAVCE(
-            Context context, RemoteRepositorySearchTransport.Response response, String sha1, List<Record> page) {
+            Context context,
+            String uri,
+            RemoteRepositorySearchTransport.Response response,
+            String sha1,
+            List<Record> page)
+            throws IOException {
         // Concrete file like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/search-api-7.0.3.pom
+
+        boolean matches = sha1 == null;
+        if (sha1 != null) {
+            try (RemoteRepositorySearchTransport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
+                if (response.getCode() == 200) {
+                    String remoteSha1 = readChecksum(sha1Response.getBody());
+                    matches = Objects.equals(sha1, remoteSha1);
+                }
+            }
+        }
+        if (!matches) {
+            return 0;
+        }
         page.add(create(
                 context.getGroupId(),
                 context.getArtifactId(),
@@ -252,6 +310,36 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         mayPut(result, MAVEN.CLASSIFIER, classifier);
         mayPut(result, MAVEN.FILE_EXTENSION, fileExtension);
         return new Record(getBackendId(), getRepositoryId(), null, null, result);
+    }
+
+    private static String readChecksum(InputStream inputStream) throws IOException {
+        String checksum = "";
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8), 512)) {
+            while (true) {
+                String line = br.readLine();
+                if (line == null) {
+                    break;
+                }
+                line = line.trim();
+                if (line.length() > 0) {
+                    checksum = line;
+                    break;
+                }
+            }
+        }
+
+        if (checksum.matches(".+= [0-9A-Fa-f]+")) {
+            int lastSpacePos = checksum.lastIndexOf(' ');
+            checksum = checksum.substring(lastSpacePos + 1);
+        } else {
+            int spacePos = checksum.indexOf(' ');
+
+            if (spacePos != -1) {
+                checksum = checksum.substring(0, spacePos);
+            }
+        }
+
+        return checksum;
     }
 
     private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
