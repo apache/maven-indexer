@@ -16,37 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.request;
+package org.apache.maven.search.backend.remoterepository;
 
-import static java.util.Objects.requireNonNull;
+import java.io.IOException;
+
+import org.apache.maven.search.SearchBackend;
+import org.apache.maven.search.SearchRequest;
 
 /**
- * Field query.
+ * The Remote Repository search backend.
  */
-public class FieldQuery extends Query {
-    private final Field field;
-
-    protected FieldQuery(Field field, String queryString) {
-        super(queryString);
-        this.field = requireNonNull(field);
-    }
-
-    /**
-     * Returns the field, never {@code null}.
-     */
-    public Field getField() {
-        return field;
-    }
-
+public interface RemoteRepositorySearchBackend extends SearchBackend {
     @Override
-    public String toString() {
-        return getField().getFieldName() + ":" + getValue();
-    }
+    RemoteRepositorySearchResponse search(SearchRequest searchRequest) throws IOException;
 
     /**
-     * Creates a field query using given {@link Field} and query string.
+     * Returns the base "service URI" that is used by this backend. never {@code null}.
      */
-    public static FieldQuery fieldQuery(Field fieldName, String query) {
-        return new FieldQuery(fieldName, query);
-    }
+    String getBaseUri();
 }

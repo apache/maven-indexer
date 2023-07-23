@@ -18,6 +18,7 @@
  */
 package org.apache.maven.search.request;
 
+import java.time.Instant;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,11 +30,8 @@ import static java.util.Objects.requireNonNull;
 public abstract class Field {
     private final String fieldName;
 
-    private final boolean searchable;
-
-    private Field(String fieldName, boolean searchable) {
+    private Field(String fieldName) {
         this.fieldName = requireNonNull(fieldName);
-        this.searchable = searchable;
     }
 
     /**
@@ -41,13 +39,6 @@ public abstract class Field {
      */
     public String getFieldName() {
         return fieldName;
-    }
-
-    /**
-     * Returns {@code true} if field may be used for {@link FieldQuery} (is searchable).
-     */
-    public boolean isSearchable() {
-        return searchable;
     }
 
     /**
@@ -79,8 +70,8 @@ public abstract class Field {
     }
 
     public static class StringField extends Field {
-        public StringField(String fieldName, boolean searchable) {
-            super(fieldName, searchable);
+        public StringField(String fieldName) {
+            super(fieldName);
         }
 
         @Override
@@ -90,8 +81,8 @@ public abstract class Field {
     }
 
     public static class NumberField extends Field {
-        public NumberField(String fieldName, boolean searchable) {
-            super(fieldName, searchable);
+        public NumberField(String fieldName) {
+            super(fieldName);
         }
 
         @Override
@@ -101,13 +92,26 @@ public abstract class Field {
     }
 
     public static class BooleanField extends Field {
-        public BooleanField(String fieldName, boolean searchable) {
-            super(fieldName, searchable);
+        public BooleanField(String fieldName) {
+            super(fieldName);
         }
 
         @Override
         public Boolean getFieldValue(Map<Field, Object> record) {
             return (Boolean) record.get(this);
+        }
+    }
+
+    /**
+     * @since 7.0.4
+     */
+    public static class InstantField extends Field {
+        public InstantField(String fieldName) {
+            super(fieldName);
+        }
+
+        public Instant getFieldValue(Map<Field, Object> record) {
+            return (Instant) record.get(this);
         }
     }
 }

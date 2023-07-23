@@ -16,37 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.request;
+package org.apache.maven.search.backend.remoterepository;
 
-import static java.util.Objects.requireNonNull;
+import org.apache.maven.search.SearchResponse;
+import org.jsoup.nodes.Document;
 
 /**
- * Field query.
+ * The RemoteRepository search response.
  */
-public class FieldQuery extends Query {
-    private final Field field;
-
-    protected FieldQuery(Field field, String queryString) {
-        super(queryString);
-        this.field = requireNonNull(field);
-    }
+public interface RemoteRepositorySearchResponse extends SearchResponse {
+    /**
+     * The URI that was tried to create {@link Document} from.
+     */
+    String getUri();
 
     /**
-     * Returns the field, never {@code null}.
+     * Returns the JSoup document, if exists or {@code null}.
      */
-    public Field getField() {
-        return field;
-    }
-
-    @Override
-    public String toString() {
-        return getField().getFieldName() + ":" + getValue();
-    }
-
-    /**
-     * Creates a field query using given {@link Field} and query string.
-     */
-    public static FieldQuery fieldQuery(Field fieldName, String query) {
-        return new FieldQuery(fieldName, query);
-    }
+    Document getDocument();
 }

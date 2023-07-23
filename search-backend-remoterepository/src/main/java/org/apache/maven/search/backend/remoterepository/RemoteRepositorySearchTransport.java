@@ -16,37 +16,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.request;
+package org.apache.maven.search.backend.remoterepository;
 
-import static java.util.Objects.requireNonNull;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
- * Field query.
+ * A trivial "transport abstraction" to make possible pluggable implementations.
  */
-public class FieldQuery extends Query {
-    private final Field field;
+public interface RemoteRepositorySearchTransport {
+    /**
+     * Trivial response.
+     */
+    interface Response extends Closeable {
+        int getCode();
 
-    protected FieldQuery(Field field, String queryString) {
-        super(queryString);
-        this.field = requireNonNull(field);
+        Map<String, String> getHeaders();
+
+        InputStream getBody();
     }
 
     /**
-     * Returns the field, never {@code null}.
+     * This method should issue a HTTP GET requests using {@code serviceUri} and return response.
      */
-    public Field getField() {
-        return field;
-    }
-
-    @Override
-    public String toString() {
-        return getField().getFieldName() + ":" + getValue();
-    }
+    Response get(String serviceUri, Map<String, String> headers) throws IOException;
 
     /**
-     * Creates a field query using given {@link Field} and query string.
+     * This method should issue a HTTP HEAD requests using {@code serviceUri} and return response.
      */
-    public static FieldQuery fieldQuery(Field fieldName, String query) {
-        return new FieldQuery(fieldName, query);
-    }
+    Response head(String serviceUri, Map<String, String> headers) throws IOException;
 }
