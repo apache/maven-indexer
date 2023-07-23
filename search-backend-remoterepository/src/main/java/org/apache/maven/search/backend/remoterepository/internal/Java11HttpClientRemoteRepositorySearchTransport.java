@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,9 +37,6 @@ import static java.util.Objects.requireNonNull;
  * Java 11 {@link HttpClient} backed transport.
  */
 public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRepositorySearchTransport {
-    private final HttpClient client =
-            HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NEVER).build();
-
     private static class ResponseImpl implements Response {
 
         private final HttpResponse<?> response;
@@ -76,10 +74,34 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
         }
     }
 
+    private final Duration timeout;
+
+    private final HttpClient client;
+
+    public Java11HttpClientRemoteRepositorySearchTransport() {
+        this(Duration.ofSeconds(10L));
+    }
+
+    public Java11HttpClientRemoteRepositorySearchTransport(Duration timeout) {
+        this(
+                timeout,
+                HttpClient.newBuilder()
+                        .connectTimeout(timeout)
+                        .followRedirects(HttpClient.Redirect.NEVER)
+                        .build());
+    }
+
+    public Java11HttpClientRemoteRepositorySearchTransport(Duration timeout, HttpClient client) {
+        this.timeout = requireNonNull(timeout);
+        this.client = requireNonNull(client);
+    }
+
     @Override
     public Response get(String serviceUri, Map<String, String> headers) throws IOException {
-        HttpRequest.Builder builder =
-                HttpRequest.newBuilder().uri(URI.create(serviceUri)).GET();
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .timeout(timeout)
+                .uri(URI.create(serviceUri))
+                .GET();
         for (Map.Entry<String, String> header : headers.entrySet()) {
             builder.header(header.getKey(), header.getValue());
         }
@@ -96,6 +118,7 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
     @Override
     public Response head(String serviceUri, Map<String, String> headers) throws IOException {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .timeout(timeout)
                 .uri(URI.create(serviceUri))
                 .method("HEAD", HttpRequest.BodyPublishers.noBody());
         for (Map.Entry<String, String> header : headers.entrySet()) {
