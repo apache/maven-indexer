@@ -210,7 +210,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     /**
      * Returns {@code true} if the name is not empty, not directory special (".."), is not metadata
-     * is not signature and is not checksum. Hence, it should be name of interest.
+     * is not signature and is not checksum. Hence, it should be a name of interest.
      */
     protected boolean accept(String name) {
         return !name.isEmpty() && !name.contains("..") && !isMetadata(name) && !isSignature(name) && !isChecksum(name);
@@ -218,8 +218,10 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     /**
      * Extracts the "name" from {@code href} attribute. In case of Maven Central, the href
-     * attribute contains name in form of {@code "name/"} (followed by slash, if name denotes
-     * a directory. The trailing slash is removed by this method.
+     * attribute contains name in form of {@code "name/"} (followed by slash), if name denotes
+     * a directory. The trailing slash is removed by this method, if any.
+     * <p>
+     * Override this method if needed (parsing different HTML output than Maven Central).
      */
     protected String nameInHref(Element element) {
         String name = element.attr("href");
@@ -234,6 +236,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
      * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/</a>
      * <p>
      * Note: this method is "best effort" and may enlist non-existent As (think nested Gs).
+     * <p>
+     * Override this method if needed (parsing different HTML output than Maven Central).
      */
     protected int populateG(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
@@ -277,6 +281,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
      * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/</a>
      * <p>
      * Note: this method is "best effort" and may enlist fake artifacts.
+     * <p>
+     * Override this method if needed (parsing different HTML output than Maven Central).
      */
     protected int populateGAV(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
