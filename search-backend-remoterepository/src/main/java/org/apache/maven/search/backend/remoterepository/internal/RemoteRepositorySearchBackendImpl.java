@@ -79,9 +79,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         this.commonHeaders = Map.of(
                 "User-Agent",
                 "Apache-Maven-Search-RR/" + discoverVersion() + " "
-                        + transport.getClass().getSimpleName(),
-                "Accept",
-                "application/json");
+                        + transport.getClass().getSimpleName());
     }
 
     private String discoverVersion() {
