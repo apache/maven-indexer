@@ -30,6 +30,9 @@ import org.apache.maven.search.request.Query;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Class that "disassembles" the query and populates fields and values and exposes them.
+ */
 public final class Context {
     private final SearchRequest searchRequest;
 

@@ -140,11 +140,11 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             throw new IllegalArgumentException("Unsupported Query: " + searchRequest.getQuery());
         }
 
-        Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
         int totalHits = 0;
         List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
         Document document = null;
         if (state.ordinal() < State.GAVCE.ordinal()) {
+            Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
             try (RemoteRepositorySearchTransport.Response response = transport.get(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
                     document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
@@ -171,7 +171,24 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         } else {
             try (RemoteRepositorySearchTransport.Response response = transport.head(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
-                    totalHits = populateGAVCE(context, uri, response, context.getSha1(), page);
+                    boolean matches = context.getSha1() == null;
+                    if (context.getSha1() != null) {
+                        try (RemoteRepositorySearchTransport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
+                            if (response.getCode() == 200) {
+                                String remoteSha1 = readChecksum(sha1Response.getBody());
+                                matches = Objects.equals(context.getSha1(), remoteSha1);
+                            }
+                        }
+                    }
+                    if (matches) {
+                        page.add(create(
+                                context.getGroupId(),
+                                context.getArtifactId(),
+                                context.getVersion(),
+                                context.getClassifier(),
+                                context.getFileExtension()));
+                    }
+                    totalHits = 1;
                 }
             }
         }
@@ -276,37 +293,6 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
-    protected int populateGAVCE(
-            Context context,
-            String uri,
-            RemoteRepositorySearchTransport.Response response,
-            String sha1,
-            List<Record> page)
-            throws IOException {
-        // Concrete file like this one:
-        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/search-api-7.0.3.pom
-
-        boolean matches = sha1 == null;
-        if (sha1 != null) {
-            try (RemoteRepositorySearchTransport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
-                if (response.getCode() == 200) {
-                    String remoteSha1 = readChecksum(sha1Response.getBody());
-                    matches = Objects.equals(sha1, remoteSha1);
-                }
-            }
-        }
-        if (!matches) {
-            return 0;
-        }
-        page.add(create(
-                context.getGroupId(),
-                context.getArtifactId(),
-                context.getVersion(),
-                context.getClassifier(),
-                context.getFileExtension()));
-        return 1;
-    }
-
     protected Record create(
             String groupId, String artifactId, String version, String classifier, String fileExtension) {
         HashMap<Field, Object> result = new HashMap<>();
@@ -319,7 +305,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return new Record(getBackendId(), getRepositoryId(), null, null, result);
     }
 
-    protected static String readChecksum(InputStream inputStream) throws IOException {
+    private static String readChecksum(InputStream inputStream) throws IOException {
         String checksum = "";
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8), 512)) {
             while (true) {
@@ -349,7 +335,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return checksum;
     }
 
-    protected static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
+    private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
         if (value == null) {
             return;
         }
