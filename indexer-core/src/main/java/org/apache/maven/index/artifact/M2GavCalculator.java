@@ -272,7 +272,7 @@ public class M2GavCalculator implements GavCalculator {
     }
 
     public String calculateArtifactName(Gav gav) {
-        if (gav.getName() != null && gav.getName().trim().length() > 0) {
+        if (gav.getName() != null && !gav.getName().isBlank()) {
             return gav.getName();
         } else {
             StringBuilder path = new StringBuilder(gav.getArtifactId());
@@ -281,7 +281,7 @@ public class M2GavCalculator implements GavCalculator {
 
             path.append(gav.getVersion());
 
-            if (gav.getClassifier() != null && gav.getClassifier().trim().length() > 0) {
+            if (gav.getClassifier() != null && !gav.getClassifier().isBlank()) {
                 path.append("-");
 
                 path.append(gav.getClassifier());
