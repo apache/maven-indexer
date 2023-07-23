@@ -173,7 +173,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                 if (response.getCode() == 200) {
                     boolean matches = context.getSha1() == null;
                     if (context.getSha1() != null) {
-                        try (RemoteRepositorySearchTransport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
+                        try (RemoteRepositorySearchTransport.Response sha1Response =
+                                transport.get(uri + ".sha1", commonHeaders)) {
                             if (response.getCode() == 200) {
                                 String remoteSha1 = readChecksum(sha1Response.getBody());
                                 matches = Objects.equals(context.getSha1(), remoteSha1);
@@ -187,8 +188,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                                 context.getVersion(),
                                 context.getClassifier(),
                                 context.getFileExtension()));
+                        totalHits = 1;
                     }
-                    totalHits = 1;
                 }
             }
         }
@@ -207,10 +208,19 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return name.equals("maven-metadata.xml");
     }
 
-    protected boolean accept(String href) {
-        return !href.contains("..") && !isMetadata(href) && !isSignature(href) && !isChecksum(href);
+    /**
+     * Returns {@code true} if the name is not empty, not directory special (".."), is not metadata
+     * is not signature and is not checksum. Hence, it should be name of interest.
+     */
+    protected boolean accept(String name) {
+        return !name.isEmpty() && !name.contains("..") && !isMetadata(name) && !isSignature(name) && !isChecksum(name);
     }
 
+    /**
+     * Extracts the "name" from {@code href} attribute. In case of Maven Central, the href
+     * attribute contains name in form of {@code "name/"} (followed by slash, if name denotes
+     * a directory. The trailing slash is removed by this method.
+     */
     protected String nameInHref(Element element) {
         String name = element.attr("href");
         if (name.endsWith("/")) {
@@ -219,6 +229,12 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return name;
     }
 
+    /**
+     * Method parsing document out of HTML page like this one:
+     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/</a>
+     * <p>
+     * Note: this method is "best effort" and may enlist non-existent As (think nested Gs).
+     */
     protected int populateG(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/
@@ -234,6 +250,10 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
+    /**
+     * Method parsing document out of XML Maven Metadata like this one:
+     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml</a>
+     */
     protected int populateGA(Context context, Document document, List<Record> page) {
         // Maven Metadata XML like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml
@@ -252,13 +272,24 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
+    /**
+     * Method parsing document out of HTML page like this one:
+     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/</a>
+     * <p>
+     * Note: this method is "best effort" and may enlist fake artifacts.
+     */
     protected int populateGAV(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/
         Element contents = document.getElementById("contents");
         if (contents != null) {
             for (Element element : contents.getElementsByTag("a")) {
-                String name = nameInHref(element);
+                // skip possible subdirectories and files without extensions
+                String name = element.attr("href");
+                if (name.endsWith("/") || !name.contains(".")) {
+                    continue;
+                }
+                name = nameInHref(element);
                 if (accept(name)) {
                     if (name.startsWith(context.getArtifactId())) {
                         name = name.substring(context.getArtifactId().length() + 1);
@@ -293,6 +324,10 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
+    /**
+     * Creates a {@link Record} instance using passed in field values. All field values except
+     * {@code groupId} are optional (nullable).
+     */
     protected Record create(
             String groupId, String artifactId, String version, String classifier, String fileExtension) {
         HashMap<Field, Object> result = new HashMap<>();
