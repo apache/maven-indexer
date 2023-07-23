@@ -30,7 +30,7 @@ import org.apache.maven.search.request.Query;
 
 import static java.util.Objects.requireNonNull;
 
-public class Context {
+public final class Context {
     private final SearchRequest searchRequest;
 
     private final Map<Field, String> fields;

@@ -44,15 +44,16 @@ public class RemoteRepositorySearchBackendImplTest {
     private void dumpSingle(AtomicInteger counter, List<Record> page) {
         for (Record record : page) {
             StringBuilder sb = new StringBuilder();
-            sb.append(record.getValue(MAVEN.GROUP_ID))
-                    .append(":")
-                    .append(record.getValue(MAVEN.ARTIFACT_ID))
-                    .append(":")
-                    .append(record.getValue(MAVEN.VERSION));
+            sb.append(record.getValue(MAVEN.GROUP_ID)).append(":").append(record.getValue(MAVEN.ARTIFACT_ID));
+            if (record.hasField(MAVEN.VERSION)) {
+                sb.append(":").append(record.getValue(MAVEN.VERSION));
+            }
             if (record.hasField(MAVEN.CLASSIFIER)) {
                 sb.append(":").append(record.getValue(MAVEN.CLASSIFIER));
             }
-            sb.append(":").append(record.getValue(MAVEN.FILE_EXTENSION));
+            if (record.hasField(MAVEN.FILE_EXTENSION)) {
+                sb.append(":").append(record.getValue(MAVEN.FILE_EXTENSION));
+            }
 
             List<String> remarks = new ArrayList<>();
             if (record.getLastUpdated() != null) {

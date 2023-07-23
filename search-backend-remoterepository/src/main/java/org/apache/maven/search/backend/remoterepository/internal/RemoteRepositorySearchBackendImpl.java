@@ -46,6 +46,12 @@ import org.jsoup.parser.Parser;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Implementation of {@link RemoteRepositorySearchBackend} that is tested against Maven Central.
+ * All the methods are "loosely encapsulated" (are protected) to enable easy override of any
+ * required aspect of this implementation, to suit it against different remote repositories
+ * (HTML parsing) if needed.
+ */
 public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport implements RemoteRepositorySearchBackend {
     private final String baseUri;
 
@@ -53,7 +59,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     private final Map<String, String> commonHeaders;
 
-    private enum State {
+    protected enum State {
         G,
         GA,
         GAV,
@@ -172,23 +178,23 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
 
-    private boolean isChecksum(String name) {
+    protected boolean isChecksum(String name) {
         return name.endsWith(".sha1") || name.endsWith(".md5") || name.endsWith(".sha256") || name.endsWith(".sha512");
     }
 
-    private boolean isSignature(String name) {
+    protected boolean isSignature(String name) {
         return name.endsWith(".asc") || name.endsWith(".sigstore");
     }
 
-    private boolean isMetadata(String name) {
+    protected boolean isMetadata(String name) {
         return name.equals("maven-metadata.xml");
     }
 
-    private boolean accept(String href) {
+    protected boolean accept(String href) {
         return !href.contains("..") && !isMetadata(href) && !isSignature(href) && !isChecksum(href);
     }
 
-    private String nameInHref(Element element) {
+    protected String nameInHref(Element element) {
         String name = element.attr("href");
         if (name.endsWith("/")) {
             name = name.substring(0, name.length() - 1);
@@ -196,7 +202,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return name;
     }
 
-    private int populateG(Context context, Document document, List<Record> page) {
+    protected int populateG(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/
         Element contents = document.getElementById("contents");
@@ -211,7 +217,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
-    private int populateGA(Context context, Document document, List<Record> page) {
+    protected int populateGA(Context context, Document document, List<Record> page) {
         // Maven Metadata XML like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml
         Element metadata = document.getElementsByTag("metadata").first();
@@ -229,7 +235,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
-    private int populateGAV(Context context, Document document, List<Record> page) {
+    protected int populateGAV(Context context, Document document, List<Record> page) {
         // Index HTML page like this one:
         // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/
         Element contents = document.getElementById("contents");
@@ -270,7 +276,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return page.size();
     }
 
-    private int populateGAVCE(
+    protected int populateGAVCE(
             Context context,
             String uri,
             RemoteRepositorySearchTransport.Response response,
@@ -301,7 +307,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return 1;
     }
 
-    private Record create(String groupId, String artifactId, String version, String classifier, String fileExtension) {
+    protected Record create(
+            String groupId, String artifactId, String version, String classifier, String fileExtension) {
         HashMap<Field, Object> result = new HashMap<>();
 
         mayPut(result, MAVEN.GROUP_ID, groupId);
@@ -312,7 +319,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return new Record(getBackendId(), getRepositoryId(), null, null, result);
     }
 
-    private static String readChecksum(InputStream inputStream) throws IOException {
+    protected static String readChecksum(InputStream inputStream) throws IOException {
         String checksum = "";
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8), 512)) {
             while (true) {
@@ -342,7 +349,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return checksum;
     }
 
-    private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
+    protected static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
         if (value == null) {
             return;
         }
