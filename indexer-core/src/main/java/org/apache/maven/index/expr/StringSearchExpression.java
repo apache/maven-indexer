@@ -27,7 +27,7 @@ public class StringSearchExpression implements SearchExpression {
     private final String expression;
 
     public StringSearchExpression(final String expression) {
-        if (expression == null || expression.trim().length() == 0) {
+        if (expression == null || expression.isBlank()) {
             throw new IllegalArgumentException("The expression's string cannot be empty!");
         }
 

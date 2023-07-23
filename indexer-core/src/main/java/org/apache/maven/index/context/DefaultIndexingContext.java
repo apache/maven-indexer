@@ -465,7 +465,7 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
 
     public String getIndexUpdateUrl() {
         if (repositoryUrl != null) {
-            if (indexUpdateUrl == null || indexUpdateUrl.trim().length() == 0) {
+            if (indexUpdateUrl == null || indexUpdateUrl.isBlank()) {
                 return repositoryUrl + (repositoryUrl.endsWith("/") ? "" : "/") + INDEX_DIRECTORY;
             }
         }

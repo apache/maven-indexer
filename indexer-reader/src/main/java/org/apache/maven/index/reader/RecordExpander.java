@@ -55,7 +55,7 @@ public class RecordExpander implements Function<Map<String, String>, Record> {
             // Fix up UINFO field wrt MINDEXER-41
             final String uinfo = recordMap.get(UINFO);
             final String info = recordMap.get(INFO);
-            if (uinfo != null && !(info == null || info.trim().length() == 0)) {
+            if (uinfo != null && !(info == null || info.isBlank())) {
                 final String[] splitInfo = FS_PATTERN.split(info);
                 if (splitInfo.length > 6) {
                     final String extension = splitInfo[6];
@@ -186,7 +186,7 @@ public class RecordExpander implements Function<Map<String, String>, Record> {
     private static void putIfNotNull(
             final Map<String, String> source, final String sourceName, final Record target, final EntryKey targetName) {
         String value = source.get(sourceName);
-        if (value != null && value.trim().length() != 0) {
+        if (value != null && !value.isBlank()) {
             target.put(targetName, value);
         }
     }
@@ -197,7 +197,7 @@ public class RecordExpander implements Function<Map<String, String>, Record> {
     private static void putIfNotNullTS(
             final Map<String, String> source, final String sourceName, final Record target, final EntryKey targetName) {
         String value = source.get(sourceName);
-        if (value != null && value.trim().length() != 0) {
+        if (value != null && !value.isBlank()) {
             target.put(targetName, Long.valueOf(value));
         }
     }
@@ -208,7 +208,7 @@ public class RecordExpander implements Function<Map<String, String>, Record> {
     private static void putIfNotNullAsStringArray(
             final Map<String, String> source, final String sourceName, final Record target, final EntryKey targetName) {
         String value = source.get(sourceName);
-        if (value != null && value.trim().length() != 0) {
+        if (value != null && !value.isBlank()) {
             target.put(targetName, FS_PATTERN.split(value));
         }
     }
