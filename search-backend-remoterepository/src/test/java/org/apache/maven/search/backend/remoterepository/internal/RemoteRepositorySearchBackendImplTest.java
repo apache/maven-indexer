@@ -195,6 +195,38 @@ public class RemoteRepositorySearchBackendImplTest {
         dumpPage(searchResponse);
     }
 
+    @Test
+    public void gavcesha1WClassifierRightChecksum() throws IOException {
+        // validity check: total hits != 0 => valid, total hits == 0 => invalid
+        SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
+                FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven"),
+                FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "apache-maven"),
+                FieldQuery.fieldQuery(MAVEN.VERSION, "3.9.3"),
+                FieldQuery.fieldQuery(MAVEN.CLASSIFIER, "bin"),
+                FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "tar.gz"),
+                FieldQuery.fieldQuery(MAVEN.SHA1, "f700d2bf6a11803c29a3240a26e91b2d1c530f79")));
+        RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        assertThat(searchResponse.getTotalHits(), equalTo(1));
+        System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
+        dumpPage(searchResponse);
+    }
+
+    @Test
+    public void gavcesha1WClassifierWrongChecksum() throws IOException {
+        // validity check: total hits != 0 => valid, total hits == 0 => invalid
+        SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
+                FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven"),
+                FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "apache-maven"),
+                FieldQuery.fieldQuery(MAVEN.VERSION, "3.9.3"),
+                FieldQuery.fieldQuery(MAVEN.CLASSIFIER, "bin"),
+                FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "tar.gz"),
+                FieldQuery.fieldQuery(MAVEN.SHA1, "wrong")));
+        RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        assertThat(searchResponse.getTotalHits(), equalTo(0));
+        System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
+        dumpPage(searchResponse);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void sha1() throws IOException {
         SearchRequest searchRequest =
