@@ -1,7 +1,7 @@
 Indexer Search Indexer Backend
 ==============================
 
-Search API Indexer Core Backend implementation.
+Search API Indexer Core Backend implementation. As it uses Maven Indexer, needs Java 11+.
 
 Examples:
 
