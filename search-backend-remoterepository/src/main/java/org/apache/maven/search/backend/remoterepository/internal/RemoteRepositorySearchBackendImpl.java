@@ -150,7 +150,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             }
 
             if (document == null) {
-                return new RemoteRepositorySearchResponseImpl(searchRequest, 0, Collections.emptyList(), uri, null);
+                throw new IOException("Unexpected response from: " + uri);
             }
 
             switch (state) {
@@ -174,8 +174,10 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                         try (RemoteRepositorySearchTransport.Response sha1Response =
                                 transport.get(uri + ".sha1", commonHeaders)) {
                             if (response.getCode() == 200) {
-                                String remoteSha1 = readChecksum(sha1Response.getBody());
-                                matches = Objects.equals(context.getSha1(), remoteSha1);
+                                try (InputStream body = sha1Response.getBody()) {
+                                    String remoteSha1 = readChecksum(body);
+                                    matches = Objects.equals(context.getSha1(), remoteSha1);
+                                }
                             }
                         }
                     }
