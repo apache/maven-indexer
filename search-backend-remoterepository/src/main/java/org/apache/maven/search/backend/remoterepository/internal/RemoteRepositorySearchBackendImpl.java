@@ -76,12 +76,12 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         this.baseUri = requireNonNull(baseUri);
         this.transport = requireNonNull(transport);
 
-        this.commonHeaders = new HashMap<>();
-        this.commonHeaders.put(
+        this.commonHeaders = Map.of(
                 "User-Agent",
                 "Apache-Maven-Search-RR/" + discoverVersion() + " "
-                        + transport.getClass().getSimpleName());
-        this.commonHeaders.put("Accept", "application/json");
+                        + transport.getClass().getSimpleName(),
+                "Accept",
+                "application/json");
     }
 
     private String discoverVersion() {
@@ -380,7 +380,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         if (value == null) {
             return;
         }
-        if (value instanceof String && ((String) value).trim().isEmpty()) {
+        if (value instanceof String && ((String) value).isBlank()) {
             return;
         }
         result.put(fieldName, value);
