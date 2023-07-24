@@ -48,7 +48,12 @@ public abstract class ResponseExtractorSupport implements ResponseExtractor {
      * is not signature and is not checksum. Hence, it should be a name of interest.
      */
     protected boolean accept(String name) {
-        return !name.isEmpty() && !name.contains("..") && !isMetadata(name) && !isSignature(name) && !isChecksum(name);
+        return name != null
+                && !name.isEmpty()
+                && !name.contains("..")
+                && !isMetadata(name)
+                && !isSignature(name)
+                && !isChecksum(name);
     }
 
     /**
@@ -72,5 +77,36 @@ public abstract class ResponseExtractorSupport implements ResponseExtractor {
             }
         }
         return page.size();
+    }
+
+    /**
+     * Processes extracted "name" extracted by {@link #populateGAV(Context, Document, RecordFactory, List)} method.
+     */
+    protected void populateGAVName(Context context, String name, RecordFactory recordFactory, List<Record> page) {
+        if (accept(name)) {
+            if (name.startsWith(context.getArtifactId())) {
+                name = name.substring(context.getArtifactId().length() + 1);
+                if (name.startsWith(context.getVersion())) {
+                    name = name.substring(context.getVersion().length() + 1);
+                    String ext = null;
+                    String classifier = null;
+                    if (name.contains(".")) {
+                        while (name.contains(".")) {
+                            if (ext == null) {
+                                ext = name.substring(name.lastIndexOf('.') + 1);
+                            } else {
+                                ext = name.substring(name.lastIndexOf('.') + 1) + "." + ext;
+                            }
+                            name = name.substring(0, name.lastIndexOf('.'));
+                        }
+                        classifier = name.isEmpty() ? null : name;
+                    } else {
+                        ext = name;
+                    }
+                    page.add(recordFactory.create(
+                            context.getGroupId(), context.getArtifactId(), context.getVersion(), classifier, ext));
+                }
+            }
+        }
     }
 }

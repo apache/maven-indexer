@@ -68,32 +68,7 @@ public class Nx2ResponseExtractor extends ResponseExtractorSupport {
             if (name.endsWith("/") || !name.contains(".")) {
                 continue;
             }
-            name = name(element);
-            if (accept(name)) {
-                if (name.startsWith(context.getArtifactId())) {
-                    name = name.substring(context.getArtifactId().length() + 1);
-                    if (name.startsWith(context.getVersion())) {
-                        name = name.substring(context.getVersion().length() + 1);
-                        String ext = null;
-                        String classifier = null;
-                        if (name.contains(".")) {
-                            while (name.contains(".")) {
-                                if (ext == null) {
-                                    ext = name.substring(name.lastIndexOf('.') + 1);
-                                } else {
-                                    ext = name.substring(name.lastIndexOf('.') + 1) + "." + ext;
-                                }
-                                name = name.substring(0, name.lastIndexOf('.'));
-                            }
-                            classifier = name.isEmpty() ? null : name;
-                        } else {
-                            ext = name;
-                        }
-                        page.add(recordFactory.create(
-                                context.getGroupId(), context.getArtifactId(), context.getVersion(), classifier, ext));
-                    }
-                }
-            }
+            populateGAVName(context, name(element), recordFactory, page);
         }
         return page.size();
     }
