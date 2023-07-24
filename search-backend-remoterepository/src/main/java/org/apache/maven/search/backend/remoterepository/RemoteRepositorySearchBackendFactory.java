@@ -18,6 +18,8 @@
  */
 package org.apache.maven.search.backend.remoterepository;
 
+import org.apache.maven.search.backend.remoterepository.extractor.MavenCentralResponseExtractor;
+import org.apache.maven.search.backend.remoterepository.extractor.Nx2ResponseExtractor;
 import org.apache.maven.search.backend.remoterepository.internal.Java11HttpClientRemoteRepositorySearchTransport;
 import org.apache.maven.search.backend.remoterepository.internal.RemoteRepositorySearchBackendImpl;
 
@@ -25,28 +27,49 @@ import org.apache.maven.search.backend.remoterepository.internal.RemoteRepositor
  * The remote repository search backend factory.
  */
 public class RemoteRepositorySearchBackendFactory {
-    public static final String DEFAULT_BACKEND_ID = "central-rr";
+    public static final String BACKEND_ID = "search-rr";
 
-    public static final String DEFAULT_REPOSITORY_ID = "central";
+    public static final String CENTRAL_REPOSITORY_ID = "central";
 
-    public static final String DEFAULT_URI = "https://repo.maven.apache.org/maven2/";
+    public static final String CENTRAL_URI = "https://repo.maven.apache.org/maven2/";
+
+    public static final String RAO_RELEASES_REPOSITORY_ID = "apache.releases.https";
+
+    public static final String RAO_RELEASES_URI = "https://repository.apache.org/content/repositories/releases/";
 
     /**
      * Creates "default" RR search backend against Maven Central suitable for most use cases.
      */
-    public static RemoteRepositorySearchBackend createDefault() {
+    public static RemoteRepositorySearchBackend createDefaultMavenCentral() {
         return create(
-                DEFAULT_BACKEND_ID,
-                DEFAULT_REPOSITORY_ID,
-                DEFAULT_URI,
-                new Java11HttpClientRemoteRepositorySearchTransport());
+                BACKEND_ID,
+                CENTRAL_REPOSITORY_ID,
+                CENTRAL_URI,
+                new Java11HttpClientRemoteRepositorySearchTransport(),
+                new MavenCentralResponseExtractor());
+    }
+
+    /**
+     * Creates "default" RR search backend against repository.apache.org releases repository suitable for most use cases.
+     */
+    public static RemoteRepositorySearchBackend createDefaultRAOReleases() {
+        return create(
+                BACKEND_ID,
+                RAO_RELEASES_REPOSITORY_ID,
+                RAO_RELEASES_URI,
+                new Java11HttpClientRemoteRepositorySearchTransport(),
+                new Nx2ResponseExtractor());
     }
 
     /**
      * Creates RR search backend using provided parameters.
      */
     public static RemoteRepositorySearchBackend create(
-            String backendId, String repositoryId, String baseUri, RemoteRepositorySearchTransport transport) {
-        return new RemoteRepositorySearchBackendImpl(backendId, repositoryId, baseUri, transport);
+            String backendId,
+            String repositoryId,
+            String baseUri,
+            RemoteRepositorySearchTransport transport,
+            ResponseExtractor responseExtractor) {
+        return new RemoteRepositorySearchBackendImpl(backendId, repositoryId, baseUri, transport, responseExtractor);
     }
 }

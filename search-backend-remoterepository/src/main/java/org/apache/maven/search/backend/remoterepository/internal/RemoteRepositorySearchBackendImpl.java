@@ -24,23 +24,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.maven.search.MAVEN;
 import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.backend.remoterepository.Context;
+import org.apache.maven.search.backend.remoterepository.RecordFactory;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchBackend;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchTransport;
-import org.apache.maven.search.request.Field;
+import org.apache.maven.search.backend.remoterepository.ResponseExtractor;
 import org.apache.maven.search.support.SearchBackendSupport;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 
 import static java.util.Objects.requireNonNull;
@@ -56,6 +55,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
     private final RemoteRepositorySearchTransport transport;
 
+    private final ResponseExtractor responseExtractor;
+
     private final Map<String, String> commonHeaders;
 
     protected enum State {
@@ -70,10 +71,15 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
      */
     public RemoteRepositorySearchBackendImpl(
-            String backendId, String repositoryId, String baseUri, RemoteRepositorySearchTransport transport) {
+            String backendId,
+            String repositoryId,
+            String baseUri,
+            RemoteRepositorySearchTransport transport,
+            ResponseExtractor responseExtractor) {
         super(backendId, repositoryId);
         this.baseUri = requireNonNull(baseUri);
         this.transport = requireNonNull(transport);
+        this.responseExtractor = requireNonNull(responseExtractor);
 
         this.commonHeaders = Map.of(
                 "User-Agent",
@@ -139,6 +145,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
         int totalHits = 0;
         List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
+        RecordFactory recordFactory = new RecordFactory(this);
         Document document = null;
         if (state.ordinal() < State.GAVCE.ordinal()) {
             Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
@@ -154,13 +161,13 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
 
             switch (state) {
                 case G:
-                    totalHits = populateG(context, document, page);
+                    totalHits = responseExtractor.populateG(context, document, recordFactory, page);
                     break;
                 case GA:
-                    totalHits = populateGA(context, document, page);
+                    totalHits = responseExtractor.populateGA(context, document, recordFactory, page);
                     break;
                 case GAV:
-                    totalHits = populateGAV(context, document, page);
+                    totalHits = responseExtractor.populateGAV(context, document, recordFactory, page);
                     break;
                 default:
                     throw new IllegalStateException("State" + state); // checkstyle
@@ -181,7 +188,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                         }
                     }
                     if (matches) {
-                        page.add(create(
+                        page.add(recordFactory.create(
                                 context.getGroupId(),
                                 context.getArtifactId(),
                                 context.getVersion(),
@@ -193,156 +200,6 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             }
         }
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
-    }
-
-    protected boolean isChecksum(String name) {
-        return name.endsWith(".sha1") || name.endsWith(".md5") || name.endsWith(".sha256") || name.endsWith(".sha512");
-    }
-
-    protected boolean isSignature(String name) {
-        return name.endsWith(".asc") || name.endsWith(".sigstore");
-    }
-
-    protected boolean isMetadata(String name) {
-        return name.equals("maven-metadata.xml");
-    }
-
-    /**
-     * Returns {@code true} if the name is not empty, not directory special (".."), is not metadata
-     * is not signature and is not checksum. Hence, it should be a name of interest.
-     */
-    protected boolean accept(String name) {
-        return !name.isEmpty() && !name.contains("..") && !isMetadata(name) && !isSignature(name) && !isChecksum(name);
-    }
-
-    /**
-     * Extracts the "name" from {@code href} attribute. In case of Maven Central, the href
-     * attribute contains name in form of {@code "name/"} (followed by slash), if name denotes
-     * a directory. The trailing slash is removed by this method, if any.
-     * <p>
-     * Override this method if needed (parsing different HTML output than Maven Central).
-     */
-    protected String nameInHref(Element element) {
-        String name = element.attr("href");
-        if (name.endsWith("/")) {
-            name = name.substring(0, name.length() - 1);
-        }
-        return name;
-    }
-
-    /**
-     * Method parsing document out of HTML page like this one:
-     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/</a>
-     * <p>
-     * Note: this method is "best effort" and may enlist non-existent As (think nested Gs).
-     * <p>
-     * Override this method if needed (parsing different HTML output than Maven Central).
-     */
-    protected int populateG(Context context, Document document, List<Record> page) {
-        // Index HTML page like this one:
-        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/
-        Element contents = document.getElementById("contents");
-        if (contents != null) {
-            for (Element element : contents.getElementsByTag("a")) {
-                String name = nameInHref(element);
-                if (accept(name)) {
-                    page.add(create(context.getGroupId(), name, null, null, null));
-                }
-            }
-        }
-        return page.size();
-    }
-
-    /**
-     * Method parsing document out of XML Maven Metadata like this one:
-     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml</a>
-     */
-    protected int populateGA(Context context, Document document, List<Record> page) {
-        // Maven Metadata XML like this one:
-        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/maven-metadata.xml
-        Element metadata = document.getElementsByTag("metadata").first();
-        if (metadata != null) {
-            Element versioning = metadata.getElementsByTag("versioning").first();
-            if (versioning != null) {
-                Element versions = versioning.getElementsByTag("versions").first();
-                if (versions != null) {
-                    for (Element version : versions.getElementsByTag("version")) {
-                        page.add(create(context.getGroupId(), context.getArtifactId(), version.text(), null, null));
-                    }
-                }
-            }
-        }
-        return page.size();
-    }
-
-    /**
-     * Method parsing document out of HTML page like this one:
-     * <a href="https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/">https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/</a>
-     * <p>
-     * Note: this method is "best effort" and may enlist fake artifacts.
-     * <p>
-     * Override this method if needed (parsing different HTML output than Maven Central).
-     */
-    protected int populateGAV(Context context, Document document, List<Record> page) {
-        // Index HTML page like this one:
-        // https://repo.maven.apache.org/maven2/org/apache/maven/indexer/search-api/7.0.3/
-        Element contents = document.getElementById("contents");
-        if (contents != null) {
-            for (Element element : contents.getElementsByTag("a")) {
-                // skip possible subdirectories and files without extensions
-                String name = element.attr("href");
-                if (name.endsWith("/") || !name.contains(".")) {
-                    continue;
-                }
-                name = nameInHref(element);
-                if (accept(name)) {
-                    if (name.startsWith(context.getArtifactId())) {
-                        name = name.substring(context.getArtifactId().length() + 1);
-                        if (name.startsWith(context.getVersion())) {
-                            name = name.substring(context.getVersion().length() + 1);
-                            String ext = null;
-                            String classifier = null;
-                            if (name.contains(".")) {
-                                while (name.contains(".")) {
-                                    if (ext == null) {
-                                        ext = name.substring(name.lastIndexOf('.') + 1);
-                                    } else {
-                                        ext = name.substring(name.lastIndexOf('.') + 1) + "." + ext;
-                                    }
-                                    name = name.substring(0, name.lastIndexOf('.'));
-                                }
-                                classifier = name.isEmpty() ? null : name;
-                            } else {
-                                ext = name;
-                            }
-                            page.add(create(
-                                    context.getGroupId(),
-                                    context.getArtifactId(),
-                                    context.getVersion(),
-                                    classifier,
-                                    ext));
-                        }
-                    }
-                }
-            }
-        }
-        return page.size();
-    }
-
-    /**
-     * Creates a {@link Record} instance using passed in field values. All field values except
-     * {@code groupId} are optional (nullable).
-     */
-    protected Record create(
-            String groupId, String artifactId, String version, String classifier, String fileExtension) {
-        HashMap<Field, Object> result = new HashMap<>();
-
-        mayPut(result, MAVEN.GROUP_ID, groupId);
-        mayPut(result, MAVEN.ARTIFACT_ID, artifactId);
-        mayPut(result, MAVEN.VERSION, version);
-        mayPut(result, MAVEN.CLASSIFIER, classifier);
-        mayPut(result, MAVEN.FILE_EXTENSION, fileExtension);
-        return new Record(getBackendId(), getRepositoryId(), null, null, result);
     }
 
     private static String readChecksum(InputStream inputStream) throws IOException {
@@ -373,15 +230,5 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
 
         return checksum;
-    }
-
-    private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
-        if (value == null) {
-            return;
-        }
-        if (value instanceof String && ((String) value).isBlank()) {
-            return;
-        }
-        result.put(fieldName, value);
     }
 }

@@ -21,6 +21,8 @@ package org.apache.maven.search.backend.remoterepository.internal;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,12 +36,32 @@ import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.FieldQuery;
 import org.apache.maven.search.request.Query;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 
+/**
+ * UT for 2 backends: Maven Central and RAO releases. This tests make use of the fact that RAO is used as "staging"
+ * are for Maven Central, hence RAO releases contains everything that was staged and synced toward Maven Central.
+ */
+@RunWith(Parameterized.class)
 public class RemoteRepositorySearchBackendImplTest {
-    private RemoteRepositorySearchBackend backend = RemoteRepositorySearchBackendFactory.createDefault();
+
+    @Parameterized.Parameters
+    public static Collection<Object> data() {
+        return Arrays.asList(
+                RemoteRepositorySearchBackendFactory.createDefaultMavenCentral(),
+                RemoteRepositorySearchBackendFactory.createDefaultRAOReleases());
+    }
+
+    private final RemoteRepositorySearchBackend backend;
+
+    public RemoteRepositorySearchBackendImplTest(RemoteRepositorySearchBackend backend) {
+        this.backend = backend;
+    }
 
     private void dumpSingle(AtomicInteger counter, List<Record> page) {
         for (Record record : page) {
@@ -110,6 +132,7 @@ public class RemoteRepositorySearchBackendImplTest {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        assertThat(searchResponse.getTotalHits(), greaterThan(0));
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -121,6 +144,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        assertThat(searchResponse.getTotalHits(), greaterThan(0));
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
