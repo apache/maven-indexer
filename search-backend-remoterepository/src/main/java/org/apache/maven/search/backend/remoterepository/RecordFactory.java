@@ -39,7 +39,7 @@ public final class RecordFactory {
     }
 
     /**
-     * Creates {@link Record} on behalf of backed. Only {@code groupId} is mandatory, all the other values are optional.
+     * Creates {@link Record} on behalf of backend. Only {@code groupId} is mandatory, all the other values are optional (nullable).
      */
     public Record create(String groupId, String artifactId, String version, String classifier, String fileExtension) {
         requireNonNull(groupId);

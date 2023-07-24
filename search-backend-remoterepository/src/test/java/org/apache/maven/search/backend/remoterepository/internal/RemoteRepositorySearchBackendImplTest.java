@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.greaterThan;
 
 /**
  * UT for 2 backends: Maven Central and RAO releases. This tests make use of the fact that RAO is used as "staging"
- * are for Maven Central, hence RAO releases contains everything that was staged and synced toward Maven Central.
+ * area for Maven Central, hence RAO releases contains everything that was staged and synced to Maven Central.
  */
 @RunWith(Parameterized.class)
 public class RemoteRepositorySearchBackendImplTest {
