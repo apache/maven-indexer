@@ -17,8 +17,12 @@
 
 # Release cheat sheet
 
-Check site build before starting.
+Check that site is build before starting (run mvn site).
+Check that local repository is okay or nuke it. If local repo is OK, this command should have only one output:
 
+```
+$ find .m2/repository-oss -type f -exec stat --format='%A' '{}' \; | sort | uniq -c
+```
 Perform the release:
 
 ```
