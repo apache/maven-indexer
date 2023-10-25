@@ -35,9 +35,9 @@ import org.apache.maven.search.backend.remoterepository.Context;
 import org.apache.maven.search.backend.remoterepository.RecordFactory;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchBackend;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
-import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchTransport;
 import org.apache.maven.search.backend.remoterepository.ResponseExtractor;
 import org.apache.maven.search.support.SearchBackendSupport;
+import org.apache.maven.search.transport.Transport;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;
@@ -53,7 +53,7 @@ import static java.util.Objects.requireNonNull;
 public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport implements RemoteRepositorySearchBackend {
     private final String baseUri;
 
-    private final RemoteRepositorySearchTransport transport;
+    private final Transport transport;
 
     private final ResponseExtractor responseExtractor;
 
@@ -74,7 +74,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             String backendId,
             String repositoryId,
             String baseUri,
-            RemoteRepositorySearchTransport transport,
+            Transport transport,
             ResponseExtractor responseExtractor) {
         super(backendId, repositoryId);
         this.baseUri = requireNonNull(baseUri);
@@ -149,7 +149,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         Document document = null;
         if (state.ordinal() < State.GAVCE.ordinal()) {
             Parser parser = state == State.GA ? Parser.xmlParser() : Parser.htmlParser();
-            try (RemoteRepositorySearchTransport.Response response = transport.get(uri, commonHeaders)) {
+            try (Transport.Response response = transport.get(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
                     document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
                 }
@@ -173,12 +173,11 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                     throw new IllegalStateException("State" + state); // checkstyle
             }
         } else {
-            try (RemoteRepositorySearchTransport.Response response = transport.head(uri, commonHeaders)) {
+            try (Transport.Response response = transport.head(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
                     boolean matches = context.getSha1() == null;
                     if (context.getSha1() != null) {
-                        try (RemoteRepositorySearchTransport.Response sha1Response =
-                                transport.get(uri + ".sha1", commonHeaders)) {
+                        try (Transport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
                             if (response.getCode() == 200) {
                                 try (InputStream body = sha1Response.getBody()) {
                                     String remoteSha1 = readChecksum(body);
@@ -211,7 +210,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                     break;
                 }
                 line = line.trim();
-                if (line.length() > 0) {
+                if (!line.isEmpty()) {
                     checksum = line;
                     break;
                 }

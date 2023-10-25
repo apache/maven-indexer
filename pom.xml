@@ -97,7 +97,8 @@ under the License.
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
     <minimalMavenBuildVersion>[3.8.7,)</minimalMavenBuildVersion>
-    <minimalJavaBuildVersion>[17.0.6,18)</minimalJavaBuildVersion>
+    <!-- spotless on Java21: move upper once new parent POM used -->
+    <minimalJavaBuildVersion>[17.0.6,21)</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>

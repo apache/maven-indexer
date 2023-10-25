@@ -20,8 +20,9 @@ package org.apache.maven.search.backend.remoterepository;
 
 import org.apache.maven.search.backend.remoterepository.extractor.MavenCentralResponseExtractor;
 import org.apache.maven.search.backend.remoterepository.extractor.Nx2ResponseExtractor;
-import org.apache.maven.search.backend.remoterepository.internal.Java11HttpClientRemoteRepositorySearchTransport;
 import org.apache.maven.search.backend.remoterepository.internal.RemoteRepositorySearchBackendImpl;
+import org.apache.maven.search.transport.Java11HttpClientTransport;
+import org.apache.maven.search.transport.Transport;
 
 /**
  * The remote repository search backend factory.
@@ -45,7 +46,7 @@ public class RemoteRepositorySearchBackendFactory {
                 BACKEND_ID,
                 CENTRAL_REPOSITORY_ID,
                 CENTRAL_URI,
-                new Java11HttpClientRemoteRepositorySearchTransport(),
+                new Java11HttpClientTransport(),
                 new MavenCentralResponseExtractor());
     }
 
@@ -57,7 +58,7 @@ public class RemoteRepositorySearchBackendFactory {
                 BACKEND_ID,
                 RAO_RELEASES_REPOSITORY_ID,
                 RAO_RELEASES_URI,
-                new Java11HttpClientRemoteRepositorySearchTransport(),
+                new Java11HttpClientTransport(),
                 new Nx2ResponseExtractor());
     }
 
@@ -68,7 +69,7 @@ public class RemoteRepositorySearchBackendFactory {
             String backendId,
             String repositoryId,
             String baseUri,
-            RemoteRepositorySearchTransport transport,
+            Transport transport,
             ResponseExtractor responseExtractor) {
         return new RemoteRepositorySearchBackendImpl(backendId, repositoryId, baseUri, transport, responseExtractor);
     }

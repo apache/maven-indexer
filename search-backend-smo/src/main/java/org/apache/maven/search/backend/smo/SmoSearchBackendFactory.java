@@ -19,7 +19,8 @@
 package org.apache.maven.search.backend.smo;
 
 import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
-import org.apache.maven.search.backend.smo.internal.SmoSearchTransportSupplier;
+import org.apache.maven.search.transport.Java11HttpClientTransport;
+import org.apache.maven.search.transport.Transport;
 
 /**
  * The SMO search backend factory.
@@ -35,15 +36,13 @@ public class SmoSearchBackendFactory {
      * Creates "default" SMO search backend suitable for most use cases.
      */
     public SmoSearchBackend createDefault() {
-        return create(
-                DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new SmoSearchTransportSupplier().get());
+        return create(DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new Java11HttpClientTransport());
     }
 
     /**
      * Creates SMO search backend using provided parameters.
      */
-    public SmoSearchBackend create(
-            String backendId, String repositoryId, String smoUri, SmoSearchTransport transportSupport) {
-        return new SmoSearchBackendImpl(backendId, repositoryId, smoUri, transportSupport);
+    public SmoSearchBackend create(String backendId, String repositoryId, String smoUri, Transport transport) {
+        return new SmoSearchBackendImpl(backendId, repositoryId, smoUri, transport);
     }
 }
