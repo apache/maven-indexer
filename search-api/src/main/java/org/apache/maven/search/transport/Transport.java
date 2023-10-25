@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.backend.remoterepository;
+package org.apache.maven.search.transport;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -24,9 +24,12 @@ import java.io.InputStream;
 import java.util.Map;
 
 /**
- * A trivial "transport abstraction" to make possible pluggable implementations.
+ * A trivial "transport abstraction" to make possible pluggable implementations. Most obviously leans toward HTTP,
+ * but is not limited to.
+ *
+ * @since TBD
  */
-public interface RemoteRepositorySearchTransport {
+public interface Transport {
     /**
      * Trivial response.
      */
@@ -39,12 +42,12 @@ public interface RemoteRepositorySearchTransport {
     }
 
     /**
-     * This method should issue a HTTP GET requests using {@code serviceUri} and return response.
+     * This method should issue HTTP GET requests using {@code serviceUri} and return response.
      */
     Response get(String serviceUri, Map<String, String> headers) throws IOException;
 
     /**
-     * This method should issue a HTTP HEAD requests using {@code serviceUri} and return response.
+     * This method should issue HTTP HEAD requests using {@code serviceUri} and return response.
      */
     Response head(String serviceUri, Map<String, String> headers) throws IOException;
 }

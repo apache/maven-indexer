@@ -31,10 +31,6 @@ under the License.
   <name>Maven :: Search API</name>
   <description>Indexer Search API.</description>
 
-  <properties>
-    <javaVersion>8</javaVersion>
-  </properties>
-
   <dependencies>
     <!-- Test -->
     <dependency>

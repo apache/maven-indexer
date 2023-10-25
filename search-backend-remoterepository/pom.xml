@@ -31,10 +31,6 @@ under the License.
   <name>Maven :: Search API Remote Repository Backend</name>
   <description>Indexer Search Backend implemented by remote repository (limited).</description>
 
-  <properties>
-    <javaVersion>11</javaVersion>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.apache.maven.indexer</groupId>

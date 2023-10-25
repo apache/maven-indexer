@@ -20,11 +20,10 @@ package org.apache.maven.search.backend.smo.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,13 +40,13 @@ import org.apache.maven.search.Record;
 import org.apache.maven.search.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.apache.maven.search.backend.smo.SmoSearchTransport;
 import org.apache.maven.search.request.BooleanQuery;
 import org.apache.maven.search.request.Field;
 import org.apache.maven.search.request.FieldQuery;
 import org.apache.maven.search.request.Paging;
 import org.apache.maven.search.request.Query;
 import org.apache.maven.search.support.SearchBackendSupport;
+import org.apache.maven.search.transport.Transport;
 
 import static java.util.Objects.requireNonNull;
 
@@ -55,38 +54,44 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     private static final Map<Field, String> FIELD_TRANSLATION;
 
     static {
-        HashMap<Field, String> map = new HashMap<>();
-        map.put(MAVEN.GROUP_ID, "g");
-        map.put(MAVEN.ARTIFACT_ID, "a");
-        map.put(MAVEN.VERSION, "v");
-        map.put(MAVEN.CLASSIFIER, "l");
-        map.put(MAVEN.PACKAGING, "p");
-        map.put(MAVEN.CLASS_NAME, "c");
-        map.put(MAVEN.FQ_CLASS_NAME, "fc");
-        map.put(MAVEN.SHA1, "1");
-        FIELD_TRANSLATION = Collections.unmodifiableMap(map);
+        FIELD_TRANSLATION = Map.of(
+                MAVEN.GROUP_ID,
+                "g",
+                MAVEN.ARTIFACT_ID,
+                "a",
+                MAVEN.VERSION,
+                "v",
+                MAVEN.CLASSIFIER,
+                "l",
+                MAVEN.PACKAGING,
+                "p",
+                MAVEN.CLASS_NAME,
+                "c",
+                MAVEN.FQ_CLASS_NAME,
+                "fc",
+                MAVEN.SHA1,
+                "1");
     }
 
     private final String smoUri;
 
-    private final SmoSearchTransport transportSupport;
+    private final Transport transport;
 
     private final Map<String, String> commonHeaders;
 
     /**
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
      */
-    public SmoSearchBackendImpl(
-            String backendId, String repositoryId, String smoUri, SmoSearchTransport transportSupport) {
+    public SmoSearchBackendImpl(String backendId, String repositoryId, String smoUri, Transport transport) {
         super(backendId, repositoryId);
         this.smoUri = requireNonNull(smoUri);
-        this.transportSupport = requireNonNull(transportSupport);
+        this.transport = requireNonNull(transport);
 
         this.commonHeaders = new HashMap<>();
         this.commonHeaders.put(
                 "User-Agent",
                 "Apache-Maven-Search-SMO/" + discoverVersion() + " "
-                        + transportSupport.getClass().getSimpleName());
+                        + transport.getClass().getSimpleName());
         this.commonHeaders.put("Accept", "application/json");
     }
 
@@ -113,7 +118,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     @Override
     public SmoSearchResponse search(SearchRequest searchRequest) throws IOException {
         String searchUri = toURI(searchRequest);
-        String payload = transportSupport.fetch(searchUri, commonHeaders);
+        String payload = fetch(searchUri, commonHeaders);
         JsonObject raw = JsonParser.parseString(payload).getAsJsonObject();
         List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
         int totalHits = populateFromRaw(raw, page);
@@ -131,6 +136,16 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
             smoQuery += "&core=gav";
         }
         return smoUri + "?q=" + smoQuery;
+    }
+
+    private String fetch(String serviceUri, Map<String, String> headers) throws IOException {
+        try (Transport.Response response = transport.get(serviceUri, headers)) {
+            if (response.getCode() == HttpURLConnection.HTTP_OK) {
+                return new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+            } else {
+                throw new IOException("Unexpected response: " + response);
+            }
+        }
     }
 
     private String toSMOQuery(HashSet<Field> searchedFields, Query query) {
@@ -151,12 +166,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     }
 
     private String encodeQueryParameterValue(String parameterValue) {
-        try {
-            return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8.name())
-                    .replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     private int populateFromRaw(JsonObject raw, List<Record> page) {

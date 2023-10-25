@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.backend.remoterepository.internal;
+package org.apache.maven.search.transport;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,14 +29,12 @@ import java.util.AbstractMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchTransport;
-
 import static java.util.Objects.requireNonNull;
 
 /**
  * Java 11 {@link HttpClient} backed transport.
  */
-public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRepositorySearchTransport {
+public class Java11HttpClientTransport implements Transport {
     private static class ResponseImpl implements Response {
 
         private final HttpResponse<?> response;
@@ -78,11 +76,11 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
 
     private final HttpClient client;
 
-    public Java11HttpClientRemoteRepositorySearchTransport() {
+    public Java11HttpClientTransport() {
         this(Duration.ofSeconds(10L));
     }
 
-    public Java11HttpClientRemoteRepositorySearchTransport(Duration timeout) {
+    public Java11HttpClientTransport(Duration timeout) {
         this(
                 timeout,
                 HttpClient.newBuilder()
@@ -91,7 +89,7 @@ public class Java11HttpClientRemoteRepositorySearchTransport implements RemoteRe
                         .build());
     }
 
-    public Java11HttpClientRemoteRepositorySearchTransport(Duration timeout, HttpClient client) {
+    public Java11HttpClientTransport(Duration timeout, HttpClient client) {
         this.timeout = requireNonNull(timeout);
         this.client = requireNonNull(client);
     }
