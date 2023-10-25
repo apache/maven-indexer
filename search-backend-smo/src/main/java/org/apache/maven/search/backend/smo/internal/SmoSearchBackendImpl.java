@@ -35,18 +35,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.MAVEN;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.apache.maven.search.request.BooleanQuery;
-import org.apache.maven.search.request.Field;
-import org.apache.maven.search.request.FieldQuery;
-import org.apache.maven.search.request.Paging;
-import org.apache.maven.search.request.Query;
-import org.apache.maven.search.support.SearchBackendSupport;
-import org.apache.maven.search.transport.Transport;
+import org.apache.maven.search.api.request.BooleanQuery;
+import org.apache.maven.search.api.request.Field;
+import org.apache.maven.search.api.request.FieldQuery;
+import org.apache.maven.search.api.request.Paging;
+import org.apache.maven.search.api.request.Query;
+import org.apache.maven.search.api.support.SearchBackendSupport;
+import org.apache.maven.search.api.transport.Transport;
 
 import static java.util.Objects.requireNonNull;
 

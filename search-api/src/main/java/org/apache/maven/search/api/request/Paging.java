@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.request;
+package org.apache.maven.search.api.request;
 
 /**
  * Paging.

@@ -44,13 +44,13 @@ import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdateResult;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.apache.maven.index.updater.ResourceFetcher;
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.SearchResponse;
+import org.apache.maven.search.api.MAVEN;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
+import org.apache.maven.search.api.SearchResponse;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackendFactory;
-import org.apache.maven.search.request.FieldQuery;
+import org.apache.maven.search.api.request.FieldQuery;
 import org.eclipse.sisu.launch.InjectedTest;
 import org.junit.After;
 import org.junit.Before;
@@ -58,8 +58,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.maven.search.request.BooleanQuery.and;
-import static org.apache.maven.search.request.Query.query;
+import static org.apache.maven.search.api.request.BooleanQuery.and;
+import static org.apache.maven.search.api.request.Query.query;
 
 @Ignore("This is not a test, is more a showcase")
 public class IndexerCoreSearchBackendImplTest extends InjectedTest {

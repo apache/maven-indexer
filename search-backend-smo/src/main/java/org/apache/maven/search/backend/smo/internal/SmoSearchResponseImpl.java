@@ -20,10 +20,10 @@ package org.apache.maven.search.backend.smo.internal;
 
 import java.util.List;
 
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.apache.maven.search.support.SearchResponseSupport;
+import org.apache.maven.search.api.support.SearchResponseSupport;
 
 import static java.util.Objects.requireNonNull;
 

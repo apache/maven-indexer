@@ -20,8 +20,8 @@ package org.apache.maven.search.backend.remoterepository;
 
 import java.io.IOException;
 
-import org.apache.maven.search.SearchBackend;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.SearchBackend;
+import org.apache.maven.search.api.SearchRequest;
 
 /**
  * The Remote Repository search backend.

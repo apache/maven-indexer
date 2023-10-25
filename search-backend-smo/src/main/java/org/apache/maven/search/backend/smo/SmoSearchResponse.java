@@ -18,7 +18,7 @@
  */
 package org.apache.maven.search.backend.smo;
 
-import org.apache.maven.search.SearchResponse;
+import org.apache.maven.search.api.SearchResponse;
 
 /**
  * The SMO search response.

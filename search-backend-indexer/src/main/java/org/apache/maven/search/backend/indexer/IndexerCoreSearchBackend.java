@@ -21,8 +21,8 @@ package org.apache.maven.search.backend.indexer;
 import java.io.IOException;
 
 import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.search.SearchBackend;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.SearchBackend;
+import org.apache.maven.search.api.SearchRequest;
 
 /**
  * The Indexer Core search backend.

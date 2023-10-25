@@ -21,9 +21,9 @@ package org.apache.maven.search.backend.remoterepository;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.request.Field;
+import org.apache.maven.search.api.MAVEN;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.request.Field;
 
 import static java.util.Objects.requireNonNull;
 

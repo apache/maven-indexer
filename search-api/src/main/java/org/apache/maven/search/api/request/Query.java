@@ -16,16 +16,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api.request;
 
-import java.io.IOException;
+import static java.util.Objects.requireNonNull;
 
 /**
- * A search engine to perform searches trough configured repository indexes.
+ * Query.
  */
-public interface SearchEngine {
+public class Query {
+    private final String queryString;
+
+    protected Query(String queryString) {
+        this.queryString = requireNonNull(queryString);
+    }
+
     /**
-     * Performs a search with given {@link SearchRequest} and returns {@link SearchResponse}, never {@code null}.
+     * Returns the query string value, never {@code null}.
      */
-    SearchResponse search(SearchRequest searchRequest) throws IOException;
+    public String getValue() {
+        return queryString;
+    }
+
+    @Override
+    public String toString() {
+        return getValue();
+    }
+
+    /**
+     * Creates a plain query.
+     */
+    public static Query query(String queryString) {
+        return new Query(queryString);
+    }
 }

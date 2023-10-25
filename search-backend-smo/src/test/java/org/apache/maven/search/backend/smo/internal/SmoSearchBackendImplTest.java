@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.MAVEN;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchBackendFactory;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.apache.maven.search.request.BooleanQuery;
-import org.apache.maven.search.request.FieldQuery;
-import org.apache.maven.search.request.Query;
+import org.apache.maven.search.api.request.BooleanQuery;
+import org.apache.maven.search.api.request.FieldQuery;
+import org.apache.maven.search.api.request.Query;
 import org.junit.Ignore;
 import org.junit.Test;
 

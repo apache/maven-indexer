@@ -19,8 +19,8 @@
 package org.apache.maven.search.backend.smo;
 
 import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
-import org.apache.maven.search.transport.Java11HttpClientTransport;
-import org.apache.maven.search.transport.Transport;
+import org.apache.maven.search.api.transport.Java11HttpClientTransport;
+import org.apache.maven.search.api.transport.Transport;
 
 /**
  * The SMO search backend factory.

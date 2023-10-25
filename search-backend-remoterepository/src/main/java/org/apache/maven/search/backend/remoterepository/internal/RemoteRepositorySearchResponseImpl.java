@@ -20,10 +20,10 @@ package org.apache.maven.search.backend.remoterepository.internal;
 
 import java.util.List;
 
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
-import org.apache.maven.search.support.SearchResponseSupport;
+import org.apache.maven.search.api.support.SearchResponseSupport;
 import org.jsoup.nodes.Document;
 
 import static java.util.Objects.requireNonNull;

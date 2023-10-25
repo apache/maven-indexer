@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.search.SearchResponse;
+import org.apache.maven.search.api.SearchResponse;
 
 /**
  * The Indexer Core search response.
