@@ -27,7 +27,7 @@ import org.apache.maven.search.backend.remoterepository.internal.RemoteRepositor
 /**
  * The remote repository search backend factory.
  */
-public class RemoteRepositorySearchBackendFactory {
+public final class RemoteRepositorySearchBackendFactory {
     public static final String BACKEND_ID = "search-rr";
 
     public static final String CENTRAL_REPOSITORY_ID = "central";
@@ -37,6 +37,8 @@ public class RemoteRepositorySearchBackendFactory {
     public static final String RAO_RELEASES_REPOSITORY_ID = "apache.releases.https";
 
     public static final String RAO_RELEASES_URI = "https://repository.apache.org/content/repositories/releases/";
+
+    private RemoteRepositorySearchBackendFactory() {}
 
     /**
      * Creates "default" RR search backend against Maven Central suitable for most use cases.
