@@ -31,13 +31,13 @@ import java.util.Properties;
 
 import org.apache.maven.search.api.Record;
 import org.apache.maven.search.api.SearchRequest;
+import org.apache.maven.search.api.support.SearchBackendSupport;
+import org.apache.maven.search.api.transport.Transport;
 import org.apache.maven.search.backend.remoterepository.Context;
 import org.apache.maven.search.backend.remoterepository.RecordFactory;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchBackend;
 import org.apache.maven.search.backend.remoterepository.RemoteRepositorySearchResponse;
 import org.apache.maven.search.backend.remoterepository.ResponseExtractor;
-import org.apache.maven.search.api.support.SearchBackendSupport;
-import org.apache.maven.search.api.transport.Transport;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.parser.Parser;

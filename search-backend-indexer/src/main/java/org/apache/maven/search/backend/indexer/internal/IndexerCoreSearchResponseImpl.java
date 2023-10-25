@@ -24,8 +24,8 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.search.api.Record;
 import org.apache.maven.search.api.SearchRequest;
-import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
 import org.apache.maven.search.api.support.SearchResponseSupport;
+import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
 
 import static java.util.Objects.requireNonNull;
 

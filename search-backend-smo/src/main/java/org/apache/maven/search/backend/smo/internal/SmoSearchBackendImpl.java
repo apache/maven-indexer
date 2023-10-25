@@ -38,8 +38,6 @@ import com.google.gson.JsonPrimitive;
 import org.apache.maven.search.api.MAVEN;
 import org.apache.maven.search.api.Record;
 import org.apache.maven.search.api.SearchRequest;
-import org.apache.maven.search.backend.smo.SmoSearchBackend;
-import org.apache.maven.search.backend.smo.SmoSearchResponse;
 import org.apache.maven.search.api.request.BooleanQuery;
 import org.apache.maven.search.api.request.Field;
 import org.apache.maven.search.api.request.FieldQuery;
@@ -47,6 +45,8 @@ import org.apache.maven.search.api.request.Paging;
 import org.apache.maven.search.api.request.Query;
 import org.apache.maven.search.api.support.SearchBackendSupport;
 import org.apache.maven.search.api.transport.Transport;
+import org.apache.maven.search.backend.smo.SmoSearchBackend;
+import org.apache.maven.search.backend.smo.SmoSearchResponse;
 
 import static java.util.Objects.requireNonNull;
 

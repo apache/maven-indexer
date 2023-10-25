@@ -18,11 +18,11 @@
  */
 package org.apache.maven.search.backend.remoterepository;
 
+import org.apache.maven.search.api.transport.Java11HttpClientTransport;
+import org.apache.maven.search.api.transport.Transport;
 import org.apache.maven.search.backend.remoterepository.extractor.MavenCentralResponseExtractor;
 import org.apache.maven.search.backend.remoterepository.extractor.Nx2ResponseExtractor;
 import org.apache.maven.search.backend.remoterepository.internal.RemoteRepositorySearchBackendImpl;
-import org.apache.maven.search.api.transport.Java11HttpClientTransport;
-import org.apache.maven.search.api.transport.Transport;
 
 /**
  * The remote repository search backend factory.

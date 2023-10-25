@@ -44,12 +44,12 @@ import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.search.api.MAVEN;
 import org.apache.maven.search.api.Record;
 import org.apache.maven.search.api.SearchRequest;
-import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
-import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
 import org.apache.maven.search.api.request.Field;
 import org.apache.maven.search.api.request.FieldQuery;
 import org.apache.maven.search.api.request.Paging;
 import org.apache.maven.search.api.support.SearchBackendSupport;
+import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
+import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
 
 import static java.util.Objects.requireNonNull;
 
@@ -148,7 +148,8 @@ public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implement
 
     private Query toQuery(HashSet<Field> searchedFields, org.apache.maven.search.api.request.Query query) {
         if (query instanceof org.apache.maven.search.api.request.BooleanQuery.And) {
-            org.apache.maven.search.api.request.BooleanQuery bq = (org.apache.maven.search.api.request.BooleanQuery) query;
+            org.apache.maven.search.api.request.BooleanQuery bq =
+                    (org.apache.maven.search.api.request.BooleanQuery) query;
             return new BooleanQuery.Builder()
                     .add(new BooleanClause(toQuery(searchedFields, bq.getLeft()), BooleanClause.Occur.MUST))
                     .add(new BooleanClause(toQuery(searchedFields, bq.getRight()), BooleanClause.Occur.MUST))
