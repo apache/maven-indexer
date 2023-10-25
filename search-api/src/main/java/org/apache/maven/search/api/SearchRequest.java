@@ -16,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api;
 
-import org.apache.maven.search.request.Paging;
-import org.apache.maven.search.request.Query;
+import org.apache.maven.search.api.request.Paging;
+import org.apache.maven.search.api.request.Query;
 
 import static java.util.Objects.requireNonNull;
 

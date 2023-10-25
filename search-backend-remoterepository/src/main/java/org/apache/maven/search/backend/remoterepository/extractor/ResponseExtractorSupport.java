@@ -20,7 +20,7 @@ package org.apache.maven.search.backend.remoterepository.extractor;
 
 import java.util.List;
 
-import org.apache.maven.search.Record;
+import org.apache.maven.search.api.Record;
 import org.apache.maven.search.backend.remoterepository.Context;
 import org.apache.maven.search.backend.remoterepository.RecordFactory;
 import org.apache.maven.search.backend.remoterepository.ResponseExtractor;

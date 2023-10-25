@@ -16,13 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.maven.search.request.Field;
+import org.apache.maven.search.api.request.Field;
 
 import static java.util.Objects.requireNonNull;
 

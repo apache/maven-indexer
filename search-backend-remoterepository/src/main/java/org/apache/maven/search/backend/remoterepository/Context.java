@@ -21,12 +21,12 @@ package org.apache.maven.search.backend.remoterepository;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.maven.search.MAVEN;
-import org.apache.maven.search.SearchRequest;
-import org.apache.maven.search.request.BooleanQuery;
-import org.apache.maven.search.request.Field;
-import org.apache.maven.search.request.FieldQuery;
-import org.apache.maven.search.request.Query;
+import org.apache.maven.search.api.MAVEN;
+import org.apache.maven.search.api.SearchRequest;
+import org.apache.maven.search.api.request.BooleanQuery;
+import org.apache.maven.search.api.request.Field;
+import org.apache.maven.search.api.request.FieldQuery;
+import org.apache.maven.search.api.request.Query;
 
 import static java.util.Objects.requireNonNull;
 

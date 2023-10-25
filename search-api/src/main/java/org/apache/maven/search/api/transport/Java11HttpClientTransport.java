@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.transport;
+package org.apache.maven.search.api.transport;
 
 import java.io.IOException;
 import java.io.InputStream;

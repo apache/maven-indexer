@@ -16,21 +16,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api;
 
-import java.io.Closeable;
+import java.io.IOException;
 
 /**
- * An engine to perform search trough single repository index (backend).
+ * A search engine to perform searches trough configured repository indexes.
  */
-public interface SearchBackend extends SearchEngine, Closeable {
+public interface SearchEngine {
     /**
-     * Returns the ID of this backend, never {@code null}.
+     * Performs a search with given {@link SearchRequest} and returns {@link SearchResponse}, never {@code null}.
      */
-    String getBackendId();
-
-    /**
-     * Returns the repository ID that this backend searches for, never {@code null}.
-     */
-    String getRepositoryId();
+    SearchResponse search(SearchRequest searchRequest) throws IOException;
 }

@@ -16,32 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api.support;
 
-import java.util.List;
+import org.apache.maven.search.api.SearchBackend;
+
+import static java.util.Objects.requireNonNull;
 
 /**
- * A search engine response.
+ * A search backend support class.
  */
-public interface SearchResponse {
-    /**
-     * Returns the {@link SearchRequest} used for this response, never {@code null}.
-     */
-    SearchRequest getSearchRequest();
+public abstract class SearchBackendSupport implements SearchBackend {
+    private final String backendId;
 
-    /**
-     * Returns the total count of hits produced by {@link #getSearchRequest()}.
-     */
-    int getTotalHits();
+    private final String repositoryId;
 
-    /**
-     * Returns the count of current hits in current "page". It may be less or equal to page size of {@link
-     * SearchRequest#getPaging()}.
-     */
-    int getCurrentHits();
+    protected SearchBackendSupport(String backendId, String repositoryId) {
+        this.backendId = requireNonNull(backendId);
+        this.repositoryId = requireNonNull(repositoryId);
+    }
 
-    /**
-     * Returns current "page" of results as list of records, never {@code null}.
-     */
-    List<Record> getPage();
+    @Override
+    public String getBackendId() {
+        return backendId;
+    }
+
+    @Override
+    public String getRepositoryId() {
+        return repositoryId;
+    }
+
+    @Override
+    public void close() {
+        // override if needed
+    }
 }

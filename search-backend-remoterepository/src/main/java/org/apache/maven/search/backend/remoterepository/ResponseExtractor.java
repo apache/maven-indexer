@@ -20,7 +20,7 @@ package org.apache.maven.search.backend.remoterepository;
 
 import java.util.List;
 
-import org.apache.maven.search.Record;
+import org.apache.maven.search.api.Record;
 import org.jsoup.nodes.Document;
 
 /**

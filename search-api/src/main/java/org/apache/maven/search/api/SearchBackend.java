@@ -16,36 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.request;
+package org.apache.maven.search.api;
 
-import static java.util.Objects.requireNonNull;
+import java.io.Closeable;
 
 /**
- * Query.
+ * An engine to perform search trough single repository index (backend).
  */
-public class Query {
-    private final String queryString;
-
-    protected Query(String queryString) {
-        this.queryString = requireNonNull(queryString);
-    }
+public interface SearchBackend extends SearchEngine, Closeable {
+    /**
+     * Returns the ID of this backend, never {@code null}.
+     */
+    String getBackendId();
 
     /**
-     * Returns the query string value, never {@code null}.
+     * Returns the repository ID that this backend searches for, never {@code null}.
      */
-    public String getValue() {
-        return queryString;
-    }
-
-    @Override
-    public String toString() {
-        return getValue();
-    }
-
-    /**
-     * Creates a plain query.
-     */
-    public static Query query(String queryString) {
-        return new Query(queryString);
-    }
+    String getRepositoryId();
 }

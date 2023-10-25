@@ -369,6 +369,8 @@ under the License.
                 <exclude>src/test/**/*.txt</exclude>
                 <exclude>src/test/**/*.filename</exclude>
                 <exclude>src/test/**/.placeholder</exclude>
+                <!-- RAT is incapable to digest this -->
+                <exclude>**/module-info.java</exclude>
               </excludes>
             </configuration>
           </execution>

@@ -22,10 +22,10 @@ import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.search.Record;
-import org.apache.maven.search.SearchRequest;
+import org.apache.maven.search.api.Record;
+import org.apache.maven.search.api.SearchRequest;
+import org.apache.maven.search.api.support.SearchResponseSupport;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchResponse;
-import org.apache.maven.search.support.SearchResponseSupport;
 
 import static java.util.Objects.requireNonNull;
 

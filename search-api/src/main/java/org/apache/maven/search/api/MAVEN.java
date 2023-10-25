@@ -16,11 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search;
+package org.apache.maven.search.api;
 
-import org.apache.maven.search.request.Field.BooleanField;
-import org.apache.maven.search.request.Field.NumberField;
-import org.apache.maven.search.request.Field.StringField;
+import org.apache.maven.search.api.request.Field.BooleanField;
+import org.apache.maven.search.api.request.Field.NumberField;
+import org.apache.maven.search.api.request.Field.StringField;
 
 /**
  * The ontology of Apache Maven related fields.
