@@ -25,24 +25,26 @@ import org.apache.maven.search.backend.smo.internal.SmoSearchBackendImpl;
 /**
  * The SMO search backend factory.
  */
-public class SmoSearchBackendFactory {
+public final class SmoSearchBackendFactory {
     public static final String DEFAULT_BACKEND_ID = "central-smo";
 
     public static final String DEFAULT_REPOSITORY_ID = "central";
 
     public static final String DEFAULT_SMO_URI = "https://search.maven.org/solrsearch/select";
 
+    private SmoSearchBackendFactory() {}
+
     /**
      * Creates "default" SMO search backend suitable for most use cases.
      */
-    public SmoSearchBackend createDefault() {
+    public static SmoSearchBackend createDefault() {
         return create(DEFAULT_BACKEND_ID, DEFAULT_REPOSITORY_ID, DEFAULT_SMO_URI, new Java11HttpClientTransport());
     }
 
     /**
      * Creates SMO search backend using provided parameters.
      */
-    public SmoSearchBackend create(String backendId, String repositoryId, String smoUri, Transport transport) {
+    public static SmoSearchBackend create(String backendId, String repositoryId, String smoUri, Transport transport) {
         return new SmoSearchBackendImpl(backendId, repositoryId, smoUri, transport);
     }
 }

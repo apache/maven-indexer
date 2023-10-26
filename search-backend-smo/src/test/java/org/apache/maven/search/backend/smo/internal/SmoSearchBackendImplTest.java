@@ -38,7 +38,7 @@ import org.junit.Test;
 
 @Ignore("This is not a test, is more a showcase")
 public class SmoSearchBackendImplTest {
-    private final SmoSearchBackend backend = new SmoSearchBackendFactory().createDefault();
+    private final SmoSearchBackend backend = SmoSearchBackendFactory.createDefault();
 
     private void dumpSingle(AtomicInteger counter, List<Record> page) {
         for (Record record : page) {
