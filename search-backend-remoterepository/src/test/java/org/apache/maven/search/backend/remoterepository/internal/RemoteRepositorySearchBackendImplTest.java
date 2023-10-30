@@ -127,6 +127,16 @@ public class RemoteRepositorySearchBackendImplTest {
     }
 
     @Test
+    public void notFound404Response() throws IOException {
+        // LIST GAs
+        SearchRequest searchRequest =
+                new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.cstamas.no-such-thing"));
+        RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
+        assertThat(searchResponse.getTotalHits(), equalTo(0));
+        System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
+    }
+
+    @Test
     public void g() throws IOException {
         // LIST GAs
         SearchRequest searchRequest =
