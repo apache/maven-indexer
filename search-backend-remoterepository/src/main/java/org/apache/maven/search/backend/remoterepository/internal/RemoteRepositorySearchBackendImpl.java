@@ -152,6 +152,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             try (Transport.Response response = transport.get(uri, commonHeaders)) {
                 if (response.getCode() == 200) {
                     document = Jsoup.parse(response.getBody(), StandardCharsets.UTF_8.name(), uri, parser);
+                } else if (response.getCode() == 404) {
+                    document = Jsoup.parse(InputStream.nullInputStream(), StandardCharsets.UTF_8.name(), uri, parser);
                 }
             }
 
