@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>40</version>
+    <version>41</version>
     <relativePath />
   </parent>
 
@@ -94,8 +94,7 @@ under the License.
 
   <properties>
     <javaVersion>11</javaVersion>
-    <maven.compiler.source>${javaVersion}</maven.compiler.source>
-    <maven.compiler.target>${javaVersion}</maven.compiler.target>
+    <maven.compiler.release>${javaVersion}</maven.compiler.release>
     <minimalMavenBuildVersion>[3.8.7,)</minimalMavenBuildVersion>
     <!-- spotless on Java21: move upper once new parent POM used -->
     <minimalJavaBuildVersion>[17.0.6,21)</minimalJavaBuildVersion>
@@ -106,9 +105,9 @@ under the License.
 
     <eclipse-sisu.version>0.9.0.M2</eclipse-sisu.version>
     <guice.version>6.0.0</guice.version>
-    <lucene.version>9.8.0</lucene.version>
-    <maven.version>3.9.5</maven.version>
-    <resolver.version>1.9.16</resolver.version>
+    <lucene.version>9.9.0</lucene.version>
+    <maven.version>3.9.6</maven.version>
+    <resolver.version>1.9.18</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <surefire.version>3.2.1</surefire.version>
     <slf4j.version>2.0.9</slf4j.version>
@@ -268,7 +267,7 @@ under the License.
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.4.51.v20230217</version>
+        <version>9.4.53.v20231009</version>
         <scope>test</scope>
       </dependency>
     </dependencies>
