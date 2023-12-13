@@ -152,6 +152,12 @@ under the License.
       </dependency>
 
       <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>32.1.3-jre</version>
+      </dependency>
+
+      <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
         <version>${guice.version}</version>
@@ -237,6 +243,13 @@ under the License.
 
       <dependency>
         <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-core</artifactId>
+        <version>2.2</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
         <version>2.2</version>
         <scope>test</scope>
@@ -297,6 +310,7 @@ under the License.
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
             <release>${javaVersion}</release>
+            <proc>none</proc>
           </configuration>
         </plugin>
         <plugin>
