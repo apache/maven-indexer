@@ -110,7 +110,7 @@ public class ArtifactContext {
                 if (e instanceof ZipException && !isZip) {
                     // ZipFile constructor threw ZipException which means this is no zip file -> ignore
                 } else {
-                    LOGGER.warn("skip error reading pom withing artifact:" + artifact, e);
+                    LOGGER.warn("skip error reading pom within artifact:" + artifact, e);
                 }
             }
         }
