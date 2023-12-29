@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
@@ -92,7 +93,9 @@ public class ArtifactContext {
         }
         // Otherwise, check for pom contained in maven generated artifact
         else if (getArtifact() != null && getArtifact().isFile()) {
+            boolean isZip = false;
             try (ZipFile zipFile = new ZipFile(artifact)) {
+                isZip = true;
                 final String embeddedPomPath =
                         "META-INF/maven/" + getGav().getGroupId() + "/" + getGav().getArtifactId() + "/pom.xml";
 
@@ -104,7 +107,11 @@ public class ArtifactContext {
                     }
                 }
             } catch (IOException | XmlPullParserException e) {
-                LOGGER.warn("skip error reading pom withing artifact:" + artifact, e);
+                if (e instanceof ZipException && !isZip) {
+                    // ZipFile constructor threw ZipException which means this is no zip file -> ignore
+                } else {
+                    LOGGER.warn("skip error reading pom within artifact:" + artifact, e);
+                }
             }
         }
 
