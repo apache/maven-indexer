@@ -32,7 +32,7 @@ import org.jsoup.nodes.Element;
 public class MavenCentralResponseExtractor extends ResponseExtractorSupport {
     /**
      * Extracts the "name" from {@code href} attribute. In case of Maven Central, the href
-     * attribute contains name in realative form as {@code "name/"} (followed by slash), if name denotes
+     * attribute contains name in relative form as {@code "name/"} (followed by slash), if name denotes
      * a directory. The trailing slash is removed by this method, if any.
      */
     private String nameInHref(Element element) {
@@ -52,7 +52,7 @@ public class MavenCentralResponseExtractor extends ResponseExtractorSupport {
             for (Element element : contents.getElementsByTag("a")) {
                 String name = nameInHref(element);
                 if (accept(name)) {
-                    page.add(recordFactory.create(context.getGroupId(), name, null, null, null));
+                    page.add(recordFactory.create(context.getGroupId(), name, null, null, null, null));
                 }
             }
         }

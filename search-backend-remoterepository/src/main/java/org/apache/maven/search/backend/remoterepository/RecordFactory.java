@@ -41,7 +41,13 @@ public final class RecordFactory {
     /**
      * Creates {@link Record} on behalf of backend. Only {@code groupId} is mandatory, all the other values are optional (nullable).
      */
-    public Record create(String groupId, String artifactId, String version, String classifier, String fileExtension) {
+    public Record create(
+            String groupId,
+            String artifactId,
+            String version,
+            String classifier,
+            String fileExtension,
+            Long lastUpdated) {
         requireNonNull(groupId);
         HashMap<Field, Object> result = new HashMap<>();
         mayPut(result, MAVEN.GROUP_ID, groupId);
@@ -49,7 +55,7 @@ public final class RecordFactory {
         mayPut(result, MAVEN.VERSION, version);
         mayPut(result, MAVEN.CLASSIFIER, classifier);
         mayPut(result, MAVEN.FILE_EXTENSION, fileExtension);
-        return new Record(backend.getBackendId(), backend.getRepositoryId(), null, null, result);
+        return new Record(backend.getBackendId(), backend.getRepositoryId(), null, lastUpdated, result);
     }
 
     private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {

@@ -23,8 +23,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -189,12 +193,19 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                         }
                     }
                     if (matches) {
+                        String lastModifiedHeader = response.getHeaders().get("last-modified");
+                        Long lastModified = lastModifiedHeader == null
+                                ? null
+                                : ZonedDateTime.parse(lastModifiedHeader, RFC7231)
+                                        .toInstant()
+                                        .toEpochMilli();
                         page.add(recordFactory.create(
                                 context.getGroupId(),
                                 context.getArtifactId(),
                                 context.getVersion(),
                                 context.getClassifier(),
-                                context.getFileExtension()));
+                                context.getFileExtension(),
+                                lastModified));
                         totalHits = 1;
                     }
                 }
@@ -202,6 +213,10 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
+
+    private static final DateTimeFormatter RFC7231 = DateTimeFormatter.ofPattern(
+                    "EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+            .withZone(ZoneId.of("GMT"));
 
     private static String readChecksum(InputStream inputStream) throws IOException {
         String checksum = "";
