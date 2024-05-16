@@ -42,7 +42,7 @@ import org.junit.runners.Parameterized;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
  * UT for 2 backends: Maven Central and RAO releases. This tests make use of the fact that RAO is used as "staging"
@@ -183,7 +183,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
         assertThat(searchResponse.getTotalHits(), equalTo(1));
-        assertNotNull(searchResponse.getPage().get(0).getLastUpdated());
+        assertThat(searchResponse.getPage().get(0).getLastUpdated(), notNullValue());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
