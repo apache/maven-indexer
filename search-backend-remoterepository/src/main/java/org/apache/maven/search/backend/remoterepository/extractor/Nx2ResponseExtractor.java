@@ -51,7 +51,7 @@ public class Nx2ResponseExtractor extends ResponseExtractorSupport {
         for (Element element : elements) {
             String name = name(element);
             if (accept(name)) {
-                page.add(recordFactory.create(context.getGroupId(), name, null, null, null));
+                page.add(recordFactory.create(context.getGroupId(), name, null, null, null, null));
             }
         }
         return page.size();

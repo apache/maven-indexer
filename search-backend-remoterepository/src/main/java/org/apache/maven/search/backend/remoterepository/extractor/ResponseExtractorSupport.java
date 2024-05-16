@@ -71,7 +71,7 @@ public abstract class ResponseExtractorSupport implements ResponseExtractor {
                 if (versions != null) {
                     for (Element version : versions.getElementsByTag("version")) {
                         page.add(recordFactory.create(
-                                context.getGroupId(), context.getArtifactId(), version.text(), null, null));
+                                context.getGroupId(), context.getArtifactId(), version.text(), null, null, null));
                     }
                 }
             }
@@ -104,7 +104,12 @@ public abstract class ResponseExtractorSupport implements ResponseExtractor {
                         ext = name;
                     }
                     page.add(recordFactory.create(
-                            context.getGroupId(), context.getArtifactId(), context.getVersion(), classifier, ext));
+                            context.getGroupId(),
+                            context.getArtifactId(),
+                            context.getVersion(),
+                            classifier,
+                            ext,
+                            null));
                 }
             }
         }
