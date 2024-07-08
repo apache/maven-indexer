@@ -109,7 +109,7 @@ under the License.
     <guice.version>6.0.0</guice.version>
     <lucene.version>9.11.0</lucene.version>
     <maven.version>3.9.6</maven.version>
-    <resolver.version>1.9.20</resolver.version>
+    <resolver.version>2.0.0</resolver.version>
     <archetype.version>3.2.1</archetype.version>
     <slf4j.version>2.0.13</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
