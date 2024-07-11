@@ -218,6 +218,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
         }
     }
 
+    @SuppressWarnings("UnusedLocalVariable")
     private static void filterDirectory(final Directory directory, final DocumentFilter filter) throws IOException {
         IndexReader r = null;
         IndexWriter w = null;
