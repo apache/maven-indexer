@@ -70,6 +70,11 @@ public class Java11HttpClientTransport implements Transport {
                 inputStream.close();
             }
         }
+
+        @Override
+        public String toString() {
+            return response.uri() + " -> " + response.version() + " " + response.statusCode();
+        }
     }
 
     private final Duration timeout;
