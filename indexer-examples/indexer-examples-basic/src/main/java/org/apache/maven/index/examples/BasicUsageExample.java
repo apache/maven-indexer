@@ -42,6 +42,7 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
@@ -162,13 +163,16 @@ public class BasicUsageExample {
             final IndexSearcher searcher = centralContext.acquireIndexSearcher();
             try {
                 final IndexReader ir = searcher.getIndexReader();
+                final StoredFields storedFields = ir.storedFields();
                 Bits liveDocs = MultiBits.getLiveDocs(ir);
                 for (int i = 0; i < ir.maxDoc(); i++) {
                     if (liveDocs == null || liveDocs.get(i)) {
-                        final Document doc = ir.document(i);
+                        final Document doc = storedFields.document(i);
                         final ArtifactInfo ai = IndexUtils.constructArtifactInfo(doc, centralContext);
-                        System.out.println(ai.getGroupId() + ":" + ai.getArtifactId() + ":" + ai.getVersion() + ":"
-                                + ai.getClassifier() + " (sha1=" + ai.getSha1() + ")");
+                        if (ai != null) {
+                            System.out.println(ai.getGroupId() + ":" + ai.getArtifactId() + ":" + ai.getVersion() + ":"
+                                    + ai.getClassifier() + " (sha1=" + ai.getSha1() + ")");
+                        }
                     }
                 }
             } finally {
