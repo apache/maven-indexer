@@ -78,8 +78,8 @@ under the License.
   </scm>
 
   <issueManagement>
-    <system>jira</system>
-    <url>https://issues.apache.org/jira/projects/MINDEXER</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/apache/maven-indexer/issues</url>
   </issueManagement>
   <ciManagement>
     <system>Jenkins</system>
