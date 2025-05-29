@@ -82,6 +82,7 @@ under the License.
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
+      <classifier>classes</classifier>
     </dependency>
 
     <!-- Spring dependencies start: -->
