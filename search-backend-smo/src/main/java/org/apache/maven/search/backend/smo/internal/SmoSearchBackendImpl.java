@@ -129,7 +129,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         Paging paging = searchRequest.getPaging();
         HashSet<Field> searchedFields = new HashSet<>();
         String smoQuery = toSMOQuery(searchedFields, searchRequest.getQuery());
-        smoQuery += "&start=" + /*paging.getPageSize() * */ paging.getPageOffset();
+        smoQuery += "&start=" + paging.getPageSize() * paging.getPageOffset();
         smoQuery += "&rows=" + paging.getPageSize();
         smoQuery += "&wt=json";
         if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
