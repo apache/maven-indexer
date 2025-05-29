@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven</groupId>
     <artifactId>maven-parent</artifactId>
-    <version>43</version>
+    <version>44</version>
     <relativePath />
   </parent>
 
@@ -93,13 +93,15 @@ under the License.
   </distributionManagement>
 
   <properties>
+    <checkstyle.includeTestSourceDirectory>false</checkstyle.includeTestSourceDirectory>
+
     <javaVersion>11</javaVersion>
     <!-- Remove these two below when MPOM-449 fixed -->
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
     <maven.compiler.release>${javaVersion}</maven.compiler.release>
-    <minimalMavenBuildVersion>[3.8.7,)</minimalMavenBuildVersion>
-    <minimalJavaBuildVersion>[17.0.6,)</minimalJavaBuildVersion>
+    <minimalMavenBuildVersion>[3.9,)</minimalMavenBuildVersion>
+    <minimalJavaBuildVersion>[17,)</minimalJavaBuildVersion>
 
     <surefire.redirectTestOutputToFile>true</surefire.redirectTestOutputToFile>
     <failsafe.redirectTestOutputToFile>true</failsafe.redirectTestOutputToFile>
@@ -111,7 +113,7 @@ under the License.
     <maven.version>3.9.9</maven.version>
     <resolver.version>1.9.22</resolver.version>
     <archetype.version>3.4.0</archetype.version>
-    <slf4j.version>2.0.16</slf4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
     <project.build.outputTimestamp>2024-09-11T19:55:44Z</project.build.outputTimestamp>
   </properties>
@@ -163,6 +165,12 @@ under the License.
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
         <version>${guice.version}</version>
+        <classifier>classes</classifier>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>9.8</version>
       </dependency>
 
       <dependency>
@@ -291,9 +299,11 @@ under the License.
         <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
-          <version>2.9.0</version>
+          <version>3.1.0</version>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
+            <!-- TODO: https://issues.apache.org/jira/browse/MINDEXER-252 -->
+            <includeTestClasses>false</includeTestClasses>
           </configuration>
           <executions>
             <execution>
