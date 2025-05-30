@@ -302,8 +302,6 @@ under the License.
           <version>3.1.0</version>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
-            <!-- TODO: https://issues.apache.org/jira/browse/MINDEXER-252 -->
-            <includeTestClasses>false</includeTestClasses>
           </configuration>
           <executions>
             <execution>

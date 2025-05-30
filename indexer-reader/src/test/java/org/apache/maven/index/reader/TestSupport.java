@@ -18,9 +18,9 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,7 +42,7 @@ public class TestSupport {
     @Rule
     public TestName testName = new TestName();
 
-    private File tempDir;
+    private Path tempDir;
 
     private List<DirectoryResourceHandler> directoryResourceHandlers;
 
@@ -51,8 +51,7 @@ public class TestSupport {
      */
     @Before
     public void setup() throws IOException {
-        this.tempDir =
-                Files.createTempDirectory(getClass().getSimpleName() + ".temp").toFile();
+        this.tempDir = Files.createTempDirectory(getClass().getSimpleName() + ".temp");
         this.directoryResourceHandlers = new ArrayList<>();
     }
 
@@ -70,18 +69,17 @@ public class TestSupport {
     /**
      * Creates a temp file within {@link #tempDir} with given name.
      */
-    protected File createTempFile(final String name) throws IOException {
-        File file = new File(tempDir, name);
-        file.deleteOnExit();
+    protected Path createTempFile(final String name) throws IOException {
+        Path file = tempDir.resolve(name);
+        file.toFile().deleteOnExit();
         return file;
     }
 
     /**
      * Creates a temp directory within {@link #tempDir}.
      */
-    protected File createTempDirectory() throws IOException {
-        return Files.createTempDirectory(tempDir.toPath(), testName.getMethodName() + "-dir")
-                .toFile();
+    protected Path createTempDirectory() throws IOException {
+        return Files.createTempDirectory(tempDir, testName.getMethodName() + "-dir");
     }
 
     /**
@@ -98,7 +96,7 @@ public class TestSupport {
      * name.
      */
     protected DirectoryResourceHandler testResourceHandler(final String name) throws IOException {
-        DirectoryResourceHandler result = new DirectoryResourceHandler(new File("src/test/resources/" + name));
+        DirectoryResourceHandler result = new DirectoryResourceHandler(Path.of("src/test/resources/" + name));
         directoryResourceHandlers.add(result);
         return result;
     }

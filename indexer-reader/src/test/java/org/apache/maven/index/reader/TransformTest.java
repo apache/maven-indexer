@@ -52,11 +52,9 @@ public class TransformTest extends TestSupport {
                 .map(compactFunction)
                 .collect(Collectors.toList());
 
-        ;
         try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
             try (IndexWriter indexWriter = new IndexWriter(writableResourceHandler, indexId, false)) {
                 indexWriter.writeChunk(iterable.iterator());
-                indexWriter.close();
             }
 
             try (IndexReader indexReader = new IndexReader(null, writableResourceHandler)) {

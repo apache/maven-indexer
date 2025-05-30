@@ -18,10 +18,9 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,20 +54,20 @@ public class ChunkReaderTest extends TestSupport {
     @Test
     public void roundtrip() throws IOException {
         final Date published;
-        File tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
+        Path tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
         {
             try (WritableResourceHandler resource = testResourceHandler("simple");
                     ChunkReader chunkReader = new ChunkReader(
                             "full",
                             resource.locate("nexus-maven-repository-index.gz").read());
                     ChunkWriter chunkWriter = new ChunkWriter(
-                            chunkReader.getName(), new FileOutputStream(tempChunkFile), 1, new Date())) {
+                            chunkReader.getName(), Files.newOutputStream(tempChunkFile), 1, new Date())) {
                 chunkWriter.writeChunk(chunkReader.iterator());
                 published = chunkWriter.getTimestamp();
             }
         }
 
-        try (ChunkReader chunkReader = new ChunkReader("full", new FileInputStream(tempChunkFile))) {
+        try (ChunkReader chunkReader = new ChunkReader("full", Files.newInputStream(tempChunkFile))) {
             assertThat(chunkReader.getVersion(), equalTo(1));
             assertThat(chunkReader.getTimestamp().getTime(), equalTo(published.getTime()));
             final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);

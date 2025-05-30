@@ -20,7 +20,6 @@ package org.apache.maven.search.backend.indexer.internal;
 
 import javax.inject.Inject;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +28,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -132,8 +132,8 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     @Before
     public void prepareAndUpdateBackend() throws Exception {
         // Files where local cache is (if any) and Lucene Index should be located
-        File centralLocalCache = new File("target/central-cache");
-        File centralIndexDir = new File("target/central-index");
+        Path centralLocalCache = Path.of("target/central-cache");
+        Path centralIndexDir = Path.of("target/central-index");
 
         // Creators we want to use (search for fields it defines)
         List<IndexCreator> indexers = new ArrayList<>();
@@ -145,8 +145,8 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
         centralContext = indexer.createIndexingContext(
                 "central-context",
                 "central",
-                centralLocalCache,
-                centralIndexDir,
+                centralLocalCache.toFile(),
+                centralIndexDir.toFile(),
                 "https://repo1.maven.org/maven2",
                 null,
                 true,
@@ -164,7 +164,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
 
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(centralContext, new Java11HttpClient());
-        updateRequest.setLocalIndexCacheDir(centralLocalCache);
+        updateRequest.setLocalIndexCacheDir(centralLocalCache.toFile());
         updateRequest.setThreads(4);
         IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex(updateRequest);
         if (updateResult.isFullUpdate()) {

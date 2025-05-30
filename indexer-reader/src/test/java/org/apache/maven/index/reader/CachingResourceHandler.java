@@ -47,6 +47,7 @@ public class CachingResourceHandler implements ResourceHandler {
         this.notFoundResources = new HashSet<>();
     }
 
+    @Override
     public Resource locate(final String name) {
         if (notFoundResources.contains(name)) {
             return NOT_EXISTING_RESOURCE;
@@ -62,6 +63,7 @@ public class CachingResourceHandler implements ResourceHandler {
             this.name = name;
         }
 
+        @Override
         public InputStream read() throws IOException {
             InputStream inputStream = local.locate(name).read();
             if (inputStream != null) {
@@ -93,6 +95,7 @@ public class CachingResourceHandler implements ResourceHandler {
         }
     }
 
+    @Override
     public void close() throws IOException {
         remote.close();
         local.close();

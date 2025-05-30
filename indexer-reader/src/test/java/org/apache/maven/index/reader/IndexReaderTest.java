@@ -18,10 +18,10 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -152,9 +152,9 @@ public class IndexReaderTest extends TestSupport {
     @Ignore("For eyes only")
     public void central() throws Exception {
         // local index location, against which we perform incremental updates
-        final File indexDir = createTempDirectory();
+        final Path indexDir = createTempDirectory();
         // cache of remote, to not rely on HTTP transport possible failures, or, to detect them early
-        final File cacheDir = createTempDirectory();
+        final Path cacheDir = createTempDirectory();
 
         final PrintWriter writer = new PrintWriter(System.out, true);
 

@@ -20,56 +20,58 @@ package org.apache.maven.index.reader;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 
 /**
- * A trivial {@link File} directory handler that does not perform any locking or extra bits, and just serves up files
+ * A trivial {@link Path} directory handler that does not perform any locking or extra bits, and just serves up files
  * by name from specified existing directory.
  */
 public class DirectoryResourceHandler implements WritableResourceHandler {
-    private final File rootDirectory;
+    private final Path rootDirectory;
 
-    public DirectoryResourceHandler(final File rootDirectory) {
+    public DirectoryResourceHandler(final Path rootDirectory) {
         if (rootDirectory == null) {
             throw new NullPointerException("null rootDirectory");
         }
-        if (!rootDirectory.isDirectory()) {
+        if (!Files.isDirectory(rootDirectory)) {
             throw new IllegalArgumentException("rootDirectory exists and is not a directory");
         }
         this.rootDirectory = rootDirectory;
     }
 
-    public File getRootDirectory() {
+    public Path getRootDirectory() {
         return rootDirectory;
     }
 
+    @Override
     public WritableResource locate(final String name) {
-        return new FileResource(new File(rootDirectory, name));
+        return new PathResource(rootDirectory.resolve(name));
     }
 
-    private static class FileResource implements WritableResource {
-        private final File file;
+    private static class PathResource implements WritableResource {
+        private final Path file;
 
-        private FileResource(final File file) {
+        private PathResource(final Path file) {
             this.file = file;
         }
 
+        @Override
         public InputStream read() throws IOException {
             try {
-                return new BufferedInputStream(new FileInputStream(file));
-            } catch (FileNotFoundException e) {
+                return new BufferedInputStream(Files.newInputStream(file));
+            } catch (NoSuchFileException e) {
                 return null;
             }
         }
 
+        @Override
         public OutputStream write() throws IOException {
-            return new BufferedOutputStream(new FileOutputStream(file));
+            return new BufferedOutputStream(Files.newOutputStream(file));
         }
     }
 }
