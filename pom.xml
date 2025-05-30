@@ -29,7 +29,7 @@ under the License.
 
   <groupId>org.apache.maven.indexer</groupId>
   <artifactId>maven-indexer</artifactId>
-  <version>7.1.6</version>
+  <version>7.1.7-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Maven-Indexer</name>
@@ -73,7 +73,7 @@ under the License.
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/maven-indexer.git</developerConnection>
-    <tag>maven-indexer-7.1.6</tag>
+    <tag>master</tag>
     <url>https://github.com/apache/maven-indexer/tree/${project.scm.tag}</url>
   </scm>
 
@@ -115,7 +115,7 @@ under the License.
     <archetype.version>3.4.0</archetype.version>
     <slf4j.version>1.7.36</slf4j.version>
     <maven.site.path>maven-indexer-archives/maven-indexer-LATEST</maven.site.path>
-    <project.build.outputTimestamp>2025-05-30T19:47:44Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-05-30T19:49:18Z</project.build.outputTimestamp>
   </properties>
 
   <dependencyManagement>
