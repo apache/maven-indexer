@@ -297,6 +297,13 @@ under the License.
     <pluginManagement>
       <plugins>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <configuration>
+            <tagNameFormat>maven-indexer-@{project.version}</tagNameFormat>
+          </configuration>
+        </plugin>
+        <plugin>
           <groupId>org.gaul</groupId>
           <artifactId>modernizer-maven-plugin</artifactId>
           <version>3.1.0</version>
