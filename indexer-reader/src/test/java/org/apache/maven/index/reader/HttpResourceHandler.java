@@ -41,6 +41,7 @@ public class HttpResourceHandler implements ResourceHandler {
         this.root = requireNonNull(root);
     }
 
+    @Override
     public Resource locate(final String name) {
         return new HttpResource(name);
     }
@@ -52,6 +53,7 @@ public class HttpResourceHandler implements ResourceHandler {
             this.name = name;
         }
 
+        @Override
         public InputStream read() throws IOException {
             HttpRequest request =
                     HttpRequest.newBuilder().uri(root.resolve(name)).GET().build();
