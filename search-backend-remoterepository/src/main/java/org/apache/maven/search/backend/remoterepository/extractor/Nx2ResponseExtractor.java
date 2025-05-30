@@ -35,7 +35,7 @@ public class Nx2ResponseExtractor extends ResponseExtractorSupport {
         return !"Parent Directory".equals(name) && super.accept(name);
     }
 
-    private String name(Element element) {
+    protected String name(Element element) {
         String name = element.text();
         if (name.endsWith("/")) {
             name = name.substring(0, name.length() - 1);

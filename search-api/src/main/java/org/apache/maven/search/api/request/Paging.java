@@ -21,10 +21,10 @@ package org.apache.maven.search.api.request;
 /**
  * Paging.
  */
-public final class Paging {
-    private final int pageSize;
+public class Paging {
+    protected final int pageSize;
 
-    private final int pageOffset;
+    protected final int pageOffset;
 
     /**
      * Creates paging instance with given page size (must be greater than 0) and page offset (must be non-negative).

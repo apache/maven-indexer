@@ -24,9 +24,9 @@ import static java.util.Objects.requireNonNull;
  * Boolean query.
  */
 public abstract class BooleanQuery extends Query {
-    private final Query left;
+    protected final Query left;
 
-    private final Query right;
+    protected final Query right;
 
     protected BooleanQuery(Query left, String op, Query right) {
         super(op);
@@ -53,8 +53,8 @@ public abstract class BooleanQuery extends Query {
         return getLeft() + " " + getValue() + " " + getRight();
     }
 
-    public static final class And extends BooleanQuery {
-        private And(Query left, Query right) {
+    public static class And extends BooleanQuery {
+        protected And(Query left, Query right) {
             super(left, "AND", right);
         }
     }

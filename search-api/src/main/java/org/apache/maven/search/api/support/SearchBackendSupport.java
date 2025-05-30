@@ -26,9 +26,9 @@ import static java.util.Objects.requireNonNull;
  * A search backend support class.
  */
 public abstract class SearchBackendSupport implements SearchBackend {
-    private final String backendId;
+    protected final String backendId;
 
-    private final String repositoryId;
+    protected final String repositoryId;
 
     protected SearchBackendSupport(String backendId, String repositoryId) {
         this.backendId = requireNonNull(backendId);

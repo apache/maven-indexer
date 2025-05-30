@@ -29,16 +29,16 @@ import static java.util.Objects.requireNonNull;
 /**
  * A search response record.
  */
-public final class Record {
-    private final String backendId;
+public class Record {
+    protected final String backendId;
 
-    private final String repositoryId;
+    protected final String repositoryId;
 
-    private final String uid;
+    protected final String uid;
 
-    private final Long lastUpdated;
+    protected final Long lastUpdated;
 
-    private final Map<Field, Object> fields;
+    protected final Map<Field, Object> fields;
 
     public Record(String backendId, String repositoryId, String uid, Long lastUpdated, Map<Field, Object> fields) {
         this.backendId = requireNonNull(backendId);

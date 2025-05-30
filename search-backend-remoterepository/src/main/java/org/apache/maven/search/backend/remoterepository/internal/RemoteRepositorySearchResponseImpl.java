@@ -31,8 +31,8 @@ import static java.util.Objects.requireNonNull;
 public class RemoteRepositorySearchResponseImpl extends SearchResponseSupport
         implements RemoteRepositorySearchResponse {
 
-    private final String uri;
-    private final Document document;
+    protected final String uri;
+    protected final Document document;
 
     public RemoteRepositorySearchResponseImpl(
             SearchRequest searchRequest, int totalHits, List<Record> page, String uri, Document document) {
