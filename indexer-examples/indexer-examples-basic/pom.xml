@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache.maven.indexer</groupId>
     <artifactId>maven-indexer-examples</artifactId>
-    <version>7.1.6-SNAPSHOT</version>
+    <version>7.1.6</version>
   </parent>
 
   <artifactId>indexer-examples-basic</artifactId>
