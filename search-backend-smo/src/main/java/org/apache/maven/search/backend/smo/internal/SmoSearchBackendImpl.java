@@ -41,7 +41,6 @@ import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.api.request.BooleanQuery;
 import org.apache.maven.search.api.request.Field;
 import org.apache.maven.search.api.request.FieldQuery;
-import org.apache.maven.search.api.request.Paging;
 import org.apache.maven.search.api.request.Query;
 import org.apache.maven.search.api.support.SearchBackendSupport;
 import org.apache.maven.search.api.transport.Transport;
@@ -127,33 +126,40 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     }
 
     protected String toURI(SearchRequest searchRequest) {
-        Paging paging = searchRequest.getPaging();
         HashSet<Field> searchedFields = new HashSet<>();
         String smoQuery = toSMOQuery(searchedFields, searchRequest.getQuery());
-        smoQuery += paging(paging);
-        smoQuery += "&rows=" + paging.getPageSize();
-        smoQuery += "&wt=json";
-        if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
-            smoQuery += "&core=gav";
-        }
+        smoQuery += paging(searchRequest, searchedFields);
+        smoQuery += extra(searchRequest, searchedFields);
         return smoUri + "?q=" + smoQuery;
     }
 
-    protected String paging(Paging paging) {
+    protected String paging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
         if (SmoSearchBackendFactory.CSC_BACKEND_ID.equals(backendId)) {
-            return cscPaging(paging);
+            return cscPaging(searchRequest, searchedFields);
         } else {
-            return smoPaging(paging);
+            return smoPaging(searchRequest, searchedFields);
         }
     }
 
-    protected String smoPaging(Paging paging) {
-        return "&start=" + paging.getPageSize() * paging.getPageOffset();
+    protected String smoPaging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        return "&start="
+                + searchRequest.getPaging().getPageSize()
+                        * searchRequest.getPaging().getPageOffset() + "&rows="
+                + searchRequest.getPaging().getPageSize();
     }
 
-    protected String cscPaging(Paging paging) {
+    protected String cscPaging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
         // this is a bug in CSC: it should work same as SMO but this is life
-        return "&start=" + paging.getPageOffset();
+        return "&start=" + searchRequest.getPaging().getPageOffset() + "&rows="
+                + searchRequest.getPaging().getPageSize();
+    }
+
+    protected String extra(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        String extra = "&wt=json";
+        if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
+            extra += "&core=gav";
+        }
+        return extra;
     }
 
     protected String fetch(String serviceUri, Map<String, String> headers) throws IOException {
