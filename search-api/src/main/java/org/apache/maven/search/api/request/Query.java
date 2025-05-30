@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
  * Query.
  */
 public class Query {
-    private final String queryString;
+    protected final String queryString;
 
     protected Query(String queryString) {
         this.queryString = requireNonNull(queryString);

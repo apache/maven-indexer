@@ -16,20 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.maven.search.backend.smo;
+package org.apache.maven.search.backend.smo.internal;
 
-import java.io.IOException;
-import java.util.Map;
+import org.apache.maven.search.backend.smo.SmoSearchBackendFactory;
+import org.junit.Ignore;
 
-/**
- * A trivial "transport abstraction" to make possible pluggable implementations.
- */
-public interface SmoSearchTransport {
-    /**
-     * This method should issue a HTTP GET requests using {@code serviceUri} and return body payload as {@link String}
-     * ONLY if the response was HTTP 200 Ok and there was a payload returned by service. In any other case, it should
-     * throw, never return {@code null}. The payload is expected to be {@code application/json}, so client may add
-     * headers to request. Also, the payload is expected to be "relatively small" that may be enforced.
-     */
-    String fetch(String serviceUri, Map<String, String> headers) throws IOException;
+@Ignore("This is not a test, is more a showcase")
+public class CscSearchBackendImplTest extends SmoSearchBackendTestSupport {
+    public CscSearchBackendImplTest() {
+        super(SmoSearchBackendFactory.createCsc());
+    }
 }

@@ -41,17 +41,17 @@ import org.apache.maven.search.api.SearchRequest;
 import org.apache.maven.search.api.request.BooleanQuery;
 import org.apache.maven.search.api.request.Field;
 import org.apache.maven.search.api.request.FieldQuery;
-import org.apache.maven.search.api.request.Paging;
 import org.apache.maven.search.api.request.Query;
 import org.apache.maven.search.api.support.SearchBackendSupport;
 import org.apache.maven.search.api.transport.Transport;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
+import org.apache.maven.search.backend.smo.SmoSearchBackendFactory;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
 
 import static java.util.Objects.requireNonNull;
 
 public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSearchBackend {
-    private static final Map<Field, String> FIELD_TRANSLATION;
+    protected static final Map<Field, String> FIELD_TRANSLATION;
 
     static {
         FIELD_TRANSLATION = Map.of(
@@ -73,11 +73,11 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
                 "1");
     }
 
-    private final String smoUri;
+    protected final String smoUri;
 
-    private final Transport transport;
+    protected final Transport transport;
 
-    private final Map<String, String> commonHeaders;
+    protected final Map<String, String> commonHeaders;
 
     /**
      * Creates a customized instance of SMO backend, like an in-house instances of SMO or different IDs.
@@ -95,7 +95,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         this.commonHeaders.put("Accept", "application/json");
     }
 
-    private String discoverVersion() {
+    protected String discoverVersion() {
         Properties properties = new Properties();
         InputStream inputStream = getClass()
                 .getClassLoader()
@@ -125,20 +125,44 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return new SmoSearchResponseImpl(searchRequest, totalHits, page, searchUri, payload);
     }
 
-    private String toURI(SearchRequest searchRequest) {
-        Paging paging = searchRequest.getPaging();
+    protected String toURI(SearchRequest searchRequest) {
         HashSet<Field> searchedFields = new HashSet<>();
         String smoQuery = toSMOQuery(searchedFields, searchRequest.getQuery());
-        smoQuery += "&start=" + paging.getPageSize() * paging.getPageOffset();
-        smoQuery += "&rows=" + paging.getPageSize();
-        smoQuery += "&wt=json";
-        if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
-            smoQuery += "&core=gav";
-        }
+        smoQuery += paging(searchRequest, searchedFields);
+        smoQuery += extra(searchRequest, searchedFields);
         return smoUri + "?q=" + smoQuery;
     }
 
-    private String fetch(String serviceUri, Map<String, String> headers) throws IOException {
+    protected String paging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        if (SmoSearchBackendFactory.CSC_BACKEND_ID.equals(backendId)) {
+            return cscPaging(searchRequest, searchedFields);
+        } else {
+            return smoPaging(searchRequest, searchedFields);
+        }
+    }
+
+    protected String smoPaging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        return "&start="
+                + searchRequest.getPaging().getPageSize()
+                        * searchRequest.getPaging().getPageOffset() + "&rows="
+                + searchRequest.getPaging().getPageSize();
+    }
+
+    protected String cscPaging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        // this is a bug in CSC: it should work same as SMO but this is life
+        return "&start=" + searchRequest.getPaging().getPageOffset() + "&rows="
+                + searchRequest.getPaging().getPageSize();
+    }
+
+    protected String extra(SearchRequest searchRequest, HashSet<Field> searchedFields) {
+        String extra = "&wt=json";
+        if (searchedFields.contains(MAVEN.GROUP_ID) && searchedFields.contains(MAVEN.ARTIFACT_ID)) {
+            extra += "&core=gav";
+        }
+        return extra;
+    }
+
+    protected String fetch(String serviceUri, Map<String, String> headers) throws IOException {
         try (Transport.Response response = transport.get(serviceUri, headers)) {
             if (response.getCode() == HttpURLConnection.HTTP_OK) {
                 return new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
@@ -148,7 +172,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         }
     }
 
-    private String toSMOQuery(HashSet<Field> searchedFields, Query query) {
+    protected String toSMOQuery(HashSet<Field> searchedFields, Query query) {
         if (query instanceof BooleanQuery.And) {
             BooleanQuery bq = (BooleanQuery) query;
             return toSMOQuery(searchedFields, bq.getLeft()) + "%20AND%20" + toSMOQuery(searchedFields, bq.getRight());
@@ -165,11 +189,11 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return encodeQueryParameterValue(query.getValue());
     }
 
-    private String encodeQueryParameterValue(String parameterValue) {
+    protected String encodeQueryParameterValue(String parameterValue) {
         return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
-    private int populateFromRaw(JsonObject raw, List<Record> page) {
+    protected int populateFromRaw(JsonObject raw, List<Record> page) {
         JsonObject response = raw.getAsJsonObject("response");
         Number numFound = response.get("numFound").getAsNumber();
 
@@ -180,7 +204,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         return numFound.intValue();
     }
 
-    private Record convert(JsonObject doc) {
+    protected Record convert(JsonObject doc) {
         HashMap<Field, Object> result = new HashMap<>();
 
         mayPut(result, MAVEN.GROUP_ID, mayGet("g", doc));
@@ -214,15 +238,15 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
                 result);
     }
 
-    private static final JsonPrimitive EC_SOURCE_JAR = new JsonPrimitive("-sources.jar");
+    protected static final JsonPrimitive EC_SOURCE_JAR = new JsonPrimitive("-sources.jar");
 
-    private static final JsonPrimitive EC_JAVADOC_JAR = new JsonPrimitive("-javadoc.jar");
+    protected static final JsonPrimitive EC_JAVADOC_JAR = new JsonPrimitive("-javadoc.jar");
 
-    private static String mayGet(String field, JsonObject object) {
+    protected static String mayGet(String field, JsonObject object) {
         return object.has(field) ? object.get(field).getAsString() : null;
     }
 
-    private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
+    protected static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
         if (value == null) {
             return;
         }

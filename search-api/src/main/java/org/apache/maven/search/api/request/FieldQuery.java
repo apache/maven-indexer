@@ -24,7 +24,7 @@ import static java.util.Objects.requireNonNull;
  * Field query.
  */
 public class FieldQuery extends Query {
-    private final Field field;
+    protected final Field field;
 
     protected FieldQuery(Field field, String queryString) {
         super(queryString);

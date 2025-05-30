@@ -35,7 +35,7 @@ public class MavenCentralResponseExtractor extends ResponseExtractorSupport {
      * attribute contains name in relative form as {@code "name/"} (followed by slash), if name denotes
      * a directory. The trailing slash is removed by this method, if any.
      */
-    private String nameInHref(Element element) {
+    protected String nameInHref(Element element) {
         String name = element.attr("href");
         if (name.endsWith("/")) {
             name = name.substring(0, name.length() - 1);

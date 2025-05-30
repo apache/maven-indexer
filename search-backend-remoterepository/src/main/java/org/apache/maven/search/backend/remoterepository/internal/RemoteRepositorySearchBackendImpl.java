@@ -55,13 +55,13 @@ import static java.util.Objects.requireNonNull;
  * (HTML parsing) if needed.
  */
 public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport implements RemoteRepositorySearchBackend {
-    private final String baseUri;
+    protected final String baseUri;
 
-    private final Transport transport;
+    protected final Transport transport;
 
-    private final ResponseExtractor responseExtractor;
+    protected final ResponseExtractor responseExtractor;
 
-    private final Map<String, String> commonHeaders;
+    protected final Map<String, String> commonHeaders;
 
     protected enum State {
         G,
@@ -91,7 +91,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                         + transport.getClass().getSimpleName());
     }
 
-    private String discoverVersion() {
+    protected String discoverVersion() {
         Properties properties = new Properties();
         InputStream inputStream = getClass()
                 .getClassLoader()
@@ -214,11 +214,11 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         return new RemoteRepositorySearchResponseImpl(searchRequest, totalHits, page, uri, document);
     }
 
-    private static final DateTimeFormatter RFC7231 = DateTimeFormatter.ofPattern(
+    protected static final DateTimeFormatter RFC7231 = DateTimeFormatter.ofPattern(
                     "EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
             .withZone(ZoneId.of("GMT"));
 
-    private static String readChecksum(InputStream inputStream) throws IOException {
+    protected static String readChecksum(InputStream inputStream) throws IOException {
         String checksum = "";
         try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8), 512)) {
             while (true) {

@@ -35,13 +35,13 @@ import static java.util.Objects.requireNonNull;
  * Java 11 {@link HttpClient} backed transport.
  */
 public class Java11HttpClientTransport implements Transport {
-    private static class ResponseImpl implements Response {
+    protected static class ResponseImpl implements Response {
 
-        private final HttpResponse<?> response;
+        protected final HttpResponse<?> response;
 
-        private final InputStream inputStream;
+        protected final InputStream inputStream;
 
-        private ResponseImpl(HttpResponse<?> response, InputStream inputStream) {
+        protected ResponseImpl(HttpResponse<?> response, InputStream inputStream) {
             this.response = requireNonNull(response);
             this.inputStream = inputStream;
         }
@@ -77,9 +77,9 @@ public class Java11HttpClientTransport implements Transport {
         }
     }
 
-    private final Duration timeout;
+    protected final Duration timeout;
 
-    private final HttpClient client;
+    protected final HttpClient client;
 
     public Java11HttpClientTransport() {
         this(Duration.ofSeconds(10L));

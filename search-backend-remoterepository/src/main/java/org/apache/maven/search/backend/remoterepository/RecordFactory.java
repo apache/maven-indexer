@@ -30,9 +30,9 @@ import static java.util.Objects.requireNonNull;
 /**
  * Helper class that creates record instances for provided backend.
  */
-public final class RecordFactory {
+public class RecordFactory {
 
-    private final RemoteRepositorySearchBackend backend;
+    protected final RemoteRepositorySearchBackend backend;
 
     public RecordFactory(RemoteRepositorySearchBackend backend) {
         this.backend = requireNonNull(backend);
@@ -58,7 +58,7 @@ public final class RecordFactory {
         return new Record(backend.getBackendId(), backend.getRepositoryId(), null, lastUpdated, result);
     }
 
-    private static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
+    protected static void mayPut(Map<Field, Object> result, Field fieldName, Object value) {
         if (value == null) {
             return;
         }
