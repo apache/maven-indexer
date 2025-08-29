@@ -23,11 +23,16 @@ github:
     - build-management
     - maven-indexer
     - maven
+  protected_branches:
+    master: { }
+    maven-indexer-5.x: { }
+    maven-indexer-6.2.x: { }
+  pull_requests:
+    del_branch_on_merge: true
   enabled_merge_buttons:
     squash: true
     merge: false
     rebase: true
-  del_branch_on_merge: true
   features:
     issues: true
 notifications:
