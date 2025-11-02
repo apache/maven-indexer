@@ -58,8 +58,8 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
         indexDir = new File(getBasedir(), "target/index/nexus-incremental-test");
         repoDir = new File(getBasedir(), "target/repos/nexus-incremental-test");
-        FileUtils.deleteDirectory(indexDir);
-        FileUtils.deleteDirectory(repoDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(indexDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(repoDir);
 
         context = indexer.addIndexingContext("test", "test", repoDir, indexDir, null, null, DEFAULT_CREATORS);
     }

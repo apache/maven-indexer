@@ -22,6 +22,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.maven.index.AbstractTestSupport;
@@ -34,7 +35,6 @@ import org.apache.maven.index.OSGI;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.nio.file.NoSuchFileException;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -37,7 +38,6 @@ import org.apache.lucene.store.IndexInput;
 import org.apache.lucene.store.IndexOutput;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
-import org.codehaus.plexus.util.FileUtils;
 
 public class IndexUtils {
     public static final String TIMESTAMP_FILE = "timestamp";

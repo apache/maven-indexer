@@ -21,10 +21,10 @@ package org.apache.maven.index;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

@@ -54,15 +54,15 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         super.setUp();
 
         remoteRepo = new File("target/localcache/remoterepo").getCanonicalFile();
-        FileUtils.deleteDirectory(remoteRepo);
+        org.apache.commons.io.FileUtils.deleteDirectory(remoteRepo);
         remoteRepo.mkdirs();
 
         localCacheDir = new File("target/localcache/cache").getCanonicalFile();
-        FileUtils.deleteDirectory(localCacheDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(localCacheDir);
         localCacheDir.mkdirs();
 
         indexDir = new File("target/localcache/index").getCanonicalFile();
-        FileUtils.deleteDirectory(indexDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(indexDir);
         indexDir.mkdirs();
     }
 
@@ -169,7 +169,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
         // kill the cache, but keep the index (expected: full index download)
         // TODO how to assert if merge==false internally?
-        FileUtils.deleteDirectory(localCacheDir);
+        org.apache.commons.io.FileUtils.deleteDirectory(localCacheDir);
         fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
         updateRequest.setLocalIndexCacheDir(localCacheDir);

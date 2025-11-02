@@ -211,7 +211,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
             return timestamp;
         } finally {
             try {
-                FileUtils.deleteDirectory(indexDir);
+                org.apache.commons.io.FileUtils.deleteDirectory(indexDir);
             } catch (IOException ex) {
                 // ignore
             }
