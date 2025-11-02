@@ -60,6 +60,6 @@ public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
             }
         }
 
-        assertEquals(foundCount, 3);
+        assertEquals(3, foundCount);
     }
 }

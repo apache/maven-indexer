@@ -39,10 +39,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * UT for 2 backends: Maven Central and RAO releases. This tests make use of the fact that RAO is used as "staging"
@@ -133,7 +132,7 @@ public class RemoteRepositorySearchBackendImplTest {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.cstamas.no-such-thing"));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(0));
+        assertEquals(0, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
     }
 
@@ -143,7 +142,7 @@ public class RemoteRepositorySearchBackendImplTest {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), greaterThan(0));
+        assertTrue(searchResponse.getTotalHits() > 0);
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -155,7 +154,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), greaterThan(0));
+        assertTrue(searchResponse.getTotalHits() > 0);
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -168,7 +167,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin"),
                 FieldQuery.fieldQuery(MAVEN.VERSION, "3.1.0")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(5));
+        assertEquals(5, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -182,8 +181,8 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.VERSION, "3.1.0"),
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(1));
-        assertThat(searchResponse.getPage().get(0).getLastUpdated(), notNullValue());
+        assertEquals(1, searchResponse.getTotalHits());
+        assertNotNull(searchResponse.getPage().get(0).getLastUpdated());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -196,7 +195,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "apache-maven"),
                 FieldQuery.fieldQuery(MAVEN.VERSION, "3.9.3")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(8));
+        assertEquals(8, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -210,7 +209,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.VERSION, "3.1.0"),
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(1));
+        assertEquals(1, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -225,7 +224,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar"),
                 FieldQuery.fieldQuery(MAVEN.SHA1, "2e030994e207ee572491927b198b139424133b2e")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(1));
+        assertEquals(1, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -240,7 +239,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "jar"),
                 FieldQuery.fieldQuery(MAVEN.SHA1, "wrong")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(0));
+        assertEquals(0, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -256,7 +255,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "tar.gz"),
                 FieldQuery.fieldQuery(MAVEN.SHA1, "f700d2bf6a11803c29a3240a26e91b2d1c530f79")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(1));
+        assertEquals(1, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }
@@ -272,7 +271,7 @@ public class RemoteRepositorySearchBackendImplTest {
                 FieldQuery.fieldQuery(MAVEN.FILE_EXTENSION, "tar.gz"),
                 FieldQuery.fieldQuery(MAVEN.SHA1, "wrong")));
         RemoteRepositorySearchResponse searchResponse = backend.search(searchRequest);
-        assertThat(searchResponse.getTotalHits(), equalTo(0));
+        assertEquals(0, searchResponse.getTotalHits());
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
         dumpPage(searchResponse);
     }

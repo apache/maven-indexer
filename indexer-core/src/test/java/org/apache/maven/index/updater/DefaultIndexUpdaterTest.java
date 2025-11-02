@@ -236,7 +236,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         Set<ArtifactInfo> results = response.getResults();
         ArtifactInfo artifactInfo = results.iterator().next();
-        assertEquals(artifactInfo.getArtifactId(), "dma.integration.tests");
+        assertEquals("dma.integration.tests", artifactInfo.getArtifactId());
     }
 
     @Test

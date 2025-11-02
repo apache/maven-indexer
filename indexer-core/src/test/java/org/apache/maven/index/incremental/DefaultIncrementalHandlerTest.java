@@ -91,7 +91,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
-            assertEquals(updates.size(), 0);
+            assertEquals(0, updates.size());
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
@@ -112,7 +112,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
             IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir);
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
-            assertEquals(updates.size(), 1);
+            assertEquals(1, updates.size());
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }

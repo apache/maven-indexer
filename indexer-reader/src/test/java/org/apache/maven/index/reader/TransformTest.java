@@ -32,9 +32,8 @@ import org.junit.Test;
 
 import static org.apache.maven.index.reader.TestUtils.compactFunction;
 import static org.apache.maven.index.reader.TestUtils.decorate;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * UT for {@link RecordCompactor} and {@link RecordExpander}.
@@ -58,21 +57,17 @@ public class TransformTest extends TestSupport {
             }
 
             try (IndexReader indexReader = new IndexReader(null, writableResourceHandler)) {
-                assertThat(indexReader.getChunkNames(), equalTo(List.of("nexus-maven-repository-index.gz")));
+                assertEquals(indexReader.getChunkNames(), List.of("nexus-maven-repository-index.gz"));
                 ChunkReader chunkReader = indexReader.iterator().next();
                 final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
-                assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
-                assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
-                assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
-                assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(3));
-                assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
+                assertEquals(1, recordTypes.get(Type.DESCRIPTOR).size());
+                assertEquals(1, recordTypes.get(Type.ROOT_GROUPS).size());
+                assertEquals(1, recordTypes.get(Type.ALL_GROUPS).size());
+                assertEquals(3, recordTypes.get(Type.ARTIFACT_ADD).size());
+                assertNotNull(recordTypes.get(Type.ARTIFACT_REMOVE));
 
-                assertThat(
-                        recordTypes.get(Type.ROOT_GROUPS).get(0).get(Record.ROOT_GROUPS),
-                        equalTo(new String[] {"com", "org"}));
-                assertThat(
-                        recordTypes.get(Type.ALL_GROUPS).get(0).get(Record.ALL_GROUPS),
-                        equalTo(new String[] {"com.bar", "org.apache", "org.foo"}));
+                assertEquals(new String[]{"com", "org"}, recordTypes.get(Type.ROOT_GROUPS).get(0).get(Record.ROOT_GROUPS));
+                assertEquals(new String[]{"com.bar", "org.apache", "org.foo"}, recordTypes.get(Type.ALL_GROUPS).get(0).get(Record.ALL_GROUPS));
             }
         }
     }

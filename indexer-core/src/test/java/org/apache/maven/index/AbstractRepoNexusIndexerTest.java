@@ -563,7 +563,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
             assertEquals(response.getResults().toString(), 2, response.getTotalHitsCount());
 
             for (ArtifactInfo ai : response) {
-                assertEquals(ai.getGroupId(), "org.terracotta.forge");
+                assertEquals("org.terracotta.forge", ai.getGroupId());
             }
         }
     }

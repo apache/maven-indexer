@@ -112,7 +112,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "3"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "4"));
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER), "0");
+        assertEquals("0", props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 
@@ -141,12 +141,12 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
         assertNotNull(props);
 
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"), "1");
+        assertEquals("1", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "3"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "4"));
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER), "1");
+        assertEquals("1", props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 
@@ -179,12 +179,12 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
         assertNotNull(props);
 
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"), "2");
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"), "1");
+        assertEquals("2", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"));
+        assertEquals("1", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "3"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "4"));
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER), "2");
+        assertEquals("2", props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 
@@ -219,12 +219,12 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
         assertNotNull(props);
 
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"), "3");
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"), "2");
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"), "1");
+        assertEquals("3", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"));
+        assertEquals("2", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"));
+        assertEquals("1", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "3"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "4"));
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER), "3");
+        assertEquals("3", props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 
@@ -262,12 +262,12 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
         assertNotNull(props);
 
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"), "4");
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"), "3");
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"), "2");
+        assertEquals("4", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0"));
+        assertEquals("3", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1"));
+        assertEquals("2", props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "3"));
         assertNull(props.getProperty(IndexingContext.INDEX_CHUNK_PREFIX + "4"));
-        assertEquals(props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER), "4");
+        assertEquals("4", props.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 

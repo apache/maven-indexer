@@ -28,9 +28,8 @@ import java.util.Map;
 import org.apache.maven.index.reader.Record.Type;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * UT for {@link ChunkReader}
@@ -43,11 +42,11 @@ public class ChunkReaderTest extends TestSupport {
                         "full",
                         handler.locate("nexus-maven-repository-index.gz").read())) {
             final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
-            assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
-            assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
+            assertEquals(1, recordTypes.get(Type.DESCRIPTOR).size());
+            assertEquals(1, recordTypes.get(Type.ROOT_GROUPS).size());
+            assertEquals(1, recordTypes.get(Type.ALL_GROUPS).size());
+            assertEquals(2, recordTypes.get(Type.ARTIFACT_ADD).size());
+            assertNull(recordTypes.get(Type.ARTIFACT_REMOVE));
         }
     }
 
@@ -68,14 +67,14 @@ public class ChunkReaderTest extends TestSupport {
         }
 
         try (ChunkReader chunkReader = new ChunkReader("full", Files.newInputStream(tempChunkFile))) {
-            assertThat(chunkReader.getVersion(), equalTo(1));
-            assertThat(chunkReader.getTimestamp().getTime(), equalTo(published.getTime()));
+            assertEquals(1, chunkReader.getVersion());
+            assertEquals(chunkReader.getTimestamp().getTime(), published.getTime());
             final Map<Type, List<Record>> recordTypes = loadRecordsByType(chunkReader);
-            assertThat(recordTypes.get(Type.DESCRIPTOR).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ROOT_GROUPS).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ALL_GROUPS).size(), equalTo(1));
-            assertThat(recordTypes.get(Type.ARTIFACT_ADD).size(), equalTo(2));
-            assertThat(recordTypes.get(Type.ARTIFACT_REMOVE), nullValue());
+            assertEquals(1, recordTypes.get(Type.DESCRIPTOR).size());
+            assertEquals(1, recordTypes.get(Type.ROOT_GROUPS).size());
+            assertEquals(1, recordTypes.get(Type.ALL_GROUPS).size());
+            assertEquals(2, recordTypes.get(Type.ARTIFACT_ADD).size());
+            assertNull(recordTypes.get(Type.ARTIFACT_REMOVE));
         }
     }
 }

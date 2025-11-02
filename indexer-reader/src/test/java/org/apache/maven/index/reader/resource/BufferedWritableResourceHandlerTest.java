@@ -30,7 +30,7 @@ import org.jmock.Mockery;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class BufferedWritableResourceHandlerTest {
     private Mockery context = new Mockery();
@@ -51,7 +51,7 @@ public class BufferedWritableResourceHandlerTest {
         OutputStream out = new BufferedWritableResourceHandler(writableResourceHandler)
                 .locate("test.txt")
                 .write();
-        assertTrue(out instanceof BufferedOutputStream);
+        assertInstanceOf(BufferedOutputStream.class, out);
         assertArrayEquals(new byte[] {}, baos.toByteArray());
         out.write('a');
         assertArrayEquals(new byte[] {}, baos.toByteArray());

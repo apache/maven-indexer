@@ -27,7 +27,8 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SingleInstanceLockFactory;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  *

@@ -32,8 +32,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestName;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test support.
@@ -107,7 +106,7 @@ public class TestSupport {
     protected Map<Type, List<Record>> loadRecordsByType(final ChunkReader chunkReader) throws IOException {
         HashMap<Type, List<Record>> stat = new HashMap<>();
         try (chunkReader) {
-            assertThat(chunkReader.getVersion(), equalTo(1));
+            assertEquals(1, chunkReader.getVersion());
             final RecordExpander recordExpander = new RecordExpander();
             for (Map<String, String> rec : chunkReader) {
                 final Record record = recordExpander.apply(rec);
@@ -126,7 +125,7 @@ public class TestSupport {
     protected Map<Type, Integer> countRecordsByType(final ChunkReader chunkReader) throws IOException {
         HashMap<Type, Integer> stat = new HashMap<>();
         try (chunkReader) {
-            assertThat(chunkReader.getVersion(), equalTo(1));
+            assertEquals(1, chunkReader.getVersion());
             final RecordExpander recordExpander = new RecordExpander();
             for (Map<String, String> rec : chunkReader) {
                 final Record record = recordExpander.apply(rec);

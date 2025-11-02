@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class BufferedResourceHandlerTest {
     private Mockery context = new Mockery();
@@ -50,7 +50,7 @@ public class BufferedResourceHandlerTest {
         });
         InputStream in =
                 new BufferedResourceHandler(resourceHandler).locate("test.txt").read();
-        assertTrue(in instanceof BufferedInputStream);
+        assertInstanceOf(BufferedInputStream.class, in);
         assertEquals('a', in.read());
         context.assertIsSatisfied();
     }

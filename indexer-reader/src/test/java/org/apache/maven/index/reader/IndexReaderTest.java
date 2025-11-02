@@ -32,10 +32,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * UT for {@link IndexReader}
@@ -44,26 +42,26 @@ public class IndexReaderTest extends TestSupport {
     @Test
     public void simple() throws IOException {
         try (IndexReader indexReader = new IndexReader(null, testResourceHandler("simple"))) {
-            assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
-            assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(1243533418015L));
-            assertThat(indexReader.isIncremental(), equalTo(false));
-            assertThat(indexReader.getChunkNames(), equalTo(List.of("nexus-maven-repository-index.gz")));
+            assertEquals("apache-snapshots-local", indexReader.getIndexId());
+            assertEquals(1243533418015L, indexReader.getPublishedTimestamp().getTime());
+            assertEquals(false, indexReader.isIncremental());
+            assertEquals(indexReader.getChunkNames(), List.of("nexus-maven-repository-index.gz"));
             int chunks = 0;
             int records = 0;
             for (ChunkReader chunkReader : indexReader) {
                 try (chunkReader) {
                     chunks++;
-                    assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
-                    assertThat(chunkReader.getVersion(), equalTo(1));
-                    assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
+                    assertEquals("nexus-maven-repository-index.gz", chunkReader.getName());
+                    assertEquals(1, chunkReader.getVersion());
+                    assertEquals(1243533418015L, chunkReader.getTimestamp().getTime());
                     records = (int) StreamSupport.stream(chunkReader.spliterator(), false)
                             .map(expandFunction)
                             .count();
                 }
             }
 
-            assertThat(chunks, equalTo(1));
-            assertThat(records, equalTo(5));
+            assertEquals(1, chunks);
+            assertEquals(5, records);
         }
     }
 
@@ -71,33 +69,31 @@ public class IndexReaderTest extends TestSupport {
     public void simpleWithLocal() throws IOException {
         try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
             try (IndexReader indexReader = new IndexReader(writableResourceHandler, testResourceHandler("simple"))) {
-                assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
-                assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(1243533418015L));
-                assertThat(indexReader.isIncremental(), equalTo(false));
-                assertThat(indexReader.getChunkNames(), equalTo(List.of("nexus-maven-repository-index.gz")));
+                assertEquals("apache-snapshots-local", indexReader.getIndexId());
+                assertEquals(1243533418015L, indexReader.getPublishedTimestamp().getTime());
+                assertEquals(false, indexReader.isIncremental());
+                assertEquals(indexReader.getChunkNames(), List.of("nexus-maven-repository-index.gz"));
                 int chunks = 0;
                 int records = 0;
                 for (ChunkReader chunkReader : indexReader) {
                     try (chunkReader) {
                         chunks++;
-                        assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
-                        assertThat(chunkReader.getVersion(), equalTo(1));
-                        assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
+                        assertEquals("nexus-maven-repository-index.gz", chunkReader.getName());
+                        assertEquals(1, chunkReader.getVersion());
+                        assertEquals(1243533418015L, chunkReader.getTimestamp().getTime());
                         records = (int) StreamSupport.stream(chunkReader.spliterator(), false)
                                 .map(expandFunction)
                                 .count();
                     }
                 }
 
-                assertThat(chunks, equalTo(1));
-                assertThat(records, equalTo(5));
+                assertEquals(1, chunks);
+                assertEquals(5, records);
             }
 
-            assertThat(
-                    writableResourceHandler
-                            .locate("nexus-maven-repository-index.properties")
-                            .read(),
-                    not(nullValue()));
+            assertNotNull(writableResourceHandler
+                    .locate("nexus-maven-repository-index.properties")
+                    .read());
         }
     }
 
@@ -120,17 +116,17 @@ public class IndexReaderTest extends TestSupport {
             }
 
             try (IndexReader indexReader = new IndexReader(null, writableResourceHandler)) {
-                assertThat(indexReader.getIndexId(), equalTo("apache-snapshots-local"));
-                assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(published.getTime()));
-                assertThat(indexReader.isIncremental(), equalTo(false));
-                assertThat(indexReader.getChunkNames(), equalTo(List.of("nexus-maven-repository-index.gz")));
+                assertEquals("apache-snapshots-local", indexReader.getIndexId());
+                assertEquals(indexReader.getPublishedTimestamp().getTime(), published.getTime());
+                assertEquals(false, indexReader.isIncremental());
+                assertEquals(indexReader.getChunkNames(), List.of("nexus-maven-repository-index.gz"));
                 int chunks = 0;
                 int records = 0;
                 for (ChunkReader chunkReader : indexReader) {
                     try (chunkReader) {
                         chunks++;
-                        assertThat(chunkReader.getName(), equalTo("nexus-maven-repository-index.gz"));
-                        assertThat(chunkReader.getVersion(), equalTo(1));
+                        assertEquals("nexus-maven-repository-index.gz", chunkReader.getName());
+                        assertEquals(1, chunkReader.getVersion());
                         // assertThat(chunkReader.getTimestamp().getTime(), equalTo(1243533418015L));
                         records = (int) StreamSupport.stream(chunkReader.spliterator(), false)
                                 .map(expandFunction)
@@ -138,8 +134,8 @@ public class IndexReaderTest extends TestSupport {
                     }
                 }
 
-                assertThat(chunks, equalTo(1));
-                assertThat(records, equalTo(5));
+                assertEquals(1, chunks);
+                assertEquals(5, records);
             }
         }
     }
