@@ -32,7 +32,7 @@ import org.apache.maven.search.api.request.FieldQuery;
 import org.apache.maven.search.api.request.Query;
 import org.apache.maven.search.backend.smo.SmoSearchBackend;
 import org.apache.maven.search.backend.smo.SmoSearchResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public abstract class SmoSearchBackendTestSupport {
     protected final SmoSearchBackend backend;

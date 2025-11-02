@@ -25,11 +25,13 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
+import org.junit.jupiter.api.BeforeEach;
 
 public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
 
     private StreamConsumer sout;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

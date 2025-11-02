@@ -25,11 +25,13 @@ import java.util.Random;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sisu.launch.InjectedTest;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
 
@@ -55,6 +57,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
 
     protected OutputStream out;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -83,6 +86,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
         FileUtils.deleteDirectory(UNPACK_DIR);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -96,15 +100,15 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     public void testNoArgs() {
         int code = execute();
         String output = out.toString();
-        assertEquals(output, 1, code);
-        assertTrue("Should print usage", output.contains("usage: nexus-indexer [options]"));
+        assertEquals(1, code, output);
+        assertTrue(output.contains("usage: nexus-indexer [options]"), "Should print usage");
     }
 
     @Test
     public void testRequiredArgs() throws Exception {
         int code = execute("--repository", TEST_REPO, "--index", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
-        assertEquals(output, 0, code);
+        assertEquals(0, code, output);
     }
 
     @Test
@@ -114,7 +118,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
         // then unpack it
         int code = execute("--unpack", "--index", DEST_DIR, "-d", UNPACK_DIR);
         String output = out.toString();
-        assertEquals(output, 0, code);
+        assertEquals(0, code, output);
 
         // FIXME: Looks strange that a newly generated index can not be reopened.
         // assertIndexFiles( UNPACK_DIR );
@@ -126,32 +130,32 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
 
         int code = execute("--repository", "--index", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
-        assertEquals(output, 1, code);
-        assertTrue("Should print bad usage", output.contains(usage));
+        assertEquals(1, code, output);
+        assertTrue(output.contains(usage), "Should print bad usage");
 
         code = execute("--repository", TEST_REPO, "--index", "-d", DEST_DIR);
         output = out.toString();
-        assertEquals(output, 1, code);
-        assertTrue("Should print bad usage", output.contains(usage));
+        assertEquals(1, code, output);
+        assertTrue(output.contains(usage), "Should print bad usage");
 
         code = execute("--repository", TEST_REPO, "--index", INDEX_DIR, "-d");
         output = out.toString();
-        assertEquals(output, 1, code);
-        assertTrue("Should print bad usage", output.contains(usage));
+        assertEquals(1, code, output);
+        assertTrue(output.contains(usage), "Should print bad usage");
 
         code = execute("--repository", "--index", "-d");
         output = out.toString();
-        assertEquals(output, 1, code);
-        assertTrue("Should print bad usage but '" + output + "'", output.contains(usage));
+        assertEquals(1, code, output);
+        assertTrue(output.contains(usage), "Should print bad usage but '" + output + "'");
 
-        assertFalse("Index file was generated", new File(INDEX_DIR).exists());
+        assertFalse(new File(INDEX_DIR).exists(), "Index file was generated");
     }
 
     @Test
     public void testAbrvsRequiredArgs() throws Exception {
         int code = execute("-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
-        assertEquals(output, 0, code);
+        assertEquals(0, code, output);
     }
 
     @Test
@@ -164,7 +168,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
                 "-d",
                 DEST_DIR);
         String output = out.toString();
-        assertEquals(output, 1, code);
+        assertEquals(1, code, output);
     }
 
     protected abstract int execute(String... args);

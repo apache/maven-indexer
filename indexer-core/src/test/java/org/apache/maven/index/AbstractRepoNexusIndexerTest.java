@@ -32,12 +32,12 @@ import org.apache.lucene.index.MultiBits;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.search.grouping.GAGrouping;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerTest {
 
@@ -46,7 +46,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     @Test
     public void testRootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
-        assertEquals(rootGroups.toString(), 12, rootGroups.size());
+        assertEquals(12, rootGroups.size(), rootGroups.toString());
 
         assertGroup(1, "com.adobe", context);
         assertGroup(1, "com.adobe.flexunit", context);
@@ -92,7 +92,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
         FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
-        assertEquals(response.getResults().toString(), 22, response.getTotalHits());
+        assertEquals(22, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
@@ -166,14 +166,13 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
             assertEquals("commons-logging : commons-logging", ig.getGroupKey());
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 13, ig.getArtifactInfos().size());
+            assertEquals(13, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
         }
 
         {
@@ -196,14 +195,13 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
             assertEquals("commons-logging : commons-logging", ig.getGroupKey());
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 13, ig.getArtifactInfos().size());
+            assertEquals(13, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
         }
 
         {
@@ -221,14 +219,13 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
             assertEquals("commons-logging : commons-logging", ig.getGroupKey());
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 13, ig.getArtifactInfos().size());
+            assertEquals(13, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
         }
 
         {
@@ -241,14 +238,13 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
             assertEquals("commons-logging : commons-logging", ig.getGroupKey());
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 13, ig.getArtifactInfos().size());
+            assertEquals(13, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
         }
 
         {
@@ -270,14 +266,13 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
             assertEquals("commons-logging : commons-logging", ig.getGroupKey());
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 13, ig.getArtifactInfos().size());
+            assertEquals(13, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
         }
 
         {
@@ -290,21 +285,19 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
             ArtifactInfoGroup ig1 = it.next();
             assertEquals("commons-cli : commons-cli", ig1.getGroupKey());
             assertEquals(
-                    ig1.getArtifactInfos().toString(), 2, ig1.getArtifactInfos().size());
+                    2, ig1.getArtifactInfos().size(), ig1.getArtifactInfos().toString());
 
             ArtifactInfoGroup ig2 = it.next();
             assertEquals("commons-logging : commons-logging", ig2.getGroupKey());
             assertEquals(
-                    ig2.getArtifactInfos().toString(),
-                    13,
-                    ig2.getArtifactInfos().size());
+                    13, ig2.getArtifactInfos().size(), ig2.getArtifactInfos().toString());
         }
 
         {
@@ -318,7 +311,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
             // since 4.0 we do handle this
             // assertEquals( r.toString(), 0, r.size() );
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
         }
 
         {
@@ -338,23 +331,23 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 3, r.size());
+            assertEquals(3, r.size(), r.toString());
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
             ArtifactInfoGroup ig1 = it.next();
             assertEquals(
-                    ig1.getArtifactInfos().toString(), 2, ig1.getArtifactInfos().size());
+                    2, ig1.getArtifactInfos().size(), ig1.getArtifactInfos().toString());
             assertEquals("org.slf4j : jcl104-over-slf4j", ig1.getGroupKey());
 
             ArtifactInfoGroup ig2 = it.next();
             assertEquals(
-                    ig2.getArtifactInfos().toString(), 4, ig2.getArtifactInfos().size());
+                    4, ig2.getArtifactInfos().size(), ig2.getArtifactInfos().toString());
             assertEquals("org.slf4j : slf4j-api", ig2.getGroupKey());
 
             ArtifactInfoGroup ig3 = it.next();
             assertEquals(
-                    ig3.getArtifactInfos().toString(), 4, ig3.getArtifactInfos().size());
+                    4, ig3.getArtifactInfos().size(), ig3.getArtifactInfos().toString());
             assertEquals("org.slf4j : slf4j-log4j12", ig3.getGroupKey());
         }
         {
@@ -366,12 +359,11 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             ArtifactInfoGroup ig = r.values().iterator().next();
 
-            assertEquals(
-                    ig.getArtifactInfos().toString(), 2, ig.getArtifactInfos().size());
+            assertEquals(2, ig.getArtifactInfos().size(), ig.getArtifactInfos().toString());
 
             assertEquals("org.slf4j : jcl104-over-slf4j", ig.getGroupKey());
         }
@@ -411,7 +403,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
         ai = ais.iterator().next();
 
-        assertNotNull("Can't identify qdox-1.5.jar", ai);
+        assertNotNull(ai, "Can't identify qdox-1.5.jar");
 
         assertEquals("qdox", ai.getGroupId());
 
@@ -519,7 +511,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
                 if (uinfo != null) {
                     String info = document.get(ArtifactInfo.INFO);
-                    assertFalse("Bad:" + info, info.startsWith("null"));
+                    assertFalse(info.startsWith("null"), "Bad:" + info);
                 }
             }
         }
@@ -532,7 +524,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
         {
             Query query = nexusIndexer.constructQuery(MAVEN.PACKAGING, "tar.gz", SearchType.EXACT);
             FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
-            assertEquals(response.getResults().toString(), 1, response.getTotalHits());
+            assertEquals(1, response.getTotalHits(), response.getResults().toString());
 
             ArtifactInfo ai = response.getResults().iterator().next();
             assertEquals("tar.gz", ai.getPackaging());
@@ -541,7 +533,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
         {
             Query query = nexusIndexer.constructQuery(MAVEN.PACKAGING, "zip", SearchType.EXACT);
             FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
-            assertEquals(response.getResults().toString(), 1, response.getTotalHits());
+            assertEquals(1, response.getTotalHits(), response.getResults().toString());
 
             ArtifactInfo ai = response.getResults().iterator().next();
             assertEquals("zip", ai.getPackaging());
@@ -560,7 +552,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
         // org.terracotta.forge:archetype-parent:1.0.1
 
         try (IteratorSearchResponse response = nexusIndexer.searchIterator(request)) {
-            assertEquals(response.getResults().toString(), 2, response.getTotalHitsCount());
+            assertEquals(2, response.getTotalHitsCount(), response.getResults().toString());
 
             for (ArtifactInfo ai : response) {
                 assertEquals(ai.getGroupId(), "org.terracotta.forge");

@@ -27,10 +27,10 @@ import org.apache.maven.index.reader.WritableResourceHandler;
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BufferedWritableResourceHandlerTest {
     private Mockery context = new Mockery();

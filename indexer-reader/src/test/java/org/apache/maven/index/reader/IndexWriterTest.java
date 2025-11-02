@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
 import static org.hamcrest.MatcherAssert.assertThat;

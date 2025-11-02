@@ -21,7 +21,7 @@ package org.apache.maven.index.examples;
 import com.google.inject.Guice;
 import org.eclipse.sisu.launch.Main;
 import org.eclipse.sisu.space.BeanScanning;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class BasicUsageExampleTest {
     @Test

@@ -45,17 +45,16 @@ import org.apache.maven.index.search.grouping.GGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.lucene.search.BooleanClause.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     @Override
@@ -77,7 +76,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
 
-            assertEquals(r.toString(), 2, r.size()); // qdox and testng
+            assertEquals(2, r.size(), r.toString()); // qdox and testng
 
             assertTrue(r.containsKey("qdox : qdox"));
             assertTrue(r.containsKey("org.testng : testng"));
@@ -90,7 +89,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GAGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
 
             assertTrue(r.containsKey("qdox : qdox"));
             assertTrue(r.containsKey("org.testng : testng"));
@@ -103,7 +102,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GAGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
             assertTrue(r.containsKey("qdox : qdox"));
             assertTrue(r.containsKey("org.testng : testng"));
             assertEquals("qdox : qdox", r.get("qdox : qdox").getGroupKey());
@@ -117,15 +116,15 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            Assert.assertThat(r.toString(), r.size(), is(2));
+            assertThat(r.toString(), r.size(), is(2));
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
             ArtifactInfoGroup ig1 = it.next();
-            assertEquals(r.toString(), "org.slf4j", ig1.getGroupKey());
+            assertEquals("org.slf4j", ig1.getGroupKey(), r.toString());
 
             ArtifactInfoGroup ig2 = it.next();
-            assertEquals(r.toString(), "org.testng", ig2.getGroupKey());
+            assertEquals("org.testng", ig2.getGroupKey(), r.toString());
         }
 
         {
@@ -134,15 +133,15 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
             ArtifactInfoGroup ig1 = it.next();
-            assertEquals(r.toString(), "org.slf4j", ig1.getGroupKey());
+            assertEquals("org.slf4j", ig1.getGroupKey(), r.toString());
 
             ArtifactInfoGroup ig2 = it.next();
-            assertEquals(r.toString(), "org.testng", ig2.getGroupKey());
+            assertEquals("org.testng", ig2.getGroupKey(), r.toString());
         }
 
         {
@@ -153,12 +152,12 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
             ArtifactInfoGroup ig1 = it.next();
-            assertEquals(r.toString(), "org.slf4j", ig1.getGroupKey());
+            assertEquals("org.slf4j", ig1.getGroupKey(), r.toString());
             ArtifactInfoGroup ig2 = it.next();
-            assertEquals(r.toString(), "org.testng", ig2.getGroupKey());
+            assertEquals("org.testng", ig2.getGroupKey(), r.toString());
         }
 
         {
@@ -169,12 +168,12 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
             ArtifactInfoGroup ig1 = it.next();
-            assertEquals(r.toString(), "org.slf4j", ig1.getGroupKey());
+            assertEquals("org.slf4j", ig1.getGroupKey(), r.toString());
             ArtifactInfoGroup ig2 = it.next();
-            assertEquals(r.toString(), "org.testng", ig2.getGroupKey());
+            assertEquals("org.testng", ig2.getGroupKey(), r.toString());
         }
 
         {
@@ -187,7 +186,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             Map<String, ArtifactInfoGroup> r = response.getResults();
             // Results are less, since no PREFIX searches anymore!
             // assertEquals( r.toString(), 3, r.size() );
-            assertEquals(r.toString(), 2, r.size());
+            assertEquals(2, r.size(), r.toString());
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -196,10 +195,10 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             // assertEquals( r.toString(), "commons-logging", ig1.getGroupKey() ); // Jdk14Logger and LogKitLogger
 
             ArtifactInfoGroup ig2 = it.next();
-            assertEquals(r.toString(), "org.slf4j", ig2.getGroupKey());
+            assertEquals("org.slf4j", ig2.getGroupKey(), r.toString());
 
             ArtifactInfoGroup ig3 = it.next();
-            assertEquals(r.toString(), "org.testng", ig3.getGroupKey());
+            assertEquals("org.testng", ig3.getGroupKey(), r.toString());
         }
 
         {
@@ -210,7 +209,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size()); // jcl104-over-slf4j and commons-logging
+            assertEquals(2, r.size(), r.toString()); // jcl104-over-slf4j and commons-logging
         }
 
         {
@@ -221,7 +220,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size()); // jcl104-over-slf4j and commons-logging
+            assertEquals(2, r.size(), r.toString()); // jcl104-over-slf4j and commons-logging
         }
 
         {
@@ -232,7 +231,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size()); // jcl104-over-slf4j and commons-logging
+            assertEquals(2, r.size(), r.toString()); // jcl104-over-slf4j and commons-logging
         }
 
         {
@@ -242,7 +241,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 2, r.size()); // jcl104-over-slf4j and commons-logging
+            assertEquals(2, r.size(), r.toString()); // jcl104-over-slf4j and commons-logging
         }
 
         {
@@ -254,12 +253,12 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
             // Error is fixed, see below
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             {
                 ArtifactInfoGroup ig = r.values().iterator().next();
                 ArrayList<ArtifactInfo> list1 = new ArrayList<>(ig.getArtifactInfos());
-                assertEquals(r.toString(), 2, list1.size());
+                assertEquals(2, list1.size(), r.toString());
 
                 ArtifactInfo ai1 = list1.get(0);
                 assertEquals("org.slf4j", ai1.getGroupId());
@@ -410,14 +409,14 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
 
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
     }
 
     @Test
     public void testArchetypePackaging() throws Exception {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
-        assertEquals(response.getResults().toString(), 4, response.getTotalHits());
+        assertEquals(4, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
@@ -430,7 +429,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
 
         Set<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 
@@ -450,7 +449,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
 
         Set<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 
@@ -484,20 +483,20 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             for (MatchHighlight mh : ai.getMatchHighlights()) {
                 for (String highlighted : mh.getHighlightedMatch()) {
                     // Logger and LoggerFactory
-                    assertTrue("Class name should be highlighted", highlighted.contains("<B>Logger"));
+                    assertTrue(highlighted.contains("<B>Logger"), "Class name should be highlighted");
                     assertFalse(
-                            "Class name should not contain \"/\" alone (but okay within HTML, see above!)",
-                            highlighted.matches("\\p{Lower}/\\p{Upper}"));
+                            highlighted.matches("\\p{Lower}/\\p{Upper}"),
+                            "Class name should not contain \"/\" alone (but okay within HTML, see above!)");
                     assertFalse(
-                            "Class name should not begin with \".\" or \"/\"",
-                            highlighted.startsWith(".") || highlighted.startsWith("/"));
+                            highlighted.startsWith(".") || highlighted.startsWith("/"),
+                            "Class name should not begin with \".\" or \"/\"");
                 }
             }
         }
 
         assertThat(response.getTotalHitsCount(), is(5));
 
-        assertEquals("found in jcl104-over-slf4j and commons-logging", 5, response.getTotalHits());
+        assertEquals(5, response.getTotalHits(), "found in jcl104-over-slf4j and commons-logging");
     }
 
     @Test
@@ -509,12 +508,12 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
         for (ArtifactInfo ai : response) {
             for (MatchHighlight mh : ai.getMatchHighlights()) {
                 assertTrue(
-                        "Group ID should be highlighted",
                         mh.getHighlightedMatch().contains("<B>commons</B>-logging")
-                                || mh.getHighlightedMatch().contains("<B>commons</B>-cli"));
+                                || mh.getHighlightedMatch().contains("<B>commons</B>-cli"),
+                        "Group ID should be highlighted");
             }
         }
 
-        assertEquals("found in commons-logging and commons-cli", 15, response.getTotalHits());
+        assertEquals(15, response.getTotalHits(), "found in commons-logging and commons-cli");
     }
 }

@@ -21,13 +21,13 @@ package org.apache.maven.index.artifact;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class M2GavCalculatorTest {
     private M2GavCalculator gavCalculator = new M2GavCalculator();
@@ -619,7 +619,7 @@ public class M2GavCalculatorTest {
         // NEXUS-4132
         gav = gavCalculator.pathToGav(
                 "/com/electrabel/connection-register-ear/1.2-SNAPSHOT/connection-register-ear-1.2-20101214.143755.ear");
-        assertNull("Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot", gav);
+        assertNull(gav, "Should fail, since the filename lacks the -BBB build number, hence, is not valid snapshot");
         // NEXUS-4132 END
     }
 
@@ -670,7 +670,7 @@ public class M2GavCalculatorTest {
         Gav gav = gavCalculator.pathToGav(
                 "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar");
 
-        assertNull("We expect null since baseVersion and version mismatch in path!", gav);
+        assertNull(gav, "We expect null since baseVersion and version mismatch in path!");
     }
 
     @Test

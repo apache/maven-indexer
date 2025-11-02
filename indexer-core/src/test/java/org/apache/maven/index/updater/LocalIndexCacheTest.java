@@ -33,12 +33,14 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.fs.Locker;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     private File remoteRepo;
@@ -49,6 +51,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
     private IndexingContext tempContext;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -66,6 +69,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         indexDir.mkdirs();
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         removeTempContext();

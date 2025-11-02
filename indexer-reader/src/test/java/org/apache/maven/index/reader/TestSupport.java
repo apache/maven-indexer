@@ -27,10 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.reader.Record.Type;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TestName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInfo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -39,8 +38,8 @@ import static org.hamcrest.Matchers.equalTo;
  * Test support.
  */
 public class TestSupport {
-    @Rule
-    public TestName testName = new TestName();
+
+    public String testName;
 
     private Path tempDir;
 
@@ -49,8 +48,9 @@ public class TestSupport {
     /**
      * Creates the temp directory and list for resource handlers.
      */
-    @Before
-    public void setup() throws IOException {
+    @BeforeEach
+    public void setup(TestInfo testInfo) throws IOException {
+        testInfo.getTestMethod().ifPresent(method -> this.testName = method.getName());
         this.tempDir = Files.createTempDirectory(getClass().getSimpleName() + ".temp");
         this.directoryResourceHandlers = new ArrayList<>();
     }
@@ -58,7 +58,7 @@ public class TestSupport {
     /**
      * Closes all the registered resources handlers and deletes the temp directory.
      */
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         for (DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers) {
             directoryResourceHandler.close();
@@ -79,7 +79,7 @@ public class TestSupport {
      * Creates a temp directory within {@link #tempDir}.
      */
     protected Path createTempDirectory() throws IOException {
-        return Files.createTempDirectory(tempDir, testName.getMethodName() + "-dir");
+        return Files.createTempDirectory(tempDir, testName + "-dir");
     }
 
     /**

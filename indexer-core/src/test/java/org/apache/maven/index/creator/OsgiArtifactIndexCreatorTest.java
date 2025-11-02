@@ -35,12 +35,13 @@ import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.StringSearchExpression;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Olivier Lamy
@@ -55,6 +56,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     protected IndexCreator indexCreator;
     private NexusIndexer nexusIndexer;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -86,11 +88,11 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
 
         indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNotNull("bundleSymbolicName", artifactContext.getArtifactInfo().getBundleSymbolicName());
+        assertNotNull(artifactContext.getArtifactInfo().getBundleSymbolicName(), "bundleSymbolicName");
 
-        assertNotNull("bundleVersion", artifactContext.getArtifactInfo().getBundleVersion());
+        assertNotNull(artifactContext.getArtifactInfo().getBundleVersion(), "bundleVersion");
 
-        assertNotNull("bundleExportPackage", artifactContext.getArtifactInfo().getBundleExportPackage());
+        assertNotNull(artifactContext.getArtifactInfo().getBundleExportPackage(), "bundleExportPackage");
 
         assertEquals(
                 "org.apache.karaf.features.command",

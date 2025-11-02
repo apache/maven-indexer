@@ -22,10 +22,10 @@ import java.io.File;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/nexus-3881");
@@ -48,7 +48,7 @@ public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
 
         IteratorSearchResponse response = nexusIndexer.searchIterator(request);
 
-        assertEquals("All artifacts has 'solution' in their GA!", 4, response.getTotalHits());
+        assertEquals(4, response.getTotalHits(), "All artifacts has 'solution' in their GA!");
 
         // for (ArtifactInfo ai : response) {
         // System.out.println(ai.toString());
@@ -64,7 +64,7 @@ public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
         }
 
         assertTrue(
-                String.format("The relevance span should be small! (%s)", firstRel - lastRel),
-                firstRel - lastRel < 0.35);
+                firstRel - lastRel < 0.35,
+                String.format("The relevance span should be small! (%s)", firstRel - lastRel));
     }
 }

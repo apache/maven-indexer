@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.index.reader.Record.Type;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;

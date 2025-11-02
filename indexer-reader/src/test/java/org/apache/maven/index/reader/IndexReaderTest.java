@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.stream.StreamSupport;
 
 import org.apache.maven.index.reader.Record.Type;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -149,7 +149,7 @@ public class IndexReaderTest extends TestSupport {
      * IP address being banned. You were warned!
      */
     @Test
-    @Ignore("For eyes only")
+    @Disabled("For eyes only")
     public void central() throws Exception {
         // local index location, against which we perform incremental updates
         final Path indexDir = createTempDirectory();

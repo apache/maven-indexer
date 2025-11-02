@@ -33,10 +33,11 @@ import org.apache.maven.index.expr.StringSearchExpression;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.lucene.search.BooleanClause.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Olivier Lamy
@@ -54,6 +55,7 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
     @Inject
     protected List<IndexCreator> indexCreators;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

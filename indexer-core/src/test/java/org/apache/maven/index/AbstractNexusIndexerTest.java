@@ -26,8 +26,10 @@ import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractNexusIndexerTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
@@ -36,6 +38,7 @@ public abstract class AbstractNexusIndexerTest extends AbstractIndexCreatorHelpe
 
     protected IndexingContext context;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         //        indexDir = new SimpleFSDirectory(new File("/tmp/nexus-test"));
@@ -45,6 +48,7 @@ public abstract class AbstractNexusIndexerTest extends AbstractIndexCreatorHelpe
         prepareNexusIndexer(nexusIndexer);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         unprepareNexusIndexer(nexusIndexer);
@@ -73,6 +77,6 @@ public abstract class AbstractNexusIndexerTest extends AbstractIndexCreatorHelpe
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(pq, context));
         Collection<ArtifactInfo> artifacts = response.getResults();
-        assertEquals(artifacts.toString(), expected, artifacts.size());
+        assertEquals(expected, artifacts.size(), artifacts.toString());
     }
 }

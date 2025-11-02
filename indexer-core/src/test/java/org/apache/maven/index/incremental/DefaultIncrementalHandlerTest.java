@@ -33,10 +33,12 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.ResourceFetcher;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
     IncrementalHandler handler = null;
@@ -49,6 +51,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
     File repoDir = null;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -64,6 +67,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         context = indexer.addIndexingContext("test", "test", repoDir, indexDir, null, null, DEFAULT_CREATORS);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();

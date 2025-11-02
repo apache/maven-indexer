@@ -36,16 +36,18 @@ import org.apache.maven.index.context.MergedIndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest.IndexFormat;
 import org.apache.maven.index.updater.IndexDataReader;
 import org.codehaus.plexus.util.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
     protected File reposBase = new File(getBasedir(), "src/test/nexus-4149");
 
     protected File idxsBase = new File(getBasedir(), "target/index/nexus-4149");
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -94,6 +96,7 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
     }
 
     @Override
+    @Test
     public void testDirectory() throws IOException {
         // we use no directory
     }
@@ -105,17 +108,12 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         for (IndexingContext member : mctx.getMembers()) {
             if (!"repo4".equals(member.getId())) // repo4 is empty
             {
-                assertEquals(
-                        "Members should have one root group!",
-                        1,
-                        member.getRootGroups().size());
+                assertEquals(1, member.getRootGroups().size(), "Members should have one root group!");
             }
         }
 
         assertEquals(
-                "Merged should have one root multiply members count (sans repo4)!",
-                3,
-                mctx.getRootGroups().size());
+                3, mctx.getRootGroups().size(), "Merged should have one root multiply members count (sans repo4)!");
     }
 
     @Test
@@ -169,8 +167,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
                 }
             }
 
-            assertNotNull("Group transport file should contain allGroups!", allGroups);
-            assertNotNull("Group transport file should contain rootGroups!", rootGroups);
+            assertNotNull(allGroups, "Group transport file should contain allGroups!");
+            assertNotNull(rootGroups, "Group transport file should contain rootGroups!");
             checkListOfStringDoesNotContainEmptyString(ArtifactInfo.str2lst(allGroups));
             checkListOfStringDoesNotContainEmptyString(ArtifactInfo.str2lst(rootGroups));
 

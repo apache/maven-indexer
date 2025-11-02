@@ -52,16 +52,16 @@ import org.apache.maven.search.api.request.FieldQuery;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackend;
 import org.apache.maven.search.backend.indexer.IndexerCoreSearchBackendFactory;
 import org.eclipse.sisu.launch.InjectedTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.maven.search.api.request.BooleanQuery.and;
 import static org.apache.maven.search.api.request.Query.query;
 
-@Ignore("This is not a test, is more a showcase")
+@Disabled("This is not a test, is more a showcase")
 public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     @Inject
     private Indexer indexer;
@@ -129,7 +129,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
         System.out.println();
     }
 
-    @Before
+    @BeforeEach
     public void prepareAndUpdateBackend() throws Exception {
         // Files where local cache is (if any) and Lucene Index should be located
         Path centralLocalCache = Path.of("target/central-cache");
@@ -181,7 +181,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
         this.backend = new IndexerCoreSearchBackendFactory(indexer).createIndexerCoreSearchBackend(centralContext);
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         indexer.closeIndexingContext(centralContext, false);
     }

@@ -39,11 +39,11 @@ import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
@@ -63,7 +63,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GAGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 4, r.size());
+            assertEquals(4, r.size(), r.toString());
 
             assertTrue(r.containsKey("cisco.infra.dft : dma.plugin.utils"));
             assertTrue(r.containsKey("cisco.infra.dft : dma.pom.enforcer"));
@@ -76,7 +76,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GAGrouping());
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertEquals(r.toString(), 1, r.size());
+            assertEquals(1, r.size(), r.toString());
 
             assertTrue(r.containsKey("cisco.infra.dft : dma.plugin.utils"));
             assertEquals(
@@ -91,7 +91,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
         assertEquals("cisco.infra.dft", ai.getGroupId());
@@ -160,7 +160,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     @Test
     public void testRootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
-        assertEquals(rootGroups.toString(), 1, rootGroups.size());
+        assertEquals(1, rootGroups.size(), rootGroups.toString());
 
         assertGroup(10, "cisco", context);
     }
@@ -171,7 +171,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 10, r.size());
+        assertEquals(10, r.size(), r.toString());
 
         List<ArtifactInfo> list = new ArrayList<>(r);
 
