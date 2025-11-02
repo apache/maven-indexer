@@ -50,12 +50,12 @@ import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.ReturnValueAction;
 import org.jmock.lib.action.VoidAction;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Eugene Kuleshov
@@ -74,7 +74,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         FlatSearchResponse response1 = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content1 = response1.getResults();
 
-        assertEquals(content1.toString(), 1, content1.size());
+        assertEquals(1, content1.size(), content1.toString());
 
         // updated index
 
@@ -91,7 +91,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         FlatSearchResponse response2 = indexer.searchFlat(new FlatSearchRequest(q, tempContext));
         Collection<ArtifactInfo> tempContent = response2.getResults();
-        assertEquals(tempContent.toString(), 2, tempContent.size());
+        assertEquals(2, tempContent.size(), tempContent.toString());
 
         // RAMDirectory is closed with context, forcing timestamp update
         tempContext.updateTimestamp(true);
@@ -111,7 +111,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         FlatSearchResponse response3 = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content2 = response3.getResults();
-        assertEquals(content2.toString(), 2, content2.size());
+        assertEquals(2, content2.size(), content2.toString());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
             FlatSearchResponse response1 = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> content1 = response1.getResults();
 
-            assertEquals(content1.toString(), 1, content1.size());
+            assertEquals(1, content1.size(), content1.toString());
         }
 
         // updated index
@@ -148,7 +148,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
             FlatSearchResponse tempResponse = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
-            assertEquals(tempContent.toString(), 3, tempContent.size());
+            assertEquals(3, tempContent.size(), tempContent.toString());
 
             ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
             for (String file : tempContext.getIndexDirectory().listAll()) {
@@ -161,7 +161,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
             FlatSearchResponse response2 = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> content2 = response2.getResults();
-            assertEquals(content2.toString(), 3, content2.size());
+            assertEquals(3, content2.size(), content2.toString());
         }
     }
 
@@ -209,7 +209,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content2 = response.getResults();
 
-        assertEquals(content2.toString(), 1, content2.size());
+        assertEquals(1, content2.size(), content2.toString());
     }
 
     @Test
@@ -280,11 +280,11 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         Set<String> rootGroups = context.getRootGroups();
 
-        assertEquals(rootGroups.toString(), 4, rootGroups.size());
+        assertEquals(4, rootGroups.size(), rootGroups.toString());
 
         Set<String> allGroups = context.getAllGroups();
 
-        assertEquals(allGroups.toString(), 5, allGroups.size());
+        assertEquals(5, allGroups.size(), allGroups.toString());
     }
 
     @Test
@@ -834,7 +834,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    @Ignore("Legacy format no longer supported with Lucene 4")
+    @Disabled("Legacy format no longer supported with Lucene 4")
     public void ignoreTestUpdateForceFullUpdateNoGZ() throws Exception {
         Mockery mockery = new Mockery();
 
@@ -954,10 +954,10 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     private void assertIndexUpdateSucceeded(IndexUpdateResult updateResult) {
-        assertTrue("Index update should have succeeded, but says it failed", updateResult.isSuccessful());
+        assertTrue(updateResult.isSuccessful(), "Index update should have succeeded, but says it failed");
     }
 
     private void assertIndexUpdateFailed(IndexUpdateResult updateResult) {
-        assertFalse("Index update should have failed, but says it succeeded", updateResult.isSuccessful());
+        assertFalse(updateResult.isSuccessful(), "Index update should have failed, but says it succeeded");
     }
 }

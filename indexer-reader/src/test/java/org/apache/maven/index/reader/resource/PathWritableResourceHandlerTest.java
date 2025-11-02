@@ -18,27 +18,27 @@
  */
 package org.apache.maven.index.reader.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PathWritableResourceHandlerTest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public File folder;
 
     @Test
     public void locate() throws IOException {
-        WritableResource test = new PathWritableResourceHandler(folder.getRoot().toPath()).locate("test.txt");
+        WritableResource test = new PathWritableResourceHandler(folder.toPath()).locate("test.txt");
         assertNull(test.read());
         try (OutputStream out = test.write()) {
             out.write('a');
@@ -46,7 +46,6 @@ public class PathWritableResourceHandlerTest {
         try (InputStream in = test.read()) {
             assertEquals('a', in.read());
         }
-        assertArrayEquals(
-                new byte[] {'a'}, Files.readAllBytes(folder.getRoot().toPath().resolve("test.txt")));
+        assertArrayEquals(new byte[] {'a'}, Files.readAllBytes(folder.toPath().resolve("test.txt")));
     }
 }

@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
@@ -44,7 +44,7 @@ public class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org.sonatype.nexus", SearchType.SCORED);
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 4, r.size());
+        assertEquals(4, r.size(), r.toString());
 
         List<ArtifactInfo> list = new ArrayList<>(r);
 

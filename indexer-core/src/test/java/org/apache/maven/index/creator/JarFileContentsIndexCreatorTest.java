@@ -24,12 +24,13 @@ import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Alin Dreghiciu
@@ -37,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     protected IndexCreator indexCreator;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -56,8 +58,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
         indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNotNull(
-                "Classes should not be null", artifactContext.getArtifactInfo().getClassNames());
+        assertNotNull(artifactContext.getArtifactInfo().getClassNames(), "Classes should not be null");
     }
 
     @Test
@@ -72,38 +73,37 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
         indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNotNull(
-                "Classes should not be null", artifactContext.getArtifactInfo().getClassNames());
+        assertNotNull(artifactContext.getArtifactInfo().getClassNames(), "Classes should not be null");
 
         String[] classNames = artifactContext.getArtifactInfo().getClassNames().split("\n");
 
-        assertEquals("Unexpected classes length", 9, classNames.length);
+        assertEquals(9, classNames.length, "Unexpected classes length");
 
-        assertEquals("Advice class was expected", "/org/aopalliance/aop/Advice", classNames[0]);
+        assertEquals("/org/aopalliance/aop/Advice", classNames[0], "Advice class was expected");
 
-        assertEquals("AspectException class was expected", "/org/aopalliance/aop/AspectException", classNames[1]);
+        assertEquals("/org/aopalliance/aop/AspectException", classNames[1], "AspectException class was expected");
 
         assertEquals(
-                "ConstructorInterceptor class was expected",
                 "/org/aopalliance/intercept/ConstructorInterceptor",
-                classNames[2]);
+                classNames[2],
+                "ConstructorInterceptor class was expected");
 
         assertEquals(
-                "ConstructorInvocation class was expected",
                 "/org/aopalliance/intercept/ConstructorInvocation",
-                classNames[3]);
+                classNames[3],
+                "ConstructorInvocation class was expected");
 
-        assertEquals("Interceptor class was expected", "/org/aopalliance/intercept/Interceptor", classNames[4]);
+        assertEquals("/org/aopalliance/intercept/Interceptor", classNames[4], "Interceptor class was expected");
 
-        assertEquals("Invocation class was expected", "/org/aopalliance/intercept/Invocation", classNames[5]);
+        assertEquals("/org/aopalliance/intercept/Invocation", classNames[5], "Invocation class was expected");
 
-        assertEquals("Joinpoint class was expected", "/org/aopalliance/intercept/Joinpoint", classNames[6]);
-
-        assertEquals(
-                "MethodInterceptor class was expected", "/org/aopalliance/intercept/MethodInterceptor", classNames[7]);
+        assertEquals("/org/aopalliance/intercept/Joinpoint", classNames[6], "Joinpoint class was expected");
 
         assertEquals(
-                "MethodInvocation class was expected", "/org/aopalliance/intercept/MethodInvocation", classNames[8]);
+                "/org/aopalliance/intercept/MethodInterceptor", classNames[7], "MethodInterceptor class was expected");
+
+        assertEquals(
+                "/org/aopalliance/intercept/MethodInvocation", classNames[8], "MethodInvocation class was expected");
     }
 
     @Test
@@ -119,7 +119,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
         indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNull("Classes should be null", artifactContext.getArtifactInfo().getClassNames());
+        assertNull(artifactContext.getArtifactInfo().getClassNames(), "Classes should be null");
     }
 
     @Test
@@ -135,7 +135,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
         indexCreator.populateArtifactInfo(artifactContext);
 
-        assertNull("Classes should be null", artifactContext.getArtifactInfo().getClassNames());
+        assertNull(artifactContext.getArtifactInfo().getClassNames(), "Classes should be null");
     }
 
     @Test
@@ -156,11 +156,11 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
         indexCreator.populateArtifactInfo(artifactContext);
 
         assertTrue(
-                "Classes should contain WebappClass",
-                artifactContext.getArtifactInfo().getClassNames().contains("WebappClass"));
+                artifactContext.getArtifactInfo().getClassNames().contains("WebappClass"),
+                "Classes should contain WebappClass");
         assertEquals(
-                "WebappClass should have proper package",
                 "/org/apache/maven/indexer/samples/webapp/WebappClass",
-                artifactContext.getArtifactInfo().getClassNames());
+                artifactContext.getArtifactInfo().getClassNames(),
+                "WebappClass should have proper package");
     }
 }

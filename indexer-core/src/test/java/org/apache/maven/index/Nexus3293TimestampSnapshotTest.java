@@ -29,9 +29,9 @@ import org.apache.maven.index.artifact.M2GavCalculator;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
@@ -121,7 +121,7 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
 
         FlatSearchResponse response = indexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 

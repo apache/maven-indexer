@@ -107,14 +107,12 @@ under the License.
       <version>${version.spring}</version>
       <scope>test</scope>
     </dependency>
-    <!-- Spring dependencies end. -->
-
-    <!-- Test -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest</artifactId>

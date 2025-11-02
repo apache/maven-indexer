@@ -36,9 +36,11 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     private Server server;
@@ -47,6 +49,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
 
     private IndexingContext centralContext;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -80,6 +83,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
                 MIN_CREATORS);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         server.stop();

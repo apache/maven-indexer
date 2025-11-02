@@ -37,12 +37,12 @@ import org.apache.maven.index.AbstractRepoNexusIndexerTest;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.context.IndexUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Eugene Kuleshov
@@ -134,7 +134,7 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
 
         for (Entry<String, ArtifactInfo> e : r1map.entrySet()) {
             String key = e.getKey();
-            assertTrue("Expected for find " + key, r2map.containsKey(key));
+            assertTrue(r2map.containsKey(key), "Expected for find " + key);
         }
 
         assertEquals(r1map.size(), r2map.size());

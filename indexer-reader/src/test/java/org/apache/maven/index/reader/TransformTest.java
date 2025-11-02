@@ -28,7 +28,7 @@ import java.util.stream.StreamSupport;
 
 import org.apache.maven.index.reader.Record.EntryKey;
 import org.apache.maven.index.reader.Record.Type;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.index.reader.TestUtils.compactFunction;
 import static org.apache.maven.index.reader.TestUtils.decorate;

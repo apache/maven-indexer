@@ -19,9 +19,9 @@
 package org.apache.maven.search.backend.smo.internal;
 
 import org.apache.maven.search.backend.smo.SmoSearchBackendFactory;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 
-@Ignore("This is not a test, is more a showcase")
+@Disabled("This is not a test, is more a showcase")
 public class CscSearchBackendImplTest extends SmoSearchBackendTestSupport {
     public CscSearchBackendImplTest() {
         super(SmoSearchBackendFactory.createCsc());

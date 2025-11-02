@@ -27,11 +27,11 @@ import org.apache.maven.index.reader.ResourceHandler;
 import org.apache.maven.index.reader.ResourceHandler.Resource;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BufferedResourceHandlerTest {
     private Mockery context = new Mockery();

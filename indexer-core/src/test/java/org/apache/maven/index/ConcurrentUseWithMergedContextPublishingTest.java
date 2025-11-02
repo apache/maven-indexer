@@ -26,6 +26,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 /**
  * The point in this test is: we use Merged context, and we modify some of the "members" in the merged context, while we
@@ -40,6 +42,7 @@ public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseW
 
     protected final AtomicInteger counter = new AtomicInteger();
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -47,6 +50,7 @@ public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseW
         packer = lookup(IndexPacker.class);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         File props = new File(IndexingContext.INDEX_PACKER_PROPERTIES_FILE);

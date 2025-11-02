@@ -42,12 +42,12 @@ import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     @Override
@@ -72,7 +72,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 
@@ -103,7 +103,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
         // repo contains 3 artifacts with packaging "maven-plugin", but one of the is actually an archetype!
-        assertEquals(response.getResults().toString(), 2, response.getTotalHits());
+        assertEquals(2, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
@@ -229,14 +229,14 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
     }
 
     @Test
     public void testArchetypePackaging() throws Exception {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
-        assertEquals(response.getResults().toString(), 4, response.getTotalHits());
+        assertEquals(4, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
@@ -249,7 +249,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Set<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 
@@ -269,7 +269,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Set<ArtifactInfo> r = response.getResults();
 
-        assertEquals(r.toString(), 1, r.size());
+        assertEquals(1, r.size(), r.toString());
 
         ArtifactInfo ai = r.iterator().next();
 

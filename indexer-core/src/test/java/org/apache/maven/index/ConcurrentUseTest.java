@@ -25,12 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.UserInputSearchExpression;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ConcurrentUseTest extends AbstractNexusIndexerTest {
     public static final int THREAD_COUNT = 10;
@@ -82,7 +82,7 @@ public class ConcurrentUseTest extends AbstractNexusIndexerTest {
             totalAdded += threads[i].getAdded();
         }
 
-        assertFalse("Not all thread did clean job!", thereWereProblems);
+        assertFalse(thereWereProblems, "Not all thread did clean job!");
 
         context.commit();
 
@@ -96,7 +96,7 @@ public class ConcurrentUseTest extends AbstractNexusIndexerTest {
 
         FlatSearchResponse result = nexusIndexer.searchFlat(new FlatSearchRequest(q, context));
 
-        assertEquals("All added should be found after final commit!", totalAdded, result.getTotalHitsCount());
+        assertEquals(totalAdded, result.getTotalHitsCount(), "All added should be found after final commit!");
     }
 
     // ==

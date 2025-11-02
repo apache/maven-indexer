@@ -27,10 +27,10 @@ import java.util.Map;
 
 import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.context.IndexCreator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class IndexCreatorSorterTest extends AbstractTestSupport {
     @Inject
@@ -50,17 +50,17 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
         }
 
         // ensure we fulfil some basic conditions
-        assertTrue("min should be present", sortedCreatorIds.contains("min"));
-        assertTrue("maven-plugin should be present", sortedCreatorIds.contains("maven-plugin"));
-        assertTrue("maven-archetype should be present", sortedCreatorIds.contains("maven-archetype"));
+        assertTrue(sortedCreatorIds.contains("min"), "min should be present");
+        assertTrue(sortedCreatorIds.contains("maven-plugin"), "maven-plugin should be present");
+        assertTrue(sortedCreatorIds.contains("maven-archetype"), "maven-archetype should be present");
 
         // currently, both "maven-plugin" and "maven-archetype" creator depend on "min" creator
         assertTrue(
-                "maven-archetype depends on min",
-                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-archetype"));
+                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-archetype"),
+                "maven-archetype depends on min");
         assertTrue(
-                "maven-plugin depends on min",
-                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-plugin"));
+                sortedCreatorIds.indexOf("min") < sortedCreatorIds.indexOf("maven-plugin"),
+                "maven-plugin depends on min");
     }
 
     @Test
@@ -83,17 +83,17 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
         }
 
         // ensure we fulfil some basic conditions
-        assertTrue("min should be present", sortedCreatorIds.contains("min"));
-        assertTrue("maven-plugin should be present", sortedCreatorIds.contains("maven-plugin"));
-        assertTrue("maven-archetype should be present", sortedCreatorIds.contains("maven-archetype"));
-        assertTrue("depend-on-all should be present", sortedCreatorIds.contains("depend-on-all"));
-        assertTrue("last should be present", sortedCreatorIds.contains("last"));
+        assertTrue(sortedCreatorIds.contains("min"), "min should be present");
+        assertTrue(sortedCreatorIds.contains("maven-plugin"), "maven-plugin should be present");
+        assertTrue(sortedCreatorIds.contains("maven-archetype"), "maven-archetype should be present");
+        assertTrue(sortedCreatorIds.contains("depend-on-all"), "depend-on-all should be present");
+        assertTrue(sortedCreatorIds.contains("last"), "last should be present");
 
         // "last" has to be last
-        assertTrue("last creator should be last", sortedCreatorIds.indexOf("last") == sortedCreatorIds.size() - 1);
+        assertTrue(sortedCreatorIds.indexOf("last") == sortedCreatorIds.size() - 1, "last creator should be last");
         assertTrue(
-                "depend-on-all should be next to last",
-                sortedCreatorIds.indexOf("depend-on-all") == sortedCreatorIds.size() - 2);
+                sortedCreatorIds.indexOf("depend-on-all") == sortedCreatorIds.size() - 2,
+                "depend-on-all should be next to last");
     }
 
     @Test
@@ -112,11 +112,11 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
             final String message = e.getMessage();
 
             assertTrue(
-                    "Exception message should mention the problematic creator's ID",
-                    message.contains("non-satisfyable"));
+                    message.contains("non-satisfyable"),
+                    "Exception message should mention the problematic creator's ID");
             assertTrue(
-                    "Exception message should mention the missing creator's ID",
-                    message.contains("this-creator-i-depend-on-does-not-exists"));
+                    message.contains("this-creator-i-depend-on-does-not-exists"),
+                    "Exception message should mention the missing creator's ID");
         }
     }
 }

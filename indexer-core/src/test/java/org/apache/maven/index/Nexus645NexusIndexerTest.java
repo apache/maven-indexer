@@ -24,9 +24,9 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.search.Query;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus645NexusIndexerTest extends AbstractNexusIndexerTest {

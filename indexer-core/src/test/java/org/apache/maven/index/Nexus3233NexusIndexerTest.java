@@ -21,10 +21,10 @@ package org.apache.maven.index;
 import java.io.File;
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
 public class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {

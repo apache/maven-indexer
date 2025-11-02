@@ -25,11 +25,11 @@ import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.UserInputSearchExpression;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/mindexer-35");

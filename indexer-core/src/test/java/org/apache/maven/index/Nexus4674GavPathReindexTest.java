@@ -22,10 +22,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Nexus4674GavPathReindexTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/repo");
@@ -41,7 +41,7 @@ public class Nexus4674GavPathReindexTest extends AbstractNexusIndexerTest {
     @Test
     public void testRootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
-        assertEquals(rootGroups.toString(), 1, rootGroups.size());
+        assertEquals(1, rootGroups.size(), rootGroups.toString());
 
         assertGroup(4, "org", context);
 
@@ -58,13 +58,13 @@ public class Nexus4674GavPathReindexTest extends AbstractNexusIndexerTest {
 
         ais = nexusIndexer.identify(artifact);
 
-        assertTrue("Should not be able to identify it!", ais.isEmpty());
+        assertTrue(ais.isEmpty(), "Should not be able to identify it!");
 
         // Using a file: this one should be known
         artifact = new File(repo, "org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar");
 
         ais = nexusIndexer.identify(artifact);
 
-        assertEquals("Should not be able to identify it!", 1, ais.size());
+        assertEquals(1, ais.size(), "Should not be able to identify it!");
     }
 }

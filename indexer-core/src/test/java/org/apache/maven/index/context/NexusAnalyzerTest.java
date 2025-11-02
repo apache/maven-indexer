@@ -27,9 +27,9 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NexusAnalyzerTest {
     protected NexusAnalyzer nexusAnalyzer = new NexusAnalyzer();
@@ -56,6 +56,6 @@ public class NexusAnalyzerTest {
             tokenList.add(text);
         }
 
-        assertEquals("The result does not meet the expectations.", Arrays.asList(expected), tokenList);
+        assertEquals(Arrays.asList(expected), tokenList, "The result does not meet the expectations.");
     }
 }
