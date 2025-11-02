@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
@@ -54,7 +55,6 @@ import org.apache.maven.index.search.grouping.GAGrouping;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
-import org.codehaus.plexus.util.StringUtils;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -373,7 +373,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         IteratorSearchRequest request = new IteratorSearchRequest(q, (ctx, ai) -> {
             // we reject version "1.5" for fun
-            return !StringUtils.equals(ai.getVersion(), "1.5");
+            return !Objects.equals(ai.getVersion(), "1.5");
         });
 
         IteratorSearchResponse response = indexer.searchIterator(request);

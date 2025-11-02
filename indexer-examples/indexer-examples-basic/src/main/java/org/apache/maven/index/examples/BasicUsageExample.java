@@ -329,7 +329,7 @@ public class BasicUsageExample {
             System.out.println(
                     StringUtils.isBlank(ai.getDescription())
                             ? "No description in plugin's POM."
-                            : StringUtils.abbreviate(ai.getDescription(), MAX_WIDTH));
+                            : ai.getDescription().length() <= MAX_WIDTH ? ai.getDescription() : ai.getDescription().substring(0, MAX_WIDTH - 3) + "...");
             System.out.println();
         }
 
