@@ -33,6 +33,7 @@ $ mvn release:perform
 Build and deploy site (to LATEST):
 
 ```
+$ cd target/checkout
 $ mvn -P reporting site site:stage
 $ mvn scm-publish:publish-scm
 ```
