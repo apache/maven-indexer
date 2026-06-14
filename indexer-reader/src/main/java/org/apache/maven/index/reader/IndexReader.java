@@ -190,7 +190,7 @@ public class IndexReader implements Iterable<ChunkReader>, Closeable {
             }
             return Collections.unmodifiableList(chunkNames);
         } else {
-            return Collections.singletonList(Utils.INDEX_FILE_PREFIX + ".gz");
+            return List.of(Utils.INDEX_FILE_PREFIX + ".gz");
         }
     }
 
