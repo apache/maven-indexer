@@ -1,4 +1,8 @@
-<?xml version="1.0"?>
+---
+title: Introduction
+author: 
+  - Hervé Boutemy
+---
 
 <!--
 /*
@@ -19,79 +23,54 @@
  */
 -->
 
-<document xmlns="http://maven.apache.org/XDOC/2.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
+# Maven :: Indexer Core
 
-  <properties>
-    <title>Introduction</title>
-    <author email="hboutemy_AT_apache_DOT_org">Hervé Boutemy</author>
-  </properties>
+Indexer Core contains the core support for indexing Maven repositories, searching them, publishing and consuming remotely published indexes.
 
-  <body>
+## Index Fields Reference
 
-    <section name="Maven :: Indexer Core">
+<!-- see org.apache.maven.index.ArtifactInfoRecord --> 
+- `u`: Artifact unique groupId|artifactId|version|classifier|extension (or packaging) (as keyword, stored)
 
-      <p>Indexer Core contains the core support for indexing Maven repositories, searching them, publishing and consuming remotely
-    published indexes.</p>
+<!-- see org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator --> 
+- `min` indexer type
+    - `i`: Artifact info: packaging|lastModified|size|sourcesExists|javadocExists|signatureExists (not indexed, stored)
+    - `g`: Artifact GroupID (as keyword)
+    - `groupId`: Artifact GroupID (tokenized)
+    - `a`: Artifact ArtifactID (as keyword)
+    - `artifactId`: Artifact ArtifactID (tokenized)
+    - `v`: Artifact Version (as keyword)
+    - `version`: Artifact Version (tokenized)
+    - `p`: Artifact Packaging/Extension (as keyword)
+    - `l`: Artifact classifier (as keyword)
+    - `n`: Artifact name (tokenized, stored)
+    - `d`: Artifact description (tokenized, stored)
+    - `m`: Artifact last modified (not indexed, stored)
+    - `1`: Artifact SHA1 checksum (as keyword, stored)
 
-    <subsection name="Index Fields Reference">
+<!-- see org.apache.maven.index.creator.JarFileContentsIndexCreator --> 
+- `jarContent` indexer type
+    - `classnames`: Artifact Classes (tokenized)
+    - `c`: Artifact Classes (tokenized on newlines only)
 
-  <ul>
-    <!-- see org.apache.maven.index.ArtifactInfoRecord -->
-    <li><code>u</code>: Artifact unique groupId|artifactId|version|classifier|extension (or packaging) (as keyword, stored)</li>
+<!-- see org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator --> 
+- `maven-plugin` indexer type
+    - `px`: MavenPlugin prefix (as keyword, stored)
+    - `gx`: MavenPlugin goals (as keyword, stored)
 
-    <!-- see org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator -->
-    <li><code>min</code> indexer type<ul>
-      <li><code>i</code>: Artifact info: packaging|lastModified|size|sourcesExists|javadocExists|signatureExists (not indexed, stored)</li>
-      <li><code>g</code>: Artifact GroupID (as keyword)</li>
-      <li><code>groupId</code>: Artifact GroupID (tokenized)</li>
-      <li><code>a</code>: Artifact ArtifactID (as keyword)</li>
-      <li><code>artifactId</code>: Artifact ArtifactID (tokenized)</li>
-      <li><code>v</code>: Artifact Version (as keyword)</li>
-      <li><code>version</code>: Artifact Version (tokenized)</li>
-      <li><code>p</code>: Artifact Packaging/Extension (as keyword)</li>
-      <li><code>l</code>: Artifact classifier (as keyword)</li>
-      <li><code>n</code>: Artifact name (tokenized, stored)</li>
-      <li><code>d</code>: Artifact description (tokenized, stored)</li>
-      <li><code>m</code>: Artifact last modified (not indexed, stored)</li>
-      <li><code>1</code>: Artifact SHA1 checksum (as keyword, stored)</li>
-    </ul></li>
+<!-- see org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator --> 
+- `maven-archetype` indexer type: no additional field
 
-    <!-- see org.apache.maven.index.creator.JarFileContentsIndexCreator -->
-    <li><code>jarContent</code> indexer type<ul>
-      <li><code>classnames</code>: Artifact Classes (tokenized)</li>
-      <li><code>c</code>: Artifact Classes (tokenized on newlines only)</li>
-    </ul></li>
+<!-- see org.apache.maven.index.creator.OsgiArtifactIndexCreator --> 
+- `osgi-metadatas` indexer type
+    - `Bundle-SymbolicName`: Bundle-SymbolicName (indexed, stored)
+    - `Bundle-Version`: Bundle-Version (indexed, stored)
+    - `Export-Package`: Export-Package (indexed, stored)
+    - `Export-Service`: Export-Service (indexed, stored)
+    - `Bundle-Description`: Bundle-Description (indexed, stored)
+    - `Bundle-Name`: Bundle-Name (indexed, stored)
+    - `Bundle-License`: Bundle-License (indexed, stored)
+    - `Bundle-DocURL`: Bundle-DocURL (indexed, stored)
+    - `Import-Package`: Import-Package (indexed, stored)
+    - `Require-Bundle`: Require-Bundle (indexed, stored)
 
-    <!-- see org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator -->
-    <li><code>maven-plugin</code> indexer type<ul>
-      <li><code>px</code>: MavenPlugin prefix (as keyword, stored)</li>
-      <li><code>gx</code>: MavenPlugin goals (as keyword, stored)</li>
-    </ul></li>
-
-    <!-- see org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator -->
-    <li><code>maven-archetype</code> indexer type: no additional field</li>
-
-    <!-- see org.apache.maven.index.creator.OsgiArtifactIndexCreator -->
-    <li><code>osgi-metadatas</code> indexer type<ul>
-      <li><code>Bundle-SymbolicName</code>: Bundle-SymbolicName (indexed, stored)</li>
-      <li><code>Bundle-Version</code>: Bundle-Version (indexed, stored)</li>
-      <li><code>Export-Package</code>: Export-Package (indexed, stored)</li>
-      <li><code>Export-Service</code>: Export-Service (indexed, stored)</li>
-      <li><code>Bundle-Description</code>: Bundle-Description (indexed, stored)</li>
-      <li><code>Bundle-Name</code>: Bundle-Name (indexed, stored)</li>
-      <li><code>Bundle-License</code>: Bundle-License (indexed, stored)</li>
-      <li><code>Bundle-DocURL</code>: Bundle-DocURL (indexed, stored)</li>
-      <li><code>Import-Package</code>: Import-Package (indexed, stored)</li>
-      <li><code>Require-Bundle</code>: Require-Bundle (indexed, stored)</li>
-    </ul></li>
-
-  </ul>
-
-    </subsection>
-    </section>
-
-  </body>
-
-</document>
