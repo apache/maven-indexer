@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
+---
+title: Frequently Asked Questions
+---
 
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -19,19 +21,15 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<faqs xmlns="http://maven.apache.org/FML/1.0.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
-  id="FAQ" title="Frequently Asked Questions">
-  <part id="General">
-    <faq id="How to open the index with Luke">
-      <question>How to open the index with Luke?</question>
-      <answer>
-        <p>
-          The <code>.gz</code> index has to be unpacked, with <code>java -jar indexer-cli.jar -u -t full</code>. Then
-          you can open the resulting directory with <a href="https://github.com/DmitryKey/luke">Luke</a>.
-        </p>
-      </answer>
-    </faq>
-  </part>
-</faqs>
+<a id="top"></a>
+
+# Frequently Asked Questions
+
+1. [How to open the index with Luke?](#How_to_open_the_index_with_Luke)
+
+<a id="How_to_open_the_index_with_Luke"></a>
+
+### How to open the index with Luke?
+
+The `.gz` index has to be unpacked, with `java -jar indexer-cli.jar -u -t full`.
+Then you can open the resulting directory with [Luke](https://github.com/DmitryKey/luke).
