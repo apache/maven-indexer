@@ -18,158 +18,143 @@
  */
 package org.apache.maven.index.updater.fixtures;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.UserStore;
-import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.util.security.Password;
-import org.eclipse.jetty.webapp.WebAppContext;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpServer;
 
 public class ServerTestFixture {
 
     private static final String SERVER_ROOT_RESOURCE_PATH = "index-updater/server-root";
 
-    private static final String SIXTY_TWO_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int BUFFER_SIZE = 64;
 
-    public static final String LONG_PASSWORD = SIXTY_TWO_CHARS + SIXTY_TWO_CHARS;
+    private static final long CHUNK_DELAY_MILLIS = 1000;
 
-    private final Server server;
+    private final Path base;
+
+    private final HttpServer server;
+
+    private final AtomicInteger redirectionCount = new AtomicInteger();
 
     public ServerTestFixture(final int port) throws Exception {
-        server = new Server();
+        this(port, getBase());
+    }
 
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(port);
-
-        server.setConnectors(new Connector[] {connector});
-
-        Constraint constraint = new Constraint();
-        constraint.setName(Constraint.__BASIC_AUTH);
-
-        constraint.setRoles(new String[] {"allowed"});
-        constraint.setAuthenticate(true);
-
-        ConstraintMapping cm = new ConstraintMapping();
-        cm.setConstraint(constraint);
-        cm.setPathSpec("/protected/*");
-
-        UserStore userStore = new UserStore();
-        userStore.addUser("user", new Password("password"), new String[] {"allowed"});
-        userStore.addUser("longuser", new Password(LONG_PASSWORD), new String[] {"allowed"});
-        HashLoginService hls = new HashLoginService("POC Server");
-        hls.setUserStore(userStore);
-
-        ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-        sh.setAuthenticator(new BasicAuthenticator());
-        sh.setLoginService(hls);
-        sh.setConstraintMappings(new ConstraintMapping[] {cm});
-
-        WebAppContext ctx = new WebAppContext();
-        ctx.setContextPath("/");
-
-        File base = getBase();
-        ctx.setWar(base.getAbsolutePath());
-        ctx.setSecurityHandler(sh);
-
-        ctx.getServletHandler().addServletWithMapping(TimingServlet.class, "/slow/*");
-        ctx.getServletHandler().addServletWithMapping(InfiniteRedirectionServlet.class, "/redirect-trap/*");
-
-        SessionHandler sessionHandler = ctx.getSessionHandler();
-        sessionHandler.setUsingCookies(true);
-
-        HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[] {ctx, new DefaultHandler()});
-
-        server.setHandler(handlers);
+    public ServerTestFixture(final int port, final Path base) throws IOException {
+        this.base = base.toAbsolutePath().normalize();
+        server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
+        server.createContext("/slow/", this::serveSlowly);
+        server.createContext("/redirect-trap/", this::redirect);
+        server.createContext("/", this::serve);
         server.start();
     }
 
-    private static File getBase() throws URISyntaxException {
+    private static Path getBase() throws URISyntaxException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource(SERVER_ROOT_RESOURCE_PATH);
         if (resource == null) {
             throw new IllegalStateException("Cannot find classpath resource: " + SERVER_ROOT_RESOURCE_PATH);
         }
 
-        return new File(resource.toURI().normalize());
+        return Paths.get(resource.toURI()).normalize();
     }
 
-    public void stop() throws Exception {
-        server.stop();
-        server.join();
+    public void stop() {
+        server.stop(0);
     }
 
-    public static final class TimingServlet extends HttpServlet {
-        private static final long serialVersionUID = 1L;
+    private void serve(final HttpExchange exchange) throws IOException {
+        if (!requireGet(exchange)) {
+            return;
+        }
 
-        @Override
-        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-            String basePath = req.getServletPath();
-            String subPath = req.getRequestURI().substring(basePath.length());
+        Path file = resolve(exchange.getRequestURI());
+        if (file == null || !Files.isRegularFile(file)) {
+            sendEmptyResponse(exchange, 404);
+            return;
+        }
 
-            File base;
-            try {
-                base = getBase();
-            } catch (URISyntaxException e) {
-                resp.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH);
-                return;
-            }
+        exchange.sendResponseHeaders(200, Files.size(file));
+        try (OutputStream out = exchange.getResponseBody()) {
+            Files.copy(file, out);
+        }
+    }
 
-            File f = new File(base, "slow" + subPath);
-            try (InputStream in = new FileInputStream(f)) {
-                OutputStream out = resp.getOutputStream();
+    private void serveSlowly(final HttpExchange exchange) throws IOException {
+        if (!requireGet(exchange)) {
+            return;
+        }
 
-                int read;
-                byte[] buf = new byte[64];
-                while ((read = in.read(buf)) > -1) {
-                    System.out.println("Sending " + read + " bytes (after pausing 1 seconds)...");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
+        Path file = resolve(exchange.getRequestURI());
+        if (file == null || !Files.isRegularFile(file)) {
+            sendEmptyResponse(exchange, 404);
+            return;
+        }
 
-                    out.write(buf, 0, read);
+        exchange.sendResponseHeaders(200, 0);
+        try (InputStream in = Files.newInputStream(file);
+                OutputStream out = exchange.getResponseBody()) {
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int read;
+            while ((read = in.read(buffer)) > -1) {
+                try {
+                    Thread.sleep(CHUNK_DELAY_MILLIS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while serving a slow response", e);
                 }
-
-                out.flush();
+                out.write(buffer, 0, read);
             }
         }
     }
 
-    public static final class InfiniteRedirectionServlet extends HttpServlet {
-        private static final long serialVersionUID = 1L;
-
-        static int redirCount = 0;
-
-        @Override
-        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-            String path = req.getServletPath();
-            String subPath = req.getRequestURI().substring(path.length());
-
-            path += subPath + "-" + (++redirCount);
-            resp.sendRedirect(path);
+    private void redirect(final HttpExchange exchange) throws IOException {
+        if (!requireGet(exchange)) {
+            return;
         }
+
+        URI requestUri = exchange.getRequestURI();
+        String location = requestUri.getRawPath() + "-" + redirectionCount.incrementAndGet();
+        if (requestUri.getRawQuery() != null) {
+            location += "?" + requestUri.getRawQuery();
+        }
+
+        exchange.getResponseHeaders().set("Location", location);
+        sendEmptyResponse(exchange, 302);
+    }
+
+    private Path resolve(final URI requestUri) {
+        String requestPath = requestUri.getPath();
+        if (requestPath == null || !requestPath.startsWith("/")) {
+            return null;
+        }
+
+        Path resolved = base.resolve(requestPath.substring(1)).normalize();
+        return resolved.startsWith(base) ? resolved : null;
+    }
+
+    private static boolean requireGet(final HttpExchange exchange) throws IOException {
+        if ("GET".equals(exchange.getRequestMethod())) {
+            return true;
+        }
+
+        exchange.getResponseHeaders().set("Allow", "GET");
+        sendEmptyResponse(exchange, 405);
+        return false;
+    }
+
+    private static void sendEmptyResponse(final HttpExchange exchange, final int status) throws IOException {
+        exchange.sendResponseHeaders(status, -1);
+        exchange.close();
     }
 }
