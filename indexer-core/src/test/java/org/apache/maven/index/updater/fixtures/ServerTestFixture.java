@@ -21,8 +21,6 @@ package org.apache.maven.index.updater.fixtures;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -30,8 +28,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.Callback;
 
 public class ServerTestFixture {
 
@@ -43,7 +47,7 @@ public class ServerTestFixture {
 
     private final Path base;
 
-    private final HttpServer server;
+    private final Server server;
 
     private final AtomicInteger redirectionCount = new AtomicInteger();
 
@@ -51,12 +55,10 @@ public class ServerTestFixture {
         this(port, getBase());
     }
 
-    public ServerTestFixture(final int port, final Path base) throws IOException {
+    public ServerTestFixture(final int port, final Path base) throws Exception {
         this.base = base.toAbsolutePath().normalize();
-        server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
-        server.createContext("/slow/", this::serveSlowly);
-        server.createContext("/redirect-trap/", this::redirect);
-        server.createContext("/", this::serve);
+        server = new Server(port);
+        server.setHandler(new FixtureHandler());
         server.start();
     }
 
@@ -69,41 +71,41 @@ public class ServerTestFixture {
         return Paths.get(resource.toURI()).normalize();
     }
 
-    public void stop() {
-        server.stop(0);
+    public void stop() throws Exception {
+        server.stop();
+        server.join();
     }
 
-    private void serve(final HttpExchange exchange) throws IOException {
-        if (!requireGet(exchange)) {
-            return;
-        }
-
-        Path file = resolve(exchange.getRequestURI());
+    private boolean serve(final String requestPath, final Response response, final Callback callback)
+            throws IOException {
+        Path file = resolve(requestPath);
         if (file == null || !Files.isRegularFile(file)) {
-            sendEmptyResponse(exchange, 404);
-            return;
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            callback.succeeded();
+            return true;
         }
 
-        exchange.sendResponseHeaders(200, Files.size(file));
-        try (OutputStream out = exchange.getResponseBody()) {
-            Files.copy(file, out);
-        }
+        response.setStatus(HttpStatus.OK_200);
+        response.getHeaders().put(HttpHeader.CONTENT_LENGTH, Files.size(file));
+        OutputStream out = Content.Sink.asOutputStream(response);
+        Files.copy(file, out);
+        out.flush();
+        callback.succeeded();
+        return true;
     }
 
-    private void serveSlowly(final HttpExchange exchange) throws IOException {
-        if (!requireGet(exchange)) {
-            return;
-        }
-
-        Path file = resolve(exchange.getRequestURI());
+    private boolean serveSlowly(final String requestPath, final Response response, final Callback callback)
+            throws IOException {
+        Path file = resolve(requestPath);
         if (file == null || !Files.isRegularFile(file)) {
-            sendEmptyResponse(exchange, 404);
-            return;
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            callback.succeeded();
+            return true;
         }
 
-        exchange.sendResponseHeaders(200, 0);
-        try (InputStream in = Files.newInputStream(file);
-                OutputStream out = exchange.getResponseBody()) {
+        response.setStatus(HttpStatus.OK_200);
+        try (InputStream in = Files.newInputStream(file)) {
+            OutputStream out = Content.Sink.asOutputStream(response);
             byte[] buffer = new byte[BUFFER_SIZE];
             int read;
             while ((read = in.read(buffer)) > -1) {
@@ -115,46 +117,31 @@ public class ServerTestFixture {
                 }
                 out.write(buffer, 0, read);
             }
+            out.flush();
         }
+        callback.succeeded();
+        return true;
     }
 
-    private void redirect(final HttpExchange exchange) throws IOException {
-        if (!requireGet(exchange)) {
-            return;
-        }
-
-        URI requestUri = exchange.getRequestURI();
-        String location = requestUri.getRawPath() + "-" + redirectionCount.incrementAndGet();
-        if (requestUri.getRawQuery() != null) {
-            location += "?" + requestUri.getRawQuery();
-        }
-
-        exchange.getResponseHeaders().set("Location", location);
-        sendEmptyResponse(exchange, 302);
-    }
-
-    private Path resolve(final URI requestUri) {
-        String requestPath = requestUri.getPath();
-        if (requestPath == null || !requestPath.startsWith("/")) {
-            return null;
-        }
-
+    private Path resolve(final String requestPath) {
         Path resolved = base.resolve(requestPath.substring(1)).normalize();
         return resolved.startsWith(base) ? resolved : null;
     }
 
-    private static boolean requireGet(final HttpExchange exchange) throws IOException {
-        if ("GET".equals(exchange.getRequestMethod())) {
-            return true;
+    private final class FixtureHandler extends Handler.Abstract {
+        @Override
+        public boolean handle(final Request request, final Response response, final Callback callback)
+                throws Exception {
+            String requestPath = Request.getPathInContext(request);
+            if (requestPath.startsWith("/slow/")) {
+                return serveSlowly(requestPath, response, callback);
+            }
+            if (requestPath.startsWith("/redirect-trap/")) {
+                String location = requestPath + "-" + redirectionCount.incrementAndGet();
+                Response.sendRedirect(request, response, callback, HttpStatus.MOVED_TEMPORARILY_302, location, false);
+                return true;
+            }
+            return serve(requestPath, response, callback);
         }
-
-        exchange.getResponseHeaders().set("Allow", "GET");
-        sendEmptyResponse(exchange, 405);
-        return false;
-    }
-
-    private static void sendEmptyResponse(final HttpExchange exchange, final int status) throws IOException {
-        exchange.sendResponseHeaders(status, -1);
-        exchange.close();
     }
 }
