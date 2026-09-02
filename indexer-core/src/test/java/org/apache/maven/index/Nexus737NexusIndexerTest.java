@@ -23,6 +23,7 @@ import java.io.File;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.util.Bits;
 import org.junit.jupiter.api.Test;
 
@@ -43,12 +44,12 @@ public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
     public void testValidateUINFOs() throws Exception {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
         Bits liveDocs = MultiBits.getLiveDocs(reader);
-
+        StoredFields storedFields = reader.storedFields();
         int foundCount = 0;
 
         for (int i = 0; i < reader.maxDoc(); i++) {
             if (liveDocs == null || liveDocs.get(i)) {
-                Document document = reader.document(i);
+                Document document = storedFields.document(i);
 
                 String uinfo = document.get(ArtifactInfo.UINFO);
 

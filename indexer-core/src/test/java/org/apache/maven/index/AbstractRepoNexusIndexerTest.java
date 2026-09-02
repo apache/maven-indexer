@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.search.grouping.GAGrouping;
@@ -501,11 +502,11 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     @Test
     public void testPackaging() throws Exception {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
-
+        StoredFields storedFields = reader.storedFields();
         Bits liveDocs = MultiBits.getLiveDocs(reader);
         for (int i = 0; i < reader.maxDoc(); i++) {
             if (liveDocs == null || liveDocs.get(i)) {
-                Document document = reader.document(i);
+                Document document = storedFields.document(i);
 
                 String uinfo = document.get(ArtifactInfo.UINFO);
 
