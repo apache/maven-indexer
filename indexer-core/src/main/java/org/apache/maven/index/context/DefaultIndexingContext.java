@@ -330,11 +330,11 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
                 final TopDocs topDocs = indexSearcher.search(
                         new TermQuery(DESCRIPTOR_TERM), new TopScoreDocCollectorManager(1, Integer.MAX_VALUE));
 
-                if (topDocs.totalHits.value == 0) {
+                if (topDocs.totalHits.value() == 0) {
                     throw new ExistingLuceneIndexMismatchException("The existing index has no NexusIndexer descriptor");
                 }
 
-                if (topDocs.totalHits.value > 1) {
+                if (topDocs.totalHits.value() > 1) {
                     // eh? this is buggy index it seems, just iron it out then
                     storeDescriptor();
                 } else {

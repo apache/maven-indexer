@@ -121,6 +121,7 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
 
         this.matchHighlightRequests = request.getMatchHighlightRequests();
 
+        // TODO list never read?
         List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<>();
         for (MatchHighlightRequest hr : request.getMatchHighlightRequests()) {
             Query rewrittenQuery = hr.getQuery().rewrite(indexSearcher);

@@ -98,7 +98,9 @@ public class DefaultSearchEngine implements SearchEngine {
 
         final TreeSet<ArtifactInfo> result = new TreeSet<>(request.getArtifactInfoComparator());
         return new FlatSearchResponse(
-                request.getQuery(), searchFlat(request, result, contexts, request.getQuery()), result);
+                request.getQuery(),
+                (int) searchFlat(request, result, contexts, request.getQuery()), // TODO long downcast
+                result);
     }
 
     // ==
@@ -122,26 +124,27 @@ public class DefaultSearchEngine implements SearchEngine {
 
         return new GroupedSearchResponse(
                 request.getQuery(),
-                searchGrouped(request, result, request.getGrouping(), contexts, request.getQuery()),
+                (int) searchGrouped(
+                        request, result, request.getGrouping(), contexts, request.getQuery()), // TODO long downcast
                 result);
     }
 
     // ===
 
-    protected int searchFlat(
+    protected long searchFlat(
             FlatSearchRequest req,
             Collection<ArtifactInfo> result,
             List<IndexingContext> participatingContexts,
             Query query)
             throws IOException {
-        int hitCount = 0;
+        long hitCount = 0;
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try {
                 final StoredFields storedFields = indexSearcher.storedFields();
                 final TopDocs topDocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (topDocs.totalHits.value == 0) {
+                if (topDocs.totalHits.value() == 0) {
                     // context has no hits, just continue to next one
                     continue;
                 }
@@ -150,7 +153,7 @@ public class DefaultSearchEngine implements SearchEngine {
 
                 // uhm btw hitCount contains dups
 
-                hitCount += (int) topDocs.totalHits.value;
+                hitCount += topDocs.totalHits.value();
 
                 int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
 
@@ -184,14 +187,14 @@ public class DefaultSearchEngine implements SearchEngine {
         return hitCount;
     }
 
-    protected int searchGrouped(
+    protected long searchGrouped(
             GroupedSearchRequest req,
             Map<String, ArtifactInfoGroup> result,
             Grouping grouping,
             List<IndexingContext> participatingContexts,
             Query query)
             throws IOException {
-        int hitCount = 0;
+        long hitCount = 0;
 
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
@@ -199,10 +202,10 @@ public class DefaultSearchEngine implements SearchEngine {
                 final StoredFields storedFields = indexSearcher.storedFields();
                 final TopDocs topDocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (topDocs.totalHits.value > 0) {
+                if (topDocs.totalHits.value() > 0) {
                     ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 
-                    hitCount += (int) topDocs.totalHits.value;
+                    hitCount += topDocs.totalHits.value();
 
                     for (ScoreDoc scoreDoc : scoreDocs) {
                         Document doc = storedFields.document(scoreDoc.doc);
@@ -263,7 +266,7 @@ public class DefaultSearchEngine implements SearchEngine {
 
             return new IteratorSearchResponse(
                     request.getQuery(),
-                    (int) topDocs.totalHits.value,
+                    (int) topDocs.totalHits.value(), // TODO long downcast
                     new DefaultIteratorResultSet(request, indexSearcher, contexts, topDocs));
         } catch (IOException | RuntimeException e) {
             try {
@@ -295,8 +298,8 @@ public class DefaultSearchEngine implements SearchEngine {
             TopDocs hits = indexSearcher.search(query, new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE));
 
             // check total hits against, does it fit?
-            if (topHitCount < hits.totalHits.value) {
-                topHitCount = (int) hits.totalHits.value;
+            if (topHitCount < hits.totalHits.value()) {
+                topHitCount = (int) hits.totalHits.value();
 
                 if (getLogger().isDebugEnabled()) {
                     // warn the user and leave trace just before OOM might happen

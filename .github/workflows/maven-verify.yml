@@ -31,7 +31,7 @@ jobs:
       ff-goal: verify
       verify-goal: verify
       ff-run: false
-      jdk-matrix: '[ "17", "21" ]'
+      jdk-matrix: '[ "21", "25" ]'
       maven-matrix: '[ "3.9.9" ]'
 
 

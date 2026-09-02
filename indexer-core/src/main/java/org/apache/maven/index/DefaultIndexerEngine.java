@@ -140,7 +140,7 @@ public class DefaultIndexerEngine implements IndexerEngine {
                                 ArtifactInfo.UINFO, ac.getArtifactInfo().getUinfo())),
                         2);
 
-                if (result.totalHits.value == 1) {
+                if (result.totalHits.value() == 1) {
                     return indexSearcher.storedFields().document(result.scoreDocs[0].doc);
                 }
             } finally {
