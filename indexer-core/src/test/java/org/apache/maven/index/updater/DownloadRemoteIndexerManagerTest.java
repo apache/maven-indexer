@@ -30,12 +30,8 @@ import java.util.TimeZone;
 
 import org.apache.maven.index.Java11HttpClient;
 import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.updater.fixtures.ServerTestFixture;
 import org.codehaus.plexus.util.FileUtils;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerList;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
-    private Server server;
+    private ServerTestFixture server;
 
     private File fakeCentral;
 
@@ -62,15 +58,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
         int port = s.getLocalPort();
         s.close();
 
-        server = new Server(port);
-
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setResourceBase(fakeCentral.getAbsolutePath());
-        HandlerList handlers = new HandlerList();
-        handlers.setHandlers(new Handler[] {resource_handler, new DefaultHandler()});
-        server.setHandler(handlers);
-
-        server.start();
+        server = new ServerTestFixture(port, fakeCentral.toPath());
 
         // make context "fake central"
         centralContext = indexer.addIndexingContext(

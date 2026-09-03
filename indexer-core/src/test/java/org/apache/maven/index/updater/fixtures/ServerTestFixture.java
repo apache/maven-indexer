@@ -18,100 +18,57 @@
  */
 package org.apache.maven.index.updater.fixtures;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jetty.security.ConstraintMapping;
-import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.UserStore;
-import org.eclipse.jetty.security.authentication.BasicAuthenticator;
-import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.handler.DefaultHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.util.security.Constraint;
-import org.eclipse.jetty.util.security.Password;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.util.Callback;
 
 public class ServerTestFixture {
 
     private static final String SERVER_ROOT_RESOURCE_PATH = "index-updater/server-root";
 
-    private static final String SIXTY_TWO_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int BUFFER_SIZE = 64;
 
-    public static final String LONG_PASSWORD = SIXTY_TWO_CHARS + SIXTY_TWO_CHARS;
+    private static final long CHUNK_DELAY_MILLIS = 1000;
+
+    private final Path base;
 
     private final Server server;
 
+    private final AtomicInteger redirectionCount = new AtomicInteger();
+
     public ServerTestFixture(final int port) throws Exception {
-        server = new Server();
+        this(port, getBase());
+    }
 
-        ServerConnector connector = new ServerConnector(server);
-        connector.setPort(port);
-
-        server.setConnectors(new Connector[] {connector});
-
-        Constraint constraint = new Constraint();
-        constraint.setName(Constraint.__BASIC_AUTH);
-
-        constraint.setRoles(new String[] {"allowed"});
-        constraint.setAuthenticate(true);
-
-        ConstraintMapping cm = new ConstraintMapping();
-        cm.setConstraint(constraint);
-        cm.setPathSpec("/protected/*");
-
-        UserStore userStore = new UserStore();
-        userStore.addUser("user", new Password("password"), new String[] {"allowed"});
-        userStore.addUser("longuser", new Password(LONG_PASSWORD), new String[] {"allowed"});
-        HashLoginService hls = new HashLoginService("POC Server");
-        hls.setUserStore(userStore);
-
-        ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-        sh.setAuthenticator(new BasicAuthenticator());
-        sh.setLoginService(hls);
-        sh.setConstraintMappings(new ConstraintMapping[] {cm});
-
-        WebAppContext ctx = new WebAppContext();
-        ctx.setContextPath("/");
-
-        File base = getBase();
-        ctx.setWar(base.getAbsolutePath());
-        ctx.setSecurityHandler(sh);
-
-        ctx.getServletHandler().addServletWithMapping(TimingServlet.class, "/slow/*");
-        ctx.getServletHandler().addServletWithMapping(InfiniteRedirectionServlet.class, "/redirect-trap/*");
-
-        SessionHandler sessionHandler = ctx.getSessionHandler();
-        sessionHandler.setUsingCookies(true);
-
-        HandlerCollection handlers = new HandlerCollection();
-        handlers.setHandlers(new Handler[] {ctx, new DefaultHandler()});
-
-        server.setHandler(handlers);
+    public ServerTestFixture(final int port, final Path base) throws Exception {
+        this.base = base.toAbsolutePath().normalize();
+        server = new Server(port);
+        server.setHandler(new FixtureHandler());
         server.start();
     }
 
-    private static File getBase() throws URISyntaxException {
+    private static Path getBase() throws URISyntaxException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource(SERVER_ROOT_RESOURCE_PATH);
         if (resource == null) {
             throw new IllegalStateException("Cannot find classpath resource: " + SERVER_ROOT_RESOURCE_PATH);
         }
 
-        return new File(resource.toURI().normalize());
+        return Paths.get(resource.toURI()).normalize();
     }
 
     public void stop() throws Exception {
@@ -119,58 +76,72 @@ public class ServerTestFixture {
         server.join();
     }
 
-    public static final class TimingServlet extends HttpServlet {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-            String basePath = req.getServletPath();
-            String subPath = req.getRequestURI().substring(basePath.length());
-
-            File base;
-            try {
-                base = getBase();
-            } catch (URISyntaxException e) {
-                resp.sendError(
-                        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                        "Cannot find server document root in classpath: " + SERVER_ROOT_RESOURCE_PATH);
-                return;
-            }
-
-            File f = new File(base, "slow" + subPath);
-            try (InputStream in = new FileInputStream(f)) {
-                OutputStream out = resp.getOutputStream();
-
-                int read;
-                byte[] buf = new byte[64];
-                while ((read = in.read(buf)) > -1) {
-                    System.out.println("Sending " + read + " bytes (after pausing 1 seconds)...");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    out.write(buf, 0, read);
-                }
-
-                out.flush();
-            }
+    private boolean serve(final String requestPath, final Response response, final Callback callback)
+            throws IOException {
+        Path file = resolve(requestPath);
+        if (file == null || !Files.isRegularFile(file)) {
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            callback.succeeded();
+            return true;
         }
+
+        response.setStatus(HttpStatus.OK_200);
+        response.getHeaders().put(HttpHeader.CONTENT_LENGTH, Files.size(file));
+        OutputStream out = Content.Sink.asOutputStream(response);
+        Files.copy(file, out);
+        out.flush();
+        callback.succeeded();
+        return true;
     }
 
-    public static final class InfiniteRedirectionServlet extends HttpServlet {
-        private static final long serialVersionUID = 1L;
+    private boolean serveSlowly(final String requestPath, final Response response, final Callback callback)
+            throws IOException {
+        Path file = resolve(requestPath);
+        if (file == null || !Files.isRegularFile(file)) {
+            response.setStatus(HttpStatus.NOT_FOUND_404);
+            callback.succeeded();
+            return true;
+        }
 
-        static int redirCount = 0;
+        response.setStatus(HttpStatus.OK_200);
+        try (InputStream in = Files.newInputStream(file)) {
+            OutputStream out = Content.Sink.asOutputStream(response);
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int read;
+            while ((read = in.read(buffer)) > -1) {
+                try {
+                    Thread.sleep(CHUNK_DELAY_MILLIS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted while serving a slow response", e);
+                }
+                out.write(buffer, 0, read);
+            }
+            out.flush();
+        }
+        callback.succeeded();
+        return true;
+    }
 
+    private Path resolve(final String requestPath) {
+        Path resolved = base.resolve(requestPath.substring(1)).normalize();
+        return resolved.startsWith(base) ? resolved : null;
+    }
+
+    private final class FixtureHandler extends Handler.Abstract {
         @Override
-        protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-            String path = req.getServletPath();
-            String subPath = req.getRequestURI().substring(path.length());
-
-            path += subPath + "-" + (++redirCount);
-            resp.sendRedirect(path);
+        public boolean handle(final Request request, final Response response, final Callback callback)
+                throws Exception {
+            String requestPath = Request.getPathInContext(request);
+            if (requestPath.startsWith("/slow/")) {
+                return serveSlowly(requestPath, response, callback);
+            }
+            if (requestPath.startsWith("/redirect-trap/")) {
+                String location = requestPath + "-" + redirectionCount.incrementAndGet();
+                Response.sendRedirect(request, response, callback, HttpStatus.MOVED_TEMPORARILY_302, location, false);
+                return true;
+            }
+            return serve(requestPath, response, callback);
         }
     }
 }

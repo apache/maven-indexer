@@ -134,7 +134,7 @@ under the License.
 
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-webapp</artifactId>
+      <artifactId>jetty-server</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
