@@ -30,6 +30,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
@@ -142,9 +143,9 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
 
     private Map<String, ArtifactInfo> readIndex(IndexReader r1) throws CorruptIndexException, IOException {
         Map<String, ArtifactInfo> map = new HashMap<>();
-
+        StoredFields storedFields = r1.storedFields();
         for (int i = 0; i < r1.maxDoc(); i++) {
-            Document document = r1.document(i);
+            Document document = storedFields.document(i);
 
             ArtifactInfo ai = IndexUtils.constructArtifactInfo(document, context);
 

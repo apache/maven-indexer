@@ -28,10 +28,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.context.IndexingContext;
 
@@ -178,10 +180,11 @@ public class DefaultScannerListener implements ArtifactScanningListener {
         try {
             final IndexReader r = indexSearcher.getIndexReader();
             Bits liveDocs = MultiBits.getLiveDocs(r);
+            StoredFields storedFields = r.storedFields();
 
             for (int i = 0; i < r.maxDoc(); i++) {
                 if (liveDocs == null || liveDocs.get(i)) {
-                    Document d = r.document(i);
+                    Document d = storedFields.document(i);
 
                     String uinfo = d.get(ArtifactInfo.UINFO);
 
@@ -217,11 +220,11 @@ public class DefaultScannerListener implements ArtifactScanningListener {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             for (String uinfo : uinfos) {
-                TopScoreDocCollector collector = TopScoreDocCollector.create(1, Integer.MAX_VALUE);
+                TopScoreDocCollectorManager collector = new TopScoreDocCollectorManager(1, Integer.MAX_VALUE);
 
-                indexSearcher.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
+                TopDocs topdocs = indexSearcher.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
 
-                if (collector.getTotalHits() > 0) {
+                if (topdocs.totalHits.value() > 0) {
                     String[] ra = ArtifactInfo.FS_PATTERN.split(uinfo);
 
                     ArtifactInfo ai = new ArtifactInfo();
@@ -245,7 +248,7 @@ public class DefaultScannerListener implements ArtifactScanningListener {
                     // minimal ArtifactContext for removal
                     ArtifactContext ac = new ArtifactContext(null, null, null, ai, ai.calculateGav());
 
-                    for (int i = 0; i < collector.getTotalHits(); i++) {
+                    for (int i = 0; i < topdocs.totalHits.value(); i++) {
                         if (contextPath == null
                                 || context.getGavCalculator()
                                         .gavToPath(ac.getGav())

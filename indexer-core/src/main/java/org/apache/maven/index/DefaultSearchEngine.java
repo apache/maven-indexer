@@ -33,10 +33,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiReader;
@@ -96,7 +98,9 @@ public class DefaultSearchEngine implements SearchEngine {
 
         final TreeSet<ArtifactInfo> result = new TreeSet<>(request.getArtifactInfoComparator());
         return new FlatSearchResponse(
-                request.getQuery(), searchFlat(request, result, contexts, request.getQuery()), result);
+                request.getQuery(),
+                (int) searchFlat(request, result, contexts, request.getQuery()), // TODO long downcast
+                result);
     }
 
     // ==
@@ -120,40 +124,42 @@ public class DefaultSearchEngine implements SearchEngine {
 
         return new GroupedSearchResponse(
                 request.getQuery(),
-                searchGrouped(request, result, request.getGrouping(), contexts, request.getQuery()),
+                (int) searchGrouped(
+                        request, result, request.getGrouping(), contexts, request.getQuery()), // TODO long downcast
                 result);
     }
 
     // ===
 
-    protected int searchFlat(
+    protected long searchFlat(
             FlatSearchRequest req,
             Collection<ArtifactInfo> result,
             List<IndexingContext> participatingContexts,
             Query query)
             throws IOException {
-        int hitCount = 0;
+        long hitCount = 0;
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+            final StoredFields storedFields = indexSearcher.storedFields();
             try {
-                final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
+                final TopDocs topdocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (collector.getTotalHits() == 0) {
+                if (topdocs.totalHits.value() == 0) {
                     // context has no hits, just continue to next one
                     continue;
                 }
 
-                ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+                ScoreDoc[] scoreDocs = topdocs.scoreDocs;
 
                 // uhm btw hitCount contains dups
 
-                hitCount += collector.getTotalHits();
+                hitCount += topdocs.totalHits.value();
 
                 int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
 
                 // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
                 for (int i = start; i < scoreDocs.length; i++) {
-                    Document doc = indexSearcher.doc(scoreDocs[i].doc);
+                    Document doc = storedFields.document(scoreDocs[i].doc);
 
                     ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo(doc, context);
 
@@ -181,27 +187,28 @@ public class DefaultSearchEngine implements SearchEngine {
         return hitCount;
     }
 
-    protected int searchGrouped(
+    protected long searchGrouped(
             GroupedSearchRequest req,
             Map<String, ArtifactInfoGroup> result,
             Grouping grouping,
             List<IndexingContext> participatingContexts,
             Query query)
             throws IOException {
-        int hitCount = 0;
+        long hitCount = 0;
 
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
+            final StoredFields storedFields = indexSearcher.storedFields();
             try {
-                final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
+                final TopDocs topdocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (collector.getTotalHits() > 0) {
-                    ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+                if (topdocs.totalHits.value() > 0) {
+                    ScoreDoc[] scoreDocs = topdocs.scoreDocs;
 
-                    hitCount += collector.getTotalHits();
+                    hitCount += topdocs.totalHits.value();
 
                     for (ScoreDoc scoreDoc : scoreDocs) {
-                        Document doc = indexSearcher.doc(scoreDoc.doc);
+                        Document doc = storedFields.document(scoreDoc.doc);
 
                         ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo(doc, context);
 
@@ -255,12 +262,12 @@ public class DefaultSearchEngine implements SearchEngine {
         NexusIndexMultiSearcher indexSearcher = new NexusIndexMultiSearcher(multiReader);
 
         try {
-            TopScoreDocCollector hits = doSearchWithCeiling(request, indexSearcher, request.getQuery());
+            TopDocs topdocs = doSearchWithCeiling(request, indexSearcher, request.getQuery());
 
             return new IteratorSearchResponse(
                     request.getQuery(),
-                    hits.getTotalHits(),
-                    new DefaultIteratorResultSet(request, indexSearcher, contexts, hits.topDocs()));
+                    (int) topdocs.totalHits.value(), // TODO long downcast
+                    new DefaultIteratorResultSet(request, indexSearcher, contexts, topdocs));
         } catch (IOException | RuntimeException e) {
             try {
                 indexSearcher.release();
@@ -273,29 +280,27 @@ public class DefaultSearchEngine implements SearchEngine {
 
     // ==
 
-    protected TopScoreDocCollector doSearchWithCeiling(
+    protected TopDocs doSearchWithCeiling(
             final AbstractSearchRequest request, final IndexSearcher indexSearcher, final Query query)
             throws IOException {
         int topHitCount = getTopDocsCollectorHitNum(request, AbstractSearchRequest.UNDEFINED);
 
         if (AbstractSearchRequest.UNDEFINED != topHitCount) {
             // count is set, simply just execute it as-is
-            final TopScoreDocCollector hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
+            final TopScoreDocCollectorManager hits = new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE);
 
-            indexSearcher.search(query, hits);
-
-            return hits;
+            return indexSearcher.search(query, hits);
         } else {
             // set something reasonable as 1k
             topHitCount = 1000;
 
             // perform search
-            TopScoreDocCollector hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
-            indexSearcher.search(query, hits);
+            TopScoreDocCollectorManager hits = new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE);
+            TopDocs result = indexSearcher.search(query, hits);
 
             // check total hits against, does it fit?
-            if (topHitCount < hits.getTotalHits()) {
-                topHitCount = hits.getTotalHits();
+            if (topHitCount < result.totalHits.value()) {
+                topHitCount = (int) result.totalHits.value();
 
                 if (getLogger().isDebugEnabled()) {
                     // warn the user and leave trace just before OOM might happen
@@ -307,11 +312,11 @@ public class DefaultSearchEngine implements SearchEngine {
                 }
 
                 // redo all, but this time with correct numbers
-                hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
-                indexSearcher.search(query, hits);
+                hits = new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE);
+                result = indexSearcher.search(query, hits);
             }
 
-            return hits;
+            return result;
         }
     }
 

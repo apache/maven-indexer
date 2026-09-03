@@ -49,7 +49,8 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.FSLockFactory;
@@ -322,21 +323,21 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
 
         // check for descriptor if this is not a "virgin" index
         if (getSize() > 0) {
-            final TopScoreDocCollector collector = TopScoreDocCollector.create(1, Integer.MAX_VALUE);
+            final TopScoreDocCollectorManager collector = new TopScoreDocCollectorManager(1, Integer.MAX_VALUE);
             final IndexSearcher indexSearcher = acquireIndexSearcher();
             try {
-                indexSearcher.search(new TermQuery(DESCRIPTOR_TERM), collector);
+                TopDocs result = indexSearcher.search(new TermQuery(DESCRIPTOR_TERM), collector);
 
-                if (collector.getTotalHits() == 0) {
+                if (result.totalHits.value() == 0) {
                     throw new ExistingLuceneIndexMismatchException("The existing index has no NexusIndexer descriptor");
                 }
 
-                if (collector.getTotalHits() > 1) {
+                if (result.totalHits.value() > 1) {
                     // eh? this is buggy index it seems, just iron it out then
                     storeDescriptor();
                 } else {
                     // good, we have one descriptor as should
-                    Document descriptor = indexSearcher.storedFields().document(collector.topDocs().scoreDocs[0].doc);
+                    Document descriptor = indexSearcher.storedFields().document(result.scoreDocs[0].doc);
                     String[] h = StringUtils.split(descriptor.get(FLD_IDXINFO), ArtifactInfo.FS);
                     // String version = h[0];
                     String repoId = h[1];
@@ -614,9 +615,9 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
 
                     String uinfo = d.get(ArtifactInfo.UINFO);
                     if (uinfo != null) {
-                        TopScoreDocCollector collector = TopScoreDocCollector.create(1, 1);
-                        s.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
-                        if (collector.getTotalHits() == 0) {
+                        TopScoreDocCollectorManager collector = new TopScoreDocCollectorManager(1, 1);
+                        TopDocs result = s.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
+                        if (result.totalHits.value() == 0) {
                             w.addDocument(IndexUtils.updateDocument(d, this, false));
                         }
                     } else {
