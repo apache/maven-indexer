@@ -245,13 +245,6 @@ under the License.
 
       <!-- Test -->
       <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>hamcrest</artifactId>
-        <version>3.0</version>
-        <scope>test</scope>
-      </dependency>
-
-      <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>4.13.2</version>
@@ -271,6 +264,13 @@ under the License.
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <!-- not used directly; keeps the hamcrest that jmock pulls in on 3.0 -->
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>3.0</version>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.jmock</groupId>
         <artifactId>jmock</artifactId>

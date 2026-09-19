@@ -38,8 +38,6 @@ import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -342,7 +340,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
             FlatSearchResponse response = nexusIndexer.searchFlat(request);
 
             // System.out.println("results with export package query " + response.getResults() );
-            assertThat(response.getResults().size(), is(1));
+            assertEquals(1, response.getResults().size());
 
             ArtifactInfo ai = response.getResults().iterator().next();
             // System.out.println( "ai " + ai );

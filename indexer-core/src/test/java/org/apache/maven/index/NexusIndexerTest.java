@@ -57,8 +57,6 @@ import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -84,7 +82,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery(MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED);
-        assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\""));
+        assertEquals("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\"", q.toString());
     }
 
     @Test
