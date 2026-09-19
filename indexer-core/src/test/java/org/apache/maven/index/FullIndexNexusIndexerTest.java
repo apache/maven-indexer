@@ -48,8 +48,6 @@ import org.apache.maven.index.updater.IndexUpdater;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.lucene.search.BooleanClause.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -116,7 +114,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             GroupedSearchResponse response = nexusIndexer.searchGrouped(request);
 
             Map<String, ArtifactInfoGroup> r = response.getResults();
-            assertThat(r.toString(), r.size(), is(2));
+            assertEquals(2, r.size(), r.toString());
 
             Iterator<ArtifactInfoGroup> it = r.values().iterator();
 
@@ -494,7 +492,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
             }
         }
 
-        assertThat(response.getTotalHitsCount(), is(5));
+        assertEquals(5, response.getTotalHitsCount());
 
         assertEquals(5, response.getTotalHits(), "found in jcl104-over-slf4j and commons-logging");
     }

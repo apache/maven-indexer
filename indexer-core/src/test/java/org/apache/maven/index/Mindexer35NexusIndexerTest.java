@@ -27,8 +27,6 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
@@ -49,7 +47,7 @@ public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
 
         Collection<ArtifactInfo> r = response.getResults();
 
-        assertThat(r.size(), is(1));
+        assertEquals(1, r.size());
 
         List<ArtifactInfo> list = new ArrayList<>(r);
 
