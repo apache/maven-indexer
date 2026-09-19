@@ -21,34 +21,35 @@ package org.apache.maven.index.reader.resource;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.maven.index.reader.WritableResourceHandler;
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BufferedWritableResourceHandlerTest {
-    private Mockery context = new Mockery();
 
     @Test
     public void locate() throws IOException {
-        final WritableResource writableResource = context.mock(WritableResource.class);
-        final WritableResourceHandler writableResourceHandler = context.mock(WritableResourceHandler.class);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        context.checking(new Expectations() {
-            {
-                oneOf(writableResource).write();
-                will(returnValue(baos));
-                oneOf(writableResourceHandler).locate("test.txt");
-                will(returnValue(writableResource));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        WritableResource writableResource = new WritableResource() {
+            @Override
+            public OutputStream write() {
+                return baos;
             }
-        });
-        OutputStream out = new BufferedWritableResourceHandler(writableResourceHandler)
+
+            @Override
+            public InputStream read() {
+                throw new UnsupportedOperationException();
+            }
+        };
+        OutputStream out = new BufferedWritableResourceHandler(
+                        new SingleWritableResourceHandler("test.txt", writableResource))
                 .locate("test.txt")
                 .write();
         assertTrue(out instanceof BufferedOutputStream);
@@ -57,18 +58,35 @@ public class BufferedWritableResourceHandlerTest {
         assertArrayEquals(new byte[] {}, baos.toByteArray());
         out.flush();
         assertArrayEquals(new byte[] {'a'}, baos.toByteArray());
-        context.assertIsSatisfied();
     }
 
     @Test
     public void close() throws IOException {
-        final WritableResourceHandler writableResourceHandler = context.mock(WritableResourceHandler.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(writableResourceHandler).close();
-            }
-        });
-        new BufferedWritableResourceHandler(writableResourceHandler).close();
-        context.assertIsSatisfied();
+        SingleWritableResourceHandler handler = new SingleWritableResourceHandler("test.txt", null);
+        new BufferedWritableResourceHandler(handler).close();
+        assertTrue(handler.closed);
+    }
+
+    /** Serves one named writable resource and records whether it was closed. */
+    private static class SingleWritableResourceHandler implements WritableResourceHandler {
+        private final String name;
+        private final WritableResource resource;
+        boolean closed;
+
+        SingleWritableResourceHandler(String name, WritableResource resource) {
+            this.name = name;
+            this.resource = resource;
+        }
+
+        @Override
+        public WritableResource locate(String name) {
+            assertEquals(this.name, name);
+            return resource;
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
     }
 }

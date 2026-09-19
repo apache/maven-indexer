@@ -19,24 +19,39 @@
 package org.apache.maven.index.reader.resource;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class BufferedWritableResourceTest {
-    private Mockery context = new Mockery();
 
     @Test
     public void close() throws IOException {
-        final WritableResource resourceHandler = context.mock(WritableResource.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(resourceHandler).close();
-            }
-        });
-        new BufferedWritableResource(resourceHandler).close();
-        context.assertIsSatisfied();
+        ClosableWritableResource resource = new ClosableWritableResource();
+        new BufferedWritableResource(resource).close();
+        assertTrue(resource.closed);
+    }
+
+    private static class ClosableWritableResource implements WritableResource {
+        boolean closed;
+
+        @Override
+        public OutputStream write() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public InputStream read() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
     }
 }
