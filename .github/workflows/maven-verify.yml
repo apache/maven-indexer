@@ -26,6 +26,10 @@ jobs:
     name: Verify
     uses: apache/maven-gh-actions-shared/.github/workflows/maven-verify.yml@v5
     with:
+      maven4-enabled: true
+      # no run-its profile here; Maven 4 refuses a profile that does not exist, Maven 3 only warned
+      ff-goal: verify
+      verify-goal: verify
       ff-run: false
       jdk-matrix: '[ "17", "21" ]'
       maven-matrix: '[ "3.9.9" ]'
