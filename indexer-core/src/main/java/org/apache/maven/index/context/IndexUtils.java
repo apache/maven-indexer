@@ -49,7 +49,11 @@ public class IndexUtils {
         // Directory.copy( source, target, false );
 
         for (String file : source.listAll()) {
-            target.copyFrom(source, file, file, IOContext.DEFAULT);
+            // the properties files are copied below by copyFile, which replaces an existing target
+            if (!IndexingContext.INDEX_UPDATER_PROPERTIES_FILE.equals(file)
+                    && !IndexingContext.INDEX_PACKER_PROPERTIES_FILE.equals(file)) {
+                target.copyFrom(source, file, file, IOContext.DEFAULT);
+            }
         }
 
         copyFile(source, target, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE);
@@ -69,6 +73,12 @@ public class IndexUtils {
             source.fileLength(srcName); // instead of fileExists
         } catch (FileNotFoundException | NoSuchFileException e) {
             return false;
+        }
+        try {
+            // Lucene never overwrites, and the properties files survive a context replace
+            target.deleteFile(targetName);
+        } catch (FileNotFoundException | NoSuchFileException e) {
+            // nothing to replace
         }
         target.copyFrom(source, srcName, targetName, IOContext.DEFAULT);
         return true;
