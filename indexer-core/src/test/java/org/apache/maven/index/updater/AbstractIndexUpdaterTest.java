@@ -20,6 +20,7 @@ package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.lucene.search.IndexSearcher;
@@ -66,10 +67,10 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
     public void setUp() throws Exception {
         super.setUp();
 
-        testBasedir = new File(getBasedir(), "/target/indexUpdater");
+        testBasedir = Path.of(getBasedir(), "/target/indexUpdater").toFile();
         testBasedir.mkdirs();
 
-        repoDir = new File(getBasedir(), "/target/indexUpdaterRepoDir");
+        repoDir = Path.of(getBasedir(), "/target/indexUpdaterRepoDir").toFile();
         repoDir.mkdirs();
 
         indexDir = super.getDirectory("indexerUpdater");
@@ -103,8 +104,8 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
     protected ArtifactContext createArtifactContext(
             String repositoryId, String groupId, String artifactId, String version, String classifier) {
         String path = createPath(groupId, artifactId, version, classifier);
-        File pomFile = new File(path + ".pom");
-        File artifact = new File(path + ".jar");
+        File pomFile = Path.of(path + ".pom").toFile();
+        File artifact = Path.of(path + ".jar").toFile();
         File metadata = null;
         ArtifactInfo artifactInfo = new ArtifactInfo(repositoryId, groupId, artifactId, version, classifier, "jar");
         Gav gav = new Gav(

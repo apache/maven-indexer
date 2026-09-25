@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -47,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/nexus-13");
+    protected File repo = Path.of(getBasedir(), "src/test/nexus-13").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
@@ -253,9 +254,10 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         // Using a file
 
-        File artifact = new File(
-                repo,
-                "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar");
+        File artifact = repo.toPath()
+                .resolve(
+                        "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar")
+                .toFile();
 
         ais = nexusIndexer.identify(artifact);
 

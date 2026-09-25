@@ -20,7 +20,6 @@ package org.apache.maven.index.util;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -35,7 +34,7 @@ public class SpoofIndexCreator extends AbstractIndexCreator {
     }
 
     public Collection<IndexerField> getIndexerFields() {
-        return Collections.emptyList();
+        return List.of();
     }
 
     public void populateArtifactInfo(ArtifactContext artifactContext) throws IOException {

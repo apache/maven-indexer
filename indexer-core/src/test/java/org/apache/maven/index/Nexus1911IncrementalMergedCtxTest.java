@@ -19,7 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.List;
 
 import org.apache.maven.index.context.IndexingContext;
 import org.junit.jupiter.api.AfterEach;
@@ -41,7 +41,7 @@ public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest 
         indexMergedDir.mkdirs();
 
         context = indexer.addMergedIndexingContext(
-                "merged", "merged", member.getRepository(), indexMergedDir, false, Collections.singletonList(member));
+                "merged", "merged", member.getRepository(), indexMergedDir, false, List.of(member));
     }
 
     @AfterEach

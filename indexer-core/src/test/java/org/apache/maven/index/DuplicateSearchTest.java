@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -34,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DuplicateSearchTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/repo");
+    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
     protected IndexingContext context1;
 

@@ -19,9 +19,11 @@
 package org.apache.maven.index.updater;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.TermQuery;
@@ -56,15 +58,15 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        remoteRepo = new File("target/localcache/remoterepo").getCanonicalFile();
+        remoteRepo = Path.of("target/localcache/remoterepo").toFile().getCanonicalFile();
         FileUtils.deleteDirectory(remoteRepo);
         remoteRepo.mkdirs();
 
-        localCacheDir = new File("target/localcache/cache").getCanonicalFile();
+        localCacheDir = Path.of("target/localcache/cache").toFile().getCanonicalFile();
         FileUtils.deleteDirectory(localCacheDir);
         localCacheDir.mkdirs();
 
-        indexDir = new File("target/localcache/index").getCanonicalFile();
+        indexDir = Path.of("target/localcache/index").toFile().getCanonicalFile();
         FileUtils.deleteDirectory(indexDir);
         indexDir.mkdirs();
     }
@@ -113,8 +115,16 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updateRequest.setLocalIndexCacheDir(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(2, fetcher.getRetrievedResources().size());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.gz").exists());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.properties").exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.gz")
+                .toFile()
+                .exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.properties")
+                .toFile()
+                .exists());
         assertGroupCount(1, "commons-lang", testContext);
 
         // update the same index (expected: no index download)
@@ -179,8 +189,16 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updateRequest.setLocalIndexCacheDir(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(2, fetcher.getRetrievedResources().size());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.gz").exists());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.properties").exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.gz")
+                .toFile()
+                .exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.properties")
+                .toFile()
+                .exists());
         assertGroupCount(2, "commons-lang", testContext);
     }
 
@@ -207,7 +225,11 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updater.fetchAndUpdateIndex(updateRequest);
 
         // corrupt local cache
-        try (FileOutputStream fos = new FileOutputStream(new File(localCacheDir, "nexus-maven-repository-index.gz"))) {
+        try (OutputStream fos = Files.newOutputStream((localCacheDir
+                        .toPath()
+                        .resolve("nexus-maven-repository-index.gz")
+                        .toFile())
+                .toPath())) {
             IOUtil.copy("corrupted", fos);
         }
 
@@ -236,8 +258,16 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updateRequest.setLocalIndexCacheDir(localCacheDir);
         updateRequest.setForceFullUpdate(true);
         updater.fetchAndUpdateIndex(updateRequest);
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.gz").exists());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.properties").exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.gz")
+                .toFile()
+                .exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.properties")
+                .toFile()
+                .exists());
     }
 
     @Test
@@ -274,8 +304,16 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
         updateRequest.setLocalIndexCacheDir(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.gz").exists());
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.properties").exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.gz")
+                .toFile()
+                .exists());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.properties")
+                .toFile()
+                .exists());
     }
 
     @Test
@@ -306,22 +344,27 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updater.fetchAndUpdateIndex(updateRequest);
 
         // sanity check
-        assertTrue(new File(localCacheDir, "nexus-maven-repository-index.1.gz").canRead());
+        assertTrue(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.1.gz")
+                .toFile()
+                .canRead());
 
         // .lock files are expected to be preserved
-        File lockFile = new File(localCacheDir, Locker.LOCK_FILE);
-        try (FileOutputStream lockFileOutput = new FileOutputStream(lockFile)) {
+        File lockFile = Path.of(localCacheDir.getPath(), Locker.LOCK_FILE).toFile();
+        try (OutputStream lockFileOutput = Files.newOutputStream(lockFile.toPath())) {
             IOUtil.copy("", lockFileOutput);
         }
         assertTrue(lockFile.canRead());
 
         // all unknown files and directories are expected to be removed
-        File unknownFile = new File(localCacheDir, "unknownFile");
-        try (FileOutputStream fileOutputStream = new FileOutputStream(unknownFile)) {
+        File unknownFile = localCacheDir.toPath().resolve("unknownFile").toFile();
+        try (OutputStream fileOutputStream = Files.newOutputStream(unknownFile.toPath())) {
             IOUtil.copy("", fileOutputStream);
         }
 
-        File unknownDirectory = new File(localCacheDir, "unknownDirectory");
+        File unknownDirectory =
+                localCacheDir.toPath().resolve("unknownDirectory").toFile();
         unknownDirectory.mkdirs();
         assertTrue(unknownFile.canRead());
         assertTrue(unknownDirectory.isDirectory());
@@ -334,7 +377,11 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         updater.fetchAndUpdateIndex(updateRequest);
 
         assertTrue(lockFile.canRead());
-        assertFalse(new File(localCacheDir, "nexus-maven-repository-index.1.gz").canRead());
+        assertFalse(localCacheDir
+                .toPath()
+                .resolve("nexus-maven-repository-index.1.gz")
+                .toFile()
+                .canRead());
         assertFalse(unknownFile.canRead());
         assertFalse(unknownDirectory.isDirectory());
     }

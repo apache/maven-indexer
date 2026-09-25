@@ -19,6 +19,7 @@
 package org.apache.maven.index.creator;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,13 +72,15 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void testPopulateArtifactInfo() throws Exception {
-        File artifact = new File(
-                getBasedir(),
-                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.jar");
+        File artifact = Path.of(
+                        getBasedir(),
+                        "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.jar")
+                .toFile();
 
-        File pom = new File(
-                getBasedir(),
-                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.pom");
+        File pom = Path.of(
+                        getBasedir(),
+                        "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.pom")
+                .toFile();
 
         ArtifactInfo artifactInfo = new ArtifactInfo(
                 "test", "org.apache.karaf.features", "org.apache.karaf.features.command", "2.2.2", null, "jar");
@@ -117,11 +120,12 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void testPopulateFragmentHost() throws Exception {
-        File artifact =
-                new File(getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
+        File artifact = Path.of(
+                        getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar")
+                .toFile();
 
-        File pom =
-                new File(getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom");
+        File pom = Path.of(getBasedir(), "src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom")
+                .toFile();
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "org.slf4j", "slf4j-simple", "1.7.7", null, "jar");
 
         ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
@@ -131,13 +135,15 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void testPopulateCapabilityAndSha256() throws Exception {
-        File artifact = new File(
-                getBasedir(),
-                "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar");
+        File artifact = Path.of(
+                        getBasedir(),
+                        "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar")
+                .toFile();
 
-        File pom = new File(
-                getBasedir(),
-                "src/test/repo-with-osgi/org/apache/karaf/features/oorg.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.pom");
+        File pom = Path.of(
+                        getBasedir(),
+                        "src/test/repo-with-osgi/org/apache/karaf/features/oorg.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.pom")
+                .toFile();
 
         ArtifactInfo artifactInfo = new ArtifactInfo(
                 "test", "org.apache.karaf.features", "org.apache.karaf.features.core", "4.1.0", null, "jar");
@@ -162,9 +168,10 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
 
     private void indexOSGIRepo() throws Exception {
 
-        File repo = new File(getBasedir(), "src/test/repo-with-osgi");
+        File repo = Path.of(getBasedir(), "src/test/repo-with-osgi").toFile();
 
-        File repoIndexDir = new File(getBasedir(), "target/test/repo-with-osgi/.index/");
+        File repoIndexDir =
+                Path.of(getBasedir(), "target/test/repo-with-osgi/.index/").toFile();
 
         if (repoIndexDir.exists()) {
             FileUtils.deleteDirectory(repoIndexDir);

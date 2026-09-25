@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SourcedSearchExpression;
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "target/repo/mindexer14");
+    protected File repo = Path.of(getBasedir(), "target/repo/mindexer14").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {

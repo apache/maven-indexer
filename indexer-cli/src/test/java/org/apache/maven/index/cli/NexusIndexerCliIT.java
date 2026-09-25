@@ -18,9 +18,9 @@
  */
 package org.apache.maven.index.cli;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -32,9 +32,10 @@ public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
         try {
             Commandline cmd = new Commandline();
             cmd.setExecutable("java");
-            cmd.setWorkingDirectory(new File(".").getCanonicalFile());
+            cmd.setWorkingDirectory(Path.of(".").toFile().getCanonicalFile());
             cmd.createArg().setValue("-jar");
-            cmd.createArg().setValue(new File(System.getProperty("indexerJar")).getCanonicalPath());
+            cmd.createArg()
+                    .setValue(Path.of(System.getProperty("indexerJar")).toFile().getCanonicalPath());
             return cmd;
         } catch (IOException e) {
             throw new RuntimeException(e);

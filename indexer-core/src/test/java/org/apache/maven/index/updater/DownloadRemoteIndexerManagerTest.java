@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -50,7 +51,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        fakeCentral = new File(getBasedir(), "target/repos/fake-central");
+        fakeCentral = Path.of(getBasedir(), "target/repos/fake-central").toFile();
         fakeCentral.mkdirs();
 
         // create proxy server
@@ -86,9 +87,11 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     public void testRepoReindex() throws Exception {
         IndexUpdateRequest iur;
 
-        File index1 = new File(getBasedir(), "src/test/resources/repo-index/index");
-        File index2 = new File(getBasedir(), "src/test/resources/repo-index/index2");
-        File centralIndex = new File(fakeCentral, ".index");
+        File index1 =
+                Path.of(getBasedir(), "src/test/resources/repo-index/index").toFile();
+        File index2 =
+                Path.of(getBasedir(), "src/test/resources/repo-index/index2").toFile();
+        File centralIndex = fakeCentral.toPath().resolve(".index").toFile();
 
         // copy index 02
         overwriteIndex(index2, centralIndex);
@@ -124,8 +127,12 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     }
 
     private void overwriteIndex(File source, File destination) throws Exception {
-        File indexFile = new File(destination, "nexus-maven-repository-index.gz");
-        File indexProperties = new File(destination, "nexus-maven-repository-index.properties");
+        File indexFile =
+                destination.toPath().resolve("nexus-maven-repository-index.gz").toFile();
+        File indexProperties = destination
+                .toPath()
+                .resolve("nexus-maven-repository-index.properties")
+                .toFile();
 
         long lastMod = -1;
         if (destination.exists()) {

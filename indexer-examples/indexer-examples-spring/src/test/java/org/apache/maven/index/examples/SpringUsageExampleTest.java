@@ -20,6 +20,7 @@ package org.apache.maven.index.examples;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
@@ -46,7 +47,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ContextConfiguration(locations = {"/META-INF/spring/*-context.xml", "classpath*:/META-INF/spring/*-context.xml"})
 public class SpringUsageExampleTest {
 
-    public static final File REPOSITORIES_BASEDIR = new File("target/repositories");
+    public static final File REPOSITORIES_BASEDIR =
+            Path.of("target/repositories").toFile();
 
     @Autowired
     private ArtifactIndexingService artifactIndexingService;
@@ -55,14 +57,17 @@ public class SpringUsageExampleTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        if (!new File(REPOSITORIES_BASEDIR, "releases/org/apache/maven/indexer/examples/indexer-examples-spring")
+        if (!REPOSITORIES_BASEDIR
+                .toPath()
+                .resolve("releases/org/apache/maven/indexer/examples/indexer-examples-spring")
+                .toFile()
                 .exists()) {
             //noinspection ResultOfMethodCallIgnored
             REPOSITORIES_BASEDIR.mkdirs();
 
             // Generate some valid test artifacts:
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",
@@ -70,7 +75,7 @@ public class SpringUsageExampleTest {
                     "jar",
                     null);
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",
@@ -78,7 +83,7 @@ public class SpringUsageExampleTest {
                     "jar",
                     null);
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",
@@ -86,7 +91,7 @@ public class SpringUsageExampleTest {
                     "jar",
                     null);
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",
@@ -94,7 +99,7 @@ public class SpringUsageExampleTest {
                     "jar",
                     null);
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",
@@ -102,7 +107,7 @@ public class SpringUsageExampleTest {
                     "jar",
                     null);
             generateArtifactAndAddToIndex(
-                    new File(REPOSITORIES_BASEDIR, "releases").getAbsolutePath(),
+                    REPOSITORIES_BASEDIR.toPath().resolve("releases").toFile().getAbsolutePath(),
                     "releases",
                     "org.apache.maven.indexer.examples",
                     "indexer-examples-spring",

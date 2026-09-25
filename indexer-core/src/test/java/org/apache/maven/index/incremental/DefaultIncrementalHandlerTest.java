@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
 
@@ -59,8 +60,8 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         indexer = lookup(NexusIndexer.class);
         handler = lookup(IncrementalHandler.class);
 
-        indexDir = new File(getBasedir(), "target/index/nexus-incremental-test");
-        repoDir = new File(getBasedir(), "target/repos/nexus-incremental-test");
+        indexDir = Path.of(getBasedir(), "target/index/nexus-incremental-test").toFile();
+        repoDir = Path.of(getBasedir(), "target/repos/nexus-incremental-test").toFile();
         FileUtils.deleteDirectory(indexDir);
         FileUtils.deleteDirectory(repoDir);
 
@@ -107,7 +108,9 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
         properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600");
 
-        FileUtils.copyDirectoryStructure(new File(getBasedir(), "src/test/repo/ch"), new File(repoDir, "ch"));
+        FileUtils.copyDirectoryStructure(
+                Path.of(getBasedir(), "src/test/repo/ch").toFile(),
+                repoDir.toPath().resolve("ch").toFile());
 
         indexer.scan(context);
 

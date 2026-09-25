@@ -20,15 +20,14 @@ package org.apache.maven.index;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,7 +72,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         File indexDir = super.getDirectory("index/test");
         super.deleteDirectory(indexDir);
 
-        File repo = new File(getBasedir(), "src/test/repo");
+        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
         context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
         indexer.scan(context);
@@ -240,7 +239,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
                 .build();
 
         // invoking the old method (was present since day 1), that will return the match only and if only there is 1 hit
-        Collection<ArtifactInfo> ais = indexer.identify(bq, Collections.singletonList(context));
+        Collection<ArtifactInfo> ais = indexer.identify(bq, List.of(context));
 
         assertEquals(1, ais.size());
 
@@ -275,7 +274,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
                 context.getRepository(),
                 indexMergedDir,
                 true,
-                new StaticContextMemberProvider(Collections.singletonList(context)));
+                new StaticContextMemberProvider(List.of(context)));
 
         performQueryCreatorNGSearch(indexer, mergedContext);
     }
@@ -332,7 +331,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         StringWriter ressw = new StringWriter();
         PrintWriter respw = new PrintWriter(ressw);
 
-        BufferedReader reader = new BufferedReader(new FileReader(expectedResults, StandardCharsets.UTF_8));
+        BufferedReader reader = Files.newBufferedReader(expectedResults.toPath(), StandardCharsets.UTF_8);
         String currentline;
 
         while ((currentline = reader.readLine()) != null) {
@@ -477,7 +476,8 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         // Using a file
 
-        File artifact = new File(getBasedir(), "src/test/repo/qdox/qdox/1.5/qdox-1.5.jar");
+        File artifact = Path.of(getBasedir(), "src/test/repo/qdox/qdox/1.5/qdox-1.5.jar")
+                .toFile();
 
         ais = nexus.identify(artifact);
 
@@ -524,9 +524,9 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         // String fname = indexingContext.getRepository().getAbsolutePath() + "/" + ai.groupId.replace( '.', '/' ) + "/"
         // + ai.artifactId + "/" + ai.version + "/" + ai.artifactId + "-" + ai.version;
 
-        // File pom = new File( fname + ".pom" );
+        // File pom = Path.of(fname + ".pom").toFile();
 
-        // File artifact = new File( fname + ".jar" );
+        // File artifact = Path.of(fname + ".jar").toFile();
 
         indexer.addArtifactToIndex(new ArtifactContext(null, null, null, ai, null), indexingContext);
 
@@ -596,7 +596,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         File indexDir = super.getDirectory("index/test");
         super.deleteDirectory(indexDir);
 
-        File repo = new File(getBasedir(), "src/test/repo");
+        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
         context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
         indexer.scan(context);

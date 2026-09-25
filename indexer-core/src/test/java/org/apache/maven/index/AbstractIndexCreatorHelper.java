@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -78,7 +79,8 @@ public class AbstractIndexCreatorHelper extends AbstractTestSupport {
     protected File getDirectory(String name) {
         // pick random output location
 
-        File outputFolder = new File(getBasedir(), "target/tests/" + name + "-" + rand.nextLong() + "/");
+        File outputFolder = Path.of(getBasedir(), "target/tests/" + name + "-" + rand.nextLong() + "/")
+                .toFile();
         outputFolder.delete();
         assertFalse(outputFolder.exists());
         return outputFolder;

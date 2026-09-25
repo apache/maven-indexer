@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/repo");
+    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
     protected Directory secondIndexDir = new ByteBuffersDirectory();
 

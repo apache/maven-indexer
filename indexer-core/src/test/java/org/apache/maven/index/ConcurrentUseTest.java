@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.search.Query;
@@ -35,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class ConcurrentUseTest extends AbstractNexusIndexerTest {
     public static final int THREAD_COUNT = 10;
 
-    protected File repo = new File(getBasedir(), "src/test/repo");
+    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {

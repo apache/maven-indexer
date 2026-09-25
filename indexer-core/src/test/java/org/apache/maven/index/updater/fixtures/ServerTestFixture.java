@@ -21,6 +21,7 @@ package org.apache.maven.index.updater.fixtures;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.Map;
 
 public class ServerTestFixture {
@@ -48,7 +49,7 @@ public class ServerTestFixture {
             throw new IllegalStateException("Cannot find classpath resource: " + SERVER_ROOT_RESOURCE_PATH);
         }
 
-        return new File(resource.toURI().normalize());
+        return Path.of(resource.toURI().normalize()).toFile();
     }
 
     public void stop() {

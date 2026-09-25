@@ -20,9 +20,10 @@ package org.apache.maven.index.packer;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,9 +44,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
-    protected File reposBase = new File(getBasedir(), "src/test/nexus-4149");
+    protected File reposBase = Path.of(getBasedir(), "src/test/nexus-4149").toFile();
 
-    protected File idxsBase = new File(getBasedir(), "target/index/nexus-4149");
+    protected File idxsBase = Path.of(getBasedir(), "target/index/nexus-4149").toFile();
 
     @BeforeEach
     @Override
@@ -56,26 +57,50 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         IndexingContext ctx1 = nexusIndexer.addIndexingContext(
-                "repo1", "repo1", new File(reposBase, "repo1"), new File(idxsBase, "repo1"), null, null, MIN_CREATORS);
+                "repo1",
+                "repo1",
+                reposBase.toPath().resolve("repo1").toFile(),
+                idxsBase.toPath().resolve("repo1").toFile(),
+                null,
+                null,
+                MIN_CREATORS);
         nexusIndexer.scan(ctx1);
 
         IndexingContext ctx2 = nexusIndexer.addIndexingContext(
-                "repo2", "repo2", new File(reposBase, "repo2"), new File(idxsBase, "repo2"), null, null, MIN_CREATORS);
+                "repo2",
+                "repo2",
+                reposBase.toPath().resolve("repo2").toFile(),
+                idxsBase.toPath().resolve("repo2").toFile(),
+                null,
+                null,
+                MIN_CREATORS);
         nexusIndexer.scan(ctx2);
 
         IndexingContext ctx3 = nexusIndexer.addIndexingContext(
-                "repo3", "repo3", new File(reposBase, "repo3"), new File(idxsBase, "repo3"), null, null, MIN_CREATORS);
+                "repo3",
+                "repo3",
+                reposBase.toPath().resolve("repo3").toFile(),
+                idxsBase.toPath().resolve("repo3").toFile(),
+                null,
+                null,
+                MIN_CREATORS);
         nexusIndexer.scan(ctx3);
 
         IndexingContext ctx4 = nexusIndexer.addIndexingContext(
-                "repo4", "repo4", new File(reposBase, "repo4"), new File(idxsBase, "repo4"), null, null, MIN_CREATORS);
+                "repo4",
+                "repo4",
+                reposBase.toPath().resolve("repo4").toFile(),
+                idxsBase.toPath().resolve("repo4").toFile(),
+                null,
+                null,
+                MIN_CREATORS);
         nexusIndexer.scan(ctx4);
 
         context = nexusIndexer.addMergedIndexingContext(
                 "ctx",
                 "ctx",
-                new File(reposBase, "merged"),
-                new File(idxsBase, "merged"),
+                reposBase.toPath().resolve("merged").toFile(),
+                idxsBase.toPath().resolve("merged").toFile(),
                 false,
                 Arrays.asList(ctx1, ctx2, ctx3, ctx4));
 
@@ -118,7 +143,7 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
 
     @Test
     public void testTransportFile() throws Exception {
-        File packTargetDir = new File(getBasedir(), "target/nexus-4149/packed");
+        File packTargetDir = Path.of(getBasedir(), "target/nexus-4149/packed").toFile();
 
         IndexPacker packer = lookup(IndexPacker.class);
 
@@ -135,8 +160,11 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         }
 
         // read it up and verify, but stay "low level", directly consume the GZ file and count
-        InputStream fis = new BufferedInputStream(
-                new FileInputStream(new File(packTargetDir, "nexus-maven-repository-index.gz")));
+        InputStream fis = new BufferedInputStream(Files.newInputStream((packTargetDir
+                        .toPath()
+                        .resolve("nexus-maven-repository-index.gz")
+                        .toFile())
+                .toPath()));
         IndexDataReader reader = new IndexDataReader(fis);
         try {
             // read header and neglect it

@@ -19,6 +19,7 @@
 package org.apache.maven.index.treeview;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.NexusIndexer;
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IndexTreeViewTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/repo");
+    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
     protected IndexTreeView indexTreeView;
 

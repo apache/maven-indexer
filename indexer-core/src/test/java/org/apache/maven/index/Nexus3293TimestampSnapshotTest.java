@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Set;
 
 import org.apache.lucene.index.Term;
@@ -39,10 +40,11 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     private NexusIndexer prepare() throws Exception, IOException, UnsupportedExistingLuceneIndexException {
         NexusIndexer indexer = lookup(NexusIndexer.class);
 
-        File indexDir = new File(getBasedir(), "target/index/test-" + System.currentTimeMillis());
+        File indexDir = Path.of(getBasedir(), "target/index/test-" + System.currentTimeMillis())
+                .toFile();
         FileUtils.deleteDirectory(indexDir);
 
-        File repo = new File(getBasedir(), "src/test/nexus-3293");
+        File repo = Path.of(getBasedir(), "src/test/nexus-3293").toFile();
         repo.mkdirs();
 
         context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
@@ -62,9 +64,11 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     public void test_nexus_3293_releaseJar() throws Exception {
         NexusIndexer indexer = prepare();
 
-        File artifact = new File(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar");
+        File artifact = Path.of(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar")
+                .toFile();
 
-        File pom = new File(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
+        File pom = Path.of(getBasedir(), "src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0.pom")
+                .toFile();
 
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0-SNAPSHOT", null, "jar");
 
@@ -90,13 +94,15 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     public void test_nexus_3293_indexTimestampedSnapshotJar() throws Exception {
         NexusIndexer indexer = prepare();
 
-        File artifact = new File(
-                getBasedir(),
-                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar");
+        File artifact = Path.of(
+                        getBasedir(),
+                        "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.jar")
+                .toFile();
 
-        File pom = new File(
-                getBasedir(),
-                "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom");
+        File pom = Path.of(
+                        getBasedir(),
+                        "src/test/nexus-3293/aopalliance/aopalliance/1.0-SNAPSHOT/aopalliance-1.0-20100517.210215-13.pom")
+                .toFile();
 
         ArtifactContextProducer artifactContextProducer = lookup(ArtifactContextProducer.class);
 

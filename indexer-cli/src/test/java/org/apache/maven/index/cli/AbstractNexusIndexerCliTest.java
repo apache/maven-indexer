@@ -21,6 +21,7 @@ package org.apache.maven.index.cli;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Random;
 
 import org.codehaus.plexus.util.FileUtils;
@@ -38,22 +39,24 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     private static final long rand = new Random().nextLong();
 
     /*
-     * private static final String DEST_DIR = new File( getBasedir(), "target/tests/clitest/output-"+rand
-     * ).getAbsolutePath(); private static final String INDEX_DIR = new File( getBasedir(),
-     * "target/tests/clitest/index-"+rand ).getAbsolutePath(); private static final String UNPACK_DIR = new File(
+     * private static final String DEST_DIR = Path.of(getBasedir(), "target/tests/clitest/output-"+rand *).toFile().getAbsolutePath(); private static final String INDEX_DIR = Path.of(getBasedir(), * "target/tests/clitest/index-"+rand).toFile().getAbsolutePath(); private static final String UNPACK_DIR = new File(
      * getBasedir(), "target/tests/clitest/unpack-"+rand ).getAbsolutePath(); private static final String TEST_REPO =
-     * new File( getBasedir(), "src/test/repo" ).getAbsolutePath();
+     * Path.of(getBasedir(), "src/test/repo").toFile().getAbsolutePath();
      */
-    private final String DEST_DIR =
-            new File(getBasedir(), "target/tests/clitest-" + rand + "/output").getAbsolutePath();
+    private final String DEST_DIR = Path.of(getBasedir(), "target/tests/clitest-" + rand + "/output")
+            .toFile()
+            .getAbsolutePath();
 
-    private final String INDEX_DIR =
-            new File(getBasedir(), "target/tests/clitest-" + rand + "/index").getAbsolutePath();
+    private final String INDEX_DIR = Path.of(getBasedir(), "target/tests/clitest-" + rand + "/index")
+            .toFile()
+            .getAbsolutePath();
 
-    private final String UNPACK_DIR =
-            new File(getBasedir(), "target/tests/clitest-" + rand + "/unpack").getAbsolutePath();
+    private final String UNPACK_DIR = Path.of(getBasedir(), "target/tests/clitest-" + rand + "/unpack")
+            .toFile()
+            .getAbsolutePath();
 
-    private final String TEST_REPO = new File(getBasedir(), "src/test/repo").getAbsolutePath();
+    private final String TEST_REPO =
+            Path.of(getBasedir(), "src/test/repo").toFile().getAbsolutePath();
 
     protected OutputStream out;
 
@@ -93,7 +96,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     }
 
     protected File getTestFile(String path) {
-        return new File(new File(getBasedir()), path);
+        return Path.of(getBasedir(), path).toFile();
     }
 
     @Test
@@ -148,7 +151,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
         assertEquals(1, code, output);
         assertTrue(output.contains(usage), "Should print bad usage but '" + output + "'");
 
-        assertFalse(new File(INDEX_DIR).exists(), "Index file was generated");
+        assertFalse(Path.of(INDEX_DIR).toFile().exists(), "Index file was generated");
     }
 
     @Test
@@ -162,7 +165,9 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     public void testInvalidRepo() throws Exception {
         int code = execute(
                 "-r",
-                new File("target/undexinting/repo/to/try/what/will/happen/here").getCanonicalPath(),
+                Path.of("target/undexinting/repo/to/try/what/will/happen/here")
+                        .toFile()
+                        .getCanonicalPath(),
                 "-i",
                 INDEX_DIR,
                 "-d",
