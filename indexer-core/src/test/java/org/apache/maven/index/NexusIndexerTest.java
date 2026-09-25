@@ -375,15 +375,15 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
                         // we reject version "1.5" for fun
                         !StringUtils.equals(ai.getVersion(), "1.5"));
 
-        IteratorSearchResponse response = indexer.searchIterator(request);
+        try (IteratorSearchResponse response = indexer.searchIterator(request)) {
+            assertEquals(2, response.getTotalHits());
 
-        assertEquals(2, response.getTotalHits());
+            assertTrue(response.getResults().hasNext(), "Iterator has to have next (2 found, 1 filtered out)");
 
-        assertTrue(response.getResults().hasNext(), "Iterator has to have next (2 found, 1 filtered out)");
+            ArtifactInfo ai = response.getResults().next();
 
-        ArtifactInfo ai = response.getResults().next();
-
-        assertEquals("1.6.1", ai.getVersion(), "1.5 is filtered out, so 1.6.1 must appear here!");
+            assertEquals("1.6.1", ai.getVersion(), "1.5 is filtered out, so 1.6.1 must appear here!");
+        }
     }
 
     @Test

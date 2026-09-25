@@ -62,28 +62,28 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
 
         IteratorSearchRequest request = new IteratorSearchRequest(q, filter);
 
-        IteratorSearchResponse response = indexer.searchIterator(request);
+        try (IteratorSearchResponse response = indexer.searchIterator(request)) {
+            assertEquals(15, response.getTotalHits(), "15 total hits (before filtering!)");
 
-        assertEquals(15, response.getTotalHits(), "15 total hits (before filtering!)");
+            ArtifactInfo ai = response.getResults().next();
+            assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
 
-        ArtifactInfo ai = response.getResults().next();
-        assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
+            ai = response.getResults().next();
+            assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
 
-        ai = response.getResults().next();
-        assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
-
-        assertEquals(
-                UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getVersion(),
-                "Property that is not unique has to have \"COLLAPSED\" value!");
-        assertEquals(
-                UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getPackaging(),
-                "Property that is not unique has to have \"COLLAPSED\" value!");
-        assertEquals(
-                UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getClassifier(),
-                "Property that is not unique has to have \"COLLAPSED\" value!");
+            assertEquals(
+                    UniqueArtifactFilterPostprocessor.COLLAPSED,
+                    ai.getVersion(),
+                    "Property that is not unique has to have \"COLLAPSED\" value!");
+            assertEquals(
+                    UniqueArtifactFilterPostprocessor.COLLAPSED,
+                    ai.getPackaging(),
+                    "Property that is not unique has to have \"COLLAPSED\" value!");
+            assertEquals(
+                    UniqueArtifactFilterPostprocessor.COLLAPSED,
+                    ai.getClassifier(),
+                    "Property that is not unique has to have \"COLLAPSED\" value!");
+        }
     }
 
     // ==
