@@ -42,6 +42,8 @@ import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiSearcher;
 import org.apache.maven.index.creator.JarFileContentsIndexCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of IteratorResultSet. TODO: there is too much of logic, refactor this!
@@ -49,6 +51,8 @@ import org.apache.maven.index.creator.JarFileContentsIndexCreator;
  * @author cstamas
  */
 public class DefaultIteratorResultSet implements IteratorResultSet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultIteratorResultSet.class);
+
     private final IteratorSearchRequest searchRequest;
 
     private final NexusIndexMultiSearcher indexSearcher;
@@ -129,7 +133,13 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
 
         this.maxRecPointer = from + count;
 
-        ai = createNextAi();
+        try {
+            ai = createNextAi();
+        } catch (IOException | RuntimeException e) {
+            // the caller releases the searcher when construction fails
+            this.cleanedUp = true;
+            throw e;
+        }
 
         if (ai == null) {
             cleanUp();
@@ -180,8 +190,7 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
         super.finalize();
 
         if (!cleanedUp) {
-            System.err.println("#WARNING: Lock leaking from " + getClass().getName() + " for query "
-                    + searchRequest.getQuery().toString());
+            LOGGER.warn("Lock leaking from {} for query {}", getClass().getName(), searchRequest.getQuery());
 
             cleanUp();
         }
