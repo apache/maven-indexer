@@ -88,7 +88,12 @@ public class DefaultArtifactContextProducer implements ArtifactContextProducer {
 
             // If we found the matching artifact, switch over to indexing that, instead of the pom
             if (artifact != null) {
-                gav = getGavFromPath(context, repositoryPath, artifact.getAbsolutePath());
+                Gav artifactGav = getGavFromPath(context, repositoryPath, artifact.getAbsolutePath());
+                if (artifactGav != null) {
+                    gav = artifactGav;
+                } else {
+                    artifact = null;
+                }
             }
 
             pom = file;
