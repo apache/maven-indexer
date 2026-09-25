@@ -70,8 +70,10 @@ public abstract class ResponseExtractorSupport implements ResponseExtractor {
                 Element versions = versioning.getElementsByTag("versions").first();
                 if (versions != null) {
                     for (Element version : versions.getElementsByTag("version")) {
-                        page.add(recordFactory.create(
-                                context.getGroupId(), context.getArtifactId(), version.text(), null, null, null));
+                        if (accept(version.text())) {
+                            page.add(recordFactory.create(
+                                    context.getGroupId(), context.getArtifactId(), version.text(), null, null, null));
+                        }
                     }
                 }
             }
