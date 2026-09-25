@@ -138,7 +138,9 @@ public class DefaultArtifactContextProducer implements ArtifactContextProducer {
                 // || filename.endsWith( ".xml" ) // NEXUS-3029
                 && !filename.endsWith(".asc")
                 && !filename.endsWith(".md5")
-                && !filename.endsWith(".sha1");
+                && !filename.endsWith(".sha1")
+                && !filename.endsWith(".sha256")
+                && !filename.endsWith(".sha512");
     }
 
     protected Gav getGavFromPath(IndexingContext context, String repositoryPath, String artifactPath) {
