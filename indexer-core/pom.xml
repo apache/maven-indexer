@@ -129,6 +129,23 @@ under the License.
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <inputExcludes combine.children="append">
+              <!-- The following directories are repositories -->
+              <exclude>src/test/repo*/**</exclude>
+              <exclude>src/test/mindexer-35/**</exclude>
+              <exclude>src/test/nexus-*/**</exclude>
+              <exclude>src/test/resources/**</exclude>
+            </inputExcludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.gaul</groupId>
@@ -156,20 +173,6 @@ under the License.
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <!-- Combine the excludes from the parent with the ones defined in this project -->
-          <excludes combine.children="append">
-            <!-- The following directories are repositories -->
-            <exclude>src/test/repo*/**</exclude>
-            <exclude>src/test/mindexer-35/**</exclude>
-            <exclude>src/test/nexus-*/**</exclude>
-            <exclude>src/test/resources/**</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

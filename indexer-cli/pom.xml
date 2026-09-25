@@ -80,6 +80,20 @@ under the License.
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <inputExcludes combine.children="append">
+              <!-- This directory is a repository -->
+              <exclude>src/test/repo/**</exclude>
+            </inputExcludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.gaul</groupId>
@@ -153,17 +167,6 @@ under the License.
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <!-- Combine the excludes from the parent with the ones defined in this project -->
-          <excludes combine.children="append">
-            <!-- This directory is a repository -->
-            <exclude>src/test/repo/**</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>
