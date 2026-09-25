@@ -185,12 +185,13 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
                     boolean matches = context.getSha1() == null;
                     if (context.getSha1() != null) {
                         try (Transport.Response sha1Response = transport.get(uri + ".sha1", commonHeaders)) {
-                            if (response.getCode() == 200) {
+                            if (sha1Response.getCode() == 200) {
                                 try (InputStream body = sha1Response.getBody()) {
                                     String remoteSha1 = readChecksum(body);
-                                    matches = Objects.equals(context.getSha1(), remoteSha1);
+                                    matches = isValidSha1(remoteSha1) && Objects.equals(context.getSha1(), remoteSha1);
                                 }
                             }
+                            // no published checksum means no match
                         }
                     }
                     if (matches) {
@@ -247,5 +248,13 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
 
         return checksum;
+    }
+
+    /**
+     * Returns {@code true} if the passed in string looks like a SHA-1 checksum (40 hexadecimal characters).
+     * Anything else (for example the first line of an HTML error page) must never be used as a checksum.
+     */
+    protected static boolean isValidSha1(String checksum) {
+        return checksum != null && checksum.matches("[0-9A-Fa-f]{40}");
     }
 }
