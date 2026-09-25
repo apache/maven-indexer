@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/nexus-3881");
+    protected File repo = Path.of(getBasedir(), "src/test/nexus-3881").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {

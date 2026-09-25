@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -31,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
 
-    protected File repo = new File(getBasedir(), "src/test/nexus-13");
+    protected File repo = Path.of(getBasedir(), "src/test/nexus-13").toFile();
 
     protected IndexingContext context;
 

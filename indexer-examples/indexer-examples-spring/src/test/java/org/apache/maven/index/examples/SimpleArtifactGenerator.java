@@ -19,9 +19,10 @@
 package org.apache.maven.index.examples;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -48,13 +49,13 @@ public class SimpleArtifactGenerator {
             String classifier,
             String extension)
             throws IOException, NoSuchAlgorithmException, XmlPullParserException {
-        File repositoryDir = new File(repositoryBasedir);
-        File artifactFile = new File(
-                repositoryDir,
-                groupId.replaceAll("\\.", File.separator) + File.separatorChar + artifactId
-                        + File.separatorChar + version + File.separatorChar + artifactId
-                        + "-" + version + (classifier != null ? "-" + classifier + File.separatorChar : "")
-                        + "." + extension);
+        File repositoryDir = Path.of(repositoryBasedir).toFile();
+        File artifactFile = Path.of(
+                        repositoryDir.getPath(),
+                        groupId.replaceAll("\\.", File.separator) + File.separatorChar + artifactId + File.separatorChar
+                                + version + File.separatorChar + artifactId + "-" + version
+                                + (classifier != null ? "-" + classifier + File.separatorChar : "") + "." + extension)
+                .toFile();
 
         if (!artifactFile.getParentFile().exists()) {
             //noinspection ResultOfMethodCallIgnored
@@ -75,11 +76,14 @@ public class SimpleArtifactGenerator {
             //noinspection ResultOfMethodCallIgnored
             artifactFile.getParentFile().mkdirs();
 
-            File pomFile = new File(
-                    artifactFile.getParent(),
-                    artifactFile.getName().substring(0, artifactFile.getName().lastIndexOf(".")) + ".pom");
+            File pomFile = Path.of(
+                            artifactFile.getParent(),
+                            artifactFile
+                                            .getName()
+                                            .substring(0, artifactFile.getName().lastIndexOf(".")) + ".pom")
+                    .toFile();
 
-            zos = new ZipOutputStream(new FileOutputStream(artifactFile));
+            zos = new ZipOutputStream(Files.newOutputStream(artifactFile.toPath()));
 
             generatePom(pomFile, groupId, artifactId, version, extension);
 
@@ -113,7 +117,7 @@ public class SimpleArtifactGenerator {
         ZipEntry ze = new ZipEntry("META-INF/maven/" + groupId + "/" + artifactId + "/" + "pom.xml");
         zos.putNextEntry(ze);
 
-        FileInputStream fis = new FileInputStream(pomFile);
+        InputStream fis = Files.newInputStream(pomFile.toPath());
 
         byte[] buffer = new byte[1024];
         int len;

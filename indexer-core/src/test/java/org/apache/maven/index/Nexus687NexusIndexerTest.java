@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
  */
 public class Nexus687NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/nexus-687");
+    protected File repo = Path.of(getBasedir(), "src/test/nexus-687").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {

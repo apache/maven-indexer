@@ -21,10 +21,11 @@ package org.apache.maven.index.updater;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -259,14 +260,14 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
     @Test
     public void testMergeSearch() throws Exception {
-        File repo1 = new File(getBasedir(), "src/test/nexus-658");
+        File repo1 = Path.of(getBasedir(), "src/test/nexus-658").toFile();
         Directory indexDir1 = new ByteBuffersDirectory();
 
         IndexingContext context1 =
                 indexer.addIndexingContext("nexus-658", "nexus-658", repo1, indexDir1, null, null, DEFAULT_CREATORS);
         indexer.scan(context1);
 
-        File repo2 = new File(getBasedir(), "src/test/nexus-13");
+        File repo2 = Path.of(getBasedir(), "src/test/nexus-13").toFile();
         Directory indexDir2 = new ByteBuffersDirectory();
 
         IndexingContext context2 =
@@ -643,7 +644,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     protected InputStream newInputStream(String path) throws IOException {
         File file = getTestFile("src/test/resources/" + path);
         if (file.isFile()) {
-            return new FileInputStream(file);
+            return Files.newInputStream(file.toPath());
         }
         return null;
     }
@@ -672,8 +673,8 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     /** Writes the local updater properties into basedir and returns it as the index directory. */
     private static File indexDirectoryWithProperties(Properties properties, File basedir) throws IOException {
         basedir.mkdirs();
-        try (FileOutputStream fos =
-                new FileOutputStream(new File(basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE))) {
+        try (OutputStream fos =
+                Files.newOutputStream(Path.of(basedir.getPath(), IndexingContext.INDEX_UPDATER_PROPERTIES_FILE))) {
             properties.store(fos, "");
         }
         return basedir;

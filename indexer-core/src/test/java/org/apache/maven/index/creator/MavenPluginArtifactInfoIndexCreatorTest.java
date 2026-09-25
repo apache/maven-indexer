@@ -19,6 +19,7 @@
 package org.apache.maven.index.creator;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,13 +48,15 @@ public class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport
 
     @Test
     public void testMavenPluginInfo() throws Exception {
-        File artifact = new File(
-                getBasedir(),
-                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar");
+        File artifact = Path.of(
+                        getBasedir(),
+                        "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar")
+                .toFile();
 
-        File pom = new File(
-                getBasedir(),
-                "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom");
+        File pom = Path.of(
+                        getBasedir(),
+                        "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.pom")
+                .toFile();
 
         ArtifactInfo artifactInfo =
                 new ArtifactInfo("test", "org.apache.maven.plugins", "maven-dependency-plugin", "2.0", null, "jar");

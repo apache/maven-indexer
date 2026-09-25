@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
@@ -92,10 +93,11 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
         NexusIndexer indexer = lookup(NexusIndexer.class);
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = new File(getBasedir(), "target/index/test-" + System.currentTimeMillis());
+        File indexDir = Path.of(getBasedir(), "target/index/test-" + System.currentTimeMillis())
+                .toFile();
         FileUtils.deleteDirectory(indexDir);
 
-        File repo = new File(getBasedir(), "src/test/repo");
+        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
         context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
 

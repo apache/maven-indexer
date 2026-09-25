@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Nexus4674GavPathReindexTest extends AbstractNexusIndexerTest {
-    protected File repo = new File(getBasedir(), "src/test/repo");
+    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
@@ -54,14 +55,16 @@ public class Nexus4674GavPathReindexTest extends AbstractNexusIndexerTest {
         File artifact;
 
         // Using a file: this one should be unknown
-        artifact = new File(repo, "qdox/qdox/1.5/qdox-1.5.jar");
+        artifact = repo.toPath().resolve("qdox/qdox/1.5/qdox-1.5.jar").toFile();
 
         ais = nexusIndexer.identify(artifact);
 
         assertTrue(ais.isEmpty(), "Should not be able to identify it!");
 
         // Using a file: this one should be known
-        artifact = new File(repo, "org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar");
+        artifact = repo.toPath()
+                .resolve("org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar")
+                .toFile();
 
         ais = nexusIndexer.identify(artifact);
 

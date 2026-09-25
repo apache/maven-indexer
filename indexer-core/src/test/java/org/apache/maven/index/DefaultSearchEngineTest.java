@@ -20,7 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.lucene.search.IndexSearcher;
@@ -82,7 +82,7 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        File repo = new File(getBasedir(), "src/test/repo");
+        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
         context = new CountingIndexingContext(
                 "test-minimal", "test", repo, indexDir, null, null, IndexCreatorSorter.sort(MIN_CREATORS), false);
 
@@ -118,7 +118,7 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
         });
 
         try {
-            searchEngine.forceSearchIteratorPaged(request, Collections.singletonList(context));
+            searchEngine.forceSearchIteratorPaged(request, List.of(context));
         } catch (RuntimeException e) {
             // this is the point of this test
         }

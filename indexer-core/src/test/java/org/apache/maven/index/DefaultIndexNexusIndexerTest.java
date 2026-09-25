@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -158,7 +159,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Thread.sleep(1000L);
 
-        File newIndex = new File(getBasedir(), "target/test-new");
+        File newIndex = Path.of(getBasedir(), "target/test-new").toFile();
 
         Directory newIndexDir = FSDirectory.open(newIndex.toPath());
 
@@ -215,7 +216,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         newContext.close(true);
 
-        assertFalse(new File(newIndex, "timestamp").exists());
+        assertFalse(newIndex.toPath().resolve("timestamp").toFile().exists());
     }
 
     @Test

@@ -21,6 +21,7 @@ package org.apache.maven.index;
 import javax.inject.Inject;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -72,7 +73,7 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         String repoPath = "target/test/empty-repo-for-searchtest";
 
-        File emptyRepo = new File(getBasedir(), repoPath);
+        File emptyRepo = Path.of(getBasedir(), repoPath).toFile();
 
         if (emptyRepo.exists()) {
             FileUtils.deleteDirectory(emptyRepo);
@@ -153,7 +154,7 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         String repoPathIndex = "target/test/repo-for-searchdupe";
 
-        File emptyRepo = new File(getBasedir(), repoPathIndex);
+        File emptyRepo = Path.of(getBasedir(), repoPathIndex).toFile();
 
         if (emptyRepo.exists()) {
             FileUtils.deleteDirectory(emptyRepo);
@@ -200,9 +201,9 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
     private void createIndex(String filePath, String repoIndex, String contextId) throws Exception {
 
-        File repo = new File(getBasedir(), filePath);
+        File repo = Path.of(getBasedir(), filePath).toFile();
 
-        File repoIndexDir = new File(getBasedir(), repoIndex + "/.index");
+        File repoIndexDir = Path.of(getBasedir(), repoIndex + "/.index").toFile();
 
         if (repoIndexDir.exists()) {
             FileUtils.deleteDirectory(repoIndexDir);
@@ -225,10 +226,11 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         indexingContext.optimize();
 
-        File managedRepository = new File(repoIndex);
+        File managedRepository = Path.of(repoIndex).toFile();
         final IndexSearcher indexSearcher = indexingContext.acquireIndexSearcher();
         try {
-            final File indexLocation = new File(managedRepository, ".index");
+            final File indexLocation =
+                    managedRepository.toPath().resolve(".index").toFile();
             IndexPackingRequest request =
                     new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation);
             indexPacker.packIndex(request);

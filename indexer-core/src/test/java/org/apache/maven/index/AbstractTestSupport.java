@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.eclipse.sisu.launch.InjectedTest;
 
@@ -27,6 +28,6 @@ import org.eclipse.sisu.launch.InjectedTest;
  */
 public class AbstractTestSupport extends InjectedTest {
     protected File getTestFile(String path) {
-        return new File(new File(getBasedir()), path);
+        return Path.of(getBasedir(), path).toFile();
     }
 }
