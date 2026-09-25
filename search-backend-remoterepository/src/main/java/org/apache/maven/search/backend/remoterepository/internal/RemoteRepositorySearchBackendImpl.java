@@ -81,7 +81,8 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
             Transport transport,
             ResponseExtractor responseExtractor) {
         super(backendId, repositoryId);
-        this.baseUri = requireNonNull(baseUri);
+        requireNonNull(baseUri);
+        this.baseUri = baseUri.endsWith("/") ? baseUri : baseUri + "/";
         this.transport = requireNonNull(transport);
         this.responseExtractor = requireNonNull(responseExtractor);
 
