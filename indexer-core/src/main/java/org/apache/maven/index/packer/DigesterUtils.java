@@ -20,11 +20,12 @@ package org.apache.maven.index.packer;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -114,9 +115,9 @@ public class DigesterUtils {
      * @return
      */
     public static String getSha1Digest(File file) throws IOException {
-        try (FileInputStream fis = new FileInputStream(file)) {
+        try (InputStream fis = Files.newInputStream(file.toPath())) {
             return getDigest("SHA1", fis);
-        } catch (NoSuchAlgorithmException | FileNotFoundException e) {
+        } catch (NoSuchAlgorithmException | NoSuchFileException | AccessDeniedException e) {
             // will not happen
             return null;
         }
@@ -164,9 +165,9 @@ public class DigesterUtils {
      */
     public static String getMd5Digest(File file) throws IOException {
 
-        try (InputStream fis = new FileInputStream(file)) {
+        try (InputStream fis = Files.newInputStream(file.toPath())) {
             return getDigest("MD5", fis);
-        } catch (NoSuchAlgorithmException | FileNotFoundException e) {
+        } catch (NoSuchAlgorithmException | NoSuchFileException | AccessDeniedException e) {
             // will not happen
             return null;
         }

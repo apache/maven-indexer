@@ -19,6 +19,7 @@
 package org.apache.maven.index.locator;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * A sources locator to locate the sources bundle relative to POM.
@@ -31,6 +32,7 @@ public class SourcesLocator implements Locator {
      */
     public File locate(File source) {
         String path = source.getAbsolutePath();
-        return new File(path.substring(0, path.length() - 4).concat("-sources.jar"));
+        return Path.of(path.substring(0, path.length() - 4).concat("-sources.jar"))
+                .toFile();
     }
 }

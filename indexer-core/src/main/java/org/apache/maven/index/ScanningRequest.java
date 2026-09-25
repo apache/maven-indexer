@@ -19,6 +19,7 @@
 package org.apache.maven.index;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.index.context.IndexingContext;
 import org.codehaus.plexus.util.StringUtils;
@@ -64,7 +65,9 @@ public class ScanningRequest {
         if (StringUtils.isBlank(startingPath)) {
             return getIndexingContext().getRepository();
         } else {
-            return new File(getIndexingContext().getRepository(), startingPath);
+            // startingPath usually starts with a slash, which Path.resolve would treat as absolute
+            return Path.of(getIndexingContext().getRepository().getPath(), startingPath)
+                    .toFile();
         }
     }
 }

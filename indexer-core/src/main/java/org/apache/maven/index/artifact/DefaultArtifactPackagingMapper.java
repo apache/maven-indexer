@@ -22,8 +22,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -93,7 +94,7 @@ public class DefaultArtifactPackagingMapper implements ArtifactPackagingMapper {
 
                         Properties userMappings = new Properties();
 
-                        try (FileInputStream fis = new FileInputStream(propertiesFile)) {
+                        try (InputStream fis = Files.newInputStream(propertiesFile.toPath())) {
                             userMappings.load(fis);
 
                             if (userMappings.keySet().size() > 0) {

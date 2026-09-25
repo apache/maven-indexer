@@ -69,7 +69,7 @@ public class ArtifactLocator implements GavHelpedLocator {
             String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + "."
                     + mapper.getExtensionForPackaging(model.getPackaging());
 
-            File artifact = new File(source.getParent(), artifactName);
+            File artifact = source.toPath().resolveSibling(artifactName).toFile();
 
             if (!artifact.exists()) {
                 return null;

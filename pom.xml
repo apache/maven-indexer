@@ -280,6 +280,8 @@ under the License.
           <version>3.5.0</version>
           <configuration>
             <javaVersion>${javaVersion}</javaVersion>
+            <!-- test sources still use java.io.File throughout; see https://github.com/apache/maven-indexer/issues/591 -->
+            <includeTestClasses>false</includeTestClasses>
           </configuration>
           <executions>
             <execution>

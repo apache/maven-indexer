@@ -22,8 +22,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -562,7 +562,7 @@ public class OsgiArtifactIndexCreator extends AbstractIndexCreator {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-            try (DigestInputStream in = new DigestInputStream(new FileInputStream(f), digest)) {
+            try (DigestInputStream in = new DigestInputStream(Files.newInputStream(f.toPath()), digest)) {
                 byte[] buf = new byte[8192];
                 while (in.read(buf) >= 0) {
                     // nop
