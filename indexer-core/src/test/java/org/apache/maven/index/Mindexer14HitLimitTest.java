@@ -24,9 +24,9 @@ import java.io.IOException;
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.apache.maven.index.search.grouping.GAGrouping;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "target/repo/mindexer14");

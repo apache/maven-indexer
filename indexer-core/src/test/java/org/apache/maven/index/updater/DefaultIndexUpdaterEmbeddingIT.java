@@ -34,11 +34,13 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.apache.maven.index.updater.fixtures.ServerTestFixture;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.sisu.launch.InjectedTest;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     private String baseUrl;
@@ -48,6 +50,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     @Inject
     private IndexUpdater updater;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
 
@@ -63,6 +66,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
         super.setUp();
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         server.stop();

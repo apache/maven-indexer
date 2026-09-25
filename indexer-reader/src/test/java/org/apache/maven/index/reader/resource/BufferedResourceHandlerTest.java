@@ -25,61 +25,59 @@ import java.io.InputStream;
 
 import org.apache.maven.index.reader.ResourceHandler;
 import org.apache.maven.index.reader.ResourceHandler.Resource;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class BufferedResourceHandlerTest {
-    private Mockery context = new Mockery();
 
     @Test
     public void locate() throws IOException {
-        final Resource resource = context.mock(Resource.class);
-        final ResourceHandler resourceHandler = context.mock(ResourceHandler.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(resource).read();
-                will(returnValue(new ByteArrayInputStream(new byte[] {'a'})));
-                oneOf(resourceHandler).locate("test.txt");
-                will(returnValue(resource));
-            }
-        });
-        InputStream in =
-                new BufferedResourceHandler(resourceHandler).locate("test.txt").read();
+        Resource resource = () -> new ByteArrayInputStream(new byte[] {'a'});
+        InputStream in = new BufferedResourceHandler(new SingleResourceHandler("test.txt", resource))
+                .locate("test.txt")
+                .read();
         assertTrue(in instanceof BufferedInputStream);
         assertEquals('a', in.read());
-        context.assertIsSatisfied();
     }
 
     @Test
     public void locateNull() throws IOException {
-        final Resource resource = context.mock(Resource.class);
-        final ResourceHandler resourceHandler = context.mock(ResourceHandler.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(resource).read();
-                oneOf(resourceHandler).locate("test.txt");
-                will(returnValue(resource));
-            }
-        });
-        assertNull(
-                new BufferedResourceHandler(resourceHandler).locate("test.txt").read());
-        context.assertIsSatisfied();
+        Resource resource = () -> null;
+        assertNull(new BufferedResourceHandler(new SingleResourceHandler("test.txt", resource))
+                .locate("test.txt")
+                .read());
     }
 
     @Test
     public void close() throws IOException {
-        final ResourceHandler resourceHandler = context.mock(ResourceHandler.class);
-        context.checking(new Expectations() {
-            {
-                oneOf(resourceHandler).close();
-            }
-        });
+        SingleResourceHandler resourceHandler = new SingleResourceHandler("test.txt", null);
         new BufferedResourceHandler(resourceHandler).close();
-        context.assertIsSatisfied();
+        assertTrue(resourceHandler.closed);
+    }
+
+    /** Serves one named resource and records whether it was closed. */
+    private static class SingleResourceHandler implements ResourceHandler {
+        private final String name;
+        private final Resource resource;
+        boolean closed;
+
+        SingleResourceHandler(String name, Resource resource) {
+            this.name = name;
+            this.resource = resource;
+        }
+
+        @Override
+        public Resource locate(String name) {
+            assertEquals(this.name, name);
+            return resource;
+        }
+
+        @Override
+        public void close() {
+            closed = true;
+        }
     }
 }

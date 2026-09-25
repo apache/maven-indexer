@@ -24,7 +24,9 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.context.IndexingContext;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
@@ -43,6 +45,7 @@ public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
 
     protected Directory otherIndexDir;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -63,6 +66,7 @@ public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
         nexusIndexer.scan(otherContext);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();

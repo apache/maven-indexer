@@ -29,13 +29,15 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // FIXME - hardcoded assumptions in test that break with lucene 4, or bugs?
 // @Ignore("Segment merge may work differently in Lucene 4")
@@ -54,6 +56,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
     File reposTargetDir;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -76,6 +79,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         indexer.scan(context);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         indexer.removeIndexingContext(context, true);

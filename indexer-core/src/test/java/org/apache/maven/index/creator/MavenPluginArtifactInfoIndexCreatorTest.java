@@ -26,9 +26,10 @@ import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexCreator;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author juven
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 public class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport {
     protected IndexCreator indexCreator;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -42,20 +42,26 @@ import org.apache.maven.index.FlatSearchRequest;
 import org.apache.maven.index.FlatSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.SearchType;
-import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.api.Invocation;
-import org.jmock.lib.action.ReturnValueAction;
-import org.jmock.lib.action.VoidAction;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.ignoreStubs;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Eugene Kuleshov
@@ -74,7 +80,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         FlatSearchResponse response1 = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content1 = response1.getResults();
 
-        assertEquals(content1.toString(), 1, content1.size());
+        assertEquals(1, content1.size(), content1.toString());
 
         // updated index
 
@@ -91,7 +97,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         FlatSearchResponse response2 = indexer.searchFlat(new FlatSearchRequest(q, tempContext));
         Collection<ArtifactInfo> tempContent = response2.getResults();
-        assertEquals(tempContent.toString(), 2, tempContent.size());
+        assertEquals(2, tempContent.size(), tempContent.toString());
 
         // RAMDirectory is closed with context, forcing timestamp update
         tempContext.updateTimestamp(true);
@@ -111,7 +117,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         FlatSearchResponse response3 = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content2 = response3.getResults();
-        assertEquals(content2.toString(), 2, content2.size());
+        assertEquals(2, content2.size(), content2.toString());
     }
 
     @Test
@@ -125,7 +131,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
             FlatSearchResponse response1 = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> content1 = response1.getResults();
 
-            assertEquals(content1.toString(), 1, content1.size());
+            assertEquals(1, content1.size(), content1.toString());
         }
 
         // updated index
@@ -148,7 +154,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
             FlatSearchResponse tempResponse = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> tempContent = tempResponse.getResults();
-            assertEquals(tempContent.toString(), 3, tempContent.size());
+            assertEquals(3, tempContent.size(), tempContent.toString());
 
             ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
             for (String file : tempContext.getIndexDirectory().listAll()) {
@@ -161,7 +167,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
             FlatSearchResponse response2 = indexer.searchFlat(new FlatSearchRequest(q));
             Collection<ArtifactInfo> content2 = response2.getResults();
-            assertEquals(content2.toString(), 3, content2.size());
+            assertEquals(3, content2.size(), content2.toString());
         }
     }
 
@@ -209,7 +215,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> content2 = response.getResults();
 
-        assertEquals(content2.toString(), 1, content2.size());
+        assertEquals(1, content2.size(), content2.toString());
     }
 
     @Test
@@ -280,548 +286,257 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         Set<String> rootGroups = context.getRootGroups();
 
-        assertEquals(rootGroups.toString(), 4, rootGroups.size());
+        assertEquals(4, rootGroups.size(), rootGroups.toString());
 
         Set<String> allGroups = context.getAllGroups();
 
-        assertEquals(allGroups.toString(), 5, allGroups.size());
+        assertEquals(5, allGroups.size(), allGroups.toString());
     }
 
     @Test
     public void testNoIndexUpdate() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081125010000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081125010000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
-
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        final Properties localProps = new Properties();
+        Properties localProps = new Properties();
         localProps.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "1");
         localProps.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
         localProps.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081125010000.000 -0600");
 
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new IndexDirectoryFileAction(localProps, testBasedir));
+        when(tempContext.getIndexDirectoryFile()).thenReturn(indexDirectoryWithProperties(localProps, testBasedir));
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
 
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081125010000.000 -0600");
-                        return properties;
-                    }
-                });
-
-                allowing(tempContext).getIndexDirectoryFile();
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        Properties remoteProps = new Properties();
+        remoteProps.setProperty(IndexingContext.INDEX_ID, "central");
+        remoteProps.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081125010000.000 -0600");
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(remoteProps));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
     public void testFullIndexUpdate() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081125010000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081125010000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
 
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new ReturnValueAction(testBasedir));
-
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                allowing(tempContext).commit();
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081126010000.000 -0600");
-                        return properties;
-                    }
-                });
-
-                allowing(tempContext).getIndexDirectoryFile();
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
-                will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
-
-                oneOf(tempContext).replace(with(any(Directory.class)), with(any(Set.class)), with(any(Set.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        Properties remoteProps = new Properties();
+        remoteProps.setProperty(IndexingContext.INDEX_ID, "central");
+        remoteProps.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081126010000.000 -0600");
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(remoteProps));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(tempContext).replace(any(Directory.class), anySet(), anySet());
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
     public void testIncrementalIndexUpdate() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
-
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        final Properties localProps = new Properties();
+        Properties localProps = new Properties();
         localProps.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "1");
         localProps.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
 
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
+        when(tempContext.getIndexDirectoryFile()).thenReturn(indexDirectoryWithProperties(localProps, testBasedir));
 
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
-                        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
-                        return properties;
-                    }
-                });
-
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new IndexDirectoryFileAction(localProps, testBasedir));
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".2.gz"));
-                will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".3.gz"));
-                will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
-                // could create index archive there and verify that it is merged correctly
-
-                oneOf(tempContext)
-                        .merge(
-                                with(any(Directory.class)),
-                                with(aNull(DocumentFilter.class)),
-                                with(any(Set.class)),
-                                with(any(Set.class)));
-
-                oneOf(tempContext)
-                        .merge(
-                                with(any(Directory.class)),
-                                with(aNull(DocumentFilter.class)),
-                                with(any(Set.class)),
-                                with(any(Set.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(chunkedRemoteProperties()));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".2.gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".3.gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
+        // could create index archive there and verify that it is merged correctly
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
         updateRequest.setIncrementalOnly(true);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".2.gz");
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".3.gz");
+        verify(tempContext, times(2)).merge(any(Directory.class), isNull(), anySet(), anySet());
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
     public void testIncrementalIndexUpdateNoCounter() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
 
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new ReturnValueAction(testBasedir));
-
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
-                        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
-                        return properties;
-                    }
-                });
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
-                will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
-                // could create index archive there and verify that it is merged correctly
-
-                oneOf(tempContext).replace(with(any(Directory.class)), with(any(Set.class)), with(any(Set.class)));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".2.gz"));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(chunkedRemoteProperties()));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
+        // could create index archive there and verify that it is merged correctly
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(tempContext).replace(any(Directory.class), anySet(), anySet());
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".2.gz");
+        verify(tempContext, never()).merge(any(Directory.class));
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
     public void testIncrementalOnlyIndexUpdateNoCounter() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
 
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new ReturnValueAction(testBasedir));
-
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
-                        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
-                        return properties;
-                    }
-                });
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(chunkedRemoteProperties()));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
         updateRequest.setIncrementalOnly(true);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateFailed(updateResult);
     }
 
     @Test
     public void testIncrementalIndexUpdateNoUpdateNecessary() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
-
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        final Properties localProps = new Properties();
+        Properties localProps = new Properties();
         localProps.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
         localProps.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
 
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
+        when(tempContext.getIndexDirectoryFile()).thenReturn(indexDirectoryWithProperties(localProps, testBasedir));
 
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                allowing(tempContext).commit();
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
-                        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
-                        return properties;
-                    }
-                });
-
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new IndexDirectoryFileAction(localProps, testBasedir));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
-                // could create index archive there and verify that it is merged correctly
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".1.gz"));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".2.gz"));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".3.gz"));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                never(tempContext).replace(with(any(Directory.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(chunkedRemoteProperties()));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".1.gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".2.gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".3.gz");
+        verify(tempContext, never()).merge(any(Directory.class));
+        verify(tempContext, never()).replace(any(Directory.class));
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
     public void testUpdateForceFullUpdate() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
 
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new ReturnValueAction(testBasedir));
-
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
-                        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
-                        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
-                        return properties;
-                    }
-                });
-
-                never(tempContext).getIndexDirectoryFile();
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".1.gz"));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".2.gz"));
-
-                never(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_FILE_PREFIX + ".3.gz"));
-
-                oneOf(mockFetcher).retrieve(with(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
-                will(returnValue(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz")));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                oneOf(tempContext).replace(with(any(Directory.class)), with(any(Set.class)), with(any(Set.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(chunkedRemoteProperties()));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
@@ -829,77 +544,44 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".1.gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".2.gz");
+        verify(mockFetcher, never()).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".3.gz");
+        verify(tempContext, never()).merge(any(Directory.class));
+        verify(tempContext).replace(any(Directory.class), anySet(), anySet());
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
     @Test
-    @Ignore("Legacy format no longer supported with Lucene 4")
+    @Disabled("Legacy format no longer supported with Lucene 4")
     public void ignoreTestUpdateForceFullUpdateNoGZ() throws Exception {
-        Mockery mockery = new Mockery();
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
-        final String indexUrl = repositoryUrl + ".index";
-        final Date contextTimestamp = df.parse("20081128000000.000 -0600");
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
 
-        final ResourceFetcher mockFetcher = mockery.mock(ResourceFetcher.class);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
 
-        final IndexingContext tempContext = mockery.mock(IndexingContext.class);
-
-        mockery.checking(new Expectations() {
-            {
-                allowing(tempContext).getIndexDirectoryFile();
-                will(new ReturnValueAction(testBasedir));
-
-                allowing(tempContext).getTimestamp();
-                will(returnValue(contextTimestamp));
-
-                allowing(tempContext).commit();
-
-                allowing(tempContext).getId();
-                will(returnValue(repositoryId));
-
-                allowing(tempContext).getIndexUpdateUrl();
-                will(returnValue(indexUrl));
-
-                allowing(tempContext).getIndexCreators();
-                will(returnValue(DEFAULT_CREATORS));
-
-                oneOf(mockFetcher).connect(repositoryId, indexUrl);
-
-                oneOf(mockFetcher)
-                        .retrieve( //
-                                with(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE));
-                will(new PropertiesAction() {
-                    @Override
-                    Properties getProperties() {
-                        Properties properties = new Properties();
-                        properties.setProperty(IndexingContext.INDEX_ID, "central");
-                        properties.setProperty(IndexingContext.INDEX_LEGACY_TIMESTAMP, "20081129174241.859 -0600");
-                        return properties;
-                    }
-                });
-
-                never(tempContext).getIndexDirectoryFile();
-
-                oneOf(mockFetcher).retrieve(with(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
-
-                will(throwException(new IOException()));
-
-                oneOf(mockFetcher).retrieve(with(IndexingContext.INDEX_FILE_PREFIX + ".zip"));
-
-                will(returnValue(newInputStream("index-updater/server-root/legacy/nexus-maven-repository-index.zip")));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                never(tempContext).merge(with(any(Directory.class)));
-
-                oneOf(tempContext).replace(with(any(Directory.class)));
-
-                oneOf(mockFetcher).disconnect();
-            }
-        });
-
-        // tempContext.updateTimestamp( true, contextTimestamp );
+        Properties remoteProps = new Properties();
+        remoteProps.setProperty(IndexingContext.INDEX_ID, "central");
+        remoteProps.setProperty(IndexingContext.INDEX_LEGACY_TIMESTAMP, "20081129174241.859 -0600");
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(remoteProps));
+        doThrow(new IOException()).when(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".zip"))
+                .thenReturn(newInputStream("index-updater/server-root/legacy/nexus-maven-repository-index.zip"));
 
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(tempContext, mockFetcher);
 
@@ -907,7 +589,15 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(updateRequest);
 
-        mockery.assertIsSatisfied();
+        verify(mockFetcher).connect(repositoryId, indexUrl);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE);
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".zip");
+        verify(tempContext, never()).merge(any(Directory.class));
+        verify(tempContext).replace(any(Directory.class));
+        verify(mockFetcher).disconnect();
+        verifyNoMoreInteractions(mockFetcher);
+        verifyNoMoreInteractions(ignoreStubs(tempContext));
         assertIndexUpdateSucceeded(updateResult);
     }
 
@@ -919,45 +609,42 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         return null;
     }
 
-    abstract static class PropertiesAction extends VoidAction {
-        @Override
-        public Object invoke(Invocation invocation) throws Throwable {
-            Properties properties = getProperties();
-
-            try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
-                properties.store(buf, null);
-                buf.flush();
-                return new ByteArrayInputStream(buf.toByteArray());
-            }
-        }
-
-        abstract Properties getProperties();
+    /** The remote properties of a chunked index with chunks 3, 2 and 1 available. */
+    private static Properties chunkedRemoteProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(IndexingContext.INDEX_ID, "central");
+        properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081129174241.859 -0600");
+        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, "3");
+        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "someid");
+        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "0", "3");
+        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "1", "2");
+        properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + "2", "1");
+        return properties;
     }
 
-    private static class IndexDirectoryFileAction extends VoidAction {
-        File file;
-
-        public IndexDirectoryFileAction(Properties properties, File basedir) throws Exception {
-            basedir.mkdirs();
-
-            this.file = new File(basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE);
-
-            try (FileOutputStream fos = new FileOutputStream(this.file)) {
-                properties.store(fos, "");
-            }
+    private static InputStream propertiesStream(Properties properties) throws IOException {
+        try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
+            properties.store(buf, null);
+            buf.flush();
+            return new ByteArrayInputStream(buf.toByteArray());
         }
+    }
 
-        @Override
-        public Object invoke(Invocation invocation) throws Throwable {
-            return this.file.getParentFile();
+    /** Writes the local updater properties into basedir and returns it as the index directory. */
+    private static File indexDirectoryWithProperties(Properties properties, File basedir) throws IOException {
+        basedir.mkdirs();
+        try (FileOutputStream fos =
+                new FileOutputStream(new File(basedir, IndexingContext.INDEX_UPDATER_PROPERTIES_FILE))) {
+            properties.store(fos, "");
         }
+        return basedir;
     }
 
     private void assertIndexUpdateSucceeded(IndexUpdateResult updateResult) {
-        assertTrue("Index update should have succeeded, but says it failed", updateResult.isSuccessful());
+        assertTrue(updateResult.isSuccessful(), "Index update should have succeeded, but says it failed");
     }
 
     private void assertIndexUpdateFailed(IndexUpdateResult updateResult) {
-        assertFalse("Index update should have failed, but says it succeeded", updateResult.isSuccessful());
+        assertFalse(updateResult.isSuccessful(), "Index update should have failed, but says it succeeded");
     }
 }

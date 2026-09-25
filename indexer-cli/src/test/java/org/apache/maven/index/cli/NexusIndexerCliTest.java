@@ -27,12 +27,14 @@ import java.util.List;
 
 import org.apache.commons.cli.Option;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class NexusIndexerCliTest extends AbstractNexusIndexerCliTest {
 
     protected NexusIndexerCli cli;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();

@@ -27,9 +27,9 @@ import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.M2GavCalculator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/repo");
@@ -56,8 +56,8 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile);
 
-        assertTrue("Artifact file was not found!", ac.getArtifact() != null);
-        assertTrue("Artifact file was not found!", ac.getArtifact().exists());
+        assertTrue(ac.getArtifact() != null, "Artifact file was not found!");
+        assertTrue(ac.getArtifact().exists(), "Artifact file was not found!");
     }
 
     @Test
@@ -74,7 +74,7 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         File artifactFile = al.locate(pomFile, gavCalculator, gav);
 
-        assertTrue("Artifact file was not located!", artifactFile != null);
-        assertTrue("Artifact file was not located!", artifactFile.exists());
+        assertTrue(artifactFile != null, "Artifact file was not located!");
+        assertTrue(artifactFile.exists(), "Artifact file was not located!");
     }
 }

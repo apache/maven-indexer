@@ -112,8 +112,7 @@ public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implement
                                 BooleanClause.Occur.MUST_NOT)
                         .build();
             }
-            IteratorSearchRequest iteratorSearchRequest =
-                    new IteratorSearchRequest(query, Collections.singletonList(indexingContext));
+            IteratorSearchRequest iteratorSearchRequest = new IteratorSearchRequest(query, List.of(indexingContext));
             iteratorSearchRequest.setCount(paging.getPageSize());
             iteratorSearchRequest.setStart(paging.getPageSize() * paging.getPageOffset());
 

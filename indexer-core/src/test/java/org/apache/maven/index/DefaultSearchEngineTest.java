@@ -30,9 +30,11 @@ import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;
 import org.apache.maven.index.context.IndexCreator;
 import org.apache.maven.index.util.IndexCreatorSorter;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
 
@@ -89,6 +91,7 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
 
     private SearchEngine searchEngine;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -96,6 +99,7 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
         searchEngine = lookup(SearchEngine.class);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         searchEngine = null;

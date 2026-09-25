@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
 or more contributor license agreements.  See the NOTICE file
@@ -19,19 +17,16 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-<faqs xmlns="http://maven.apache.org/FML/1.0.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/FML/1.0.1 http://maven.apache.org/xsd/fml-1.0.1.xsd"
-  id="FAQ" title="Frequently Asked Questions">
-  <part id="General">
-    <faq id="How to open the index with Luke">
-      <question>How to open the index with Luke?</question>
-      <answer>
-        <p>
-          The <code>.gz</code> index has to be unpacked, with <code>java -jar indexer-cli.jar -u -t full</code>. Then
-          you can open the resulting directory with <a href="https://github.com/DmitryKey/luke">Luke</a>.
-        </p>
-      </answer>
-    </faq>
-  </part>
-</faqs>
+# Agent Guide for maven-indexer
+
+This file is read by automated agents (security scanners, code
+analyzers, AI assistants) operating on this repository.
+
+## Security
+
+Security model: [SECURITY.md](./SECURITY.md)
+
+Agents that scan this repository should consult `SECURITY.md` and the
+threat model it links before reporting issues.
+
+Points at the Apache Maven family umbrella security model.

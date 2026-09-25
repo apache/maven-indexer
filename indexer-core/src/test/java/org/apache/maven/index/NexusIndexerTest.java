@@ -55,14 +55,12 @@ import org.apache.maven.index.updater.DefaultIndexUpdater;
 import org.apache.maven.index.updater.IndexUpdateRequest;
 import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Jason van Zyl */
 public class NexusIndexerTest extends AbstractIndexCreatorHelper {
@@ -84,7 +82,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         // scored search against field having tokenized IndexerField only (should be impossible).
         q = indexer.constructQuery(MAVEN.NAME, "Some artifact name from Pom", SearchType.SCORED);
-        assertThat(q.toString(), is("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\""));
+        assertEquals("(+n:some +n:artifact +n:name +n:from +n:Pom*) n:\"some artifact name from pom\"", q.toString());
     }
 
     @Test
@@ -345,7 +343,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         String whatWeHave = sw.toString();
 
         // we compare those two
-        assertEquals("Search results inconsistent!", shouldBe, whatWeHave);
+        assertEquals(shouldBe, whatWeHave, "Search results inconsistent!");
     }
 
     @Test
@@ -361,7 +359,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         assertEquals(2, response.getTotalHits());
 
         for (ArtifactInfo ai : response.getResults()) {
-            assertEquals("GroupId must match \"qdox\"!", "qdox", ai.getGroupId());
+            assertEquals("qdox", ai.getGroupId(), "GroupId must match \"qdox\"!");
         }
     }
 
@@ -371,22 +369,21 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         Query q = indexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
 
-        IteratorSearchRequest request = new IteratorSearchRequest(q, (ctx, ai) -> {
-            // we reject version "1.5" for fun
-            return !StringUtils.equals(ai.getVersion(), "1.5");
-        });
+        IteratorSearchRequest request = new IteratorSearchRequest(
+                q,
+                (ctx, ai) ->
+                        // we reject version "1.5" for fun
+                        !StringUtils.equals(ai.getVersion(), "1.5"));
 
         IteratorSearchResponse response = indexer.searchIterator(request);
 
         assertEquals(2, response.getTotalHits());
 
-        assertTrue(
-                "Iterator has to have next (2 found, 1 filtered out)",
-                response.getResults().hasNext());
+        assertTrue(response.getResults().hasNext(), "Iterator has to have next (2 found, 1 filtered out)");
 
         ArtifactInfo ai = response.getResults().next();
 
-        assertEquals("1.5 is filtered out, so 1.6.1 must appear here!", "1.6.1", ai.getVersion());
+        assertEquals("1.6.1", ai.getVersion(), "1.5 is filtered out, so 1.6.1 must appear here!");
     }
 
     @Test
@@ -429,7 +426,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
             WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
             FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
             Set<ArtifactInfo> r = response.getResults();
-            assertEquals(r.toString(), 4, r.size());
+            assertEquals(4, r.size(), r.toString());
         }
 
         {
@@ -442,7 +439,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
             FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(bq));
             Set<ArtifactInfo> r = response.getResults();
 
-            assertEquals(r.toString(), 4, r.size());
+            assertEquals(4, r.size(), r.toString());
         }
     }
 
@@ -453,7 +450,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 2, r.size());
+        assertEquals(2, r.size(), r.toString());
     }
 
     @Test
@@ -589,7 +586,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> infos = response.getResults();
 
-        assertEquals(infos.toString(), 2, infos.size());
+        assertEquals(2, infos.size(), infos.toString());
     }
 
     private NexusIndexer prepare() throws Exception, IOException, UnsupportedExistingLuceneIndexException {

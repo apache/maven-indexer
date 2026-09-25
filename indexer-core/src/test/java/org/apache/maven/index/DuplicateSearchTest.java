@@ -28,10 +28,10 @@ import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.expr.SourcedSearchExpression;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DuplicateSearchTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/repo");
@@ -134,10 +134,7 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat(fsReq);
 
-        assertEquals(
-                "We have 10 GAVs coming from three contextes",
-                10,
-                fsResp.getResults().size());
+        assertEquals(10, fsResp.getResults().size(), "We have 10 GAVs coming from three contextes");
 
         // Why? Look at the FlatSearchRequest default comparator it uses, it is ArtifactInfo.VERSION_COMPARATOR
         // that neglects contextId and repositoryId and compares GAVs only, and the Collection fixed in SVN Rev1158917
@@ -159,10 +156,7 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
 
         FlatSearchResponse fsResp = nexusIndexer.searchFlat(fsReq);
 
-        assertEquals(
-                "We have 10 GAVs coming from three contextes, it is 30",
-                30,
-                fsResp.getResults().size());
+        assertEquals(30, fsResp.getResults().size(), "We have 10 GAVs coming from three contextes, it is 30");
 
         // Why? We set explicitly the comparator to CONTEXT_VERSION_COMPARATOR, that compares GAV+contextId, hence,
         // will return all hits from all participating contexts.
@@ -208,14 +202,14 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
             }
         }
 
-        assertEquals("Iterator delivered to us 3 results, since we have 3 GA combinations", 3, actualResultCount);
+        assertEquals(3, actualResultCount, "Iterator delivered to us 3 results, since we have 3 GA combinations");
         assertEquals(
-                "IteratorSearch is strange beast, due to it's nature, it cannot say how many elements it (will) return in advance, due to filtering, postprocessing, etc",
                 -1,
-                isResp.getReturnedHitsCount());
+                isResp.getReturnedHitsCount(),
+                "IteratorSearch is strange beast, due to it's nature, it cannot say how many elements it (will) return in advance, due to filtering, postprocessing, etc");
         assertEquals(
-                "The processing/search tackled 10 GAVs coming from three contextes, it is 30. This is the record count that were hit by processing of this search, but IS NOT the count results (it depends on filtering, comparators, etc)!",
                 30,
-                isResp.getTotalHitsCount());
+                isResp.getTotalHitsCount(),
+                "The processing/search tackled 10 GAVs coming from three contextes, it is 30. This is the record count that were hit by processing of this search, but IS NOT the count results (it depends on filtering, comparators, etc)!");
     }
 }

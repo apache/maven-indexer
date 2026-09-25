@@ -22,12 +22,15 @@ import java.io.File;
 import java.util.Collections;
 
 import org.apache.maven.index.context.IndexingContext;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest {
     IndexingContext member;
 
     File indexMergedDir;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -41,6 +44,7 @@ public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest 
                 "merged", "merged", member.getRepository(), indexMergedDir, false, Collections.singletonList(member));
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         indexer.removeIndexingContext(context, true);

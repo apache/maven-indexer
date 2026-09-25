@@ -25,10 +25,10 @@ import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
@@ -46,7 +46,7 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
         assertEquals(2, response.getTotalHits());
 
         for (ArtifactInfo ai : response.getResults()) {
-            assertEquals("GroupId must match \"qdox\"!", "qdox", ai.getGroupId());
+            assertEquals("qdox", ai.getGroupId(), "GroupId must match \"qdox\"!");
         }
     }
 
@@ -64,26 +64,26 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
 
         IteratorSearchResponse response = indexer.searchIterator(request);
 
-        assertEquals("15 total hits (before filtering!)", 15, response.getTotalHits());
+        assertEquals(15, response.getTotalHits(), "15 total hits (before filtering!)");
 
         ArtifactInfo ai = response.getResults().next();
-        assertTrue("Iterator has to have next (2 should be returned)", ai != null);
+        assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
 
         ai = response.getResults().next();
-        assertTrue("Iterator has to have next (2 should be returned)", ai != null);
+        assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
 
         assertEquals(
-                "Property that is not unique has to have \"COLLAPSED\" value!",
                 UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getVersion());
+                ai.getVersion(),
+                "Property that is not unique has to have \"COLLAPSED\" value!");
         assertEquals(
-                "Property that is not unique has to have \"COLLAPSED\" value!",
                 UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getPackaging());
+                ai.getPackaging(),
+                "Property that is not unique has to have \"COLLAPSED\" value!");
         assertEquals(
-                "Property that is not unique has to have \"COLLAPSED\" value!",
                 UniqueArtifactFilterPostprocessor.COLLAPSED,
-                ai.getClassifier());
+                ai.getClassifier(),
+                "Property that is not unique has to have \"COLLAPSED\" value!");
     }
 
     // ==

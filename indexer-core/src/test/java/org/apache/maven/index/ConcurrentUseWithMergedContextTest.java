@@ -24,7 +24,7 @@ import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * The point in this test is: we use Merged context, and we modify some of the "members" in the merged context, while we

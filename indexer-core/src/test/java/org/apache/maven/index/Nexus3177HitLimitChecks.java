@@ -26,9 +26,9 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.IndexingContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/repo");
@@ -75,8 +75,8 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 4, r.size());
-        assertEquals(r.toString(), 4, response.getTotalHitsCount());
+        assertEquals(4, r.size(), r.toString());
+        assertEquals(4, response.getTotalHitsCount(), r.toString());
     }
 
     @Test
@@ -90,8 +90,8 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 4, r.size());
-        assertEquals(r.toString(), 4, response.getTotalHitsCount());
+        assertEquals(4, r.size(), r.toString());
+        assertEquals(4, response.getTotalHitsCount(), r.toString());
     }
 
     // See NOTE above
@@ -123,8 +123,8 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 8, r.size());
-        assertEquals(r.toString(), 8, response.getTotalHitsCount());
+        assertEquals(8, r.size(), r.toString());
+        assertEquals(8, response.getTotalHitsCount(), r.toString());
     }
 
     @Test
@@ -140,8 +140,8 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
 
         FlatSearchResponse response = nexusIndexer.searchFlat(request);
         Set<ArtifactInfo> r = response.getResults();
-        assertEquals(r.toString(), 8, r.size());
-        assertEquals(r.toString(), 8, response.getTotalHitsCount());
+        assertEquals(8, r.size(), r.toString());
+        assertEquals(8, response.getTotalHitsCount(), r.toString());
     }
 
     // See NOTE above

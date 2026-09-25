@@ -29,20 +29,20 @@ import org.apache.maven.index.examples.indexing.SearchRequest;
 import org.apache.maven.index.examples.indexing.SearchResults;
 import org.apache.maven.index.examples.services.ArtifactIndexingService;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author mtodorov
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"/META-INF/spring/*-context.xml", "classpath*:/META-INF/spring/*-context.xml"})
 public class SpringUsageExampleTest {
 
@@ -53,7 +53,7 @@ public class SpringUsageExampleTest {
 
     private SimpleArtifactGenerator generator = new SimpleArtifactGenerator();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         if (!new File(REPOSITORIES_BASEDIR, "releases/org/apache/maven/indexer/examples/indexer-examples-spring")
                 .exists()) {
@@ -119,13 +119,13 @@ public class SpringUsageExampleTest {
         SearchRequest request =
                 new SearchRequest("releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.4");
 
-        assertTrue("Couldn't find existing artifact!", artifactIndexingService.contains(request));
+        assertTrue(artifactIndexingService.contains(request), "Couldn't find existing artifact!");
 
         // Delete the artifact from the index:
         artifactIndexingService.deleteFromIndex(
                 "releases", "org.apache.maven.indexer.examples", "indexer-examples-spring", "1.4", "jar", null);
 
-        assertFalse("Failed to remove artifact from index!", artifactIndexingService.contains(request));
+        assertFalse(artifactIndexingService.contains(request), "Failed to remove artifact from index!");
     }
 
     @Test
@@ -134,7 +134,7 @@ public class SpringUsageExampleTest {
         SearchRequest request = new SearchRequest(
                 "releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.3*");
 
-        assertTrue("Couldn't find existing artifact!", artifactIndexingService.contains(request));
+        assertTrue(artifactIndexingService.contains(request), "Couldn't find existing artifact!");
 
         final SearchResults searchResults = artifactIndexingService.search(request);
 

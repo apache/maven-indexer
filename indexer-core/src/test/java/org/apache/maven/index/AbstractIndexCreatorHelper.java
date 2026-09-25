@@ -30,10 +30,11 @@ import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.codehaus.plexus.util.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class AbstractIndexCreatorHelper extends AbstractTestSupport {
     public List<IndexCreator> DEFAULT_CREATORS;
@@ -44,6 +45,7 @@ public class AbstractIndexCreatorHelper extends AbstractTestSupport {
 
     Random rand = new Random();
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -90,6 +92,6 @@ public class AbstractIndexCreatorHelper extends AbstractTestSupport {
         assertFalse(dir.exists());
 
         File dir2 = this.getDirectory("foo");
-        assertNotEquals("Directories aren't unique", dir.getCanonicalPath(), dir2.getCanonicalPath());
+        assertNotEquals(dir.getCanonicalPath(), dir2.getCanonicalPath(), "Directories aren't unique");
     }
 }

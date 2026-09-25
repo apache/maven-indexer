@@ -22,9 +22,10 @@ import java.io.File;
 
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.NexusIndexer;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     protected File repo = new File(getBasedir(), "src/test/repo");
@@ -33,6 +34,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
     protected boolean debug = false;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -75,7 +77,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
         int leafsFound = prettyPrint(debug, root, 0);
 
-        assertEquals("The group name should be here", "/", root.getNodeName());
+        assertEquals("/", root.getNodeName(), "The group name should be here");
         assertEquals(12, root.getChildren().size());
         assertEquals(49, leafsFound);
     }
@@ -88,7 +90,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
         int leafsFound = prettyPrint(debug, root, 0);
 
-        assertEquals("The group name should be here", "org", root.getNodeName());
+        assertEquals("org", root.getNodeName(), "The group name should be here");
         assertEquals(4, root.getChildren().size());
         assertEquals(22, leafsFound);
     }
@@ -101,7 +103,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
         int leafsFound = prettyPrint(debug, root, 0);
 
-        assertEquals("The group name should be here", "slf4j", root.getNodeName());
+        assertEquals("slf4j", root.getNodeName(), "The group name should be here");
         assertEquals(3, root.getChildren().size());
         assertEquals(10, leafsFound);
     }
@@ -127,7 +129,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
         int leafsFound = prettyPrint(debug, root, 0);
 
-        assertEquals("The group name should be here", "1.4.1", root.getNodeName());
+        assertEquals("1.4.1", root.getNodeName(), "The group name should be here");
         assertEquals(1, root.getChildren().size());
         assertEquals(4, leafsFound);
     }

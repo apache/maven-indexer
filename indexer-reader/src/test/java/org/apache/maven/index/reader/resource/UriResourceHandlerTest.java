@@ -18,27 +18,27 @@
  */
 package org.apache.maven.index.reader.resource;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
 import org.apache.maven.index.reader.ResourceHandler.Resource;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class UriResourceHandlerTest {
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public File folder;
 
     @Test
     public void locate() throws IOException {
-        Resource test = new UriResourceHandler(folder.getRoot().toURI()).locate("test.txt");
+        Resource test = new UriResourceHandler(folder.toURI()).locate("test.txt");
         assertNull(test.read());
-        Files.write(folder.getRoot().toPath().resolve("test.txt"), new byte[] {'a'});
+        Files.write(folder.toPath().resolve("test.txt"), new byte[] {'a'});
         try (InputStream in = test.read()) {
             assertEquals('a', in.read());
         }

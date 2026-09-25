@@ -37,8 +37,10 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.util.FileUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelper {
     File testBasedir;
@@ -59,6 +61,7 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
 
     IndexingContext context;
 
+    @BeforeEach
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -82,6 +85,7 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
                 repositoryId, repositoryId, repoDir, indexDir, repositoryUrl, null, MIN_CREATORS);
     }
 
+    @AfterEach
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
@@ -154,6 +158,6 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
             ais.add(ai);
         }
 
-        assertEquals(ais.toString(), expected, ais.size());
+        assertEquals(expected, ais.size(), ais.toString());
     }
 }
