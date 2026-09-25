@@ -114,7 +114,11 @@ public class RecordCompactor implements Function<Record, Map<String, String>> {
         putIfNotNull(record.getString(Record.SHA1), result, "1");
 
         // Jar file contents (optional)
-        putIfNotNullAsStringArray(record.getStringArray(Record.CLASSNAMES), result, "classnames");
+        String[] classNames = record.getStringArray(Record.CLASSNAMES);
+        if (classNames != null && classNames.length > 0) {
+            // same field and format as indexer-core JarFileContentsIndexCreator: "c", one class name per line
+            result.put("c", String.join("\n", classNames));
+        }
 
         // Maven Plugin (optional)
         putIfNotNull(record.getString(Record.PLUGIN_PREFIX), result, "px");

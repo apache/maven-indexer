@@ -133,7 +133,13 @@ public class RecordExpander implements Function<Map<String, String>, Record> {
         putIfNotNull(raw, "1", result, Record.SHA1);
 
         // Jar file contents (optional)
-        putIfNotNullAsStringArray(raw, "classnames", result, Record.CLASSNAMES);
+        // indexer-core stores class names as "c", one per line; "classnames" was written by older indexer-reader
+        String classNames = raw.get("c");
+        if (classNames != null && !classNames.isBlank()) {
+            result.put(Record.CLASSNAMES, classNames.trim().split("\n"));
+        } else {
+            putIfNotNullAsStringArray(raw, "classnames", result, Record.CLASSNAMES);
+        }
 
         // Maven Plugin (optional)
         putIfNotNull(raw, "px", result, Record.PLUGIN_PREFIX);
