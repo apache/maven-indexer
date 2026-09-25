@@ -48,7 +48,7 @@ public abstract class AbstractMultiArtifactInfoFilter implements ArtifactInfoFil
      */
     public List<ArtifactInfoFilter> getFilters() {
         if (filters == null) {
-            return Collections.emptyList();
+            return List.of();
         } else {
             return Collections.unmodifiableList(filters);
         }

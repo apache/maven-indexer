@@ -34,7 +34,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -218,8 +217,7 @@ public class BasicUsageExample {
         };
 
         System.out.println("Searching for all GAVs with org.apache.maven:maven-plugin-api having V greater than 3.1.0");
-        final IteratorSearchRequest request =
-                new IteratorSearchRequest(query, Collections.singletonList(centralContext), versionFilter);
+        final IteratorSearchRequest request = new IteratorSearchRequest(query, List.of(centralContext), versionFilter);
         final IteratorSearchResponse response = indexer.searchIterator(request);
         for (ArtifactInfo ai : response) {
             System.out.println(ai.toString());

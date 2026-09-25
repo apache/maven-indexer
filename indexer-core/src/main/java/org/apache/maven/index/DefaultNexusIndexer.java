@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -337,7 +338,7 @@ public class DefaultNexusIndexer implements NexusIndexer {
      * Delegates to the {@link IndexerEngine} to update artifact to the index
      */
     public void addArtifactToIndex(ArtifactContext ac, IndexingContext context) throws IOException {
-        indexer.addArtifactsToIndex(Collections.singleton(ac), context);
+        indexer.addArtifactsToIndex(Set.of(ac), context);
     }
 
     public void addArtifactsToIndex(Collection<ArtifactContext> acs, IndexingContext context) throws IOException {
@@ -348,7 +349,7 @@ public class DefaultNexusIndexer implements NexusIndexer {
      * Delegates to the {@link IndexerEngine} to remove artifact from the index
      */
     public void deleteArtifactFromIndex(ArtifactContext ac, IndexingContext context) throws IOException {
-        indexer.deleteArtifactsFromIndex(Collections.singleton(ac), context);
+        indexer.deleteArtifactsFromIndex(Set.of(ac), context);
     }
 
     public void deleteArtifactsFromIndex(Collection<ArtifactContext> acs, IndexingContext context) throws IOException {

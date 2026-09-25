@@ -26,17 +26,17 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -261,9 +261,10 @@ public class DefaultIndexUpdater implements IndexUpdater {
     }
 
     private Properties loadIndexProperties(final File indexDirectoryFile, final String remoteIndexPropertiesName) {
-        File indexProperties = new File(indexDirectoryFile, remoteIndexPropertiesName);
+        File indexProperties =
+                indexDirectoryFile.toPath().resolve(remoteIndexPropertiesName).toFile();
 
-        try (FileInputStream fis = new FileInputStream(indexProperties)) {
+        try (InputStream fis = Files.newInputStream(indexProperties.toPath())) {
             Properties properties = new Properties();
 
             properties.load(fis);
@@ -277,10 +278,10 @@ public class DefaultIndexUpdater implements IndexUpdater {
 
     private void storeIndexProperties(final File dir, final String indexPropertiesName, final Properties properties)
             throws IOException {
-        File file = new File(dir, indexPropertiesName);
+        File file = dir.toPath().resolve(indexPropertiesName).toFile();
 
         if (properties != null) {
-            try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
+            try (OutputStream os = new BufferedOutputStream(Files.newOutputStream(file.toPath()))) {
                 properties.store(os, null);
             }
         } else {
@@ -368,11 +369,16 @@ public class DefaultIndexUpdater implements IndexUpdater {
         }
 
         public InputStream retrieve(String name) throws IOException, FileNotFoundException {
-            return new FileInputStream(getFile(name));
+            try {
+                return Files.newInputStream(getFile(name).toPath());
+            } catch (NoSuchFileException e) {
+                // keep the ResourceFetcher contract
+                throw (FileNotFoundException) new FileNotFoundException(e.getMessage()).initCause(e);
+            }
         }
 
         private File getFile(String name) {
-            return new File(basedir, name);
+            return Path.of(basedir.getPath(), name).toFile();
         }
     }
 
@@ -482,7 +488,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
         }
 
         public void addIndexChunk(ResourceFetcher source, String filename) throws IOException {
-            File chunk = new File(dir, filename);
+            File chunk = dir.toPath().resolve(filename).toFile();
             FileUtils.copyStreamToFile(new RawInputStreamFacade(source.retrieve(filename)), chunk);
             newChunks.add(filename);
         }
@@ -492,7 +498,7 @@ public class DefaultIndexUpdater implements IndexUpdater {
 
             result.setFullUpdate(true);
 
-            File target = new File(dir, filename);
+            File target = dir.toPath().resolve(filename).toFile();
             FileUtils.copyStreamToFile(new RawInputStreamFacade(source.retrieve(filename)), target);
 
             return null;
@@ -500,8 +506,9 @@ public class DefaultIndexUpdater implements IndexUpdater {
 
         @Override
         public void commit() throws IOException {
-            File chunksFile = new File(dir, CHUNKS_FILENAME);
-            try (BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(chunksFile, true)); //
+            File chunksFile = dir.toPath().resolve(CHUNKS_FILENAME).toFile();
+            try (BufferedOutputStream os = new BufferedOutputStream(Files.newOutputStream(
+                            chunksFile.toPath(), StandardOpenOption.CREATE, StandardOpenOption.APPEND)); //
                     Writer w = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
                 for (String filename : newChunks) {
                     w.write(filename + "\n");
@@ -514,9 +521,8 @@ public class DefaultIndexUpdater implements IndexUpdater {
         public List<String> getChunks() throws IOException {
             ArrayList<String> chunks = new ArrayList<>();
 
-            File chunksFile = new File(dir, CHUNKS_FILENAME);
-            try (BufferedReader r = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(chunksFile), StandardCharsets.UTF_8))) {
+            File chunksFile = dir.toPath().resolve(CHUNKS_FILENAME).toFile();
+            try (BufferedReader r = Files.newBufferedReader(chunksFile.toPath(), StandardCharsets.UTF_8)) {
                 String str;
                 while ((str = r.readLine()) != null) {
                     chunks.add(str);

@@ -19,6 +19,7 @@
 package org.apache.maven.index.locator;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * An sha1 locator to locate the sha1 file relative to POM.
@@ -28,6 +29,6 @@ import java.io.File;
 public class Sha1Locator implements Locator {
     public File locate(File source) {
         // return new File( source.getParentFile(), source.getName() + ".sha1" );
-        return new File(source.getAbsolutePath() + ".sha1");
+        return Path.of(source.getAbsolutePath() + ".sha1").toFile();
     }
 }

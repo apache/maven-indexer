@@ -30,6 +30,6 @@ public class PomLocator implements GavHelpedLocator {
     public File locate(File source, GavCalculator gavCalculator, Gav gav) {
         String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + ".pom";
 
-        return new File(source.getParent(), artifactName);
+        return source.toPath().resolveSibling(artifactName).toFile();
     }
 }

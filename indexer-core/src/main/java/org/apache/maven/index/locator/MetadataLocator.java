@@ -27,6 +27,10 @@ import java.io.File;
  */
 public class MetadataLocator implements Locator {
     public File locate(File source) {
-        return new File(source.getParentFile().getParentFile(), "maven-metadata.xml");
+        return source.getParentFile()
+                .getParentFile()
+                .toPath()
+                .resolve("maven-metadata.xml")
+                .toFile();
     }
 }

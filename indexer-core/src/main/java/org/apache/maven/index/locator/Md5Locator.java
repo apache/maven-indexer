@@ -19,6 +19,7 @@
 package org.apache.maven.index.locator;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * An md5 locator to locate the md5 file relative to POM.
@@ -28,6 +29,6 @@ import java.io.File;
 public class Md5Locator implements Locator {
     public File locate(File source) {
         // return new File( source.getParentFile(), source.getName() + ".md5" );
-        return new File(source.getAbsolutePath() + ".md5");
+        return Path.of(source.getAbsolutePath() + ".md5").toFile();
     }
 }

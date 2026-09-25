@@ -24,7 +24,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipFile;
 
 import org.apache.lucene.document.Document;
@@ -119,6 +119,6 @@ public class MavenArchetypeArtifactInfoIndexCreator extends AbstractIndexCreator
 
     public Collection<IndexerField> getIndexerFields() {
         // it does not "add" any new field, it actually updates those already maintained by minimal creator.
-        return Collections.emptyList();
+        return List.of();
     }
 }

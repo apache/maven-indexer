@@ -23,14 +23,16 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;
@@ -150,7 +152,7 @@ public class DefaultIndexer implements Indexer {
 
     public FlatSearchResponse searchFlat(FlatSearchRequest request) throws IOException {
         if (request.getContexts().isEmpty()) {
-            return new FlatSearchResponse(request.getQuery(), 0, Collections.emptySet());
+            return new FlatSearchResponse(request.getQuery(), 0, Set.of());
         } else {
             return searcher.forceSearchFlatPaged(request, request.getContexts());
         }
@@ -166,7 +168,7 @@ public class DefaultIndexer implements Indexer {
 
     public GroupedSearchResponse searchGrouped(GroupedSearchRequest request) throws IOException {
         if (request.getContexts().isEmpty()) {
-            return new GroupedSearchResponse(request.getQuery(), 0, Collections.emptyMap());
+            return new GroupedSearchResponse(request.getQuery(), 0, Map.of());
         } else {
             // search targeted
             return searcher.forceSearchGrouped(request, request.getContexts());
@@ -179,7 +181,7 @@ public class DefaultIndexer implements Indexer {
 
     public Collection<ArtifactInfo> identify(final File artifact, final Collection<IndexingContext> contexts)
             throws IOException {
-        try (FileInputStream is = new FileInputStream(artifact)) {
+        try (InputStream is = Files.newInputStream(artifact.toPath())) {
             final MessageDigest sha1 = MessageDigest.getInstance("SHA-1");
             final byte[] buff = new byte[4096];
             int n;

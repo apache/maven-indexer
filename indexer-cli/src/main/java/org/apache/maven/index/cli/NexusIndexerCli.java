@@ -20,10 +20,11 @@ package org.apache.maven.index.cli;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Proxy;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -387,13 +388,13 @@ public class NexusIndexerCli {
             throws IOException, UnsupportedExistingLuceneIndexException {
         String indexDirectoryName = cli.getOptionValue(INDEX);
 
-        File indexFolder = new File(indexDirectoryName);
+        File indexFolder = Path.of(indexDirectoryName).toFile();
 
         String outputDirectoryName = cli.getOptionValue(TARGET_DIR, ".");
 
-        File outputFolder = new File(outputDirectoryName);
+        File outputFolder = Path.of(outputDirectoryName).toFile();
 
-        File repositoryFolder = new File(cli.getOptionValue(REPO));
+        File repositoryFolder = Path.of(cli.getOptionValue(REPO)).toFile();
 
         String repositoryName = cli.getOptionValue(NAME, indexFolder.getName());
 
@@ -479,11 +480,14 @@ public class NexusIndexerCli {
 
     private int unpack(CommandLine cli, Components components) throws IOException {
         final String indexDirectoryName = cli.getOptionValue(INDEX, ".");
-        final File indexFolder = new File(indexDirectoryName).getCanonicalFile();
-        final File indexArchive = new File(indexFolder, IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        final File indexFolder = Path.of(indexDirectoryName).toFile().getCanonicalFile();
+        final File indexArchive = indexFolder
+                .toPath()
+                .resolve(IndexingContext.INDEX_FILE_PREFIX + ".gz")
+                .toFile();
 
         final String outputDirectoryName = cli.getOptionValue(TARGET_DIR, ".");
-        final File outputFolder = new File(outputDirectoryName).getCanonicalFile();
+        final File outputFolder = Path.of(outputDirectoryName).toFile().getCanonicalFile();
 
         final boolean quiet = cli.hasOption(QUIET);
         if (!quiet) {
@@ -495,7 +499,7 @@ public class NexusIndexerCli {
 
         final List<IndexCreator> indexers = getIndexers(cli, components);
 
-        try (BufferedInputStream is = new BufferedInputStream(new FileInputStream(indexArchive)); //
+        try (BufferedInputStream is = new BufferedInputStream(Files.newInputStream(indexArchive.toPath())); //
                 FSDirectory directory = FSDirectory.open(outputFolder.toPath())) {
             DefaultIndexUpdater.unpackIndexData(is, 4, directory, (IndexingContext) Proxy.newProxyInstance(
                     getClass().getClassLoader(), new Class[] {IndexingContext.class}, new PartialImplementation() {
