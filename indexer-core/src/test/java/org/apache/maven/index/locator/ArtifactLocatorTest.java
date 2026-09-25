@@ -19,16 +19,23 @@
 package org.apache.maven.index.locator;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.maven.index.AbstractNexusIndexerTest;
 import org.apache.maven.index.ArtifactContext;
 import org.apache.maven.index.ArtifactContextProducer;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
+import org.apache.maven.index.artifact.DefaultArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.M2GavCalculator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
@@ -76,5 +83,32 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         assertTrue(artifactFile != null, "Artifact file was not located!");
         assertTrue(artifactFile.exists(), "Artifact file was not located!");
+    }
+
+    @Test
+    public void testArtifactLocatorFindsSibling(@TempDir Path dir) throws IOException {
+        Files.createFile(dir.resolve("a-1.0.zip"));
+
+        assertEquals(dir.resolve("a-1.0.zip").toFile(), locate(dir, "zip"));
+    }
+
+    @Test
+    public void testArtifactLocatorIgnoresPackagingWithPathSeparator(@TempDir Path dir) throws IOException {
+        Files.createDirectories(dir.resolve("a-1.0.zip"));
+        Files.createFile(dir.resolve("a-1.0.zip").resolve("b"));
+
+        assertNull(locate(dir, "zip/b"));
+    }
+
+    private static File locate(Path dir, String packaging) throws IOException {
+        Path pom = dir.resolve("a-1.0.pom");
+        Files.writeString(
+                pom,
+                "<project><modelVersion>4.0.0</modelVersion><groupId>g</groupId><artifactId>a</artifactId>"
+                        + "<version>1.0</version><packaging>" + packaging + "</packaging></project>");
+
+        M2GavCalculator gavCalculator = new M2GavCalculator();
+        Gav gav = gavCalculator.pathToGav("g/a/1.0/a-1.0.pom");
+        return new ArtifactLocator(new DefaultArtifactPackagingMapper()).locate(pom.toFile(), gavCalculator, gav);
     }
 }

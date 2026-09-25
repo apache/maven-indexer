@@ -69,6 +69,11 @@ public class ArtifactLocator implements GavHelpedLocator {
             String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + "."
                     + mapper.getExtensionForPackaging(model.getPackaging());
 
+            // the artifact is a sibling of the POM
+            if (artifactName.indexOf('/') >= 0 || artifactName.indexOf('\\') >= 0) {
+                return null;
+            }
+
             File artifact = source.toPath().resolveSibling(artifactName).toFile();
 
             if (!artifact.exists()) {
