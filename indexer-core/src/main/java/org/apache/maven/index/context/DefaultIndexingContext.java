@@ -614,11 +614,9 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
 
                     String uinfo = d.get(ArtifactInfo.UINFO);
                     if (uinfo != null) {
-                        TopScoreDocCollector collector = TopScoreDocCollector.create(1, 1);
-                        s.search(new TermQuery(new Term(ArtifactInfo.UINFO, uinfo)), collector);
-                        if (collector.getTotalHits() == 0) {
-                            w.addDocument(IndexUtils.updateDocument(d, this, false));
-                        }
+                        // replaces a record with the same UINFO, including one added or deleted earlier in this merge
+                        w.updateDocument(
+                                new Term(ArtifactInfo.UINFO, uinfo), IndexUtils.updateDocument(d, this, false));
                     } else {
                         String deleted = d.get(ArtifactInfo.DELETED);
 

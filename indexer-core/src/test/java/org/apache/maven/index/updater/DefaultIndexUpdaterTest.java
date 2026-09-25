@@ -219,6 +219,45 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
+    public void testMergeIndexDeleteThenReaddSameUinfo() throws Exception {
+        indexer.addArtifactToIndex(
+                createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
+
+        indexer.addArtifactToIndex(
+                createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.3", null), context);
+
+        {
+            Directory tempIndexDirectory = new ByteBuffersDirectory();
+
+            IndexingContext tempContext = indexer.addIndexingContext(
+                    repositoryId + "temp", repositoryId, null, tempIndexDirectory, repositoryUrl, null, MIN_CREATORS);
+
+            // one chunk that deletes 2.2 and then adds it again
+            indexer.deleteArtifactFromIndex(
+                    createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), tempContext);
+
+            indexer.addArtifactToIndex(
+                    createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), tempContext);
+
+            ByteBuffersDirectory tempDir2 = new ByteBuffersDirectory();
+            for (String file : tempContext.getIndexDirectory().listAll()) {
+                tempDir2.copyFrom(tempContext.getIndexDirectory(), file, file, IOContext.DEFAULT);
+            }
+
+            indexer.removeIndexingContext(tempContext, false);
+
+            context.merge(tempDir2);
+        }
+
+        Query q = indexer.constructQuery(MAVEN.ARTIFACT_ID, "commons-lang", SearchType.SCORED);
+
+        FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
+        Collection<ArtifactInfo> content = response.getResults();
+
+        assertEquals(2, content.size(), content.toString());
+    }
+
+    @Test
     public void testMergeSearch() throws Exception {
         File repo1 = new File(getBasedir(), "src/test/nexus-658");
         Directory indexDir1 = new ByteBuffersDirectory();
