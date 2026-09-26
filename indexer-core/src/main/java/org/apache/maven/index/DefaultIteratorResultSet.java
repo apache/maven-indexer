@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.ref.Cleaner;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -53,6 +54,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultIteratorResultSet implements IteratorResultSet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultIteratorResultSet.class);
+
+    private static final Cleaner CLEANER = Cleaner.create();
 
     private final IteratorSearchRequest searchRequest;
 
@@ -91,6 +94,10 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
         this.searchRequest = request;
 
         this.indexSearcher = indexSearcher;
+
+        this.searcherRelease = new SearcherRelease(indexSearcher, request.getQuery());
+
+        this.cleanable = CLEANER.register(this, searcherRelease);
 
         this.contexts = contexts;
 
@@ -139,6 +146,8 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
         } catch (IOException | RuntimeException e) {
             // the caller releases the searcher when construction fails
             this.cleanedUp = true;
+            searcherRelease.released = true;
+            cleanable.clean();
             throw e;
         }
 
@@ -186,16 +195,39 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
         return processedArtifactInfoCount;
     }
 
-    @Override
-    public void finalize() throws Throwable {
-        super.finalize();
+    /**
+     * Releases the searcher of a result set that was never closed, once the result set is unreachable. It must not
+     * reference the result set, or the result set would never become unreachable.
+     */
+    private static final class SearcherRelease implements Runnable {
+        private final NexusIndexMultiSearcher indexSearcher;
 
-        if (!cleanedUp) {
-            LOGGER.warn("Lock leaking from {} for query {}", getClass().getName(), searchRequest.getQuery());
+        private final Query query;
 
-            cleanUp();
+        private volatile boolean released;
+
+        SearcherRelease(NexusIndexMultiSearcher indexSearcher, Query query) {
+            this.indexSearcher = indexSearcher;
+            this.query = query;
+        }
+
+        @Override
+        public void run() {
+            if (!released) {
+                released = true;
+                LOGGER.warn("Lock leaking from {} for query {}", DefaultIteratorResultSet.class.getName(), query);
+                try {
+                    indexSearcher.release();
+                } catch (IOException e) {
+                    LOGGER.warn("Could not release the index searcher", e);
+                }
+            }
         }
     }
+
+    private final SearcherRelease searcherRelease;
+
+    private final Cleaner.Cleanable cleanable;
 
     // ==
 
@@ -268,7 +300,9 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
             throw new IllegalStateException(e);
         }
 
+        searcherRelease.released = true;
         this.cleanedUp = true;
+        cleanable.clean();
     }
 
     /**
