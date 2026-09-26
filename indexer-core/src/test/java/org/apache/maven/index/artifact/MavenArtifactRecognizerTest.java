@@ -64,14 +64,14 @@ class MavenArtifactRecognizerTest {
     }
 
     @Test
-    public void testChecksums() {
+    void checksums() {
         for (String checksum : new String[] {".sha1", ".md5", ".sha256", ".sha512"}) {
-            assertEquals(true, M2ArtifactRecognizer.isChecksum("aaa.jar" + checksum));
-            assertEquals(true, M2ArtifactRecognizer.isPom("aaa.pom" + checksum));
-            assertEquals(true, M2ArtifactRecognizer.isMetadata("maven-metadata.xml" + checksum));
+            assertTrue(M2ArtifactRecognizer.isChecksum("aaa.jar" + checksum));
+            assertTrue(M2ArtifactRecognizer.isPom("aaa.pom" + checksum));
+            assertTrue(M2ArtifactRecognizer.isMetadata("maven-metadata.xml" + checksum));
         }
-        assertEquals(false, M2ArtifactRecognizer.isChecksum("aaa.jar"));
-        assertEquals(false, M2ArtifactRecognizer.isChecksum("aaa.jar.asc"));
-        assertEquals(false, M2ArtifactRecognizer.isPom("aaa.jar.sha256"));
+        assertFalse(M2ArtifactRecognizer.isChecksum("aaa.jar"));
+        assertFalse(M2ArtifactRecognizer.isChecksum("aaa.jar.asc"));
+        assertFalse(M2ArtifactRecognizer.isPom("aaa.jar.sha256"));
     }
 }
