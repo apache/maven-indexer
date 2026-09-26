@@ -218,9 +218,10 @@ public class BasicUsageExample {
 
         System.out.println("Searching for all GAVs with org.apache.maven:maven-plugin-api having V greater than 3.1.0");
         final IteratorSearchRequest request = new IteratorSearchRequest(query, List.of(centralContext), versionFilter);
-        final IteratorSearchResponse response = indexer.searchIterator(request);
-        for (ArtifactInfo ai : response) {
-            System.out.println(ai.toString());
+        try (IteratorSearchResponse response = indexer.searchIterator(request)) {
+            for (ArtifactInfo ai : response) {
+                System.out.println(ai.toString());
+            }
         }
 
         // Case:
