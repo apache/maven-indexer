@@ -18,14 +18,28 @@
  */
 package org.apache.maven.index;
 
-import org.apache.lucene.search.highlight.Encoder;
-import org.apache.lucene.search.highlight.SimpleHTMLEncoder;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Encodes text of {@link MatchHighlightMode#HTML} fragments: escapes it as HTML and removes line breaks.
+ * UT for {@link CleaningEncoder}.
  */
-public class CleaningEncoder implements Encoder {
-    public String encodeText(String originalText) {
-        return SimpleHTMLEncoder.htmlEncode(originalText).replace("\n", "");
+public class CleaningEncoderTest {
+    private final CleaningEncoder encoder = new CleaningEncoder();
+
+    @Test
+    public void plainTextIsUnchanged() {
+        assertEquals("commons logging", encoder.encodeText("commons logging"));
+    }
+
+    @Test
+    public void textIsHtmlEscaped() {
+        assertEquals("a &lt;b&gt; &amp; &quot;c&quot;", encoder.encodeText("a <b> & \"c\""));
+    }
+
+    @Test
+    public void lineBreaksAreRemoved() {
+        assertEquals("line oneline two", encoder.encodeText("line one\nline two"));
     }
 }
