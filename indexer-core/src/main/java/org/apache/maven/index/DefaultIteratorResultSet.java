@@ -28,6 +28,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.CachingTokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.Explanation;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -115,7 +116,7 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
 
         List<MatchHighlightRequest> matchHighlightRequests = new ArrayList<>();
         for (MatchHighlightRequest hr : request.getMatchHighlightRequests()) {
-            Query rewrittenQuery = hr.getQuery().rewrite(indexSearcher.getIndexReader());
+            Query rewrittenQuery = hr.getQuery().rewrite(indexSearcher);
             matchHighlightRequests.add(new MatchHighlightRequest(hr.getField(), rewrittenQuery, hr.getHighlightMode()));
         }
 
@@ -201,13 +202,14 @@ public class DefaultIteratorResultSet implements IteratorResultSet {
     protected ArtifactInfo createNextAi() throws IOException {
         ArtifactInfo result = null;
 
+        StoredFields storedFields = indexSearcher.storedFields();
         // we should stop if:
         // a) we found what we want
         // b) pointer advanced over more documents that user requested
         // c) pointer advanced over more documents that hits has
         // or we found what we need
         while ((result == null) && (pointer < maxRecPointer) && (pointer < hits.scoreDocs.length)) {
-            Document doc = indexSearcher.doc(hits.scoreDocs[pointer].doc);
+            Document doc = storedFields.document(hits.scoreDocs[pointer].doc);
 
             IndexingContext context = getIndexingContextForPointer(doc, hits.scoreDocs[pointer].doc);
 
