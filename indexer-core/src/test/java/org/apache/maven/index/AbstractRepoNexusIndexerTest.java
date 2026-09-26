@@ -505,7 +505,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
         Bits liveDocs = MultiBits.getLiveDocs(reader);
         for (int i = 0; i < reader.maxDoc(); i++) {
             if (liveDocs == null || liveDocs.get(i)) {
-                Document document = reader.document(i);
+                Document document = reader.storedFields().document(i);
 
                 String uinfo = document.get(ArtifactInfo.UINFO);
 

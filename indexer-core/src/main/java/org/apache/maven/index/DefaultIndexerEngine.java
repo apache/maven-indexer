@@ -141,7 +141,7 @@ public class DefaultIndexerEngine implements IndexerEngine {
                         2);
 
                 if (result.totalHits.value == 1) {
-                    return indexSearcher.doc(result.scoreDocs[0].doc);
+                    return indexSearcher.storedFields().document(result.scoreDocs[0].doc);
                 }
             } finally {
                 context.releaseIndexSearcher(indexSearcher);
