@@ -118,6 +118,8 @@ public class MergedIndexingContext extends AbstractIndexingContext {
         return repositoryId;
     }
 
+    @Deprecated
+    @Override
     public File getRepository() {
         return repository;
     }
@@ -255,6 +257,8 @@ public class MergedIndexingContext extends AbstractIndexingContext {
         return directory;
     }
 
+    @Deprecated
+    @Override
     public File getIndexDirectoryFile() {
         return directoryFile;
     }

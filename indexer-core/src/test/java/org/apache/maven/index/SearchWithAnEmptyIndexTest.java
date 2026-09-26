@@ -231,7 +231,7 @@ class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
         try {
             final Path indexLocation = managedRepository.resolve(".index");
             IndexPackingRequest request =
-                    new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation.toFile());
+                    new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation);
             indexPacker.packIndex(request);
         } finally {
             indexingContext.releaseIndexSearcher(indexSearcher);

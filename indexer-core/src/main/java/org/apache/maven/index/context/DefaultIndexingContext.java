@@ -259,6 +259,8 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
         }
     }
 
+    @Deprecated
+    @Override
     public File getIndexDirectoryFile() {
         return indexDirectoryFile;
     }
@@ -456,6 +458,8 @@ public class DefaultIndexingContext extends AbstractIndexingContext {
         return repositoryId;
     }
 
+    @Deprecated
+    @Override
     public File getRepository() {
         return repository;
     }

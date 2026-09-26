@@ -109,7 +109,7 @@ class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
             IndexingContext ctx = newTestContext(basedir, baseUrl);
 
             IndexUpdateRequest updateRequest = new IndexUpdateRequest(ctx, new Java11HttpClient());
-            updateRequest.setIndexTempDir(indexTempDir.toFile());
+            updateRequest.setIndexTempPath(indexTempDir);
 
             updater.fetchAndUpdateIndex(updateRequest);
 

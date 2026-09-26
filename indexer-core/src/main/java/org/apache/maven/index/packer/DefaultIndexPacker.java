@@ -64,32 +64,29 @@ public class DefaultIndexPacker implements IndexPacker {
     }
 
     public void packIndex(IndexPackingRequest request) throws IOException, IllegalArgumentException {
-        if (request.getTargetDir() == null) {
+        if (request.getTargetPath() == null) {
             throw new IllegalArgumentException("The target dir is null");
         }
 
-        if (request.getTargetDir().exists()) {
-            if (!request.getTargetDir().isDirectory()) {
+        File targetDir = request.getTargetPath().toFile();
+
+        if (targetDir.exists()) {
+            if (!targetDir.isDirectory()) {
                 throw new IllegalArgumentException( //
-                        String.format(
-                                "Specified target path %s is not a directory",
-                                request.getTargetDir().getAbsolutePath()));
+                        String.format("Specified target path %s is not a directory", targetDir.getAbsolutePath()));
             }
-            if (!request.getTargetDir().canWrite()) {
-                throw new IllegalArgumentException(String.format(
-                        "Specified target path %s is not writtable",
-                        request.getTargetDir().getAbsolutePath()));
+            if (!targetDir.canWrite()) {
+                throw new IllegalArgumentException(
+                        String.format("Specified target path %s is not writtable", targetDir.getAbsolutePath()));
             }
         } else {
-            if (!request.getTargetDir().mkdirs()) {
-                throw new IllegalArgumentException(
-                        "Can't create " + request.getTargetDir().getAbsolutePath());
+            if (!targetDir.mkdirs()) {
+                throw new IllegalArgumentException("Can't create " + targetDir.getAbsolutePath());
             }
         }
 
         // These are all of the files we'll be dealing with (except for the incremental chunks of course)
-        File v1File = request.getTargetDir()
-                .toPath()
+        File v1File = request.getTargetPath()
                 .resolve(IndexingContext.INDEX_FILE_PREFIX + ".gz")
                 .toFile();
 
@@ -109,8 +106,7 @@ public class DefaultIndexPacker implements IndexPacker {
                 } else if (chunk.isEmpty()) {
                     getLogger().debug("No incremental changes, not writing new incremental chunk");
                 } else {
-                    File file = request.getTargetDir()
-                            .toPath()
+                    File file = request.getTargetPath()
                             .resolve(IndexingContext.INDEX_FILE_PREFIX + "."
                                     + info.getProperty(IndexingContext.INDEX_CHUNK_COUNTER) + ".gz")
                             .toFile();
@@ -151,12 +147,13 @@ public class DefaultIndexPacker implements IndexPacker {
         writeIndexProperties(request, info);
     }
 
+    // a caller's IndexingContext may be a proxy or mock without the default Path methods
+    @SuppressWarnings("deprecation")
     private Properties readIndexProperties(IndexPackingRequest request) throws IOException {
         File file;
 
         if (request.isUseTargetProperties() || request.getContext().getIndexDirectoryFile() == null) {
-            file = request.getTargetDir()
-                    .toPath()
+            file = request.getTargetPath()
                     .resolve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE)
                     .toFile();
         } else {
@@ -189,14 +186,15 @@ public class DefaultIndexPacker implements IndexPacker {
         }
     }
 
+    // a caller's IndexingContext may be a proxy or mock without the default Path methods
+    @SuppressWarnings("deprecation")
     void writeIndexProperties(IndexPackingRequest request, Properties info) throws IOException {
         File propertyFile = request.getContext()
                 .getIndexDirectoryFile()
                 .toPath()
                 .resolve(IndexingContext.INDEX_PACKER_PROPERTIES_FILE)
                 .toFile();
-        File targetPropertyFile = request.getTargetDir()
-                .toPath()
+        File targetPropertyFile = request.getTargetPath()
                 .resolve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE)
                 .toFile();
 

@@ -113,8 +113,8 @@ public class BasicUsageExample {
         centralContext = indexer.createIndexingContext(
                 "central-context",
                 "central",
-                centralLocalCache.toFile(),
-                centralIndexDir.toFile(),
+                centralLocalCache,
+                centralIndexDir,
                 "https://repo1.maven.org/maven2",
                 null,
                 true,

@@ -65,8 +65,8 @@ public class RepositoryIndexerFactory {
                 .createIndexingContext(
                         repositoryId + "-ctx",
                         repositoryId,
-                        repositoryBasedir,
-                        indexDir,
+                        repositoryBasedir != null ? repositoryBasedir.toPath() : null,
+                        indexDir != null ? indexDir.toPath() : null,
                         null,
                         null,
                         true,

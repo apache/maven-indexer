@@ -25,6 +25,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +74,8 @@ public class MavenPluginArtifactInfoIndexCreator extends AbstractIndexCreator {
     }
 
     public void populateArtifactInfo(ArtifactContext ac) {
-        File artifact = ac.getArtifact();
+        Path artifactPath = ac.getArtifactPath();
+        File artifact = artifactPath != null ? artifactPath.toFile() : null;
 
         ArtifactInfo ai = ac.getArtifactInfo();
 

@@ -398,7 +398,9 @@ public class NexusIndexerCli {
 
         String outputDirectoryName = cli.getOptionValue(TARGET_DIR, ".");
 
-        File outputFolder = Path.of(outputDirectoryName).toFile();
+        Path outputPath = Path.of(outputDirectoryName);
+
+        File outputFolder = outputPath.toFile();
 
         File repositoryFolder = Path.of(cli.getOptionValue(REPO)).toFile();
 
@@ -458,7 +460,7 @@ public class NexusIndexerCli {
 
             try {
                 IndexPackingRequest request =
-                        new IndexPackingRequest(context, indexSearcher.getIndexReader(), outputFolder);
+                        new IndexPackingRequest(context, indexSearcher.getIndexReader(), outputPath);
 
                 request.setCreateChecksumFiles(createChecksums);
 
@@ -618,7 +620,7 @@ public class NexusIndexerCli {
             }
 
             if (!quiet && (debug || (t - ts) > 2000L)) {
-                System.err.printf("  %6d %s\n", count, formatFile(ac.getPom()));
+                System.err.printf("  %6d %s\n", count, formatFile(ac.getPomPath()));
                 ts = t;
             }
         }
@@ -626,9 +628,9 @@ public class NexusIndexerCli {
         @Override
         public void artifactError(ArtifactContext ac, Exception e) {
             if (!quiet) {
-                System.err.printf("! %6d %s - %s\n", count, formatFile(ac.getPom()), e.getMessage());
+                System.err.printf("! %6d %s - %s\n", count, formatFile(ac.getPomPath()), e.getMessage());
 
-                System.err.printf("         %s\n", formatFile(ac.getArtifact()));
+                System.err.printf("         %s\n", formatFile(ac.getArtifactPath()));
 
                 if (debug) {
                     e.printStackTrace();
@@ -638,9 +640,17 @@ public class NexusIndexerCli {
             ts = System.currentTimeMillis();
         }
 
-        private String formatFile(File file) {
-            return file.getAbsolutePath()
-                    .substring(context.getRepository().getAbsolutePath().length() + 1);
+        // a caller's IndexingContext may be a proxy or mock without the default Path methods
+        @SuppressWarnings("deprecation")
+        private String formatFile(Path path) {
+            return path.toAbsolutePath()
+                    .toString()
+                    .substring(context.getRepository()
+                                    .toPath()
+                                    .toAbsolutePath()
+                                    .toString()
+                                    .length()
+                            + 1);
         }
 
         @Override

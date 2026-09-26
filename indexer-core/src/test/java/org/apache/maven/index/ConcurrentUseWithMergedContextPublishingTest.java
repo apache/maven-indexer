@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,8 +65,7 @@ class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseWithMerg
         // This test had multiple threads doing it, and since it was not checking actual results of publish (that was
         // not the goal of the test, but simultaneous publishing of merged context that has member changes happening),
         // it was probably publish rubbish anyway.
-        final File publish =
-                repoPublish.resolve("publish-" + counter.getAndIncrement()).toFile();
+        final Path publish = repoPublish.resolve("publish-" + counter.getAndIncrement());
 
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {

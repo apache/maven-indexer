@@ -102,7 +102,7 @@ class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
                 false,
                 Arrays.asList(ctx1, ctx2, ctx3, ctx4));
 
-        Files.createDirectories(context.getIndexDirectoryFile().toPath());
+        Files.createDirectories(context.getIndexDirectoryPath());
     }
 
     @Override
@@ -148,7 +148,7 @@ class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), packTargetDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), packTargetDir);
             request.setCreateIncrementalChunks(false);
             request.setFormats(Arrays.asList(IndexFormat.FORMAT_V1));
 

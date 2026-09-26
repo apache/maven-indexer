@@ -99,7 +99,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
@@ -131,7 +131,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
@@ -165,7 +165,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
@@ -202,7 +202,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
@@ -240,7 +240,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             request.setMaxIndexChunks(3);
             packer.packIndex(request);
@@ -291,7 +291,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
             request.setCreateIncrementalChunks(true);
             request.setMaxIndexChunks(maxIndexChunks);
             packer.packIndex(request);

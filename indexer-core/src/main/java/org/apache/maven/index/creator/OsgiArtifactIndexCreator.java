@@ -24,6 +24,7 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -211,7 +212,8 @@ public class OsgiArtifactIndexCreator extends AbstractIndexCreator {
     public void populateArtifactInfo(ArtifactContext artifactContext) throws IOException {
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
-        File artifactFile = artifactContext.getArtifact();
+        Path artifactPath = artifactContext.getArtifactPath();
+        File artifactFile = artifactPath != null ? artifactPath.toFile() : null;
 
         // TODO : olamy : supports only jars ?
 
