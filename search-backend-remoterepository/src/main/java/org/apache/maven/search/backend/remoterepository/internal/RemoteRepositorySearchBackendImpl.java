@@ -149,7 +149,7 @@ public class RemoteRepositorySearchBackendImpl extends SearchBackendSupport impl
         }
 
         int totalHits = 0;
-        List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
+        List<Record> page = new ArrayList<>();
         RecordFactory recordFactory = new RecordFactory(this);
         Document document = null;
         if (state.ordinal() < State.GAVCE.ordinal()) {
