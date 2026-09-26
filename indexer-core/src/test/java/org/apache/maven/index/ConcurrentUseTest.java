@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,11 +35,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class ConcurrentUseTest extends AbstractNexusIndexerTest {
     public static final int THREAD_COUNT = 10;
 
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-default", "test", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         assertNull(context.getTimestamp()); // unknown upon creation
 

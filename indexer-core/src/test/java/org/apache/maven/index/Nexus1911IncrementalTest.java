@@ -18,13 +18,16 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.maven.index.context.IndexingContext;
@@ -52,11 +55,11 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
 
     IndexPacker packer;
 
-    File indexDir;
+    Path indexDir;
 
-    File indexPackDir;
+    Path indexPackDir;
 
-    File reposTargetDir;
+    Path reposTargetDir;
 
     @BeforeEach
     @Override
@@ -69,15 +72,15 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         indexDir = super.getDirectory("index/nexus-1911");
         indexPackDir = indexDir; // super.getDirectory( "index/nexus-1911-pack" );
 
-        File reposSrcDir = Path.of(getBasedir(), "src/test/nexus-1911").toFile();
+        Path reposSrcDir = getTestPath("src/test/nexus-1911");
         this.reposTargetDir = super.getDirectory("repos/nexus-1911");
 
-        FileUtils.copyDirectoryStructure(reposSrcDir, reposTargetDir);
+        FileUtils.copyDirectoryStructure(reposSrcDir.toFile(), reposTargetDir.toFile());
 
-        File repo = reposTargetDir.toPath().resolve("repo").toFile();
-        repo.mkdirs();
-        reindexedContext =
-                context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        Path repo = reposTargetDir.resolve("repo");
+        Files.createDirectories(repo);
+        reindexedContext = context = indexer.addIndexingContext(
+                "test", "test", repo.toFile(), indexDir.toFile(), null, null, DEFAULT_CREATORS);
         indexer.scan(context);
     }
 
@@ -96,15 +99,16 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
 
-        Set<String> filenames = getFilenamesFromFiles(indexPackDir.listFiles());
-        Properties props = getPropertiesFromFiles(indexPackDir.listFiles());
+        List<Path> packedFiles = listDir(indexPackDir);
+        Set<String> filenames = getFilenamesFromFiles(packedFiles);
+        Properties props = getPropertiesFromFiles(packedFiles);
 
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".properties"));
@@ -127,18 +131,18 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
 
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-1").toFile(), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-1"), IndexPackingRequest.MAX_CHUNKS);
 
-        Set<String> filenames = getFilenamesFromFiles(indexPackDir.listFiles());
-        Properties props = getPropertiesFromFiles(indexPackDir.listFiles());
+        List<Path> packedFiles = listDir(indexPackDir);
+        Set<String> filenames = getFilenamesFromFiles(packedFiles);
+        Properties props = getPropertiesFromFiles(packedFiles);
 
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".properties"));
@@ -161,20 +165,19 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
 
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-1").toFile(), IndexPackingRequest.MAX_CHUNKS);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-2").toFile(), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-1"), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-2"), IndexPackingRequest.MAX_CHUNKS);
 
-        Set<String> filenames = getFilenamesFromFiles(indexPackDir.listFiles());
-        Properties props = getPropertiesFromFiles(indexPackDir.listFiles());
+        List<Path> packedFiles = listDir(indexPackDir);
+        Set<String> filenames = getFilenamesFromFiles(packedFiles);
+        Properties props = getPropertiesFromFiles(packedFiles);
 
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".properties"));
@@ -199,22 +202,20 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             packer.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
 
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-1").toFile(), IndexPackingRequest.MAX_CHUNKS);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-2").toFile(), IndexPackingRequest.MAX_CHUNKS);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-3").toFile(), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-1"), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-2"), IndexPackingRequest.MAX_CHUNKS);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-3"), IndexPackingRequest.MAX_CHUNKS);
 
-        Set<String> filenames = getFilenamesFromFiles(indexPackDir.listFiles());
-        Properties props = getPropertiesFromFiles(indexPackDir.listFiles());
+        List<Path> packedFiles = listDir(indexPackDir);
+        Set<String> filenames = getFilenamesFromFiles(packedFiles);
+        Properties props = getPropertiesFromFiles(packedFiles);
 
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".gz"));
         assertTrue(filenames.contains(IndexingContext.INDEX_FILE_PREFIX + ".properties"));
@@ -239,7 +240,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             request.setMaxIndexChunks(3);
             packer.packIndex(request);
@@ -247,17 +248,14 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
             context.releaseIndexSearcher(indexSearcher);
         }
 
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-1").toFile(), 3);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-2").toFile(), 3);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-3").toFile(), 3);
-        copyRepoContentsAndReindex(
-                Path.of(getBasedir(), "src/test/nexus-1911/repo-inc-4").toFile(), 3);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-1"), 3);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-2"), 3);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-3"), 3);
+        copyRepoContentsAndReindex(getTestPath("src/test/nexus-1911/repo-inc-4"), 3);
 
-        Set<String> filenames = getFilenamesFromFiles(indexPackDir.listFiles());
-        Properties props = getPropertiesFromFiles(indexPackDir.listFiles());
+        List<Path> packedFiles = listDir(indexPackDir);
+        Set<String> filenames = getFilenamesFromFiles(packedFiles);
+        Properties props = getPropertiesFromFiles(packedFiles);
 
         System.out.println(filenames);
 
@@ -281,11 +279,10 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         assertNotNull(props.getProperty(IndexingContext.INDEX_CHAIN_ID));
     }
 
-    private void copyRepoContentsAndReindex(File src, int maxIndexChunks) throws Exception {
-        File reposTargetDir =
-                Path.of(getBasedir(), "target/repos/nexus-1911/repo").toFile();
+    private void copyRepoContentsAndReindex(Path src, int maxIndexChunks) throws Exception {
+        Path reposTargetDir = getTestPath("target/repos/nexus-1911/repo");
 
-        FileUtils.copyDirectoryStructure(src, reposTargetDir);
+        FileUtils.copyDirectoryStructure(src.toFile(), reposTargetDir.toFile());
 
         // this was ALWAYS broken, if incremental reindex wanted, this has to be TRUE!!!
         // TODO: fix this!
@@ -294,7 +291,7 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexPackDir.toFile());
             request.setCreateIncrementalChunks(true);
             request.setMaxIndexChunks(maxIndexChunks);
             packer.packIndex(request);
@@ -303,28 +300,35 @@ public class Nexus1911IncrementalTest extends AbstractIndexCreatorHelper {
         }
     }
 
-    private Set<String> getFilenamesFromFiles(File[] files) {
+    private List<Path> listDir(Path dir) throws IOException {
+        try (Stream<Path> stream = Files.list(dir)) {
+            return stream.collect(Collectors.toList());
+        }
+    }
+
+    private Set<String> getFilenamesFromFiles(List<Path> files) {
         Set<String> filenames = new HashSet<>();
 
-        for (File file : files) {
-            filenames.add(file.getName());
+        for (Path file : files) {
+            filenames.add(file.getFileName().toString());
         }
 
         return filenames;
     }
 
-    private Properties getPropertiesFromFiles(File[] files) throws Exception {
+    private Properties getPropertiesFromFiles(List<Path> files) throws Exception {
         Properties props = new Properties();
-        File propertyFile = null;
+        Path propertyFile = null;
 
-        for (File file : files) {
-            if ((IndexingContext.INDEX_REMOTE_PROPERTIES_FILE).equalsIgnoreCase(file.getName())) {
+        for (Path file : files) {
+            if ((IndexingContext.INDEX_REMOTE_PROPERTIES_FILE)
+                    .equalsIgnoreCase(file.getFileName().toString())) {
                 propertyFile = file;
                 break;
             }
         }
 
-        try (InputStream fis = Files.newInputStream(propertyFile.toPath())) {
+        try (InputStream fis = Files.newInputStream(propertyFile)) {
             props.load(fis);
         }
 

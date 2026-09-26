@@ -18,8 +18,9 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,28 +73,31 @@ public class AbstractIndexCreatorHelper extends AbstractTestSupport {
         FULL_CREATORS.add(jar);
     }
 
-    protected void deleteDirectory(File dir) throws IOException {
-        FileUtils.deleteDirectory(dir);
+    protected void deleteDirectory(Path dir) throws IOException {
+        FileUtils.deleteDirectory(dir.toFile());
     }
 
-    protected File getDirectory(String name) {
+    protected Path getDirectory(String name) {
         // pick random output location
-
-        File outputFolder = Path.of(getBasedir(), "target/tests/" + name + "-" + rand.nextLong() + "/")
-                .toFile();
-        outputFolder.delete();
-        assertFalse(outputFolder.exists());
+        Path outputFolder = getTestPath("target/tests/" + name + "-" + rand.nextLong());
+        try {
+            Files.deleteIfExists(outputFolder);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        assertFalse(Files.exists(outputFolder));
         return outputFolder;
     }
 
     @Test
     public void testDirectory() throws IOException {
-        File dir = this.getDirectory("foo");
-        assert (dir.getAbsolutePath().contains("foo"));
+        Path dir = this.getDirectory("foo");
+        assert (dir.toAbsolutePath().toString().contains("foo"));
         this.deleteDirectory(dir);
-        assertFalse(dir.exists());
+        assertFalse(Files.exists(dir));
 
-        File dir2 = this.getDirectory("foo");
-        assertNotEquals(dir.getCanonicalPath(), dir2.getCanonicalPath(), "Directories aren't unique");
+        Path dir2 = this.getDirectory("foo");
+        assertNotEquals(
+                dir.toAbsolutePath().normalize(), dir2.toAbsolutePath().normalize(), "Directories aren't unique");
     }
 }

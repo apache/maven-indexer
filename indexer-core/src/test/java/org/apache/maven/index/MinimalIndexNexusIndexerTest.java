@@ -33,7 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class MinimalIndexNexusIndexerTest extends AbstractRepoNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-minimal", "test", repo.toFile(), indexDir, null, null, MIN_CREATORS);
 
         nexusIndexer.scan(context);
     }

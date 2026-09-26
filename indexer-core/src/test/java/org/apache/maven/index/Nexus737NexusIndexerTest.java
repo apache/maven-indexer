@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.lucene.document.Document;
@@ -31,12 +30,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-737 */
 public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/nexus-658").toFile();
+    protected Path repo = getTestPath("src/test/nexus-658");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context =
-                nexusIndexer.addIndexingContext("nexus-658", "nexus-658", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "nexus-658", "nexus-658", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
         nexusIndexer.scan(context);
     }
 

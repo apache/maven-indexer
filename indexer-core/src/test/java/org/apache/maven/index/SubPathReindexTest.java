@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
@@ -29,11 +28,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubPathReindexTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-minimal", "test", repo.toFile(), indexDir, null, null, MIN_CREATORS);
 
         nexusIndexer.scan(context, "/org/slf4j/slf4j-api", null, false);
     }
@@ -77,21 +77,19 @@ public class SubPathReindexTest extends AbstractNexusIndexerTest {
     @Test
     public void testIdentify() throws Exception {
         Collection<ArtifactInfo> ais;
-        File artifact;
+        Path artifact;
 
         // Using a file: this one should be unknown
-        artifact = repo.toPath().resolve("qdox/qdox/1.5/qdox-1.5.jar").toFile();
+        artifact = repo.resolve("qdox/qdox/1.5/qdox-1.5.jar");
 
-        ais = nexusIndexer.identify(artifact);
+        ais = nexusIndexer.identify(artifact.toFile());
 
         assertTrue(ais.isEmpty(), "Should not be able to identify it!");
 
         // Using a file: this one should be known
-        artifact = repo.toPath()
-                .resolve("org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar")
-                .toFile();
+        artifact = repo.resolve("org/slf4j/slf4j-api/1.4.2/slf4j-api-1.4.2.jar");
 
-        ais = nexusIndexer.identify(artifact);
+        ais = nexusIndexer.identify(artifact.toFile());
 
         assertEquals(1, ais.size(), "Should not be able to identify it!");
     }

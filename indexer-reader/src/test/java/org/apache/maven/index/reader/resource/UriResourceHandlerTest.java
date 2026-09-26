@@ -18,10 +18,10 @@
  */
 package org.apache.maven.index.reader.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.maven.index.reader.ResourceHandler.Resource;
 import org.junit.jupiter.api.Test;
@@ -32,13 +32,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class UriResourceHandlerTest {
     @TempDir
-    public File folder;
+    public Path folder;
 
     @Test
     public void locate() throws IOException {
-        Resource test = new UriResourceHandler(folder.toURI()).locate("test.txt");
+        Resource test = new UriResourceHandler(folder.toUri()).locate("test.txt");
         assertNull(test.read());
-        Files.write(folder.toPath().resolve("test.txt"), new byte[] {'a'});
+        Files.write(folder.resolve("test.txt"), new byte[] {'a'});
         try (InputStream in = test.read()) {
             assertEquals('a', in.read());
         }

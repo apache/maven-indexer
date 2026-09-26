@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DuplicateSearchTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     protected IndexingContext context1;
 
@@ -48,11 +47,14 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         // we have a context with ID "repo1-ctx" that contains index of repository with ID "repo1"
-        context = nexusIndexer.addIndexingContext("repo1-ctx", "repo1", repo, indexDir, null, null, FULL_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "repo1-ctx", "repo1", repo.toFile(), indexDir, null, null, FULL_CREATORS);
         // we have a context with ID "repo2-ctx" that contains index of repository with ID "repo2"
-        context1 = nexusIndexer.addIndexingContext("repo2-ctx", "repo2", repo, contextDir1, null, null, FULL_CREATORS);
+        context1 = nexusIndexer.addIndexingContext(
+                "repo2-ctx", "repo2", repo.toFile(), contextDir1, null, null, FULL_CREATORS);
         // we have a context with ID "repo3-ctx" that contains index of repository with ID "repo2"
-        context2 = nexusIndexer.addIndexingContext("repo3-ctx", "repo2", repo, contextDir2, null, null, FULL_CREATORS);
+        context2 = nexusIndexer.addIndexingContext(
+                "repo3-ctx", "repo2", repo.toFile(), contextDir2, null, null, FULL_CREATORS);
 
         // note: those three contexts, while representing different entities are actually indexing the same repository
         // directory, hence, will have exactly same content! Also, context1 and context2 do say, they both index

@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.updater.fixtures;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,8 +41,8 @@ public class HttpServerFixture {
 
     private final AtomicInteger redirects = new AtomicInteger();
 
-    public HttpServerFixture(final int port, final File root) throws IOException {
-        this.root = root.toPath().toRealPath();
+    public HttpServerFixture(final int port, final Path root) throws IOException {
+        this.root = root.toRealPath();
         server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
         server.createContext("/", this::serveFile);
     }

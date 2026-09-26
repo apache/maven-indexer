@@ -48,11 +48,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
 public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/nexus-13").toFile();
+    protected Path repo = getTestPath("src/test/nexus-13");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("nexus-13", "nexus-13", repo, indexDir, null, null, FULL_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "nexus-13", "nexus-13", repo.toFile(), indexDir, null, null, FULL_CREATORS);
         nexusIndexer.scan(context);
     }
 
@@ -102,14 +103,14 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
     @Test
     public void testIndexTimestamp() throws Exception {
-        final File targetDir = Files.createTempDirectory("testIndexTimestamp").toFile();
-        targetDir.deleteOnExit();
+        final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
+        targetDir.toFile().deleteOnExit();
 
         final IndexPacker indexPacker = lookup(IndexPacker.class);
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -124,7 +125,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         final IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile()));
         indexUpdater.fetchAndUpdateIndex(updateRequest);
 
         assertEquals(
@@ -254,8 +255,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         // Using a file
 
-        File artifact = repo.toPath()
-                .resolve(
+        File artifact = repo.resolve(
                         "cisco/infra/dft/maven-dma-mgmt-plugin/1.0-SNAPSHOT/maven-dma-mgmt-plugin-1.0-20080409.022326-2.jar")
                 .toFile();
 

@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.updater.fixtures;
 
-import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -43,13 +42,13 @@ public class ServerTestFixture {
         server.start();
     }
 
-    private static File getBase() throws URISyntaxException {
+    private static Path getBase() throws URISyntaxException {
         URL resource = Thread.currentThread().getContextClassLoader().getResource(SERVER_ROOT_RESOURCE_PATH);
         if (resource == null) {
             throw new IllegalStateException("Cannot find classpath resource: " + SERVER_ROOT_RESOURCE_PATH);
         }
 
-        return Path.of(resource.toURI().normalize()).toFile();
+        return Path.of(resource.toURI().normalize());
     }
 
     public void stop() {

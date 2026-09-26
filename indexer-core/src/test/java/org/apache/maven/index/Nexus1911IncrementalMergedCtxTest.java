@@ -18,7 +18,8 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.maven.index.context.IndexingContext;
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest {
     IndexingContext member;
 
-    File indexMergedDir;
+    Path indexMergedDir;
 
     @BeforeEach
     @Override
@@ -38,10 +39,10 @@ public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest 
         member = context;
 
         indexMergedDir = super.getDirectory("index/nexus-1911-merged");
-        indexMergedDir.mkdirs();
+        Files.createDirectories(indexMergedDir);
 
         context = indexer.addMergedIndexingContext(
-                "merged", "merged", member.getRepository(), indexMergedDir, false, List.of(member));
+                "merged", "merged", member.getRepository(), indexMergedDir.toFile(), false, List.of(member));
     }
 
     @AfterEach

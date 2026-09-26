@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -53,7 +52,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-default", "test", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         assertNull(context.getTimestamp()); // unknown upon creation
 
@@ -144,14 +144,14 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
     @Test
     public void testIndexTimestamp() throws Exception {
-        final File targetDir = Files.createTempDirectory("testIndexTimestamp").toFile();
-        targetDir.deleteOnExit();
+        final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
+        targetDir.toFile().deleteOnExit();
 
         final IndexPacker indexPacker = lookup(IndexPacker.class);
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -159,16 +159,16 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         Thread.sleep(1000L);
 
-        File newIndex = Path.of(getBasedir(), "target/test-new").toFile();
+        Path newIndex = getTestPath("target/test-new");
 
-        Directory newIndexDir = FSDirectory.open(newIndex.toPath());
+        Directory newIndexDir = FSDirectory.open(newIndex);
 
         IndexingContext newContext =
                 nexusIndexer.addIndexingContext("test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS);
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
 
         assertEquals(context.getTimestamp().getTime(), newContext.getTimestamp().getTime());
 
@@ -204,19 +204,19 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
 
         newContext.close(false);
 
-        newIndexDir = FSDirectory.open(newIndex.toPath());
+        newIndexDir = FSDirectory.open(newIndex);
 
         newContext =
                 nexusIndexer.addIndexingContext("test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS);
 
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
 
         assertEquals(timestamp, newContext.getTimestamp());
 
         newContext.close(true);
 
-        assertFalse(newIndex.toPath().resolve("timestamp").toFile().exists());
+        assertFalse(Files.exists(newIndex.resolve("timestamp")));
     }
 
     @Test

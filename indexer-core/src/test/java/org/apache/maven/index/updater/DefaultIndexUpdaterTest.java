@@ -260,18 +260,18 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
     @Test
     public void testMergeSearch() throws Exception {
-        File repo1 = Path.of(getBasedir(), "src/test/nexus-658").toFile();
+        Path repo1 = getTestPath("src/test/nexus-658");
         Directory indexDir1 = new ByteBuffersDirectory();
 
-        IndexingContext context1 =
-                indexer.addIndexingContext("nexus-658", "nexus-658", repo1, indexDir1, null, null, DEFAULT_CREATORS);
+        IndexingContext context1 = indexer.addIndexingContext(
+                "nexus-658", "nexus-658", repo1.toFile(), indexDir1, null, null, DEFAULT_CREATORS);
         indexer.scan(context1);
 
-        File repo2 = Path.of(getBasedir(), "src/test/nexus-13").toFile();
+        Path repo2 = getTestPath("src/test/nexus-13");
         Directory indexDir2 = new ByteBuffersDirectory();
 
-        IndexingContext context2 =
-                indexer.addIndexingContext("nexus-13", "nexus-13", repo2, indexDir2, null, null, DEFAULT_CREATORS);
+        IndexingContext context2 = indexer.addIndexingContext(
+                "nexus-13", "nexus-13", repo2.toFile(), indexDir2, null, null, DEFAULT_CREATORS);
         indexer.scan(context2);
 
         context1.merge(indexDir2);
@@ -379,7 +379,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
         IndexingContext tempContext = mock(IndexingContext.class);
 
-        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir.toFile());
         when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
         when(tempContext.getId()).thenReturn(repositoryId);
         when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
@@ -459,7 +459,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
         IndexingContext tempContext = mock(IndexingContext.class);
 
-        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir.toFile());
         when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
         when(tempContext.getId()).thenReturn(repositoryId);
         when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
@@ -496,7 +496,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
         IndexingContext tempContext = mock(IndexingContext.class);
 
-        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir.toFile());
         when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
         when(tempContext.getId()).thenReturn(repositoryId);
         when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
@@ -566,7 +566,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
         IndexingContext tempContext = mock(IndexingContext.class);
 
-        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir.toFile());
         when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
         when(tempContext.getId()).thenReturn(repositoryId);
         when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
@@ -607,7 +607,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
         ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
         IndexingContext tempContext = mock(IndexingContext.class);
 
-        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir);
+        when(tempContext.getIndexDirectoryFile()).thenReturn(testBasedir.toFile());
         when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
         when(tempContext.getId()).thenReturn(repositoryId);
         when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
@@ -642,9 +642,9 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     protected InputStream newInputStream(String path) throws IOException {
-        File file = getTestFile("src/test/resources/" + path);
-        if (file.isFile()) {
-            return Files.newInputStream(file.toPath());
+        Path file = getTestPath("src/test/resources/" + path);
+        if (Files.isRegularFile(file)) {
+            return Files.newInputStream(file);
         }
         return null;
     }
@@ -671,13 +671,12 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     /** Writes the local updater properties into basedir and returns it as the index directory. */
-    private static File indexDirectoryWithProperties(Properties properties, File basedir) throws IOException {
-        basedir.mkdirs();
-        try (OutputStream fos =
-                Files.newOutputStream(Path.of(basedir.getPath(), IndexingContext.INDEX_UPDATER_PROPERTIES_FILE))) {
+    private static File indexDirectoryWithProperties(Properties properties, Path basedir) throws IOException {
+        Files.createDirectories(basedir);
+        try (OutputStream fos = Files.newOutputStream(basedir.resolve(IndexingContext.INDEX_UPDATER_PROPERTIES_FILE))) {
             properties.store(fos, "");
         }
-        return basedir;
+        return basedir.toFile();
     }
 
     private void assertIndexUpdateSucceeded(IndexUpdateResult updateResult) {

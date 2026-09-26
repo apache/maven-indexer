@@ -41,49 +41,39 @@ public class SimpleArtifactGenerator {
         // no op
     }
 
-    public File generateArtifact(
-            String repositoryBasedir,
+    public Path generateArtifact(
+            Path repositoryBasedir,
             String groupId,
             String artifactId,
             String version,
             String classifier,
             String extension)
             throws IOException, NoSuchAlgorithmException, XmlPullParserException {
-        File repositoryDir = Path.of(repositoryBasedir).toFile();
-        File artifactFile = Path.of(
-                        repositoryDir.getPath(),
-                        groupId.replaceAll("\\.", File.separator) + File.separatorChar + artifactId + File.separatorChar
-                                + version + File.separatorChar + artifactId + "-" + version
-                                + (classifier != null ? "-" + classifier + File.separatorChar : "") + "." + extension)
-                .toFile();
+        Path artifactFile = Path.of(
+                repositoryBasedir.toString(),
+                groupId.replaceAll("\\.", File.separator) + File.separatorChar + artifactId + File.separatorChar
+                        + version + File.separatorChar + artifactId + "-" + version
+                        + (classifier != null ? "-" + classifier + File.separatorChar : "") + "." + extension);
 
-        if (!artifactFile.getParentFile().exists()) {
-            //noinspection ResultOfMethodCallIgnored
-            artifactFile.getParentFile().mkdirs();
-        }
+        Files.createDirectories(artifactFile.getParent());
 
         createArchive(artifactFile, groupId, artifactId, version, extension);
 
         return artifactFile;
     }
 
-    private void createArchive(File artifactFile, String groupId, String artifactId, String version, String extension)
+    private void createArchive(Path artifactFile, String groupId, String artifactId, String version, String extension)
             throws NoSuchAlgorithmException, IOException, XmlPullParserException {
         ZipOutputStream zos = null;
 
         try {
             // Make sure the artifact's parent directory exists before writing the model.
-            //noinspection ResultOfMethodCallIgnored
-            artifactFile.getParentFile().mkdirs();
+            Files.createDirectories(artifactFile.getParent());
 
-            File pomFile = Path.of(
-                            artifactFile.getParent(),
-                            artifactFile
-                                            .getName()
-                                            .substring(0, artifactFile.getName().lastIndexOf(".")) + ".pom")
-                    .toFile();
+            String fileName = artifactFile.getFileName().toString();
+            Path pomFile = artifactFile.resolveSibling(fileName.substring(0, fileName.lastIndexOf(".")) + ".pom");
 
-            zos = new ZipOutputStream(Files.newOutputStream(artifactFile.toPath()));
+            zos = new ZipOutputStream(Files.newOutputStream(artifactFile));
 
             generatePom(pomFile, groupId, artifactId, version, extension);
 
@@ -95,12 +85,11 @@ public class SimpleArtifactGenerator {
         }
     }
 
-    protected void generatePom(File pomFile, String groupId, String artifactId, String version, String type)
+    protected void generatePom(Path pomFile, String groupId, String artifactId, String version, String type)
             throws IOException, XmlPullParserException, NoSuchAlgorithmException {
 
         // Make sure the artifact's parent directory exists before writing the model.
-        //noinspection ResultOfMethodCallIgnored
-        pomFile.getParentFile().mkdirs();
+        Files.createDirectories(pomFile.getParent());
 
         Model model = new Model();
         model.setGroupId(groupId);
@@ -109,15 +98,15 @@ public class SimpleArtifactGenerator {
         model.setPackaging(type); // This is not exactly correct.
 
         ModelWriter writer = new DefaultModelWriter();
-        writer.write(pomFile, null, model);
+        writer.write(pomFile.toFile(), null, model);
     }
 
-    private void addMavenPomFile(ZipOutputStream zos, File pomFile, String groupId, String artifactId)
+    private void addMavenPomFile(ZipOutputStream zos, Path pomFile, String groupId, String artifactId)
             throws IOException {
         ZipEntry ze = new ZipEntry("META-INF/maven/" + groupId + "/" + artifactId + "/" + "pom.xml");
         zos.putNextEntry(ze);
 
-        InputStream fis = Files.newInputStream(pomFile.toPath());
+        InputStream fis = Files.newInputStream(pomFile);
 
         byte[] buffer = new byte[1024];
         int len;

@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     private ArtifactContextProducer artifactContextProducer;
 
@@ -47,7 +47,8 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("al-test", "al-test", repo, indexDir, null, null, FULL_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "al-test", "al-test", repo.toFile(), indexDir, null, null, FULL_CREATORS);
 
         nexusIndexer.scan(context);
 
@@ -58,10 +59,10 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
     @Test
     public void testContextProducer() {
-        final File pomFile =
-                getTestFile("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
+        final Path pomFile =
+                getTestPath("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
-        final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile);
+        final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile.toFile());
 
         assertTrue(ac.getArtifact() != null, "Artifact file was not found!");
         assertTrue(ac.getArtifact().exists(), "Artifact file was not found!");
@@ -73,13 +74,13 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         final M2GavCalculator gavCalculator = new M2GavCalculator();
 
-        final File pomFile =
-                getTestFile("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
+        final Path pomFile =
+                getTestPath("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
         final Gav gav =
                 gavCalculator.pathToGav("/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
-        File artifactFile = al.locate(pomFile, gavCalculator, gav);
+        File artifactFile = al.locate(pomFile.toFile(), gavCalculator, gav);
 
         assertTrue(artifactFile != null, "Artifact file was not located!");
         assertTrue(artifactFile.exists(), "Artifact file was not located!");

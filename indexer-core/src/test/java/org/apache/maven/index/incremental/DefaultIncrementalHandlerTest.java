@@ -48,9 +48,9 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
     IndexingContext context = null;
 
-    File indexDir = null;
+    Path indexDir = null;
 
-    File repoDir = null;
+    Path repoDir = null;
 
     @BeforeEach
     @Override
@@ -60,12 +60,13 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         indexer = lookup(NexusIndexer.class);
         handler = lookup(IncrementalHandler.class);
 
-        indexDir = Path.of(getBasedir(), "target/index/nexus-incremental-test").toFile();
-        repoDir = Path.of(getBasedir(), "target/repos/nexus-incremental-test").toFile();
-        FileUtils.deleteDirectory(indexDir);
-        FileUtils.deleteDirectory(repoDir);
+        indexDir = getTestPath("target/index/nexus-incremental-test");
+        repoDir = getTestPath("target/repos/nexus-incremental-test");
+        deleteDirectory(indexDir);
+        deleteDirectory(repoDir);
 
-        context = indexer.addIndexingContext("test", "test", repoDir, indexDir, null, null, DEFAULT_CREATORS);
+        context = indexer.addIndexingContext(
+                "test", "test", repoDir.toFile(), indexDir.toFile(), null, null, DEFAULT_CREATORS);
     }
 
     @AfterEach
@@ -82,7 +83,8 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         try {
             Properties properties = new Properties();
 
-            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir);
+            IndexPackingRequest request =
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir.toFile());
 
             // No properties definite fail
             assertNull(handler.getIncrementalUpdates(request, properties));
@@ -109,14 +111,14 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600");
 
         FileUtils.copyDirectoryStructure(
-                Path.of(getBasedir(), "src/test/repo/ch").toFile(),
-                repoDir.toPath().resolve("ch").toFile());
+                getTestPath("src/test/repo/ch").toFile(), repoDir.resolve("ch").toFile());
 
         indexer.scan(context);
 
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
-            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir);
+            IndexPackingRequest request =
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir.toFile());
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
             assertEquals(updates.size(), 1);

@@ -54,7 +54,8 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         indexDir = new ByteBuffersDirectory();
 
-        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-default", "test", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         // assertNull( context.getTimestamp() ); // unknown upon creation
 
@@ -92,7 +93,8 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
     public void testEmptyContext() throws Exception {
         indexDir = new ByteBuffersDirectory();
 
-        context = nexusIndexer.addIndexingContext("test-default", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-default", "test", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         assertNull(context.getTimestamp()); // unknown upon creation
 

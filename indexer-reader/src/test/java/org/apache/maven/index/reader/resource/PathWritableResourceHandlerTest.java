@@ -18,11 +18,11 @@
  */
 package org.apache.maven.index.reader.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 import org.junit.jupiter.api.Test;
@@ -34,11 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class PathWritableResourceHandlerTest {
     @TempDir
-    public File folder;
+    public Path folder;
 
     @Test
     public void locate() throws IOException {
-        WritableResource test = new PathWritableResourceHandler(folder.toPath()).locate("test.txt");
+        WritableResource test = new PathWritableResourceHandler(folder).locate("test.txt");
         assertNull(test.read());
         try (OutputStream out = test.write()) {
             out.write('a');
@@ -46,6 +46,6 @@ public class PathWritableResourceHandlerTest {
         try (InputStream in = test.read()) {
             assertEquals('a', in.read());
         }
-        assertArrayEquals(new byte[] {'a'}, Files.readAllBytes(folder.toPath().resolve("test.txt")));
+        assertArrayEquals(new byte[] {'a'}, Files.readAllBytes(folder.resolve("test.txt")));
     }
 }

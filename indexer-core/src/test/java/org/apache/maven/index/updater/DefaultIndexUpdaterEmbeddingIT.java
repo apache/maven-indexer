@@ -18,10 +18,10 @@
  */
 package org.apache.maven.index.updater;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,9 +74,9 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
 
     @Test
     public void testBasicIndexRetrieval() throws IOException, UnsupportedExistingLuceneIndexException {
-        File basedir = Files.createTempDirectory("nexus-indexer.").toFile();
-        basedir.delete();
-        basedir.mkdirs();
+        Path basedir = Files.createTempDirectory("nexus-indexer.");
+        Files.deleteIfExists(basedir);
+        Files.createDirectories(basedir);
 
         try {
             IndexingContext ctx = newTestContext(basedir, baseUrl);
@@ -88,7 +88,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
             ctx.close(false);
         } finally {
             try {
-                FileUtils.forceDelete(basedir);
+                FileUtils.forceDelete(basedir.toFile());
             } catch (IOException e) {
             }
         }
@@ -96,30 +96,30 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
 
     @Test
     public void testIndexTempDirB() throws IOException, UnsupportedExistingLuceneIndexException {
-        File basedir = Files.createTempDirectory("nexus-indexer.").toFile();
-        basedir.delete();
-        basedir.mkdirs();
+        Path basedir = Files.createTempDirectory("nexus-indexer.");
+        Files.deleteIfExists(basedir);
+        Files.createDirectories(basedir);
 
-        File indexTempDir = Files.createTempDirectory("index-temp").toFile();
-        indexTempDir.delete();
+        Path indexTempDir = Files.createTempDirectory("index-temp");
+        Files.deleteIfExists(indexTempDir);
         // temp dir should not exists
-        assertFalse(indexTempDir.exists());
+        assertFalse(Files.exists(indexTempDir));
 
         try {
             IndexingContext ctx = newTestContext(basedir, baseUrl);
 
             IndexUpdateRequest updateRequest = new IndexUpdateRequest(ctx, new Java11HttpClient());
-            updateRequest.setIndexTempDir(indexTempDir);
+            updateRequest.setIndexTempDir(indexTempDir.toFile());
 
             updater.fetchAndUpdateIndex(updateRequest);
 
             // dir should still exists after retrival
-            assertTrue(indexTempDir.exists());
-            indexTempDir.delete();
+            assertTrue(Files.exists(indexTempDir));
+            Files.deleteIfExists(indexTempDir);
             ctx.close(false);
         } finally {
             try {
-                FileUtils.forceDelete(basedir);
+                FileUtils.forceDelete(basedir.toFile());
             } catch (IOException e) {
             }
         }
@@ -127,7 +127,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
 
     @Test
     public void testBasicHighLatencyIndexRetrieval() throws IOException, UnsupportedExistingLuceneIndexException {
-        File basedir = Files.createTempDirectory("nexus-indexer.").toFile();
+        Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {
             IndexingContext ctx = newTestContext(basedir, baseUrl + "slow/");
@@ -139,7 +139,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
             ctx.close(false);
         } finally {
             try {
-                FileUtils.forceDelete(basedir);
+                FileUtils.forceDelete(basedir.toFile());
             } catch (IOException e) {
             }
         }
@@ -147,7 +147,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
 
     @Test
     public void testIndexRetrieval_InfiniteRedirection() throws IOException, UnsupportedExistingLuceneIndexException {
-        File basedir = Files.createTempDirectory("nexus-indexer.").toFile();
+        Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {
             IndexingContext ctx = newTestContext(basedir, baseUrl + "redirect-trap/");
@@ -164,7 +164,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
             ctx.close(false);
         } finally {
             try {
-                FileUtils.forceDelete(basedir);
+                FileUtils.forceDelete(basedir.toFile());
             } catch (IOException e) {
             }
         }
@@ -172,7 +172,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
 
     @Test
     public void testIndexRetrieval_BadHostname() throws IOException, UnsupportedExistingLuceneIndexException {
-        File basedir = Files.createTempDirectory("nexus-indexer.").toFile();
+        Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {
             IndexingContext ctx = newTestContext(basedir, "http://dummy/");
@@ -189,13 +189,13 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
             ctx.close(false);
         } finally {
             try {
-                FileUtils.forceDelete(basedir);
+                FileUtils.forceDelete(basedir.toFile());
             } catch (IOException e) {
             }
         }
     }
 
-    private IndexingContext newTestContext(final File basedir, final String baseUrl)
+    private IndexingContext newTestContext(final Path basedir, final String baseUrl)
             throws IOException, UnsupportedExistingLuceneIndexException {
         IndexCreator min = lookup(IndexCreator.class, "min");
         IndexCreator jar = lookup(IndexCreator.class, "jarContent");
@@ -207,6 +207,6 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
         String repositoryId = "test";
 
         return new DefaultIndexingContext(
-                repositoryId, repositoryId, basedir, basedir, baseUrl, baseUrl, creators, true);
+                repositoryId, repositoryId, basedir.toFile(), basedir.toFile(), baseUrl, baseUrl, creators, true);
     }
 }

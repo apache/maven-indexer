@@ -20,6 +20,7 @@ package org.apache.maven.index.updater;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
@@ -44,11 +45,11 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelper {
-    File testBasedir;
+    Path testBasedir;
 
-    File repoDir;
+    Path repoDir;
 
-    File indexDir;
+    Path indexDir;
 
     String repositoryId = "test";
 
@@ -67,14 +68,14 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
     public void setUp() throws Exception {
         super.setUp();
 
-        testBasedir = Path.of(getBasedir(), "/target/indexUpdater").toFile();
-        testBasedir.mkdirs();
+        testBasedir = getTestPath("/target/indexUpdater");
+        Files.createDirectories(testBasedir);
 
-        repoDir = Path.of(getBasedir(), "/target/indexUpdaterRepoDir").toFile();
-        repoDir.mkdirs();
+        repoDir = getTestPath("/target/indexUpdaterRepoDir");
+        Files.createDirectories(repoDir);
 
         indexDir = super.getDirectory("indexerUpdater");
-        indexDir.mkdirs();
+        Files.createDirectories(indexDir);
 
         indexer = lookup(NexusIndexer.class);
 
@@ -83,7 +84,7 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
         packer = lookup(IndexPacker.class);
 
         context = indexer.addIndexingContext(
-                repositoryId, repositoryId, repoDir, indexDir, repositoryUrl, null, MIN_CREATORS);
+                repositoryId, repositoryId, repoDir.toFile(), indexDir.toFile(), repositoryUrl, null, MIN_CREATORS);
     }
 
     @AfterEach
@@ -94,18 +95,18 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
         // this one closes it too
         indexer.removeIndexingContext(context, true);
 
-        FileUtils.forceDelete(testBasedir);
+        FileUtils.forceDelete(testBasedir.toFile());
 
-        FileUtils.forceDelete(repoDir);
+        FileUtils.forceDelete(repoDir.toFile());
 
-        FileUtils.forceDelete(indexDir);
+        FileUtils.forceDelete(indexDir.toFile());
     }
 
     protected ArtifactContext createArtifactContext(
             String repositoryId, String groupId, String artifactId, String version, String classifier) {
         String path = createPath(groupId, artifactId, version, classifier);
-        File pomFile = Path.of(path + ".pom").toFile();
-        File artifact = Path.of(path + ".jar").toFile();
+        Path pomFile = Path.of(path + ".pom");
+        Path artifact = Path.of(path + ".jar");
         File metadata = null;
         ArtifactInfo artifactInfo = new ArtifactInfo(repositoryId, groupId, artifactId, version, classifier, "jar");
         Gav gav = new Gav(
@@ -116,12 +117,12 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
                 "jar",
                 null,
                 null,
-                artifact.getName(),
+                artifact.getFileName().toString(),
                 false,
                 null,
                 false,
                 null);
-        return new ArtifactContext(pomFile, artifact, metadata, artifactInfo, gav);
+        return new ArtifactContext(pomFile.toFile(), artifact.toFile(), metadata, artifactInfo, gav);
     }
 
     protected String createPath(String groupId, String artifactId, String version, String classifier) {
@@ -129,10 +130,11 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
                 + (classifier == null ? "" : "-" + classifier);
     }
 
-    protected void packIndex(File targetDir, IndexingContext context) throws IllegalArgumentException, IOException {
+    protected void packIndex(Path targetDir, IndexingContext context) throws IllegalArgumentException, IOException {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
-            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
+            IndexPackingRequest request =
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
             request.setUseTargetProperties(true);
             packer.packIndex(request);
         } finally {

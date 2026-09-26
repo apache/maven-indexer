@@ -18,14 +18,12 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
-import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -93,13 +91,13 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
         NexusIndexer indexer = lookup(NexusIndexer.class);
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = Path.of(getBasedir(), "target/index/test-" + System.currentTimeMillis())
-                .toFile();
-        FileUtils.deleteDirectory(indexDir);
+        Path indexDir = getTestPath("target/index/test-" + System.currentTimeMillis());
+        deleteDirectory(indexDir);
 
-        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+        Path repo = getTestPath("src/test/repo");
 
-        context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = indexer.addIndexingContext(
+                "test", "test", repo.toFile(), indexDir.toFile(), null, null, DEFAULT_CREATORS);
 
         indexer.scan(context);
 

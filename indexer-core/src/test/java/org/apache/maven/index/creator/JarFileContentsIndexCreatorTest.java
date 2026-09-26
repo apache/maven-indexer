@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.creator;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.maven.index.AbstractTestSupport;
@@ -49,15 +48,14 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void test_nexus_2318_indexJarWithClasses() throws Exception {
-        File artifact = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar")
-                .toFile();
+        Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar");
 
-        File pom = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom")
-                .toFile();
+        Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0", null, "jar");
 
-        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        ArtifactContext artifactContext =
+                new ArtifactContext(pom.toFile(), artifact.toFile(), null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
 
@@ -66,15 +64,14 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void test_nexus_2318_indexZipWithClasses() throws Exception {
-        File artifact = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.zip")
-                .toFile();
+        Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.zip");
 
-        File pom = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom")
-                .toFile();
+        Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0", null, "zip");
 
-        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        ArtifactContext artifactContext =
+                new ArtifactContext(pom.toFile(), artifact.toFile(), null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
 
@@ -113,16 +110,14 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void test_nexus_2318_indexJarWithSources() throws Exception {
-        File artifact = Path.of(
-                        getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar")
-                .toFile();
+        Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar");
 
-        File pom = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom")
-                .toFile();
+        Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0", null, "jar");
 
-        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        ArtifactContext artifactContext =
+                new ArtifactContext(pom.toFile(), artifact.toFile(), null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
 
@@ -131,16 +126,14 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void test_nexus_2318_indexZipWithSources() throws Exception {
-        File artifact = Path.of(
-                        getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.zip")
-                .toFile();
+        Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.zip");
 
-        File pom = Path.of(getBasedir(), "src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom")
-                .toFile();
+        Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
 
         ArtifactInfo artifactInfo = new ArtifactInfo("test", "aopalliance", "aopalliance", "1.0", null, "zip");
 
-        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        ArtifactContext artifactContext =
+                new ArtifactContext(pom.toFile(), artifact.toFile(), null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
 
@@ -149,20 +142,17 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
 
     @Test
     public void testMindexer35ScanWar() throws Exception {
-        File artifact = Path.of(
-                        getBasedir(),
-                        "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.war")
-                .toFile();
+        Path artifact = getTestPath(
+                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.war");
 
-        File pom = Path.of(
-                        getBasedir(),
-                        "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom")
-                .toFile();
+        Path pom = getTestPath(
+                "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.pom");
 
         ArtifactInfo artifactInfo =
                 new ArtifactInfo("test", "org.apache.maven.indexer.test", "sample-war", "1.0-SNAPSHOT", null, "war");
 
-        ArtifactContext artifactContext = new ArtifactContext(pom, artifact, null, artifactInfo, null);
+        ArtifactContext artifactContext =
+                new ArtifactContext(pom.toFile(), artifact.toFile(), null, artifactInfo, null);
 
         indexCreator.populateArtifactInfo(artifactContext);
 
