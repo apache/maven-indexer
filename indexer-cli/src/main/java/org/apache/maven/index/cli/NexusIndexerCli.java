@@ -352,7 +352,10 @@ public class NexusIndexerCli {
         System.out.println();
 
         try {
-            HelpFormatter.builder().get().printHelp("nexus-indexer [options]", null, options, null, false);
+            HelpFormatter.builder()
+                    .setShowSince(false)
+                    .get()
+                    .printHelp("nexus-indexer [options]", null, options, null, false);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
