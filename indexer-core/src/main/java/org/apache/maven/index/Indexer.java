@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -66,7 +67,10 @@ public interface Indexer {
      *             and equipped with proper descriptor silently.
      * @throws IllegalArgumentException in case the supplied list of IndexCreators are having non-satisfiable
      *             dependencies.
+     * @deprecated Use {@link #createIndexingContext(String, String, Path, Path, String, String, boolean, boolean, List)}
+     *             instead.
      */
+    @Deprecated
     IndexingContext createIndexingContext(
             String id,
             String repositoryId,
@@ -80,6 +84,38 @@ public interface Indexer {
             throws IOException, ExistingLuceneIndexMismatchException, IllegalArgumentException;
 
     /**
+     * Creates an indexing context, like
+     * {@link #createIndexingContext(String, String, File, File, String, String, boolean, boolean, List)} but taking
+     * {@link Path} locations.
+     *
+     * @param repository the location of the repository on FS, may be {@code null}.
+     * @param indexDirectory the location of the Lucene indexes on FS.
+     * @since 7.2.0
+     */
+    default IndexingContext createIndexingContext(
+            String id,
+            String repositoryId,
+            Path repository,
+            Path indexDirectory,
+            String repositoryUrl,
+            String indexUpdateUrl,
+            boolean searchable,
+            boolean reclaim,
+            List<? extends IndexCreator> indexers)
+            throws IOException, ExistingLuceneIndexMismatchException, IllegalArgumentException {
+        return createIndexingContext(
+                id,
+                repositoryId,
+                repository != null ? repository.toFile() : null,
+                indexDirectory != null ? indexDirectory.toFile() : null,
+                repositoryUrl,
+                indexUpdateUrl,
+                searchable,
+                reclaim,
+                indexers);
+    }
+
+    /**
      * Creates a merged indexing context.
      *
      * @param id the ID of the context.
@@ -91,7 +127,10 @@ public interface Indexer {
      * @param membersProvider the {@link ContextMemberProvider}, never null.
      * @return the context created.
      * @throws IOException in case of some serious IO problem.
+     * @deprecated Use {@link #createMergedIndexingContext(String, String, Path, Path, boolean, ContextMemberProvider)}
+     *             instead.
      */
+    @Deprecated
     IndexingContext createMergedIndexingContext(
             String id,
             String repositoryId,
@@ -100,6 +139,30 @@ public interface Indexer {
             boolean searchable,
             ContextMemberProvider membersProvider)
             throws IOException;
+
+    /**
+     * Creates a merged indexing context, like
+     * {@link #createMergedIndexingContext(String, String, File, File, boolean, ContextMemberProvider)} but taking
+     * {@link Path} locations.
+     *
+     * @since 7.2.0
+     */
+    default IndexingContext createMergedIndexingContext(
+            String id,
+            String repositoryId,
+            Path repository,
+            Path indexDirectory,
+            boolean searchable,
+            ContextMemberProvider membersProvider)
+            throws IOException {
+        return createMergedIndexingContext(
+                id,
+                repositoryId,
+                repository != null ? repository.toFile() : null,
+                indexDirectory != null ? indexDirectory.toFile() : null,
+                searchable,
+                membersProvider);
+    }
 
     /**
      * Closes the indexing context: closes it and deletes (if specified) the index files.
@@ -187,8 +250,23 @@ public interface Indexer {
      * @param contexts in which to perform the action
      * @return collection of identified matches.
      * @throws IOException
+     * @deprecated Use {@link #identify(Path, Collection)} instead.
      */
+    @Deprecated
     Collection<ArtifactInfo> identify(File artifact, Collection<IndexingContext> contexts) throws IOException;
+
+    /**
+     * Performs an "identity" search, like {@link #identify(File, Collection)} but taking a {@link Path}.
+     *
+     * @param artifact the file
+     * @param contexts in which to perform the action
+     * @return collection of identified matches.
+     * @throws IOException
+     * @since 7.2.0
+     */
+    default Collection<ArtifactInfo> identify(Path artifact, Collection<IndexingContext> contexts) throws IOException {
+        return identify(artifact.toFile(), contexts);
+    }
 
     /**
      * Performs an "identity" search. Those are usually simple key-value queries, involving "unique" fields like

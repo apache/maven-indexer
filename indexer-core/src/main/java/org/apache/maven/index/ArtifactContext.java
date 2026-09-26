@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -77,8 +78,19 @@ public class ArtifactContext {
         this.gav = gav == null ? artifactInfo.calculateGav() : gav;
     }
 
+    /**
+     * @deprecated Use {@link #getPomPath()} instead.
+     */
+    @Deprecated
     public File getPom() {
         return pom;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public Path getPomPath() {
+        return pom != null ? pom.toPath() : null;
     }
 
     public Model getPomModel() {
@@ -118,12 +130,34 @@ public class ArtifactContext {
         return null;
     }
 
+    /**
+     * @deprecated Use {@link #getArtifactPath()} instead.
+     */
+    @Deprecated
     public File getArtifact() {
         return artifact;
     }
 
+    /**
+     * @since 7.2.0
+     */
+    public Path getArtifactPath() {
+        return artifact != null ? artifact.toPath() : null;
+    }
+
+    /**
+     * @deprecated Use {@link #getMetadataPath()} instead.
+     */
+    @Deprecated
     public File getMetadata() {
         return metadata;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public Path getMetadataPath() {
+        return metadata != null ? metadata.toPath() : null;
     }
 
     public ArtifactInfo getArtifactInfo() {

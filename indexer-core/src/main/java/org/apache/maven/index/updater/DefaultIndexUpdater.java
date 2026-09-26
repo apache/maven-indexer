@@ -364,6 +364,17 @@ public class DefaultIndexUpdater implements IndexUpdater {
     public static class FileFetcher implements ResourceFetcher {
         private final File basedir;
 
+        /**
+         * @since 7.2.0
+         */
+        public FileFetcher(Path basedir) {
+            this(basedir.toFile());
+        }
+
+        /**
+         * @deprecated Use {@link #FileFetcher(Path)} instead.
+         */
+        @Deprecated
         public FileFetcher(File basedir) {
             this.basedir = basedir;
         }
