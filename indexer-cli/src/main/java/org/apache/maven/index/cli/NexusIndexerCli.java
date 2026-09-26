@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,10 +35,10 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactContext;
@@ -183,82 +184,82 @@ public class NexusIndexerCli {
     Options buildCliOptions() {
         this.options = new Options();
 
-        options.addOption(Option.builder(QUIET)
-                .longOpt("quiet")
-                .desc("Quiet output - only show errors")
-                .build());
-
-        options.addOption(Option.builder(DEBUG)
-                .longOpt("debug")
-                .desc("Produce execution debug output")
-                .build());
-
-        options.addOption(Option.builder(VERSION)
-                .longOpt("version")
-                .desc("Display version information")
-                .build());
-
-        options.addOption(Option.builder(HELP)
-                .longOpt("help")
-                .desc("Display help information")
-                .build());
-
-        options.addOption(Option.builder(INDEX)
-                .longOpt("index")
-                .argName("path")
-                .hasArg()
-                .desc("Path to the index folder")
-                .build());
+        options.addOption(Option.builder(CREATE_INCREMENTAL_CHUNKS)
+                .longOpt("chunks")
+                .desc("Create incremental chunks")
+                .get());
 
         options.addOption(Option.builder(TARGET_DIR)
                 .longOpt("destination")
                 .argName("path")
                 .hasArg()
                 .desc("Target folder")
-                .build());
+                .get());
 
-        options.addOption(Option.builder(REPO)
-                .longOpt("repository")
+        options.addOption(Option.builder(HELP)
+                .longOpt("help")
+                .desc("Display help information")
+                .get());
+
+        options.addOption(Option.builder(INDEX)
+                .longOpt("index")
                 .argName("path")
                 .hasArg()
-                .desc("Path to the Maven repository")
-                .build());
-
-        options.addOption(Option.builder(NAME)
-                .longOpt("name")
-                .argName("string")
-                .hasArg()
-                .desc("Repository name")
-                .build());
-
-        options.addOption(Option.builder(CREATE_INCREMENTAL_CHUNKS)
-                .longOpt("chunks")
-                .desc("Create incremental chunks")
-                .build());
+                .desc("Path to the index folder")
+                .get());
 
         options.addOption(Option.builder(INCREMENTAL_CHUNK_KEEP_COUNT)
                 .longOpt("keep")
                 .argName("num")
                 .hasArg()
                 .desc("Number of incremental chunks to keep")
-                .build());
+                .get());
+
+        options.addOption(Option.builder(NAME)
+                .longOpt("name")
+                .argName("string")
+                .hasArg()
+                .desc("Repository name")
+                .get());
+
+        options.addOption(Option.builder(QUIET)
+                .longOpt("quiet")
+                .desc("Quiet output - only show errors")
+                .get());
+
+        options.addOption(Option.builder(REPO)
+                .longOpt("repository")
+                .argName("path")
+                .hasArg()
+                .desc("Path to the Maven repository")
+                .get());
 
         options.addOption(Option.builder(CREATE_FILE_CHECKSUMS)
                 .longOpt("checksums")
                 .desc("Create checksums for all files (sha1, md5)")
-                .build());
+                .get());
 
         options.addOption(Option.builder(TYPE)
                 .longOpt("type")
                 .argName("type")
                 .hasArg()
                 .desc("Indexer type (default, min, full or comma separated list of custom types)")
-                .build());
+                .get());
 
         options.addOption(Option.builder(UNPACK)
                 .longOpt("unpack")
                 .desc("Unpack an index file")
-                .build());
+                .get());
+
+        options.addOption(Option.builder(VERSION)
+                .longOpt("version")
+                .desc("Display version information")
+                .get());
+
+        options.addOption(Option.builder(DEBUG)
+                .longOpt("debug")
+                .desc("Produce execution debug output")
+                .get());
 
         return options;
     }
@@ -350,9 +351,14 @@ public class NexusIndexerCli {
     private void displayHelp() {
         System.out.println();
 
-        HelpFormatter formatter = new HelpFormatter();
-
-        formatter.printHelp("nexus-indexer [options]", "\nOptions:", options, "\n");
+        try {
+            HelpFormatter.builder()
+                    .setShowSince(false)
+                    .get()
+                    .printHelp("nexus-indexer [options]", null, options, null, false);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private void showVersion() {

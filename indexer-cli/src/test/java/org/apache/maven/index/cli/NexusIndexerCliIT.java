@@ -20,31 +20,13 @@ package org.apache.maven.index.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
-import org.junit.jupiter.api.BeforeEach;
 
 public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
-
-    private StreamConsumer sout;
-
-    @BeforeEach
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        sout = line -> {
-            try {
-                out.write(line.getBytes());
-                out.write("\n".getBytes());
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        };
-    }
 
     private Commandline createCommandLine() {
         try {
@@ -65,10 +47,20 @@ public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
         for (String arg : args) {
             cmd.createArg().setValue(arg);
         }
+        // stdout and stderr are pumped by separate threads, so each gets its own buffer
+        StringBuilder stdout = new StringBuilder();
+        StringBuilder stderr = new StringBuilder();
         try {
-            return CommandLineUtils.executeCommandLine(cmd, sout, sout);
+            int code = CommandLineUtils.executeCommandLine(
+                    cmd,
+                    line -> stdout.append(line).append('\n'),
+                    line -> stderr.append(line).append('\n'));
+            out.write(stderr.append(stdout).toString().getBytes());
+            return code;
         } catch (CommandLineException e) {
             return -1;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 }
