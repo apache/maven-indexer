@@ -24,7 +24,6 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.examples.indexing.SearchRequest;
 import org.apache.maven.index.examples.indexing.SearchResults;
@@ -55,7 +54,7 @@ public class SpringUsageExampleTest {
     private SimpleArtifactGenerator generator = new SimpleArtifactGenerator();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         if (!Files.exists(
                 REPOSITORIES_BASEDIR.resolve("releases/org/apache/maven/indexer/examples/indexer-examples-spring"))) {
             Files.createDirectories(REPOSITORIES_BASEDIR);
@@ -113,8 +112,7 @@ public class SpringUsageExampleTest {
     }
 
     @Test
-    public void testAddAndDelete()
-            throws IOException, ParseException, NoSuchAlgorithmException, XmlPullParserException {
+    void addAndDelete() throws Exception {
         // Create a search request matching GAV "org.apache.maven.indexer.examples:indexer-examples-spring:1.4"
         SearchRequest request =
                 new SearchRequest("releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.4");
@@ -129,7 +127,7 @@ public class SpringUsageExampleTest {
     }
 
     @Test
-    public void testSearch() throws IOException, ParseException {
+    void search() throws Exception {
         // Create a search request matching GAV "org.apache.maven.indexer.examples:indexer-examples-spring:1.3"
         SearchRequest request = new SearchRequest(
                 "releases", "+g:org.apache.maven.indexer.examples +a:indexer-examples-spring +v:1.3*");

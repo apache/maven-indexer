@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +34,7 @@ public class UriResourceHandlerTest {
     public Path folder;
 
     @Test
-    public void locate() throws IOException {
+    void locate() throws Exception {
         Resource test = new UriResourceHandler(folder.toUri()).locate("test.txt");
         assertNull(test.read());
         Files.write(folder.resolve("test.txt"), new byte[] {'a'});

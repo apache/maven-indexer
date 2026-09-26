@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
+class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
 
     private NexusIndexer prepare() throws Exception, IOException, UnsupportedExistingLuceneIndexException {
@@ -60,7 +60,7 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void test_nexus_3293_releaseJar() throws Exception {
+    void nexus_3293_release_jar() throws Exception {
         NexusIndexer indexer = prepare();
 
         Path artifact = getTestPath("src/test/nexus-3293/aopalliance/aopalliance/1.0/aopalliance-1.0jar");
@@ -89,7 +89,7 @@ public class Nexus3293TimestampSnapshotTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void test_nexus_3293_indexTimestampedSnapshotJar() throws Exception {
+    void nexus_3293_index_timestamped_snapshot_jar() throws Exception {
         NexusIndexer indexer = prepare();
 
         Path artifact = getTestPath(

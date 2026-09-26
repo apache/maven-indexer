@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.cli;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +94,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     }
 
     @Test
-    public void testNoArgs() {
+    public void noArgs() {
         int code = execute();
         String output = out.toString();
         assertEquals(1, code, output);
@@ -103,14 +102,14 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     }
 
     @Test
-    public void testRequiredArgs() throws Exception {
+    public void requiredArgs() throws Exception {
         int code = execute("--repository", TEST_REPO, "--index", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
         assertEquals(0, code, output);
     }
 
     @Test
-    public void testUnpack() throws Exception {
+    public void unpack() throws Exception {
         // first create an index, in the destination dir
         execute("--repository", TEST_REPO, "--index", INDEX_DIR, "-d", DEST_DIR);
         // then unpack it
@@ -123,7 +122,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     }
 
     @Test
-    public void testMissingArgs() throws IOException {
+    public void missingArgs() throws Exception {
         String usage = "usage:  nexus-indexer";
 
         int code = execute("--repository", "--index", INDEX_DIR, "-d", DEST_DIR);
@@ -150,14 +149,14 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
     }
 
     @Test
-    public void testAbrvsRequiredArgs() throws Exception {
+    public void abrvsRequiredArgs() throws Exception {
         int code = execute("-r", TEST_REPO, "-i", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
         assertEquals(0, code, output);
     }
 
     @Test
-    public void testInvalidRepo() throws Exception {
+    public void invalidRepo() throws Exception {
         int code = execute(
                 "-r",
                 Path.of("target/undexinting/repo/to/try/what/will/happen/here")

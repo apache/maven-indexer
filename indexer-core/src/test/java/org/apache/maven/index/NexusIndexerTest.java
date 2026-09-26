@@ -56,17 +56,15 @@ import org.apache.maven.index.updater.IndexUpdater;
 import org.codehaus.plexus.util.StringUtils;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** @author Jason van Zyl */
 public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
 
     @Test
-    public void testSingleQuery() throws Exception {
+    void singleQuery() throws Exception {
         NexusIndexer indexer = lookup(NexusIndexer.class);
         // Directory indexDir = new RAMDirectory();
         Path indexDir = getDirectory("index/test");
@@ -86,7 +84,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testQueryCreatorNG() throws Exception {
+    void queryCreatorNG() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q;
@@ -247,7 +245,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         ArtifactInfo ai = ais.iterator().next();
 
         // null means not "identified", so we want non-null response
-        assertTrue(ai != null);
+        assertNotNull(ai);
 
         // we assure we found what we wanted
         assertEquals(
@@ -257,14 +255,14 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testQueryCreatorNGSearch() throws Exception {
+    void queryCreatorNGSearch() throws Exception {
         NexusIndexer indexer = prepare();
 
         performQueryCreatorNGSearch(indexer, context);
     }
 
     @Test
-    public void testQueryCreatorNGSearchOnMergedContext() throws Exception {
+    void queryCreatorNGSearchOnMergedContext() throws Exception {
         NexusIndexer indexer = prepare();
 
         Path indexMergedDir = getDirectory("index/testMerged");
@@ -347,7 +345,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchIterator() throws Exception {
+    void searchIterator() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q = indexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
@@ -364,7 +362,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchIteratorWithFilter() throws Exception {
+    void searchIteratorWithFilter() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q = indexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
@@ -387,7 +385,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchGrouped() throws Exception {
+    void searchGrouped() throws Exception {
         NexusIndexer indexer = prepare();
 
         {
@@ -419,7 +417,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         NexusIndexer indexer = prepare();
 
         {
@@ -444,7 +442,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchPackaging() throws Exception {
+    void searchPackaging() throws Exception {
         NexusIndexer indexer = prepare();
 
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
@@ -454,7 +452,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testIdentity() throws Exception {
+    void identity() throws Exception {
         NexusIndexer nexus = prepare();
 
         // Search using SHA1 to find qdox 1.5
@@ -497,7 +495,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testUpdateArtifact() throws Exception {
+    void updateArtifact() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q =
@@ -542,7 +540,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testUnpack() throws Exception {
+    void unpack() throws Exception {
         NexusIndexer indexer = prepare();
 
         String indexId = context.getId();

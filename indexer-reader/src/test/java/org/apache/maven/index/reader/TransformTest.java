@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,9 +38,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * UT for {@link RecordCompactor} and {@link RecordExpander}.
  */
-public class TransformTest extends TestSupport {
+class TransformTest extends TestSupport {
     @Test
-    public void decorateAndTransform() throws IOException {
+    void decorateAndTransform() throws Exception {
         final String indexId = "test";
         final Record r1 = new Record(Type.ARTIFACT_ADD, artifactMap("org.apache"));
         final Record r2 = new Record(Type.ARTIFACT_ADD, artifactMap("org.foo"));

@@ -28,8 +28,9 @@ import org.apache.maven.index.expr.UserInputSearchExpression;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
+class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/mindexer-35");
 
     @Override
@@ -40,7 +41,7 @@ public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchWar() throws Exception {
+    void searchWar() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.CLASSNAMES, new UserInputSearchExpression("WebappClass"));
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
@@ -60,7 +61,7 @@ public class Mindexer35NexusIndexerTest extends AbstractNexusIndexerTest {
         assertEquals("sample-war", ai.getArtifactId());
         assertEquals("1.0-SNAPSHOT", ai.getVersion());
         assertEquals("war", ai.getPackaging());
-        assertEquals(null, ai.getClassifier());
+        assertNull(ai.getClassifier());
         assertEquals("mindexer-35", ai.getRepository());
         assertEquals("war", ai.getFileExtension());
     }

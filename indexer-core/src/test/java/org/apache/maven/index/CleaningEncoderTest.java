@@ -25,21 +25,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * UT for {@link CleaningEncoder}.
  */
-public class CleaningEncoderTest {
+class CleaningEncoderTest {
     private final CleaningEncoder encoder = new CleaningEncoder();
 
     @Test
-    public void plainTextIsUnchanged() {
+    void plainTextIsUnchanged() {
         assertEquals("commons logging", encoder.encodeText("commons logging"));
     }
 
     @Test
-    public void textIsHtmlEscaped() {
+    void textIsHtmlEscaped() {
         assertEquals("a &lt;b&gt; &amp; &quot;c&quot;", encoder.encodeText("a <b> & \"c\""));
     }
 
     @Test
-    public void lineBreaksAreRemoved() {
+    void lineBreaksAreRemoved() {
         assertEquals("line oneline two", encoder.encodeText("line one\nline two"));
     }
 }

@@ -20,7 +20,6 @@ package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -28,14 +27,12 @@ import org.apache.maven.index.reader.WritableResourceHandler;
 import org.apache.maven.index.reader.WritableResourceHandler.WritableResource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class BufferedWritableResourceHandlerTest {
+class BufferedWritableResourceHandlerTest {
 
     @Test
-    public void locate() throws IOException {
+    void locate() throws Exception {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         WritableResource writableResource = new WritableResource() {
             @Override
@@ -52,7 +49,7 @@ public class BufferedWritableResourceHandlerTest {
                         new SingleWritableResourceHandler("test.txt", writableResource))
                 .locate("test.txt")
                 .write();
-        assertTrue(out instanceof BufferedOutputStream);
+        assertInstanceOf(BufferedOutputStream.class, out);
         assertArrayEquals(new byte[] {}, baos.toByteArray());
         out.write('a');
         assertArrayEquals(new byte[] {}, baos.toByteArray());
@@ -61,7 +58,7 @@ public class BufferedWritableResourceHandlerTest {
     }
 
     @Test
-    public void close() throws IOException {
+    void close() throws Exception {
         SingleWritableResourceHandler handler = new SingleWritableResourceHandler("test.txt", null);
         new BufferedWritableResourceHandler(handler).close();
         assertTrue(handler.closed);

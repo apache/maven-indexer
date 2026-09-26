@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class DuplicateSearchTest extends AbstractNexusIndexerTest {
+class DuplicateSearchTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     protected IndexingContext context1;
@@ -124,7 +123,7 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
     // ArtifactInfo, along with GAV carries contextId and repositoryId too!
 
     @Test
-    public void testProveSvnRev1158917IsWrong() throws IOException {
+    void proveSvnRev1158917IsWrong() throws Exception {
         // change is SVN Rev1158917 (http://svn.apache.org/viewvc?view=revision&revision=1158917) is wrong (and is
         // undone)
         // because after removing it, we still dont have GAV dupes in results, here is a proof:
@@ -145,7 +144,7 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testHowUniqueSearchShouldBeDone() throws IOException {
+    void howUniqueSearchShouldBeDone() throws Exception {
         // my use case: I am searching for duplicates in given two contexts belonging to given groupId "org.slf4j"
         // I expect to find intersection of two reposes, since both of those indexes/reposes contains that
 
@@ -166,7 +165,7 @@ public class DuplicateSearchTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testHowtoPerformAggregatedSearch() throws IOException {
+    void howtoPerformAggregatedSearch() throws Exception {
         // Note: currently this is implemented for IteratorSearches only! TBD for Flat and Grouped searches
 
         // my use case: searching across multiple contexts, querying how many combinations of GAs exists in groupId

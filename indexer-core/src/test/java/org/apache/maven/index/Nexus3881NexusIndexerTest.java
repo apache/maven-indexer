@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-3881");
 
     @Override
@@ -38,7 +38,7 @@ public class Nexus3881NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testRelevances() throws Exception {
+    void relevances() throws Exception {
         IteratorSearchRequest request = new IteratorSearchRequest(new BooleanQuery.Builder()
                 .add(nexusIndexer.constructQuery(MAVEN.GROUP_ID, "solution", SearchType.SCORED), Occur.SHOULD)
                 .add(nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "solution", SearchType.SCORED), Occur.SHOULD)

@@ -37,10 +37,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * UT for {@link IndexDataReader} reading documents from a gzipped stream.
  */
-public class IndexDataReaderTest {
+class IndexDataReaderTest {
 
     @Test
-    public void streamEndingBetweenDocumentsIsTheEnd() throws IOException {
+    void streamEndingBetweenDocumentsIsTheEnd() throws Exception {
         IndexDataReader reader = reader(gzip(document("value".length(), "value")));
 
         Document document = reader.readDocument();
@@ -50,7 +50,7 @@ public class IndexDataReaderTest {
     }
 
     @Test
-    public void streamEndingEarlyIsAnError() throws IOException {
+    void streamEndingEarlyIsAnError() throws Exception {
         byte[] data = gzip(document("value".length(), "value"));
         IndexDataReader reader = reader(Arrays.copyOf(data, data.length - 4));
 
@@ -62,7 +62,7 @@ public class IndexDataReaderTest {
     }
 
     @Test
-    public void negativeValueLengthIsAnError() throws IOException {
+    void negativeValueLengthIsAnError() throws Exception {
         IndexDataReader reader = reader(gzip(document(-1, "")));
 
         assertThrows(IOException.class, reader::readDocument);

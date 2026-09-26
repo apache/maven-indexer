@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** http://issues.sonatype.org/browse/NEXUS-737 */
-public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-658");
 
     @Override
@@ -40,7 +40,7 @@ public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testValidateUINFOs() throws Exception {
+    void validateUINFOs() throws Exception {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
         Bits liveDocs = MultiBits.getLiveDocs(reader);
 
@@ -60,6 +60,6 @@ public class Nexus737NexusIndexerTest extends AbstractNexusIndexerTest {
             }
         }
 
-        assertEquals(foundCount, 3);
+        assertEquals(3, foundCount);
     }
 }

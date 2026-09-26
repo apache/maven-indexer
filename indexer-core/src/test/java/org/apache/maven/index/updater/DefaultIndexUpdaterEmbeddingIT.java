@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
+class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     private String baseUrl;
 
     private ServerTestFixture server;
@@ -73,7 +73,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     }
 
     @Test
-    public void testBasicIndexRetrieval() throws IOException, UnsupportedExistingLuceneIndexException {
+    void basicIndexRetrieval() throws Exception {
         Path basedir = Files.createTempDirectory("nexus-indexer.");
         Files.deleteIfExists(basedir);
         Files.createDirectories(basedir);
@@ -95,7 +95,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     }
 
     @Test
-    public void testIndexTempDirB() throws IOException, UnsupportedExistingLuceneIndexException {
+    void indexTempDirB() throws Exception {
         Path basedir = Files.createTempDirectory("nexus-indexer.");
         Files.deleteIfExists(basedir);
         Files.createDirectories(basedir);
@@ -126,7 +126,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     }
 
     @Test
-    public void testBasicHighLatencyIndexRetrieval() throws IOException, UnsupportedExistingLuceneIndexException {
+    void basicHighLatencyIndexRetrieval() throws Exception {
         Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {
@@ -146,7 +146,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     }
 
     @Test
-    public void testIndexRetrieval_InfiniteRedirection() throws IOException, UnsupportedExistingLuceneIndexException {
+    void indexRetrievalInfiniteRedirection() throws Exception {
         Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {
@@ -171,7 +171,7 @@ public class DefaultIndexUpdaterEmbeddingIT extends InjectedTest {
     }
 
     @Test
-    public void testIndexRetrieval_BadHostname() throws IOException, UnsupportedExistingLuceneIndexException {
+    void indexRetrievalBadHostname() throws Exception {
         Path basedir = Files.createTempDirectory("nexus-indexer.");
 
         try {

@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -26,13 +25,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * UT for {@link IndexWriter}
  */
-public class IndexWriterTest extends TestSupport {
+class IndexWriterTest extends TestSupport {
     @Test
-    public void roundtrip() throws IOException {
+    void roundtrip() throws Exception {
         try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
             try (IndexReader indexReader = new IndexReader(null, testResourceHandler("simple"));
                     IndexWriter indexWriter =
@@ -48,7 +48,7 @@ public class IndexWriterTest extends TestSupport {
             try (IndexReader indexReader = new IndexReader(null, writableResourceHandler)) {
                 assertEquals("apache-snapshots-local", indexReader.getIndexId());
                 // assertThat(indexReader.getPublishedTimestamp().getTime(), equalTo(published.getTime()));
-                assertEquals(false, indexReader.isIncremental());
+                assertFalse(indexReader.isIncremental());
                 assertEquals(List.of("nexus-maven-repository-index.gz"), indexReader.getChunkNames());
                 int chunks = 0;
                 int records = 0;

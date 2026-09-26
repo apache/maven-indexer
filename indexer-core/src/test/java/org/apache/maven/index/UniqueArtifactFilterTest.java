@@ -27,13 +27,13 @@ import org.apache.maven.index.context.UnsupportedExistingLuceneIndexException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
+class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
     private IndexingContext context;
 
     @Test
-    public void testSearchIterator() throws Exception {
+    void searchIterator() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q = indexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
@@ -50,7 +50,7 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testSearchIteratorWithFilter() throws Exception {
+    void searchIteratorWithFilter() throws Exception {
         NexusIndexer indexer = prepare();
 
         Query q = indexer.constructQuery(MAVEN.GROUP_ID, "commons", SearchType.SCORED);
@@ -65,10 +65,10 @@ public class UniqueArtifactFilterTest extends AbstractIndexCreatorHelper {
             assertEquals(15, response.getTotalHits(), "15 total hits (before filtering!)");
 
             ArtifactInfo ai = response.getResults().next();
-            assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
+            assertNotNull(ai, "Iterator has to have next (2 should be returned)");
 
             ai = response.getResults().next();
-            assertTrue(ai != null, "Iterator has to have next (2 should be returned)");
+            assertNotNull(ai, "Iterator has to have next (2 should be returned)");
 
             assertEquals(
                     UniqueArtifactFilterPostprocessor.COLLAPSED,

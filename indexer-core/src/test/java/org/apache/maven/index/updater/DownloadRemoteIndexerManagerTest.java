@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
+class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     private HttpServerFixture server;
 
     private Path fakeCentral;
@@ -83,7 +83,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testRepoReindex() throws Exception {
+    void repoReindex() throws Exception {
         IndexUpdateRequest iur;
 
         Path index1 = getTestPath("src/test/resources/repo-index/index");

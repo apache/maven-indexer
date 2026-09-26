@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -27,10 +26,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BufferedWritableResourceTest {
+class BufferedWritableResourceTest {
 
     @Test
-    public void close() throws IOException {
+    void close() throws Exception {
         ClosableWritableResource resource = new ClosableWritableResource();
         new BufferedWritableResource(resource).close();
         assertTrue(resource.closed);

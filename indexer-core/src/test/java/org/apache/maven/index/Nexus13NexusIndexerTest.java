@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
-public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-13");
 
     @Override
@@ -58,7 +58,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchGroupedClasses() throws Exception {
+    void searchGroupedClasses() throws Exception {
         {
             Query q = nexusIndexer.constructQuery(MAVEN.CLASSNAMES, "cisco", SearchType.SCORED);
 
@@ -88,7 +88,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchArchetypes() throws Exception {
+    void searchArchetypes() throws Exception {
         Query q = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
@@ -102,7 +102,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testIndexTimestamp() throws Exception {
+    void indexTimestamp() throws Exception {
         final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
         targetDir.toFile().deleteOnExit();
 
@@ -160,7 +160,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testRootGroups() throws Exception {
+    void rootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals(1, rootGroups.size(), rootGroups.toString());
 
@@ -168,7 +168,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "cisco.infra", SearchType.SCORED);
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
@@ -189,7 +189,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchGrouped() throws Exception {
+    void searchGrouped() throws Exception {
         // ----------------------------------------------------------------------------
         //
         // ----------------------------------------------------------------------------
@@ -216,7 +216,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchGroupedProblematicNames() throws Exception {
+    void searchGroupedProblematicNames() throws Exception {
 
         // ----------------------------------------------------------------------------
         // Artifacts with "problematic" names
@@ -238,7 +238,7 @@ public class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testIdentify() throws Exception {
+    void identify() throws Exception {
         Collection<ArtifactInfo> ais = nexusIndexer.identify(MAVEN.SHA1, "c8a2ef9d92a4b857eae0f36c2e01481787c5cbf8");
 
         assertEquals(1, ais.size());

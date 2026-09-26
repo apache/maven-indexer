@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Alin Dreghiciu
  */
-public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
+class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     protected IndexCreator indexCreator;
 
     @BeforeEach
@@ -47,7 +47,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void test_nexus_2318_indexJarWithClasses() throws Exception {
+    void nexus_2318_index_jar_with_classes() throws Exception {
         Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.jar");
 
         Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
@@ -63,7 +63,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void test_nexus_2318_indexZipWithClasses() throws Exception {
+    void nexus_2318_index_zip_with_classes() throws Exception {
         Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.zip");
 
         Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
@@ -109,7 +109,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void test_nexus_2318_indexJarWithSources() throws Exception {
+    void nexus_2318_index_jar_with_sources() throws Exception {
         Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.jar");
 
         Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
@@ -125,7 +125,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void test_nexus_2318_indexZipWithSources() throws Exception {
+    void nexus_2318_index_zip_with_sources() throws Exception {
         Path artifact = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0-sources.zip");
 
         Path pom = getTestPath("src/test/nexus-2318/aopalliance/aopalliance/1.0/aopalliance-1.0.pom");
@@ -141,7 +141,7 @@ public class JarFileContentsIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testMindexer35ScanWar() throws Exception {
+    void mindexer35ScanWar() throws Exception {
         Path artifact = getTestPath(
                 "src/test/mindexer-35/org/apache/maven/indexer/test/sample-war/1.0-SNAPSHOT/sample-war-1.0-SNAPSHOT.war");
 

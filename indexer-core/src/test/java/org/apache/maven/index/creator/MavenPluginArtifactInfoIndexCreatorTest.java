@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author juven
  */
-public class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport {
+class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport {
     protected IndexCreator indexCreator;
 
     @BeforeEach
@@ -46,7 +46,7 @@ public class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport
     }
 
     @Test
-    public void testMavenPluginInfo() throws Exception {
+    void mavenPluginInfo() throws Exception {
         Path artifact = getTestPath(
                 "src/test/repo-creator/org/apache/maven/plugins/maven-dependency-plugin/2.0/maven-dependency-plugin-2.0.jar");
 

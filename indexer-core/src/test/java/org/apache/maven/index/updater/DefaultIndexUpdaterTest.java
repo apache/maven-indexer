@@ -67,12 +67,12 @@ import static org.mockito.Mockito.when;
 /**
  * @author Eugene Kuleshov
  */
-public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
+class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
     SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss.SSS Z");
 
     @Test
-    public void testReplaceIndex() throws Exception {
+    void replaceIndex() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
 
@@ -122,7 +122,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testMergeIndex() throws Exception {
+    void mergeIndex() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
 
@@ -173,7 +173,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testMergeIndexDeletes() throws Exception {
+    void mergeIndexDeletes() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
 
@@ -220,7 +220,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testMergeIndexDeleteThenReaddSameUinfo() throws Exception {
+    void mergeIndexDeleteThenReaddSameUinfo() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
 
@@ -259,7 +259,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testMergeSearch() throws Exception {
+    void mergeSearch() throws Exception {
         Path repo1 = getTestPath("src/test/nexus-658");
         Directory indexDir1 = new ByteBuffersDirectory();
 
@@ -282,11 +282,11 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
         Set<ArtifactInfo> results = response.getResults();
         ArtifactInfo artifactInfo = results.iterator().next();
-        assertEquals(artifactInfo.getArtifactId(), "dma.integration.tests");
+        assertEquals("dma.integration.tests", artifactInfo.getArtifactId());
     }
 
     @Test
-    public void testMergeGroups() throws Exception {
+    void mergeGroups() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
 
@@ -334,7 +334,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testNoIndexUpdate() throws Exception {
+    void noIndexUpdate() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081125010000.000 -0600");
 
@@ -372,7 +372,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testFullIndexUpdate() throws Exception {
+    void fullIndexUpdate() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081125010000.000 -0600");
 
@@ -409,7 +409,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testIncrementalIndexUpdate() throws Exception {
+    void incrementalIndexUpdate() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
@@ -452,7 +452,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testIncrementalIndexUpdateNoCounter() throws Exception {
+    void incrementalIndexUpdateNoCounter() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
@@ -489,7 +489,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testIncrementalOnlyIndexUpdateNoCounter() throws Exception {
+    void incrementalOnlyIndexUpdateNoCounter() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
@@ -519,7 +519,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testIncrementalIndexUpdateNoUpdateNecessary() throws Exception {
+    void incrementalIndexUpdateNoUpdateNecessary() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
@@ -559,7 +559,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testUpdateForceFullUpdate() throws Exception {
+    void updateForceFullUpdate() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 
@@ -600,7 +600,7 @@ public class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
 
     @Test
     @Disabled("Legacy format no longer supported with Lucene 4")
-    public void ignoreTestUpdateForceFullUpdateNoGZ() throws Exception {
+    void ignoreTestUpdateForceFullUpdateNoGZ() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081128000000.000 -0600");
 

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
+class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     protected Directory secondIndexDir = new ByteBuffersDirectory();
@@ -65,7 +65,7 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     // but the two test explicitly testing LIMIT_EXCEEDED were just removed/commented out.
 
     @Test
-    public void testHitLimitNotReachedSingleContext() throws Exception {
+    void hitLimitNotReachedSingleContext() throws Exception {
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
         FlatSearchRequest request = new FlatSearchRequest(q);
@@ -80,7 +80,7 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testHitLimitEqualSingleContext() throws Exception {
+    void hitLimitEqualSingleContext() throws Exception {
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
         FlatSearchRequest request = new FlatSearchRequest(q);
@@ -111,7 +111,7 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     // }
 
     @Test
-    public void testHitLimitNotReachedMultipleContexts() throws Exception {
+    void hitLimitNotReachedMultipleContexts() throws Exception {
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
         FlatSearchRequest request = new FlatSearchRequest(q);
@@ -128,7 +128,7 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testHitLimitEqualMultipleContexts() throws Exception {
+    void hitLimitEqualMultipleContexts() throws Exception {
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.UINFO, "*testng*"));
 
         FlatSearchRequest request = new FlatSearchRequest(q);

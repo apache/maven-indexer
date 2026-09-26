@@ -31,11 +31,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class NexusAnalyzerTest {
+class NexusAnalyzerTest {
     protected NexusAnalyzer nexusAnalyzer = new NexusAnalyzer();
 
     @Test
-    public void testGroupIdTokenization() throws IOException {
+    void groupIdTokenization() throws Exception {
         runAndCompare(MinimalArtifactInfoIndexCreator.FLD_GROUP_ID, "org.slf4j", new String[] {"org", "slf4j"});
 
         runAndCompare(MinimalArtifactInfoIndexCreator.FLD_GROUP_ID_KW, "org.slf4j", new String[] {"org.slf4j"});

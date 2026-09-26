@@ -54,7 +54,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
+class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         context = nexusIndexer.addIndexingContext(
@@ -68,7 +68,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testSearchGroupedClasses() throws Exception {
+    void searchGroupedClasses() throws Exception {
         {
             Query q = nexusIndexer.constructQuery(MAVEN.CLASSNAMES, "com/thoughtworks/qdox", SearchType.SCORED);
             GroupedSearchRequest request = new GroupedSearchRequest(q, new GAGrouping());
@@ -285,7 +285,8 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testSearchArchetypes() throws Exception {
+    @Override
+    void searchArchetypes() throws Exception {
         Query q = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
@@ -320,7 +321,8 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testIndexTimestamp() throws Exception {
+    @Override
+    void indexTimestamp() throws Exception {
         final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
         targetDir.toFile().deleteOnExit();
 
@@ -395,7 +397,8 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testArchetype() throws Exception {
+    @Override
+    void archetype() throws Exception {
         String term = "proptest";
 
         Query bq = new PrefixQuery(new Term(ArtifactInfo.GROUP_ID, term));
@@ -412,14 +415,16 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testArchetypePackaging() throws Exception {
+    @Override
+    void archetypePackaging() throws Exception {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
         assertEquals(4, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
-    public void testBrokenJar() throws Exception {
+    @Override
+    void brokenJar() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED);
 
         FlatSearchRequest searchRequest = new FlatSearchRequest(q);
@@ -435,11 +440,12 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
         assertEquals("brokenjar", ai.getGroupId());
         assertEquals("brokenjar", ai.getArtifactId());
         assertEquals("1.0", ai.getVersion());
-        assertEquals(null, ai.getClassNames());
+        assertNull(ai.getClassNames());
     }
 
     @Test
-    public void testMissingPom() throws Exception {
+    @Override
+    void missingPom() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED);
 
         FlatSearchRequest searchRequest = new FlatSearchRequest(q);
@@ -473,7 +479,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testClassnameSearchNgWithHighlighting() throws Exception {
+    void classnameSearchNgWithHighlighting() throws Exception {
         IteratorSearchRequest request = createHighlightedRequest(MAVEN.CLASSNAMES, "Logger", SearchType.SCORED);
 
         IteratorSearchResponse response = nexusIndexer.searchIterator(request);
@@ -499,7 +505,7 @@ public class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
     }
 
     @Test
-    public void testGAVSearchNgWithHighlighting() throws Exception {
+    void gavSearchNgWithHighlighting() throws Exception {
         IteratorSearchRequest request = createHighlightedRequest(MAVEN.GROUP_ID, "commons", SearchType.SCORED);
 
         IteratorSearchResponse response = nexusIndexer.searchIterator(request);

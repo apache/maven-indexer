@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Path;
@@ -32,19 +31,19 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.maven.index.reader.TestUtils.expandFunction;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * UT for {@link IndexReader}
  */
-public class IndexReaderTest extends TestSupport {
+class IndexReaderTest extends TestSupport {
     @Test
-    public void simple() throws IOException {
+    void simple() throws Exception {
         try (IndexReader indexReader = new IndexReader(null, testResourceHandler("simple"))) {
             assertEquals("apache-snapshots-local", indexReader.getIndexId());
             assertEquals(1243533418015L, indexReader.getPublishedTimestamp().getTime());
-            assertEquals(false, indexReader.isIncremental());
+            assertFalse(indexReader.isIncremental());
             assertEquals(List.of("nexus-maven-repository-index.gz"), indexReader.getChunkNames());
             int chunks = 0;
             int records = 0;
@@ -66,12 +65,12 @@ public class IndexReaderTest extends TestSupport {
     }
 
     @Test
-    public void simpleWithLocal() throws IOException {
+    void simpleWithLocal() throws Exception {
         try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
             try (IndexReader indexReader = new IndexReader(writableResourceHandler, testResourceHandler("simple"))) {
                 assertEquals("apache-snapshots-local", indexReader.getIndexId());
                 assertEquals(1243533418015L, indexReader.getPublishedTimestamp().getTime());
-                assertEquals(false, indexReader.isIncremental());
+                assertFalse(indexReader.isIncremental());
                 assertEquals(List.of("nexus-maven-repository-index.gz"), indexReader.getChunkNames());
                 int chunks = 0;
                 int records = 0;
@@ -98,7 +97,7 @@ public class IndexReaderTest extends TestSupport {
     }
 
     @Test
-    public void roundtrip() throws IOException {
+    void roundtrip() throws Exception {
         try (WritableResourceHandler writableResourceHandler = createWritableResourceHandler()) {
             Date published;
             IndexWriter iw; // TODO: fix this, IW close will set timestamp but ref to it is lost from try-with-res
@@ -119,7 +118,7 @@ public class IndexReaderTest extends TestSupport {
                 assertEquals("apache-snapshots-local", indexReader.getIndexId());
                 assertEquals(
                         published.getTime(), indexReader.getPublishedTimestamp().getTime());
-                assertEquals(false, indexReader.isIncremental());
+                assertFalse(indexReader.isIncremental());
                 assertEquals(List.of("nexus-maven-repository-index.gz"), indexReader.getChunkNames());
                 int chunks = 0;
                 int records = 0;
@@ -147,7 +146,7 @@ public class IndexReaderTest extends TestSupport {
      */
     @Test
     @Disabled("For eyes only")
-    public void central() throws Exception {
+    void central() throws Exception {
         // local index location, against which we perform incremental updates
         final Path indexDir = createTempDirectory();
         // cache of remote, to not rely on HTTP transport possible failures, or, to detect them early

@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * Offline UT for URI composition: the base URI may or may not end with a slash.
  */
-public class RemoteRepositorySearchBackendBaseUriTest {
+class RemoteRepositorySearchBackendBaseUriTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"https://repo.example/maven2", "https://repo.example/maven2/"})

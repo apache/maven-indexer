@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Olivier Lamy
  */
-public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
+class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
     static final String INDEX_ID1 = "osgi-test1";
     static final String INDEX_ID2 = "empty-repo";
 
@@ -69,7 +69,7 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testWithTwoContextWithOneEmptyFirstInContextsListSearchFlat() throws Exception {
+    void withTwoContextWithOneEmptyFirstInContextsListSearchFlat() throws Exception {
 
         String repoPath = "target/test/empty-repo-for-searchtest";
 
@@ -150,7 +150,7 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
      * both repos contains commons-cli so ensure we don't return duplicates
      */
     @Test
-    public void testSearchNoDuplicateArtifactInfo() throws Exception {
+    void searchNoDuplicateArtifactInfo() throws Exception {
 
         String repoPathIndex = "target/test/repo-for-searchdupe";
 

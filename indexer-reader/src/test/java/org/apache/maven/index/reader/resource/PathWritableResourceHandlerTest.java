@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.reader.resource;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -37,7 +36,7 @@ public class PathWritableResourceHandlerTest {
     public Path folder;
 
     @Test
-    public void locate() throws IOException {
+    void locate() throws Exception {
         WritableResource test = new PathWritableResourceHandler(folder).locate("test.txt");
         assertNull(test.read());
         try (OutputStream out = test.write()) {

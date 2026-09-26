@@ -26,7 +26,7 @@ import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 
-public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
+class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
 
     private Commandline createCommandLine() {
         try {

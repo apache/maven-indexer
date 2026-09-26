@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.cli;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -95,7 +94,7 @@ public class NexusIndexerCliTest extends AbstractNexusIndexerCliTest {
     }
 
     @Test
-    public void testOptionsAsHtml() throws IOException {
+    void optionsAsHtml() throws Exception {
         Path options = getTestFile("target/test-classes/options.html");
         FileUtils.fileWrite(options.toFile(), "UTF-8", getOptionsAsHtml());
     }

@@ -66,12 +66,12 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testAssertIndexCreatorComponentExists() throws Exception {
+    void assertIndexCreatorComponentExists() throws Exception {
         assertNotNull(indexCreator);
     }
 
     @Test
-    public void testPopulateArtifactInfo() throws Exception {
+    void populateArtifactInfo() throws Exception {
         Path artifact = getTestPath(
                 "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.command/2.2.2/org.apache.karaf.features.command-2.2.2.jar");
 
@@ -116,7 +116,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testPopulateFragmentHost() throws Exception {
+    void populateFragmentHost() throws Exception {
         Path artifact = getTestPath("src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.jar");
 
         Path pom = getTestPath("src/test/repo-with-osgi/org/slf4j/slf4j-simple/1.7.7/slf4j-simple-1.7.7.pom");
@@ -129,7 +129,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testPopulateCapabilityAndSha256() throws Exception {
+    void populateCapabilityAndSha256() throws Exception {
         Path artifact = getTestPath(
                 "src/test/repo-with-osgi/org/apache/karaf/features/org.apache.karaf.features.core/4.1.0/org.apache.karaf.features.core-4.1.0.jar");
 
@@ -189,7 +189,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearch() throws Exception {
+    void indexOSGIRepoThenSearch() throws Exception {
 
         try {
             indexOSGIRepo();
@@ -226,7 +226,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithVersion() throws Exception {
+    void indexOSGIRepoThenSearchWithVersion() throws Exception {
 
         indexOSGIRepo();
 
@@ -251,7 +251,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithSha256() throws Exception {
+    void indexOSGIRepoThenSearchWithSha256() throws Exception {
 
         indexOSGIRepo();
 
@@ -278,7 +278,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithExportPackage() throws Exception {
+    void indexOSGIRepoThenSearchWithExportPackage() throws Exception {
 
         indexOSGIRepo();
 
@@ -321,7 +321,7 @@ public class OsgiArtifactIndexCreatorTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testIndexOSGIRepoThenSearchWithExportService() throws Exception {
+    void indexOSGIRepoThenSearchWithExportService() throws Exception {
 
         indexOSGIRepo();
 

@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * body (for example an error page served for a missing {@code .sha1} file) must never be accepted as
  * a checksum.
  */
-public class RemoteRepositorySearchBackendImplChecksumTest {
+class RemoteRepositorySearchBackendImplChecksumTest {
 
     private static final String SHA1 = "2a9a736e5bd63a0865e2c795828e5a08d9d10a23";
 
@@ -51,23 +51,23 @@ public class RemoteRepositorySearchBackendImplChecksumTest {
     }
 
     @Test
-    public void plainChecksumIsRead() throws IOException {
+    void plainChecksumIsRead() throws Exception {
         assertEquals(SHA1, RemoteRepositorySearchBackendImpl.readChecksum(body(SHA1 + "\n")));
     }
 
     @Test
-    public void checksumWithFileNameIsRead() throws IOException {
+    void checksumWithFileNameIsRead() throws Exception {
         assertEquals(SHA1, RemoteRepositorySearchBackendImpl.readChecksum(body(SHA1 + "  some-artifact-1.0.jar\n")));
     }
 
     @Test
-    public void validSha1Accepted() {
+    void validSha1Accepted() {
         assertTrue(RemoteRepositorySearchBackendImpl.isValidSha1(SHA1));
         assertTrue(RemoteRepositorySearchBackendImpl.isValidSha1(SHA1.toUpperCase()));
     }
 
     @Test
-    public void nonChecksumContentRejected() throws IOException {
+    void nonChecksumContentRejected() throws Exception {
         // first non-empty line of a typical error page must not pass as a checksum
         String errorPage = RemoteRepositorySearchBackendImpl.readChecksum(
                 body("<html>\n<head><title>404 Not Found</title></head>\n</html>\n"));
@@ -83,12 +83,12 @@ public class RemoteRepositorySearchBackendImplChecksumTest {
     }
 
     @Test
-    public void checksumFromNon200ResponseIsIgnored() throws IOException {
+    void checksumFromNon200ResponseIsIgnored() throws Exception {
         assertEquals(0, searchBySha1(404).getTotalHits());
     }
 
     @Test
-    public void checksumFrom200ResponseIsUsed() throws IOException {
+    void checksumFrom200ResponseIsUsed() throws Exception {
         assertEquals(1, searchBySha1(200).getTotalHits());
     }
 

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Offline UT for the SMO paging parameters.
  */
-public class SmoSearchBackendPagingTest {
+class SmoSearchBackendPagingTest {
 
     @Test
     void startIsComputedWithoutIntOverflow() {

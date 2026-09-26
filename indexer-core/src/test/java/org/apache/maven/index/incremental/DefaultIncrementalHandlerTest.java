@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
+class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
     IncrementalHandler handler = null;
 
     NexusIndexer indexer = null;
@@ -78,7 +78,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testUpdateInvalidProperties() throws Exception {
+    void updateInvalidProperties() throws Exception {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             Properties properties = new Properties();
@@ -98,14 +98,14 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
-            assertEquals(updates.size(), 0);
+            assertEquals(0, updates.size());
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
     }
 
     @Test
-    public void testUpdateValid() throws Exception {
+    void updateValid() throws Exception {
         Properties properties = new Properties();
 
         properties.setProperty(IndexingContext.INDEX_TIMESTAMP, "19991112182432.432 -0600");
@@ -121,14 +121,14 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
                     new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir.toFile());
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
-            assertEquals(updates.size(), 1);
+            assertEquals(1, updates.size());
         } finally {
             context.releaseIndexSearcher(indexSearcher);
         }
     }
 
     @Test
-    public void testRemoteUpdatesInvalidProperties() throws Exception {
+    void remoteUpdatesInvalidProperties() throws Exception {
         // just a dummy fetcher, it's not used here anyway
         IndexUpdateRequest request = new IndexUpdateRequest(context, new ResourceFetcher() {
             public InputStream retrieve(String name) throws IOException, FileNotFoundException {
@@ -161,7 +161,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testRemoteUpdatesEnlistedChunks() throws Exception {
+    void remoteUpdatesEnlistedChunks() throws Exception {
         List<String> filenames = handler.loadRemoteIncrementalUpdates(
                 remoteUpdatesRequest(), chunkProperties(3), chunkProperties(5, 4, 5));
 
@@ -169,7 +169,7 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testRemoteUpdatesNotAllChunksEnlisted() throws Exception {
+    void remoteUpdatesNotAllChunksEnlisted() throws Exception {
         List<String> filenames = handler.loadRemoteIncrementalUpdates(
                 remoteUpdatesRequest(), chunkProperties(3), chunkProperties(7, 4, 5));
 
