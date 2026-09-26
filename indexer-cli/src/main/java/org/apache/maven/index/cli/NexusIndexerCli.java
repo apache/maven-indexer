@@ -184,19 +184,16 @@ public class NexusIndexerCli {
     Options buildCliOptions() {
         this.options = new Options();
 
-        options.addOption(Option.builder(QUIET)
-                .longOpt("quiet")
-                .desc("Quiet output - only show errors")
+        options.addOption(Option.builder(CREATE_INCREMENTAL_CHUNKS)
+                .longOpt("chunks")
+                .desc("Create incremental chunks")
                 .get());
 
-        options.addOption(Option.builder(DEBUG)
-                .longOpt("debug")
-                .desc("Produce execution debug output")
-                .get());
-
-        options.addOption(Option.builder(VERSION)
-                .longOpt("version")
-                .desc("Display version information")
+        options.addOption(Option.builder(TARGET_DIR)
+                .longOpt("destination")
+                .argName("path")
+                .hasArg()
+                .desc("Target folder")
                 .get());
 
         options.addOption(Option.builder(HELP)
@@ -211,18 +208,11 @@ public class NexusIndexerCli {
                 .desc("Path to the index folder")
                 .get());
 
-        options.addOption(Option.builder(TARGET_DIR)
-                .longOpt("destination")
-                .argName("path")
+        options.addOption(Option.builder(INCREMENTAL_CHUNK_KEEP_COUNT)
+                .longOpt("keep")
+                .argName("num")
                 .hasArg()
-                .desc("Target folder")
-                .get());
-
-        options.addOption(Option.builder(REPO)
-                .longOpt("repository")
-                .argName("path")
-                .hasArg()
-                .desc("Path to the Maven repository")
+                .desc("Number of incremental chunks to keep")
                 .get());
 
         options.addOption(Option.builder(NAME)
@@ -232,16 +222,16 @@ public class NexusIndexerCli {
                 .desc("Repository name")
                 .get());
 
-        options.addOption(Option.builder(CREATE_INCREMENTAL_CHUNKS)
-                .longOpt("chunks")
-                .desc("Create incremental chunks")
+        options.addOption(Option.builder(QUIET)
+                .longOpt("quiet")
+                .desc("Quiet output - only show errors")
                 .get());
 
-        options.addOption(Option.builder(INCREMENTAL_CHUNK_KEEP_COUNT)
-                .longOpt("keep")
-                .argName("num")
+        options.addOption(Option.builder(REPO)
+                .longOpt("repository")
+                .argName("path")
                 .hasArg()
-                .desc("Number of incremental chunks to keep")
+                .desc("Path to the Maven repository")
                 .get());
 
         options.addOption(Option.builder(CREATE_FILE_CHECKSUMS)
@@ -259,6 +249,16 @@ public class NexusIndexerCli {
         options.addOption(Option.builder(UNPACK)
                 .longOpt("unpack")
                 .desc("Unpack an index file")
+                .get());
+
+        options.addOption(Option.builder(VERSION)
+                .longOpt("version")
+                .desc("Display version information")
+                .get());
+
+        options.addOption(Option.builder(DEBUG)
+                .longOpt("debug")
+                .desc("Produce execution debug output")
                 .get());
 
         return options;
