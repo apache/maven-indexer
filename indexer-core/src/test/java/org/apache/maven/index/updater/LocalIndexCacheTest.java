@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
+class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     private Path remoteRepo;
 
     private Path localCacheDir;
@@ -107,7 +107,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testBasic() throws Exception {
+    void basic() throws Exception {
         // create initial remote repo index
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
@@ -203,7 +203,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testForceIndexDownload() throws Exception {
+    void forceIndexDownload() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
         packIndex(remoteRepo, context);
@@ -233,7 +233,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testInitialForcedFullDownload() throws Exception {
+    void initialForcedFullDownload() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
         packIndex(remoteRepo, context);
@@ -253,7 +253,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testFailedIndexDownload() throws Exception {
+    void failedIndexDownload() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
         packIndex(remoteRepo, context);
@@ -291,7 +291,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testCleanCacheDirectory() throws Exception {
+    void cleanCacheDirectory() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
         packIndex(remoteRepo, context);
@@ -352,7 +352,7 @@ public class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
-    public void testOffline() throws Exception {
+    void offline() throws Exception {
         indexer.addArtifactToIndex(
                 createArtifactContext(repositoryId, "commons-lang", "commons-lang", "2.2", null), context);
         packIndex(remoteRepo, context);

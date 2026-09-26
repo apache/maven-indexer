@@ -40,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * UT for {@link ChunkReader}
  */
-public class ChunkReaderTest extends TestSupport {
+class ChunkReaderTest extends TestSupport {
     @Test
-    public void simple() throws IOException {
+    void simple() throws Exception {
         try (WritableResourceHandler handler = testResourceHandler("simple");
                 ChunkReader chunkReader = new ChunkReader(
                         "full",
@@ -57,7 +57,7 @@ public class ChunkReaderTest extends TestSupport {
     }
 
     @Test
-    public void roundtrip() throws IOException {
+    void roundtrip() throws Exception {
         final Date published;
         Path tempChunkFile = createTempFile("nexus-maven-repository-index.gz");
         {
@@ -85,7 +85,7 @@ public class ChunkReaderTest extends TestSupport {
     }
 
     @Test
-    public void streamEndingEarlyIsAnError() throws IOException {
+    void streamEndingEarlyIsAnError() throws Exception {
         byte[] data;
         try (WritableResourceHandler handler = testResourceHandler("simple")) {
             data = handler.locate("nexus-maven-repository-index.gz").read().readAllBytes();
@@ -98,7 +98,7 @@ public class ChunkReaderTest extends TestSupport {
     }
 
     @Test
-    public void negativeValueLengthIsAnError() throws IOException {
+    void negativeValueLengthIsAnError() throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (DataOutputStream out = new DataOutputStream(new GZIPOutputStream(bytes))) {
             out.writeByte(1); // version

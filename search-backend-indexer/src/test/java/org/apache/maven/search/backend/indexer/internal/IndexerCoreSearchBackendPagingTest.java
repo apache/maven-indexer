@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Offline UT for paging against an empty local index.
  */
-public class IndexerCoreSearchBackendPagingTest extends InjectedTest {
+class IndexerCoreSearchBackendPagingTest extends InjectedTest {
     @Inject
     private Indexer indexer;
 
@@ -76,12 +76,12 @@ public class IndexerCoreSearchBackendPagingTest extends InjectedTest {
     }
 
     @Test
-    void largePageSize() throws IOException {
+    void largePageSize() throws Exception {
         assertEquals(0, search(new Paging(Integer.MAX_VALUE)).getTotalHits());
     }
 
     @Test
-    void pageStartBeyondIntRange() throws IOException {
+    void pageStartBeyondIntRange() throws Exception {
         assertEquals(0, search(new Paging(1 << 30, 3)).getTotalHits());
     }
 

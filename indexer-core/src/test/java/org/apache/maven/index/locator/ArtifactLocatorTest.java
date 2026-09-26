@@ -34,11 +34,10 @@ import org.apache.maven.index.artifact.M2GavCalculator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
+class ArtifactLocatorTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     private ArtifactContextProducer artifactContextProducer;
@@ -58,18 +57,18 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testContextProducer() {
+    void contextProducer() {
         final Path pomFile =
                 getTestPath("src/test/repo/ch/marcus-schulte/maven/hivedoc-plugin/1.0.0/hivedoc-plugin-1.0.0.pom");
 
         final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile.toFile());
 
-        assertTrue(ac.getArtifact() != null, "Artifact file was not found!");
+        assertNotNull(ac.getArtifact(), "Artifact file was not found!");
         assertTrue(ac.getArtifact().exists(), "Artifact file was not found!");
     }
 
     @Test
-    public void testArtifactLocator() {
+    void artifactLocator() {
         ArtifactLocator al = new ArtifactLocator(artifactPackagingMapper);
 
         final M2GavCalculator gavCalculator = new M2GavCalculator();
@@ -82,19 +81,19 @@ public class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         File artifactFile = al.locate(pomFile.toFile(), gavCalculator, gav);
 
-        assertTrue(artifactFile != null, "Artifact file was not located!");
+        assertNotNull(artifactFile, "Artifact file was not located!");
         assertTrue(artifactFile.exists(), "Artifact file was not located!");
     }
 
     @Test
-    public void testArtifactLocatorFindsSibling(@TempDir Path dir) throws IOException {
+    void artifactLocatorFindsSibling(@TempDir Path dir) throws Exception {
         Files.createFile(dir.resolve("a-1.0.zip"));
 
         assertEquals(dir.resolve("a-1.0.zip").toFile(), locate(dir, "zip"));
     }
 
     @Test
-    public void testArtifactLocatorIgnoresPackagingWithPathSeparator(@TempDir Path dir) throws IOException {
+    void artifactLocatorIgnoresPackagingWithPathSeparator(@TempDir Path dir) throws Exception {
         Files.createDirectories(dir.resolve("a-1.0.zip"));
         Files.createFile(dir.resolve("a-1.0.zip").resolve("b"));
 

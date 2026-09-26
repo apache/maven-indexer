@@ -20,31 +20,28 @@ package org.apache.maven.index.reader.resource;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.maven.index.reader.ResourceHandler;
 import org.apache.maven.index.reader.ResourceHandler.Resource;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class BufferedResourceHandlerTest {
+class BufferedResourceHandlerTest {
 
     @Test
-    public void locate() throws IOException {
+    void locate() throws Exception {
         Resource resource = () -> new ByteArrayInputStream(new byte[] {'a'});
         InputStream in = new BufferedResourceHandler(new SingleResourceHandler("test.txt", resource))
                 .locate("test.txt")
                 .read();
-        assertTrue(in instanceof BufferedInputStream);
+        assertInstanceOf(BufferedInputStream.class, in);
         assertEquals('a', in.read());
     }
 
     @Test
-    public void locateNull() throws IOException {
+    void locateNull() throws Exception {
         Resource resource = () -> null;
         assertNull(new BufferedResourceHandler(new SingleResourceHandler("test.txt", resource))
                 .locate("test.txt")
@@ -52,7 +49,7 @@ public class BufferedResourceHandlerTest {
     }
 
     @Test
-    public void close() throws IOException {
+    void close() throws Exception {
         SingleResourceHandler resourceHandler = new SingleResourceHandler("test.txt", null);
         new BufferedResourceHandler(resourceHandler).close();
         assertTrue(resourceHandler.closed);

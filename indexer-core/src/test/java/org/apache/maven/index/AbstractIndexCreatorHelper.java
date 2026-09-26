@@ -90,7 +90,7 @@ public class AbstractIndexCreatorHelper extends AbstractTestSupport {
     }
 
     @Test
-    public void testDirectory() throws IOException {
+    protected void directory() throws Exception {
         Path dir = this.getDirectory("foo");
         assert (dir.toAbsolutePath().toString().contains("foo"));
         this.deleteDirectory(dir);

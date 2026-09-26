@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.context;
 
-import java.io.IOException;
 import java.util.Set;
 
 import org.apache.lucene.store.ByteBuffersDirectory;
@@ -27,16 +26,17 @@ import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.lucene.store.SingleInstanceLockFactory;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  * @author Tomas Zezula
  */
-public class TrackingLockFactoryTest {
+class TrackingLockFactoryTest {
 
     @Test
-    public void testLockUnlock() throws IOException {
+    void lockUnlock() throws Exception {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
         final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock foo = ram.obtainLock("foo");
@@ -47,7 +47,7 @@ public class TrackingLockFactoryTest {
     }
 
     @Test
-    public void testLockLocked() throws IOException {
+    void lockLocked() throws Exception {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
         final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock foo = ram.obtainLock("foo");
@@ -65,7 +65,7 @@ public class TrackingLockFactoryTest {
     }
 
     @Test
-    public void testEmmittedLocks() throws IOException {
+    void emmittedLocks() throws Exception {
         final TrackingLockFactory lf = new TrackingLockFactory(new SingleInstanceLockFactory());
         final ByteBuffersDirectory ram = new ByteBuffersDirectory(lf);
         final Lock l1 = ram.obtainLock("l1");

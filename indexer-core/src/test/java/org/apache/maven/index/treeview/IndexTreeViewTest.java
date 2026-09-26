@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class IndexTreeViewTest extends AbstractNexusIndexerTest {
+class IndexTreeViewTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     protected IndexTreeView indexTreeView;
@@ -72,7 +72,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testRoot() throws Exception {
+    void root() throws Exception {
         TreeViewRequest req = new TreeViewRequest(new DefaultTreeNodeFactory(context.getRepositoryId()), "/", context);
         TreeNode root = indexTreeView.listNodes(req);
 
@@ -84,7 +84,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testPathIsAboveRealGroup() throws Exception {
+    void pathIsAboveRealGroup() throws Exception {
         TreeViewRequest req =
                 new TreeViewRequest(new DefaultTreeNodeFactory(context.getRepositoryId()), "/org/", context);
         TreeNode root = indexTreeView.listNodes(req);
@@ -97,7 +97,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testPathIsRealGroup() throws Exception {
+    void pathIsRealGroup() throws Exception {
         TreeViewRequest req =
                 new TreeViewRequest(new DefaultTreeNodeFactory(context.getRepositoryId()), "/org/slf4j/", context);
         TreeNode root = indexTreeView.listNodes(req);
@@ -110,7 +110,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testPathIsRealGroupArtifact() throws Exception {
+    void pathIsRealGroupArtifact() throws Exception {
         TreeViewRequest req = new TreeViewRequest(
                 new DefaultTreeNodeFactory(context.getRepositoryId()), "/org/slf4j/slf4j-log4j12/", context);
         TreeNode root = indexTreeView.listNodes(req);
@@ -123,7 +123,7 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testPathIsRealGroupArtifactVersion() throws Exception {
+    void pathIsRealGroupArtifactVersion() throws Exception {
         TreeViewRequest req = new TreeViewRequest(
                 new DefaultTreeNodeFactory(context.getRepositoryId()), "/org/slf4j/slf4j-log4j12/1.4.1/", context);
         TreeNode root = indexTreeView.listNodes(req);

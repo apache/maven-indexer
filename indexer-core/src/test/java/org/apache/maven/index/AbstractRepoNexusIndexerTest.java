@@ -44,7 +44,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     protected Path repo = getTestPath("src/test/repo");
 
     @Test
-    public void testRootGroups() throws Exception {
+    public void rootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals(12, rootGroups.size(), rootGroups.toString());
 
@@ -80,7 +80,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testSearchFlatPaged() throws Exception {
+    public void searchFlatPaged() throws Exception {
         FlatSearchRequest request =
                 new FlatSearchRequest(nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org", SearchType.SCORED));
 
@@ -96,7 +96,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    public void searchFlat() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "qdox", SearchType.SCORED);
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
@@ -121,7 +121,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testSearchGrouped() throws Exception {
+    public void searchGrouped() throws Exception {
         // ----------------------------------------------------------------------------
         //
         // ----------------------------------------------------------------------------
@@ -155,7 +155,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testSearchGroupedProblematicNames() throws Exception {
+    public void searchGroupedProblematicNames() throws Exception {
         {
             // "-" in the name
             Query q = nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "commons-logg*", SearchType.SCORED);
@@ -378,7 +378,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     // }
 
     @Test
-    public void testIdentify() throws Exception {
+    public void identify() throws Exception {
         Collection<ArtifactInfo> ais = nexusIndexer.identify(MAVEN.SHA1, "4d2db265eddf1576cb9d896abc90c7ba46b48d87");
 
         assertEquals(1, ais.size());
@@ -467,7 +467,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     //    }
 
     @Test
-    public void testPurge() throws Exception {
+    public void purge() throws Exception {
         // we have 14 artifact for this search
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org", SearchType.SCORED);
         FlatSearchRequest request = new FlatSearchRequest(q);
@@ -499,7 +499,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testPackaging() throws Exception {
+    public void packaging() throws Exception {
         IndexReader reader = context.acquireIndexSearcher().getIndexReader();
 
         Bits liveDocs = MultiBits.getLiveDocs(reader);
@@ -542,7 +542,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
     }
 
     @Test
-    public void testPrefixWildcard() throws Exception {
+    public void prefixWildcard() throws Exception {
         // see https://issues.apache.org/jira/browse/MINDEXER-108
         IteratorSearchRequest request =
                 new IteratorSearchRequest(nexusIndexer.constructQuery(MAVEN.GROUP_ID, "*.forge", SearchType.EXACT));
@@ -555,7 +555,7 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
             assertEquals(2, response.getTotalHitsCount(), response.getResults().toString());
 
             for (ArtifactInfo ai : response) {
-                assertEquals(ai.getGroupId(), "org.terracotta.forge");
+                assertEquals("org.terracotta.forge", ai.getGroupId());
             }
         }
     }

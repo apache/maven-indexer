@@ -62,7 +62,7 @@ import static org.apache.maven.search.api.request.BooleanQuery.and;
 import static org.apache.maven.search.api.request.Query.query;
 
 @Disabled("This is not a test, is more a showcase")
-public class IndexerCoreSearchBackendImplTest extends InjectedTest {
+class IndexerCoreSearchBackendImplTest extends InjectedTest {
     @Inject
     private Indexer indexer;
 
@@ -130,7 +130,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @BeforeEach
-    public void prepareAndUpdateBackend() throws Exception {
+    void prepareAndUpdateBackend() throws Exception {
         // Files where local cache is (if any) and Lucene Index should be located
         Path centralLocalCache = Path.of("target/central-cache");
         Path centralIndexDir = Path.of("target/central-index");
@@ -182,12 +182,12 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @AfterEach
-    public void cleanup() throws IOException {
+    void cleanup() throws IOException {
         indexer.closeIndexingContext(centralContext, false);
     }
 
     @Test
-    public void smoke() throws IOException {
+    void smoke() throws Exception {
         SearchRequest searchRequest = new SearchRequest(query("smoke"));
         SearchResponse searchResponse = backend.search(searchRequest);
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
@@ -195,7 +195,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void g() throws IOException {
+    void g() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"));
         SearchResponse searchResponse = backend.search(searchRequest);
@@ -204,7 +204,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void ga() throws IOException {
+    void ga() throws Exception {
         SearchRequest searchRequest = new SearchRequest(and(
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin")));
@@ -214,7 +214,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void gav() throws IOException {
+    void gav() throws Exception {
         SearchRequest searchRequest = new SearchRequest(and(
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin"),
@@ -225,7 +225,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void sha1() throws IOException {
+    void sha1() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.SHA1, "8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12"));
         SearchResponse searchResponse = backend.search(searchRequest);
@@ -234,7 +234,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void cn() throws IOException {
+    void cn() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.CLASS_NAME, "MavenRepositorySystem"));
         SearchResponse searchResponse = backend.search(searchRequest);
@@ -243,7 +243,7 @@ public class IndexerCoreSearchBackendImplTest extends InjectedTest {
     }
 
     @Test
-    public void fqcn() throws IOException {
+    void fqcn() throws Exception {
         SearchRequest searchRequest = new SearchRequest(
                 FieldQuery.fieldQuery(MAVEN.FQ_CLASS_NAME, "org.apache.maven.bridge.MavenRepositorySystem"));
         SearchResponse searchResponse = backend.search(searchRequest);

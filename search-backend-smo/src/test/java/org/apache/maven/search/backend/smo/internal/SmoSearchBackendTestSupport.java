@@ -98,7 +98,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void smoke() throws IOException {
+    public void smoke() throws Exception {
         SearchRequest searchRequest = new SearchRequest(Query.query("smoke"));
         SmoSearchResponse searchResponse = backend.search(searchRequest);
         System.out.println("TOTAL HITS: " + searchResponse.getTotalHits());
@@ -106,7 +106,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void g() throws IOException {
+    public void g() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"));
         SmoSearchResponse searchResponse = backend.search(searchRequest);
@@ -115,7 +115,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void ga() throws IOException {
+    public void ga() throws Exception {
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin")));
@@ -125,7 +125,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void gav() throws IOException {
+    public void gav() throws Exception {
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
                 FieldQuery.fieldQuery(MAVEN.GROUP_ID, "org.apache.maven.plugins"),
                 FieldQuery.fieldQuery(MAVEN.ARTIFACT_ID, "maven-clean-plugin"),
@@ -136,7 +136,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void sha1() throws IOException {
+    public void sha1() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.SHA1, "8ac9e16d933b6fb43bc7f576336b8f4d7eb5ba12"));
         SmoSearchResponse searchResponse = backend.search(searchRequest);
@@ -145,7 +145,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void cn() throws IOException {
+    public void cn() throws Exception {
         SearchRequest searchRequest =
                 new SearchRequest(FieldQuery.fieldQuery(MAVEN.CLASS_NAME, "MavenRepositorySystem"));
         SmoSearchResponse searchResponse = backend.search(searchRequest);
@@ -154,7 +154,7 @@ public abstract class SmoSearchBackendTestSupport {
     }
 
     @Test
-    public void fqcn() throws IOException {
+    public void fqcn() throws Exception {
         SearchRequest searchRequest = new SearchRequest(
                 FieldQuery.fieldQuery(MAVEN.FQ_CLASS_NAME, "org.apache.maven.bridge.MavenRepositorySystem"));
         SmoSearchResponse searchResponse = backend.search(searchRequest);

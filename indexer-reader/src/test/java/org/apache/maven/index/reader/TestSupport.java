@@ -48,7 +48,7 @@ public class TestSupport {
      * Creates the temp directory and list for resource handlers.
      */
     @BeforeEach
-    public void setup(TestInfo testInfo) throws IOException {
+    void setup(TestInfo testInfo) throws IOException {
         testInfo.getTestMethod().ifPresent(method -> this.testName = method.getName());
         this.tempDir = Files.createTempDirectory(getClass().getSimpleName() + ".temp");
         this.directoryResourceHandlers = new ArrayList<>();
@@ -58,7 +58,7 @@ public class TestSupport {
      * Closes all the registered resources handlers and deletes the temp directory.
      */
     @AfterEach
-    public void cleanup() throws IOException {
+    void cleanup() throws IOException {
         for (DirectoryResourceHandler directoryResourceHandler : directoryResourceHandlers) {
             directoryResourceHandler.close();
         }

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class Nexus2046NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus2046NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-2046");
 
     @Override
@@ -40,7 +40,7 @@ public class Nexus2046NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         // Since 4.0 the original query become illegal
         // Query q = nexusIndexer.constructQuery( MAVEN.GROUP_ID, "*", SearchType.SCORED );
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org.maven.ide", SearchType.SCORED);

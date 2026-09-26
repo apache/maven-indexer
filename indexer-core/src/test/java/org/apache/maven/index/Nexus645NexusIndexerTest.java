@@ -27,9 +27,10 @@ import org.apache.lucene.search.Query;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
-public class Nexus645NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus645NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-645");
 
     @Override
@@ -40,7 +41,7 @@ public class Nexus645NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org.codehaus.tycho", SearchType.SCORED);
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
@@ -58,7 +59,7 @@ public class Nexus645NexusIndexerTest extends AbstractNexusIndexerTest {
         assertEquals("tycho-distribution", ai.getArtifactId());
         assertEquals("0.3.0-SNAPSHOT", ai.getVersion());
         assertEquals("pom", ai.getPackaging());
-        assertEquals(null, ai.getClassifier());
+        assertNull(ai.getClassifier());
         assertEquals("nexus-645", ai.getRepository());
         assertEquals("pom", ai.getFileExtension());
 

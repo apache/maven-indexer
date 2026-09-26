@@ -37,7 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
  *
  * @author cstamas
  */
-public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseWithMergedContextTest {
+class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseWithMergedContextTest {
     protected IndexPacker packer;
 
     protected Path repoPublish = getTestPath("target/repo-publish");

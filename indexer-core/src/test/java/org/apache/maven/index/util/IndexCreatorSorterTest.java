@@ -29,10 +29,9 @@ import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.context.IndexCreator;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class IndexCreatorSorterTest extends AbstractTestSupport {
+class IndexCreatorSorterTest extends AbstractTestSupport {
     @Inject
     private List<IndexCreator> creators;
 
@@ -40,7 +39,7 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
     private Map<String, IndexCreator> creatorMap;
 
     @Test
-    public void testLookupList() throws Exception {
+    void lookupList() throws Exception {
         final List<IndexCreator> sortedCreators = IndexCreatorSorter.sort(creators);
 
         // we are interested in IDs only
@@ -64,7 +63,7 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
     }
 
     @Test
-    public void testLookupListWithSpoofedCreator() throws Exception {
+    void lookupListWithSpoofedCreator() throws Exception {
         List<IndexCreator> myIndexCreators = new ArrayList<>(creators);
 
         // now we add spoofs to it, this one depends on ALL creators. Note: we add it as 1st intentionally
@@ -90,14 +89,15 @@ public class IndexCreatorSorterTest extends AbstractTestSupport {
         assertTrue(sortedCreatorIds.contains("last"), "last should be present");
 
         // "last" has to be last
-        assertTrue(sortedCreatorIds.indexOf("last") == sortedCreatorIds.size() - 1, "last creator should be last");
-        assertTrue(
-                sortedCreatorIds.indexOf("depend-on-all") == sortedCreatorIds.size() - 2,
+        assertEquals(sortedCreatorIds.indexOf("last"), sortedCreatorIds.size() - 1, "last creator should be last");
+        assertEquals(
+                sortedCreatorIds.indexOf("depend-on-all"),
+                sortedCreatorIds.size() - 2,
                 "depend-on-all should be next to last");
     }
 
     @Test
-    public void testLookupListWithNonExistentCreatorDependency() throws Exception {
+    void lookupListWithNonExistentCreatorDependency() throws Exception {
         List<IndexCreator> myCreators = new ArrayList<>(creators);
         // now we add spoofs to it, this one depends on non existent creator. Note: we add it as 1st intentionally
         myCreators.add(

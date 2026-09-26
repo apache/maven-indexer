@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
  */
-public class Nexus687NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus687NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-687");
 
     @Override
@@ -42,7 +42,7 @@ public class Nexus687NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "xstream", SearchType.SCORED);
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));

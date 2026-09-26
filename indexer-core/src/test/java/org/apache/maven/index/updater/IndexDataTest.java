@@ -47,7 +47,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * @author Eugene Kuleshov
  */
-public class IndexDataTest extends AbstractRepoNexusIndexerTest {
+class IndexDataTest extends AbstractRepoNexusIndexerTest {
     private Directory newDir;
 
     @Override
@@ -90,7 +90,7 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
     }
 
     @Test
-    public void testEmptyContext() throws Exception {
+    void emptyContext() throws Exception {
         indexDir = new ByteBuffersDirectory();
 
         context = nexusIndexer.addIndexingContext(
@@ -119,13 +119,13 @@ public class IndexDataTest extends AbstractRepoNexusIndexerTest {
         Date newTimestamp =
                 DefaultIndexUpdater.unpackIndexData(is, 1, newDir, context).getTimestamp();
 
-        assertEquals(null, newTimestamp);
+        assertNull(newTimestamp);
 
         context.replace(newDir);
     }
 
     @Test
-    public void testData() throws Exception {
+    void data() throws Exception {
         IndexReader r1 = context.acquireIndexSearcher().getIndexReader();
 
         Map<String, ArtifactInfo> r1map = readIndex(r1);

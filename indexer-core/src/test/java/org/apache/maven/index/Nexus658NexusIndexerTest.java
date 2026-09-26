@@ -27,9 +27,10 @@ import org.apache.lucene.search.Query;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-13 */
-public class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-658");
 
     @Override
@@ -40,7 +41,7 @@ public class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "org.sonatype.nexus", SearchType.SCORED);
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
@@ -54,7 +55,7 @@ public class Nexus658NexusIndexerTest extends AbstractNexusIndexerTest {
         assertEquals("nexus-webapp", ai1.getArtifactId());
         assertEquals("1.0.0-SNAPSHOT", ai1.getVersion());
         assertEquals("jar", ai1.getPackaging());
-        assertEquals(null, ai1.getClassifier());
+        assertNull(ai1.getClassifier());
         assertEquals(ArtifactAvailability.PRESENT, ai1.getSourcesExists());
         assertEquals("nexus-658", ai1.getRepository());
 

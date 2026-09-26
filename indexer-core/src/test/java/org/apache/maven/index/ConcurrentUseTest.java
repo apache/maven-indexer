@@ -55,7 +55,7 @@ public class ConcurrentUseTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testConcurrency() throws Exception {
+    void concurrency() throws Exception {
         IndexUserThread[] threads = new IndexUserThread[THREAD_COUNT];
 
         ArtifactInfo ai = new ArtifactInfo(

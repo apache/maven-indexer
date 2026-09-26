@@ -26,7 +26,7 @@ import org.apache.maven.index.context.IndexingContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
-public class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest {
+class Nexus1911IncrementalMergedCtxTest extends Nexus1911IncrementalTest {
     IndexingContext member;
 
     Path indexMergedDir;

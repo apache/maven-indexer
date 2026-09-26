@@ -32,9 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 /**
  * UT for {@link Utils}.
  */
-public class UtilsTest {
+class UtilsTest {
     @Test
-    public void loadProperties() throws IOException {
+    void loadProperties() throws Exception {
         Properties properties =
                 Utils.loadProperties(resource("nexus.index.id=central\n".getBytes(StandardCharsets.UTF_8)));
 
@@ -42,7 +42,7 @@ public class UtilsTest {
     }
 
     @Test
-    public void loadPropertiesRejectsOversizedFile() {
+    void loadPropertiesRejectsOversizedFile() {
         assertThrows(IOException.class, () -> Utils.loadProperties(resource(new byte[2 * 1024 * 1024])));
     }
 

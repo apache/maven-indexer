@@ -63,7 +63,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testPlugin() throws Exception {
+    void plugin() throws Exception {
         Query query = new BooleanQuery.Builder()
                 .add(new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin")), Occur.MUST)
                 .add(new PrefixQuery(new Term(ArtifactInfo.GROUP_ID, "org.apache.maven.plugins")), Occur.FILTER)
@@ -100,7 +100,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testPluginPackaging() throws Exception {
+    void pluginPackaging() throws Exception {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
         // repo contains 3 artifacts with packaging "maven-plugin", but one of the is actually an archetype!
@@ -108,7 +108,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testSearchArchetypes() throws Exception {
+    void searchArchetypes() throws Exception {
         Query q = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));
         Collection<ArtifactInfo> r = response.getResults();
@@ -143,7 +143,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testIndexTimestamp() throws Exception {
+    void indexTimestamp() throws Exception {
         final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
         targetDir.toFile().deleteOnExit();
 
@@ -220,7 +220,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testArchetype() throws Exception {
+    void archetype() throws Exception {
         Query query = new BooleanQuery.Builder()
                 .add(new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype")), Occur.MUST)
                 .add(new PrefixQuery(new Term(ArtifactInfo.GROUP_ID, "proptest")), Occur.FILTER)
@@ -234,14 +234,14 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testArchetypePackaging() throws Exception {
+    void archetypePackaging() throws Exception {
         Query query = new TermQuery(new Term(ArtifactInfo.PACKAGING, "maven-archetype"));
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(query));
         assertEquals(4, response.getTotalHits(), response.getResults().toString());
     }
 
     @Test
-    public void testBrokenJar() throws Exception {
+    void brokenJar() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "brokenjar", SearchType.SCORED);
 
         FlatSearchRequest searchRequest = new FlatSearchRequest(q);
@@ -261,7 +261,7 @@ public class DefaultIndexNexusIndexerTest extends MinimalIndexNexusIndexerTest {
     }
 
     @Test
-    public void testMissingPom() throws Exception {
+    void missingPom() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.ARTIFACT_ID, "missingpom", SearchType.SCORED);
 
         FlatSearchRequest searchRequest = new FlatSearchRequest(q);

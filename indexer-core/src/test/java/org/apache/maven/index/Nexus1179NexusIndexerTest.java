@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class Nexus1179NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus1179NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-1179");
 
     @Override
@@ -40,7 +40,7 @@ public class Nexus1179NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testSearchFlat() throws Exception {
+    void searchFlat() throws Exception {
         // Since 4.0 this query become illegal
         // This test only performs search and expects to have all the "problematic" ones found too, to prove
         // they are indexed

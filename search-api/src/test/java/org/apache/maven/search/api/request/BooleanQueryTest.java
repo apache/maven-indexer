@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class BooleanQueryTest {
+class BooleanQueryTest {
     private static Query[] terms(int count) {
         Query[] terms = new Query[count];
         for (int i = 0; i < count; i++) {
@@ -34,27 +34,27 @@ public class BooleanQueryTest {
     }
 
     @Test
-    public void simpleAnd() {
+    void simpleAnd() {
         BooleanQuery query = BooleanQuery.and(Query.query("left"), Query.query("right"));
         assertEquals("left AND right", query.toString());
     }
 
     @Test
-    public void chainAtMaxDepthIsAcceptedAndConsumable() {
+    void chainAtMaxDepthIsAcceptedAndConsumable() {
         BooleanQuery query = BooleanQuery.and(Query.query("left"), terms(BooleanQuery.MAX_DEPTH));
         // recursive consumption of a maximal legal chain must not overflow the stack
         assertNotNull(query.toString());
     }
 
     @Test
-    public void chainBeyondMaxDepthIsRejected() {
+    void chainBeyondMaxDepthIsRejected() {
         assertThrows(
                 IllegalArgumentException.class,
                 () -> BooleanQuery.and(Query.query("left"), terms(BooleanQuery.MAX_DEPTH + 1)));
     }
 
     @Test
-    public void nestedConstructionIsRejectedAtTheLimitToo() {
+    void nestedConstructionIsRejectedAtTheLimitToo() {
         Query deep = BooleanQuery.and(Query.query("left"), terms(BooleanQuery.MAX_DEPTH));
         // one more level on top of a maximal chain must fail, wherever it is nested
         assertThrows(IllegalArgumentException.class, () -> BooleanQuery.and(deep, Query.query("right")));

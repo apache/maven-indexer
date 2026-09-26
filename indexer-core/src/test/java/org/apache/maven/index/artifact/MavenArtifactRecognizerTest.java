@@ -20,49 +20,47 @@ package org.apache.maven.index.artifact;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MavenArtifactRecognizerTest {
+class MavenArtifactRecognizerTest {
 
     @Test
-    public void testIsPom() {
-        assertEquals(true, M2ArtifactRecognizer.isPom("aaa.pom"));
-        assertEquals(true, M2ArtifactRecognizer.isPom("zxc-1-2-3.pom"));
-        assertEquals(false, M2ArtifactRecognizer.isPom("aaa.jar"));
-        assertEquals(false, M2ArtifactRecognizer.isPom("aaa.pom-a"));
+    void isPom() {
+        assertTrue(M2ArtifactRecognizer.isPom("aaa.pom"));
+        assertTrue(M2ArtifactRecognizer.isPom("zxc-1-2-3.pom"));
+        assertFalse(M2ArtifactRecognizer.isPom("aaa.jar"));
+        assertFalse(M2ArtifactRecognizer.isPom("aaa.pom-a"));
     }
 
     @Test
-    public void testIsSnapshot1() {
+    void isSnapshot1() {
         // NEXUS-3148
-        assertEquals(true, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0SNAPSHOT/aid-1.0SNAPSHOT.jar"));
+        assertTrue(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0SNAPSHOT/aid-1.0SNAPSHOT.jar"));
 
-        assertEquals(true, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.jar"));
-        assertEquals(true, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.pom"));
-        assertEquals(true, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.2.3-.pom"));
-        assertEquals(false, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/xsd-SNAPsHOT.jar"));
-        assertEquals(false, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/xsd-SNAPHOT.pom"));
-        assertEquals(false, M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/a/b/c/xsd-1.2.3NAPSHOT.pom"));
-        assertEquals(false, M2ArtifactRecognizer.isSnapshot("/javax/mail/mail/1.4/mail-1.4.jar"));
+        assertTrue(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.jar"));
+        assertTrue(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.0-SNAPSHOT.pom"));
+        assertTrue(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0-SNAPSHOT/aid-1.2.3-.pom"));
+        assertFalse(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/xsd-SNAPsHOT.jar"));
+        assertFalse(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/xsd-SNAPHOT.pom"));
+        assertFalse(M2ArtifactRecognizer.isSnapshot("/org/somewhere/aid/1.0/a/b/c/xsd-1.2.3NAPSHOT.pom"));
+        assertFalse(M2ArtifactRecognizer.isSnapshot("/javax/mail/mail/1.4/mail-1.4.jar"));
     }
 
     @Test
-    public void testIsSnapshot2() {
-        assertEquals(
-                true,
+    void isSnapshot2() {
+        assertTrue(
                 M2ArtifactRecognizer.isSnapshot(
                         "/org/somewhere/appassembler-maven-plugin/1.0-SNAPSHOT/appassembler-maven-plugin-1.0-20060714.142547-1.pom"));
-        assertEquals(
-                false,
-                M2ArtifactRecognizer.isSnapshot(
-                        "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom"));
+        assertFalse(M2ArtifactRecognizer.isSnapshot(
+                "/org/somewhere/appassembler-maven-plugin/1.0/appassembler-maven-plugin-1.0-20060714.142547-1.pom"));
     }
 
     @Test
-    public void testIsMetadata() {
-        assertEquals(true, M2ArtifactRecognizer.isMetadata("maven-metadata.xml"));
-        assertEquals(false, M2ArtifactRecognizer.isMetadata("aven-metadata.xml"));
-        assertEquals(false, M2ArtifactRecognizer.isMetadata("/javax/mail/mail/1.4/mail-1.4.jar"));
+    void isMetadata() {
+        assertTrue(M2ArtifactRecognizer.isMetadata("maven-metadata.xml"));
+        assertFalse(M2ArtifactRecognizer.isMetadata("aven-metadata.xml"));
+        assertFalse(M2ArtifactRecognizer.isMetadata("/javax/mail/mail/1.4/mail-1.4.jar"));
     }
 
     @Test

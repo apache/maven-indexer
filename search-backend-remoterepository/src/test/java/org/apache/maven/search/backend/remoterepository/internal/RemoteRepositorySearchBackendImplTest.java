@@ -118,7 +118,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void smoke(RemoteRepositorySearchBackend backend) throws IOException {
+    void smoke(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         assertThrows(IllegalArgumentException.class, () -> {
             SearchRequest searchRequest = new SearchRequest(Query.query("smoke"));
@@ -130,7 +130,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void notFound404Response(RemoteRepositorySearchBackend backend) throws IOException {
+    void notFound404Response(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAs
         SearchRequest searchRequest =
@@ -142,7 +142,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void g(RemoteRepositorySearchBackend backend) throws IOException {
+    void g(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAs
         SearchRequest searchRequest =
@@ -155,7 +155,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void ga(RemoteRepositorySearchBackend backend) throws IOException {
+    void ga(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAVs
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -169,7 +169,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gav(RemoteRepositorySearchBackend backend) throws IOException {
+    void gav(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAVCEs
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -184,7 +184,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gave(RemoteRepositorySearchBackend backend) throws IOException {
+    void gave(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAVCEs
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -201,7 +201,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavWithTarGz(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavWithTarGz(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // LIST GAVCEs
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -216,7 +216,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavce(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavce(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // EXISTENCE check: total hits != 0 => exists, total hits == 0 => not exists
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -232,7 +232,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavcesha1RightChecksum(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavcesha1RightChecksum(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // validity check: total hits != 0 => valid, total hits == 0 => invalid
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -249,7 +249,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavcesha1WrongChecksum(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavcesha1WrongChecksum(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // validity check: total hits != 0 => valid, total hits == 0 => invalid
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -266,7 +266,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavcesha1WClassifierRightChecksum(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavcesha1WClassifierRightChecksum(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // validity check: total hits != 0 => valid, total hits == 0 => invalid
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -284,7 +284,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void gavcesha1WClassifierWrongChecksum(RemoteRepositorySearchBackend backend) throws IOException {
+    void gavcesha1WClassifierWrongChecksum(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         // validity check: total hits != 0 => valid, total hits == 0 => invalid
         SearchRequest searchRequest = new SearchRequest(BooleanQuery.and(
@@ -302,7 +302,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void sha1(RemoteRepositorySearchBackend backend) throws IOException {
+    void sha1(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         assertThrows(IllegalArgumentException.class, () -> {
             SearchRequest searchRequest =
@@ -315,7 +315,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void cn(RemoteRepositorySearchBackend backend) throws IOException {
+    void cn(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         assertThrows(IllegalArgumentException.class, () -> {
             SearchRequest searchRequest =
@@ -328,7 +328,7 @@ public class RemoteRepositorySearchBackendImplTest {
 
     @MethodSource("data")
     @ParameterizedTest
-    public void fqcn(RemoteRepositorySearchBackend backend) throws IOException {
+    void fqcn(RemoteRepositorySearchBackend backend) throws Exception {
         initRemoteRepositorySearchBackendImplTest(backend);
         assertThrows(IllegalArgumentException.class, () -> {
             SearchRequest searchRequest = new SearchRequest(

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
+class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
 
     protected Path repo = getTestPath("src/test/nexus-13");
@@ -82,7 +82,7 @@ public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     }
 
     @Test
-    public void testIndexAndDelete() throws Exception {
+    void indexAndDelete() throws Exception {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         final IndexSearcher otherIndexSearcher = otherContext.acquireIndexSearcher();
 

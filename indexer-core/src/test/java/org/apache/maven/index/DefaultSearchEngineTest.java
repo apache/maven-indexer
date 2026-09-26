@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
+class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
 
     private static class CountingIndexingContext extends DefaultIndexingContext {
         public int count;
@@ -114,7 +114,7 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testExceptionInArtifactFilter() throws Exception {
+    void exceptionInArtifactFilter() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT);
         IteratorSearchRequest request = new IteratorSearchRequest(q);
         request.setArtifactInfoFilter((ctx, ai) -> {

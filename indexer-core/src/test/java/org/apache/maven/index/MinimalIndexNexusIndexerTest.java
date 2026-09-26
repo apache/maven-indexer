@@ -40,7 +40,7 @@ public class MinimalIndexNexusIndexerTest extends AbstractRepoNexusIndexerTest {
     }
 
     @Test
-    public void testNEXUS2712() throws Exception {
+    void nexus2712() throws Exception {
         Query q = nexusIndexer.constructQuery(MAVEN.GROUP_ID, "com.adobe.flexunit", SearchType.EXACT); // WAS SCORED
 
         FlatSearchResponse response = nexusIndexer.searchFlat(new FlatSearchRequest(q));

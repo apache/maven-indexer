@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
-public class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {
+class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/nexus-3233");
 
     @Override
@@ -38,7 +38,7 @@ public class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testIdentifyPomPackagingArtifacts() throws Exception {
+    void identifyPomPackagingArtifacts() throws Exception {
         // POM1
         Collection<ArtifactInfo> ais = nexusIndexer.identify(MAVEN.SHA1, "741ea3998e6db3ce202d8b88aa53889543f050cc");
 

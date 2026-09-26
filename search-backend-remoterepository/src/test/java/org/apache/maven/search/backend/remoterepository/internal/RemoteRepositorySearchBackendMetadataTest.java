@@ -39,10 +39,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Offline UT for listing versions from {@code maven-metadata.xml}.
  */
-public class RemoteRepositorySearchBackendMetadataTest {
+class RemoteRepositorySearchBackendMetadataTest {
 
     @Test
-    void versionsAreFilteredLikeOtherNames() throws IOException {
+    void versionsAreFilteredLikeOtherNames() throws Exception {
         String metadata = "<metadata><groupId>org.example</groupId><artifactId>example</artifactId><versioning>"
                 + "<versions><version>1.0</version><version></version><version>..</version><version>2.0</version>"
                 + "</versions></versioning></metadata>";

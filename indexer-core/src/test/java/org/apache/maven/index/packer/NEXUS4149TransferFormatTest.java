@@ -19,7 +19,6 @@
 package org.apache.maven.index.packer;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -42,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
+class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
     protected Path reposBase = getTestPath("src/test/nexus-4149");
 
     protected Path idxsBase = getTestPath("target/index/nexus-4149");
@@ -121,12 +120,12 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
 
     @Override
     @Test
-    public void testDirectory() throws IOException {
+    protected void directory() throws Exception {
         // we use no directory
     }
 
     @Test
-    public void testMembersAndMergedRootGroups() throws Exception {
+    void membersAndMergedRootGroups() throws Exception {
         MergedIndexingContext mctx = (MergedIndexingContext) context;
 
         for (IndexingContext member : mctx.getMembers()) {
@@ -141,7 +140,7 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testTransportFile() throws Exception {
+    void transportFile() throws Exception {
         Path packTargetDir = getTestPath("target/nexus-4149/packed");
 
         IndexPacker packer = lookup(IndexPacker.class);

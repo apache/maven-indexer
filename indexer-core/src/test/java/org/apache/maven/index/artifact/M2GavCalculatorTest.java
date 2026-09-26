@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class M2GavCalculatorTest {
+class M2GavCalculatorTest {
     private M2GavCalculator gavCalculator = new M2GavCalculator();
 
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd.HHmmss");
@@ -43,7 +43,7 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testGav() throws Exception {
+    void gav() throws Exception {
         Gav gav;
         String path;
 
@@ -58,9 +58,9 @@ public class M2GavCalculatorTest {
         assertEquals(Integer.valueOf(25), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20070504.160758"), gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0RC1-20070504.160758-25-javadoc.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-25-javadoc.jar", path);
@@ -72,13 +72,13 @@ public class M2GavCalculatorTest {
         assertEquals("jaxws-local-transport", gav.getArtifactId());
         assertEquals("2.1.3", gav.getVersion());
         assertEquals("2.1.3", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jaxws-local-transport-2.1.3.pom.md5", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertFalse(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.md5, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -90,14 +90,14 @@ public class M2GavCalculatorTest {
         assertEquals("jruby", gav.getArtifactId());
         assertEquals("1.0RC1-20070504.160758-2", gav.getVersion());
         assertEquals("1.0RC1-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
         assertEquals(Integer.valueOf(2), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20070504.160758"), gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0RC1-20070504.160758-2.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-2.jar", path);
@@ -108,13 +108,13 @@ public class M2GavCalculatorTest {
         assertEquals("jruby", gav.getArtifactId());
         assertEquals("1.0RC1-20070504.160758-2", gav.getVersion());
         assertEquals("1.0RC1-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
         assertEquals(Integer.valueOf(2), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20070504.160758"), gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0RC1-20070504.160758-2.jar.md5", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertTrue(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.md5, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -126,14 +126,14 @@ public class M2GavCalculatorTest {
         assertEquals("jruby", gav.getArtifactId());
         assertEquals("1.0RC1-20070504.160758-2", gav.getVersion());
         assertEquals("1.0RC1-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
         assertEquals(Integer.valueOf(2), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20070504.160758"), gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0RC1-20070504.160758-2.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-2.jar", path);
@@ -149,9 +149,9 @@ public class M2GavCalculatorTest {
         assertEquals(Integer.valueOf(2), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20070504.160758"), gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0RC1-20070504.160758-2-sources.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0RC1-SNAPSHOT/jruby-1.0RC1-20070504.160758-2-sources.jar", path);
@@ -163,13 +163,13 @@ public class M2GavCalculatorTest {
         assertEquals("dsms-intervention-service", gav.getArtifactId());
         assertEquals("2.4.2-64-SNAPSHOT", gav.getVersion());
         assertEquals("2.4.2-64-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("dsms-intervention-service-2.4.2-64-SNAPSHOT.jar.sha1", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertTrue(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha1, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -186,11 +186,11 @@ public class M2GavCalculatorTest {
         assertEquals("2.4.2-64-SNAPSHOT", gav.getBaseVersion());
         assertEquals("javadoc", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("dsms-intervention-service-2.4.2-64-SNAPSHOT-javadoc.jar.sha1", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertTrue(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha1, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -205,14 +205,14 @@ public class M2GavCalculatorTest {
         assertEquals("dsms-intervention-service", gav.getArtifactId());
         assertEquals("2.4.2-64-SNAPSHOT", gav.getVersion());
         assertEquals("2.4.2-64-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("dsms-intervention-service-2.4.2-64-SNAPSHOT.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals(
@@ -227,12 +227,12 @@ public class M2GavCalculatorTest {
         assertEquals("1.0", gav.getBaseVersion());
         assertEquals("javadoc", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0-javadoc.jar", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertFalse(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0/jruby-1.0-javadoc.jar", path);
@@ -245,11 +245,11 @@ public class M2GavCalculatorTest {
         assertEquals("1.0", gav.getBaseVersion());
         assertEquals("javadoc", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0-javadoc.jar.sha1", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertFalse(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha1, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -261,14 +261,14 @@ public class M2GavCalculatorTest {
         assertEquals("jruby", gav.getArtifactId());
         assertEquals("1.0", gav.getVersion());
         assertEquals("1.0", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0.jar", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertFalse(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/jruby/jruby/1.0/jruby-1.0.jar", path);
@@ -279,51 +279,51 @@ public class M2GavCalculatorTest {
         assertEquals("activemq-core", gav.getArtifactId());
         assertEquals("1.2", gav.getVersion());
         assertEquals("1.2", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("activemq-core-1.2.pom", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertFalse(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/activemq/activemq-core/1.2/activemq-core-1.2.pom", path);
 
         gav = gavCalculator.pathToGav("/org/jruby/jruby/1.0/maven-metadata.xml");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/org/jruby/jruby/1.0-SNAPSHOT/maven-metadata.xml");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/junit/junit/3.8/junit-3.8.jar");
         assertEquals("junit", gav.getGroupId());
         assertEquals("junit", gav.getArtifactId());
         assertEquals("3.8", gav.getVersion());
         assertEquals("3.8", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("junit-3.8.jar", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertFalse(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         gav = gavCalculator.pathToGav("/foo1/foo1/0.0.1-SNAPSHOT/foo1-0.0.1-SNAPSHOT.pom");
         assertEquals("foo1", gav.getGroupId());
         assertEquals("foo1", gav.getArtifactId());
         assertEquals("0.0.1-SNAPSHOT", gav.getVersion());
         assertEquals("0.0.1-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("foo1-0.0.1-SNAPSHOT.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo1/foo1/0.0.1-SNAPSHOT/foo1-0.0.1-SNAPSHOT.pom", path);
@@ -334,14 +334,14 @@ public class M2GavCalculatorTest {
         assertEquals("foo1", gav.getArtifactId());
         assertEquals("0.0.1SNAPSHOT", gav.getVersion());
         assertEquals("0.0.1SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("foo1-0.0.1SNAPSHOT.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo1/foo1/0.0.1SNAPSHOT/foo1-0.0.1SNAPSHOT.pom", path);
@@ -351,14 +351,14 @@ public class M2GavCalculatorTest {
         assertEquals("foo1", gav.getArtifactId());
         assertEquals("0.0.1.SNAPSHOT", gav.getVersion());
         assertEquals("0.0.1.SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("foo1-0.0.1.SNAPSHOT.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo1/foo1/0.0.1.SNAPSHOT/foo1-0.0.1.SNAPSHOT.pom", path);
@@ -372,12 +372,12 @@ public class M2GavCalculatorTest {
         assertEquals("0.0.1-SNAPSHOT", gav.getBaseVersion());
         assertEquals("jdk14", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("foo1-0.0.1-SNAPSHOT-jdk14.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo1/foo1/0.0.1-SNAPSHOT/foo1-0.0.1-SNAPSHOT-jdk14.jar", path);
@@ -387,14 +387,14 @@ public class M2GavCalculatorTest {
         assertEquals("foo1", gav.getArtifactId());
         assertEquals("1.0.0-beta-4-20080623.175436-1", gav.getVersion());
         assertEquals("1.0.0-beta-4-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
         assertEquals(Integer.valueOf(1), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080623.175436"), gav.getSnapshotTimeStamp());
         assertEquals("foo1-1.0.0-beta-4-20080623.175436-1.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo1/foo1/1.0.0-beta-4-SNAPSHOT/foo1-1.0.0-beta-4-20080623.175436-1.jar", path);
@@ -405,14 +405,14 @@ public class M2GavCalculatorTest {
         assertEquals("nexus-webapp", gav.getArtifactId());
         assertEquals("1.0.0-beta-4-20080623.203653-349", gav.getVersion());
         assertEquals("1.0.0-beta-4-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
         assertEquals(Integer.valueOf(349), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080623.203653"), gav.getSnapshotTimeStamp());
         assertEquals("nexus-webapp-1.0.0-beta-4-20080623.203653-349.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals(
@@ -425,15 +425,15 @@ public class M2GavCalculatorTest {
         assertEquals("maven-artifact", gav.getArtifactId());
         assertEquals("3.0-20080411.005221-75", gav.getVersion());
         assertEquals("3.0-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
         assertEquals(Integer.valueOf(75), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080411.005221"), gav.getSnapshotTimeStamp());
         assertEquals("maven-artifact-3.0-20080411.005221-75.pom.asc", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
-        assertEquals(true, gav.isSignature());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
+        assertTrue(gav.isSignature());
         assertEquals(Gav.SignatureType.gpg, gav.getSignatureType());
 
         path = gavCalculator.gavToPath(gav);
@@ -447,15 +447,15 @@ public class M2GavCalculatorTest {
         assertEquals("maven-artifact", gav.getArtifactId());
         assertEquals("3.0-20080411.005221-75", gav.getVersion());
         assertEquals("3.0-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
         assertEquals(Integer.valueOf(75), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080411.005221"), gav.getSnapshotTimeStamp());
         assertEquals("maven-artifact-3.0-20080411.005221-75.pom.asc.sha1", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertTrue(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha1, gav.getHashType());
-        assertEquals(true, gav.isSignature());
+        assertTrue(gav.isSignature());
         assertEquals(Gav.SignatureType.gpg, gav.getSignatureType());
 
         path = gavCalculator.gavToPath(gav);
@@ -474,10 +474,10 @@ public class M2GavCalculatorTest {
         assertEquals(Integer.valueOf(6), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080302.032223"), gav.getSnapshotTimeStamp());
         assertEquals("maven-core-2.0.9-20080302.032223-6-bin.zip.sha1", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertTrue(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha1, gav.getHashType());
-        assertEquals(false, gav.isSignature());
+        assertFalse(gav.isSignature());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals(
@@ -494,10 +494,10 @@ public class M2GavCalculatorTest {
         assertEquals(Integer.valueOf(6), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080302.032223"), gav.getSnapshotTimeStamp());
         assertEquals("maven-core-2.0.9-20080302.032223-6-bin.tar.gz", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
-        assertEquals(false, gav.isSignature());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
+        assertFalse(gav.isSignature());
 
         gav = gavCalculator.pathToGav("/org/sonatype/nexus/nexus-webapp/1.4.0/nexus-webapp-1.4.0-bundle.tar.gz");
         assertEquals("org.sonatype.nexus", gav.getGroupId());
@@ -506,13 +506,13 @@ public class M2GavCalculatorTest {
         assertEquals("1.4.0", gav.getBaseVersion());
         assertEquals("bundle", gav.getClassifier());
         assertEquals("tar.gz", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("nexus-webapp-1.4.0-bundle.tar.gz", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
-        assertEquals(false, gav.isSignature());
+        assertFalse(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
+        assertFalse(gav.isSignature());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/org/sonatype/nexus/nexus-webapp/1.4.0/nexus-webapp-1.4.0-bundle.tar.gz", path);
@@ -522,14 +522,14 @@ public class M2GavCalculatorTest {
         assertEquals("artifact", gav.getArtifactId());
         assertEquals("SNAPSHOT", gav.getVersion());
         assertEquals("SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("artifact-SNAPSHOT.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo/artifact/SNAPSHOT/artifact-SNAPSHOT.jar", path);
@@ -539,14 +539,14 @@ public class M2GavCalculatorTest {
         assertEquals("artifact", gav.getArtifactId());
         assertEquals("20080623.175436-1", gav.getVersion());
         assertEquals("SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("jar", gav.getExtension());
         assertEquals(Integer.valueOf(1), gav.getSnapshotBuildNumber());
         assertEquals(parseTimestamp("20080623.175436"), gav.getSnapshotTimeStamp());
         assertEquals("artifact-20080623.175436-1.jar", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/foo/artifact/SNAPSHOT/artifact-20080623.175436-1.jar", path);
@@ -559,11 +559,11 @@ public class M2GavCalculatorTest {
         assertEquals("1.0", gav.getBaseVersion());
         assertEquals("javadoc", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0-javadoc.jar.sha256", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertFalse(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha256, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -576,11 +576,11 @@ public class M2GavCalculatorTest {
         assertEquals("1.0", gav.getBaseVersion());
         assertEquals("javadoc", gav.getClassifier());
         assertEquals("jar", gav.getExtension());
-        assertEquals(null, gav.getSnapshotBuildNumber());
-        assertEquals(null, gav.getSnapshotTimeStamp());
+        assertNull(gav.getSnapshotBuildNumber());
+        assertNull(gav.getSnapshotTimeStamp());
         assertEquals("jruby-1.0-javadoc.jar.sha512", gav.getName());
-        assertEquals(false, gav.isSnapshot());
-        assertEquals(true, gav.isHash());
+        assertFalse(gav.isSnapshot());
+        assertTrue(gav.isHash());
         assertEquals(Gav.HashType.sha512, gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
@@ -591,12 +591,12 @@ public class M2GavCalculatorTest {
         assertEquals("hintmod", gav.getArtifactId());
         assertEquals("1.0-SNAPSHOT", gav.getVersion());
         assertEquals("1.0-SNAPSHOT", gav.getBaseVersion());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
         assertEquals("hintmod-1.0-SNAPSHOT.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         path = gavCalculator.gavToPath(gav);
         assertEquals("/dev/mbien/hintmod/1.0-SNAPSHOT/hintmod-1.0-SNAPSHOT.pom", path);
@@ -613,7 +613,7 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testNegGav() throws Exception {
+    void negGav() throws Exception {
         Gav gav;
 
         // NEXUS-4132
@@ -624,48 +624,48 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testGavExtreme() throws Exception {
+    void gavExtreme() throws Exception {
         Gav gav;
 
         gav = gavCalculator.pathToGav("/");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/some/stupid/path");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/some/stupid/path/more/in/it");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/something/that/looks/");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/something/that/looks/like-an-artifact.blah");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("/something/that/looks/like-an-artifact.pom");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("org/apache/maven/scm/maven-scm");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         gav = gavCalculator.pathToGav("org/apache/geronimo/javamail/geronimo-javamail_1.4_mail");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         // this is metadata, will return null
         gav = gavCalculator.pathToGav("/something/that/looks/maven-metadata.xml");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         // this is metadata, will return null
         gav = gavCalculator.pathToGav("/something/that/looks/like-SNAPSHOT/maven-metadata.xml");
-        assertEquals(null, gav);
+        assertNull(gav);
 
         // this is metadata, will return null
         gav = gavCalculator.pathToGav("/org/codehaus/plexus/plexus-container-default/maven-metadata.xml");
-        assertEquals(null, gav);
+        assertNull(gav);
     }
 
     @Test
-    public void testIssueNexus57() throws Exception {
+    void issueNexus57() throws Exception {
         // broken path, baseVersion and version mismatch (2.0-SNAPSHOT vs 2.0-alpha-1...)
         Gav gav = gavCalculator.pathToGav(
                 "/org/apache/maven/plugins/maven-dependency-plugin/2.0-SNAPSHOT/maven-dependency-plugin-2.0-alpha-1-20070109.165112-13.jar");
@@ -674,13 +674,13 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testGavExtensionAndClassifier() throws Exception {
+    void gavExtensionAndClassifier() throws Exception {
         Gav gav;
 
         gav = gavCalculator.pathToGav("/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5/nexus-webapp-1.0.0-beta-5.tar.gz");
         assertNotNull(gav);
         assertEquals("tar.gz", gav.getExtension());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("1.0.0-beta-5", gav.getVersion());
 
         gav = gavCalculator.pathToGav(
@@ -734,14 +734,14 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testGavSnapshotVersion() throws Exception {
+    void gavSnapshotVersion() throws Exception {
         Gav gav;
 
         gav = gavCalculator.pathToGav(
                 "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT/nexus-webapp-1.0.0-beta-5-SNAPSHOT.tar.gz");
         assertNotNull(gav);
         assertEquals("tar.gz", gav.getExtension());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("1.0.0-beta-5-SNAPSHOT", gav.getVersion());
         assertTrue(gav.isSnapshot());
 
@@ -749,7 +749,7 @@ public class M2GavCalculatorTest {
                 "/org/sonatype/nexus/nexus-webapp/1.0.0-beta-5-SNAPSHOT-1234/nexus-webapp-1.0.0-beta-5-SNAPSHOT-1234.tar.gz");
         assertNotNull(gav);
         assertEquals("tar.gz", gav.getExtension());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("1.0.0-beta-5-SNAPSHOT-1234", gav.getVersion());
         assertFalse(gav.isSnapshot());
 
@@ -771,7 +771,7 @@ public class M2GavCalculatorTest {
     }
 
     @Test
-    public void testGavLooseStrictedSnapshot() throws Exception {
+    void gavLooseStrictedSnapshot() throws Exception {
         Gav gav;
 
         gav = gavCalculator.pathToGav("/org/sonatype/nexus-3148/1.0.SNAPSHOT/nexus-3148-1.0.20100111.064938-1.pom");
@@ -781,16 +781,16 @@ public class M2GavCalculatorTest {
         assertEquals("1.0.SNAPSHOT", gav.getBaseVersion());
         assertEquals("org.sonatype", gav.getGroupId());
         assertEquals("nexus-3148", gav.getArtifactId());
-        assertEquals(null, gav.getClassifier());
+        assertNull(gav.getClassifier());
         assertEquals("pom", gav.getExtension());
         assertEquals(Integer.valueOf(1), gav.getSnapshotBuildNumber());
         // the timestamp is UTC, not EST timezoned!
         // also, the Gav is it seems TZ sensitive!!!
         assertEquals(parseTimestamp("20100111.064938"), gav.getSnapshotTimeStamp());
         assertEquals("nexus-3148-1.0.20100111.064938-1.pom", gav.getName());
-        assertEquals(true, gav.isSnapshot());
-        assertEquals(false, gav.isHash());
-        assertEquals(null, gav.getHashType());
+        assertTrue(gav.isSnapshot());
+        assertFalse(gav.isHash());
+        assertNull(gav.getHashType());
 
         String path = gavCalculator.gavToPath(gav);
         assertEquals("/org/sonatype/nexus-3148/1.0.SNAPSHOT/nexus-3148-1.0.20100111.064938-1.pom", path);

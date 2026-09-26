@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class IndexUtilsTest {
 
     @Test
-    void copyDirectoryWithPropertiesFiles() throws IOException {
+    void copyDirectoryWithPropertiesFiles() throws Exception {
         try (Directory source = new ByteBuffersDirectory();
                 Directory target = new ByteBuffersDirectory()) {
             write(source, IndexingContext.INDEX_PACKER_PROPERTIES_FILE, 1);
@@ -51,7 +51,7 @@ class IndexUtilsTest {
     }
 
     @Test
-    void copyDirectoryReplacesExistingPropertiesFiles() throws IOException {
+    void copyDirectoryReplacesExistingPropertiesFiles() throws Exception {
         try (Directory source = new ByteBuffersDirectory();
                 Directory target = new ByteBuffersDirectory()) {
             write(source, IndexingContext.INDEX_PACKER_PROPERTIES_FILE, 1);

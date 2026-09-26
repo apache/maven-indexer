@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SubPathReindexTest extends AbstractNexusIndexerTest {
+class SubPathReindexTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     @Override
@@ -39,7 +39,7 @@ public class SubPathReindexTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testRootGroups() throws Exception {
+    void rootGroups() throws Exception {
         Set<String> rootGroups = context.getRootGroups();
         assertEquals(1, rootGroups.size(), rootGroups.toString());
 
@@ -75,7 +75,7 @@ public class SubPathReindexTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testIdentify() throws Exception {
+    void identify() throws Exception {
         Collection<ArtifactInfo> ais;
         Path artifact;
 

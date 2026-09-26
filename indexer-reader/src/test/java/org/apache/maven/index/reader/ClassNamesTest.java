@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 /**
  * Class names are stored by indexer-core JarFileContentsIndexCreator in field "c", one class name per line.
  */
-public class ClassNamesTest {
+class ClassNamesTest {
     private static final String[] CLASS_NAMES = {
         "/com/thoughtworks/qdox/ant/AbstractQdoxTask", "/com/thoughtworks/qdox/directorywalker/DirectoryScanner"
     };
@@ -43,7 +43,7 @@ public class ClassNamesTest {
     }
 
     @Test
-    public void expandIndexerCoreClassNames() {
+    void expandIndexerCoreClassNames() {
         Map<String, String> raw = artifact();
         // as written by indexer-core, including the trailing newline
         raw.put("c", String.join("\n", CLASS_NAMES) + "\n");
@@ -54,7 +54,7 @@ public class ClassNamesTest {
     }
 
     @Test
-    public void expandLegacyClassNames() {
+    void expandLegacyClassNames() {
         Map<String, String> raw = artifact();
         raw.put("classnames", String.join("|", CLASS_NAMES));
 
@@ -64,7 +64,7 @@ public class ClassNamesTest {
     }
 
     @Test
-    public void compactWritesIndexerCoreFormat() {
+    void compactWritesIndexerCoreFormat() {
         Map<String, String> raw = artifact();
         raw.put("c", String.join("\n", CLASS_NAMES));
 

@@ -23,9 +23,9 @@ import org.eclipse.sisu.launch.Main;
 import org.eclipse.sisu.space.BeanScanning;
 import org.junit.jupiter.api.Test;
 
-public class BasicUsageExampleTest {
+class BasicUsageExampleTest {
     @Test
-    public void testApp() throws Exception {
+    void app() throws Exception {
         final com.google.inject.Module app = Main.wire(BeanScanning.INDEX);
         Guice.createInjector(app).getInstance(BasicUsageExample.class).perform();
     }

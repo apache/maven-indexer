@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
+class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("target/repo/mindexer14");
 
     @Override
@@ -55,7 +55,7 @@ public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testFlatSearchTotalHitsLie1k() throws Exception {
+    void flatSearchTotalHitsLie1k() throws Exception {
         createDummyAis("org.test", "mindexer14", 1010);
 
         Query query = nexusIndexer.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression("org.test"));
@@ -70,7 +70,7 @@ public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testFlatSearchUnlimited() throws Exception {
+    void flatSearchUnlimited() throws Exception {
         createDummyAis("org.test", "mindexer14", 1010);
 
         Query query = nexusIndexer.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression("org.test"));
@@ -87,7 +87,7 @@ public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testFlatSearchLimited() throws Exception {
+    void flatSearchLimited() throws Exception {
         createDummyAis("org.test", "mindexer14", 1010);
 
         Query query = nexusIndexer.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression("org.test"));
@@ -105,7 +105,7 @@ public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testGroupedSearchTotalHitsLie1k() throws Exception {
+    void groupedSearchTotalHitsLie1k() throws Exception {
         createDummyAis("org.test", "mindexer14", 1010);
 
         Query query = nexusIndexer.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression("org.test"));
@@ -124,7 +124,7 @@ public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
     }
 
     @Test
-    public void testIteratorSearchTotalHitsLie1k() throws Exception {
+    void iteratorSearchTotalHitsLie1k() throws Exception {
         createDummyAis("org.test", "mindexer14", 1010);
 
         Query query = nexusIndexer.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression("org.test"));
