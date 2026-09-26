@@ -70,6 +70,11 @@ import org.slf4j.LoggerFactory;
 public class IndexDataReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(IndexDataReader.class);
 
+    /**
+     * The longest field value accepted, in bytes of its modified UTF-8 encoding.
+     */
+    private static final int MAX_VALUE_LENGTH = 64 * 1024 * 1024;
+
     private final DataInputStream dis;
     private final Path tempStorage;
     private final DocumentFilter filter;
@@ -334,10 +339,8 @@ public class IndexDataReader {
     }
 
     public Document readDocument() throws IOException {
-        int fieldCount;
-        try {
-            fieldCount = dis.readInt();
-        } catch (EOFException ex) {
+        int fieldCount = readFieldCount(dis);
+        if (fieldCount < 0) {
             return null; // no more documents
         }
 
@@ -384,8 +387,28 @@ public class IndexDataReader {
         return new Field(name, value, fieldType);
     }
 
+    /**
+     * Returns the field count of the next document, or -1 at the end of the stream. Unlike catching the
+     * {@link EOFException} of {@link DataInputStream#readInt()}, this tells a stream that ends between two
+     * documents from one that ends early: {@link java.util.zip.GZIPInputStream} reports the latter by throwing.
+     */
+    static int readFieldCount(DataInputStream in) throws IOException {
+        int first = in.read();
+        if (first == -1) {
+            return -1;
+        }
+        int fieldCount = first << 24 | in.readUnsignedByte() << 16 | in.readUnsignedByte() << 8 | in.readUnsignedByte();
+        if (fieldCount < 0) {
+            throw new IOException("Index data content is inappropriate (is junk?), field count " + fieldCount);
+        }
+        return fieldCount;
+    }
+
     private static String readUTF(DataInput in) throws IOException {
         int utflen = in.readInt();
+        if (utflen < 0 || utflen > MAX_VALUE_LENGTH) {
+            throw new IOException("Index data content is inappropriate (is junk?), value length " + utflen);
+        }
 
         byte[] bytearr;
         char[] chararr;
