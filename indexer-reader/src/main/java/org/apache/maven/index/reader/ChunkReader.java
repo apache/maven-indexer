@@ -21,7 +21,6 @@ package org.apache.maven.index.reader;
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UTFDataFormatException;
@@ -40,6 +39,11 @@ import java.util.zip.GZIPInputStream;
  * @since 5.1.2
  */
 public class ChunkReader implements Closeable, Iterable<Map<String, String>> {
+    /**
+     * The longest field value accepted, in bytes of its modified UTF-8 encoding.
+     */
+    private static final int MAX_VALUE_LENGTH = 64 * 1024 * 1024;
+
     private final String chunkName;
 
     private final DataInputStream dataInputStream;
@@ -141,12 +145,18 @@ public class ChunkReader implements Closeable, Iterable<Map<String, String>> {
     /**
      * Reads and returns next record from the underlying stream, or {@code null} if no more records.
      */
-    private static Map<String, String> readRecord(final DataInput dataInput) throws IOException {
-        int fieldCount;
-        try {
-            fieldCount = dataInput.readInt();
-        } catch (EOFException ex) {
+    private static Map<String, String> readRecord(final DataInputStream dataInput) throws IOException {
+        // a stream ending between two records is the end; one ending early throws from GZIPInputStream
+        int first = dataInput.read();
+        if (first == -1) {
             return null; // no more documents
+        }
+        int fieldCount = first << 24
+                | dataInput.readUnsignedByte() << 16
+                | dataInput.readUnsignedByte() << 8
+                | dataInput.readUnsignedByte();
+        if (fieldCount < 0) {
+            throw new IOException("Index data content is corrupt, field count " + fieldCount);
         }
 
         Map<String, String> recordMap = new HashMap<>();
@@ -165,6 +175,9 @@ public class ChunkReader implements Closeable, Iterable<Map<String, String>> {
 
     private static String readUTF(final DataInput dataInput) throws IOException {
         int utflen = dataInput.readInt();
+        if (utflen < 0 || utflen > MAX_VALUE_LENGTH) {
+            throw new IOException("Index data content is corrupt, value length " + utflen);
+        }
 
         byte[] bytearr;
         char[] chararr;
