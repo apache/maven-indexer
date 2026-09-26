@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,10 +35,10 @@ import com.google.inject.Guice;
 import com.google.inject.Module;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.maven.index.ArtifactContext;
@@ -347,14 +348,21 @@ public class NexusIndexerCli {
         return cleanArgs;
     }
 
-    // org.apache.commons.cli.help.HelpFormatter renders a different layout, and the usage line is matched by callers
-    @SuppressWarnings("deprecation")
     private void displayHelp() {
         System.out.println();
 
-        HelpFormatter formatter = new HelpFormatter();
+        HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
+        formatter.setSyntaxPrefix("usage:");
 
-        formatter.printHelp("nexus-indexer [options]", "\nOptions:", options, "\n");
+        // the table lists options in the order they were added
+        List<Option> sorted = new ArrayList<>(options.getOptions());
+        sorted.sort(HelpFormatter.DEFAULT_COMPARATOR);
+
+        try {
+            formatter.printHelp("nexus-indexer [options]", null, sorted, null, false);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     private void showVersion() {
