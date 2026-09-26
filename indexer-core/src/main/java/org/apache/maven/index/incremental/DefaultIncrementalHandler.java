@@ -251,24 +251,38 @@ public class DefaultIncrementalHandler implements IncrementalHandler {
             return false;
         }
 
-        int currentLocalCounter = Integer.parseInt(counterProp);
+        int currentLocalCounter;
+        int remoteCounter;
+        try {
+            currentLocalCounter = Integer.parseInt(counterProp);
+            remoteCounter = Integer.parseInt(remoteProps.getProperty(IndexingContext.INDEX_CHUNK_COUNTER));
+        } catch (NumberFormatException e) {
+            return false;
+        }
 
-        // check remote props for existence of next chunk after local
-        // if we find it, then we are ok to retrieve the rest of the chunks
+        Set<String> enlisted = new HashSet<>();
         for (Object key : remoteProps.keySet()) {
             String sKey = (String) key;
 
             if (sKey.startsWith(IndexingContext.INDEX_CHUNK_PREFIX)) {
-                String value = remoteProps.getProperty(sKey);
-
-                // If we have the current counter, or the next counter, we are good to go
-                if (Integer.toString(currentLocalCounter).equals(value)
-                        || Integer.toString(currentLocalCounter + 1).equals(value)) {
-                    return true;
-                }
+                enlisted.add(remoteProps.getProperty(sKey));
             }
         }
 
-        return false;
+        // If we have the current counter, or the next counter, and every chunk up to the remote counter is
+        // enlisted, we are good to go
+        if (!enlisted.contains(Integer.toString(currentLocalCounter))
+                && !enlisted.contains(Integer.toString(currentLocalCounter + 1))) {
+            return false;
+        }
+        if (remoteCounter < currentLocalCounter || remoteCounter - currentLocalCounter > enlisted.size()) {
+            return false;
+        }
+        for (int counter = currentLocalCounter + 1; counter <= remoteCounter; counter++) {
+            if (!enlisted.contains(Integer.toString(counter))) {
+                return false;
+            }
+        }
+        return true;
     }
 }

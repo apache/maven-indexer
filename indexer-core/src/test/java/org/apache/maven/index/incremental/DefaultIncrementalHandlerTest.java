@@ -154,4 +154,47 @@ public class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
         assertNull(filenames);
     }
+
+    @Test
+    public void testRemoteUpdatesEnlistedChunks() throws Exception {
+        List<String> filenames = handler.loadRemoteIncrementalUpdates(
+                remoteUpdatesRequest(), chunkProperties(3), chunkProperties(5, 4, 5));
+
+        assertEquals(List.of("nexus-maven-repository-index.4.gz", "nexus-maven-repository-index.5.gz"), filenames);
+    }
+
+    @Test
+    public void testRemoteUpdatesNotAllChunksEnlisted() throws Exception {
+        List<String> filenames = handler.loadRemoteIncrementalUpdates(
+                remoteUpdatesRequest(), chunkProperties(3), chunkProperties(7, 4, 5));
+
+        assertNull(filenames);
+    }
+
+    private IndexUpdateRequest remoteUpdatesRequest() {
+        // chunks are only listed, never fetched
+        return new IndexUpdateRequest(context, new ResourceFetcher() {
+            public InputStream retrieve(String name) {
+                throw new UnsupportedOperationException(name);
+            }
+
+            public void retrieve(String name, File targetFile) {
+                throw new UnsupportedOperationException(name);
+            }
+
+            public void disconnect() {}
+
+            public void connect(String id, String url) {}
+        });
+    }
+
+    private static Properties chunkProperties(int counter, int... enlisted) {
+        Properties properties = new Properties();
+        properties.setProperty(IndexingContext.INDEX_CHAIN_ID, "chain");
+        properties.setProperty(IndexingContext.INDEX_CHUNK_COUNTER, Integer.toString(counter));
+        for (int i = 0; i < enlisted.length; i++) {
+            properties.setProperty(IndexingContext.INDEX_CHUNK_PREFIX + i, Integer.toString(enlisted[i]));
+        }
+        return properties;
+    }
 }

@@ -25,9 +25,11 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.maven.index.reader.ResourceHandler.Resource;
@@ -209,18 +211,30 @@ public class IndexReader implements Iterable<ChunkReader>, Closeable {
         try {
             int localLastIncremental =
                     Integer.parseInt(localIndexProperties.getProperty("nexus.index.last-incremental"));
-            String currentLocalCounter = String.valueOf(localLastIncremental);
-            String nextLocalCounter = String.valueOf(localLastIncremental + 1);
-            // check remote props for existence of current or next chunk after local
+            int remoteLastIncremental =
+                    Integer.parseInt(remoteIndexProperties.getProperty("nexus.index.last-incremental"));
+            Set<String> enlisted = new HashSet<>();
             for (Object key : remoteIndexProperties.keySet()) {
                 String sKey = (String) key;
                 if (sKey.startsWith("nexus.index.incremental-")) {
-                    String value = remoteIndexProperties.getProperty(sKey);
-                    if (currentLocalCounter.equals(value) || nextLocalCounter.equals(value)) {
-                        return true;
-                    }
+                    enlisted.add(remoteIndexProperties.getProperty(sKey));
                 }
             }
+            // check remote props for existence of current or next chunk after local, and of every chunk up to remote
+            if (!enlisted.contains(String.valueOf(localLastIncremental))
+                    && !enlisted.contains(String.valueOf(localLastIncremental + 1))) {
+                return false;
+            }
+            if (remoteLastIncremental < localLastIncremental
+                    || remoteLastIncremental - localLastIncremental > enlisted.size()) {
+                return false;
+            }
+            for (int counter = localLastIncremental + 1; counter <= remoteLastIncremental; counter++) {
+                if (!enlisted.contains(String.valueOf(counter))) {
+                    return false;
+                }
+            }
+            return true;
         } catch (NumberFormatException e) {
             // fall through
         }
