@@ -20,6 +20,7 @@ package org.apache.maven.index.context;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -110,8 +111,21 @@ public interface IndexingContext {
 
     /**
      * Returns location for the local repository.
+     *
+     * @deprecated Use {@link #getRepositoryPath()} instead.
      */
+    @Deprecated
     File getRepository();
+
+    /**
+     * Returns location for the local repository, or {@code null} if this context has none.
+     *
+     * @since 7.2.0
+     */
+    default Path getRepositoryPath() {
+        File repository = getRepository();
+        return repository != null ? repository.toPath() : null;
+    }
 
     /**
      * Returns public repository url.
@@ -263,7 +277,23 @@ public interface IndexingContext {
 
     Directory getIndexDirectory();
 
+    /**
+     * Returns the location of the index directory.
+     *
+     * @deprecated Use {@link #getIndexDirectoryPath()} instead.
+     */
+    @Deprecated
     File getIndexDirectoryFile();
+
+    /**
+     * Returns the location of the index directory, or {@code null} if the index is not on the file system.
+     *
+     * @since 7.2.0
+     */
+    default Path getIndexDirectoryPath() {
+        File indexDirectory = getIndexDirectoryFile();
+        return indexDirectory != null ? indexDirectory.toPath() : null;
+    }
 
     /**
      * Returns the GavCalculator for this Context. Implies repository layout.

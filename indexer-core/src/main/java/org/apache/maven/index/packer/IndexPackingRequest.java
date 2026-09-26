@@ -19,6 +19,7 @@
 package org.apache.maven.index.packer;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -49,6 +50,17 @@ public class IndexPackingRequest {
 
     private Collection<IndexFormat> formats;
 
+    /**
+     * @since 7.2.0
+     */
+    public IndexPackingRequest(final IndexingContext context, final IndexReader indexReader, final Path targetDir) {
+        this(context, indexReader, requireNonNull(targetDir).toFile());
+    }
+
+    /**
+     * @deprecated Use {@link #IndexPackingRequest(IndexingContext, IndexReader, Path)} instead.
+     */
+    @Deprecated
     public IndexPackingRequest(final IndexingContext context, final IndexReader indexReader, final File targetDir) {
         this.context = requireNonNull(context);
 
@@ -89,8 +101,19 @@ public class IndexPackingRequest {
         return formats;
     }
 
+    /**
+     * @deprecated Use {@link #getTargetPath()} instead.
+     */
+    @Deprecated
     public File getTargetDir() {
         return targetDir;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public Path getTargetPath() {
+        return targetDir.toPath();
     }
 
     public boolean isCreateIncrementalChunks() {

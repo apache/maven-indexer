@@ -19,6 +19,7 @@
 package org.apache.maven.index.updater;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.maven.index.context.DocumentFilter;
 import org.apache.maven.index.context.IndexingContext;
@@ -108,12 +109,34 @@ public class IndexUpdateRequest {
         this.incrementalOnly = incrementalOnly;
     }
 
+    /**
+     * @deprecated Use {@link #getLocalIndexCachePath()} instead.
+     */
+    @Deprecated
     public File getLocalIndexCacheDir() {
         return localIndexCacheDir;
     }
 
+    /**
+     * @deprecated Use {@link #setLocalIndexCachePath(Path)} instead.
+     */
+    @Deprecated
     public void setLocalIndexCacheDir(File dir) {
         this.localIndexCacheDir = dir;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public Path getLocalIndexCachePath() {
+        return localIndexCacheDir != null ? localIndexCacheDir.toPath() : null;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public void setLocalIndexCachePath(Path dir) {
+        this.localIndexCacheDir = dir != null ? dir.toFile() : null;
     }
 
     public Locker getLocker() {
@@ -148,12 +171,34 @@ public class IndexUpdateRequest {
         return directoryFactory != null ? directoryFactory : FSDirectoryFactory.DEFAULT;
     }
 
+    /**
+     * @deprecated Use {@link #setIndexTempPath(Path)} instead.
+     */
+    @Deprecated
     public void setIndexTempDir(File indexTempDir) {
         this.indexTempDir = indexTempDir;
     }
 
+    /**
+     * @deprecated Use {@link #getIndexTempPath()} instead.
+     */
+    @Deprecated
     public File getIndexTempDir() {
         return indexTempDir;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public void setIndexTempPath(Path indexTempDir) {
+        this.indexTempDir = indexTempDir != null ? indexTempDir.toFile() : null;
+    }
+
+    /**
+     * @since 7.2.0
+     */
+    public Path getIndexTempPath() {
+        return indexTempDir != null ? indexTempDir.toPath() : null;
     }
 
     public int getThreads() {

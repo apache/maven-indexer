@@ -73,6 +73,8 @@ public class DefaultIndexer implements Indexer {
     // Contexts
     // ----------------------------------------------------------------------------
 
+    @Deprecated
+    @Override
     public IndexingContext createIndexingContext(
             String id,
             String repositoryId,
@@ -97,6 +99,8 @@ public class DefaultIndexer implements Indexer {
         return context;
     }
 
+    @Deprecated
+    @Override
     public IndexingContext createMergedIndexingContext(
             String id,
             String repositoryId,
@@ -179,6 +183,8 @@ public class DefaultIndexer implements Indexer {
     // Identification
     // ----------------------------------------------------------------------------
 
+    @Deprecated
+    @Override
     public Collection<ArtifactInfo> identify(final File artifact, final Collection<IndexingContext> contexts)
             throws IOException {
         try (InputStream is = Files.newInputStream(artifact.toPath())) {
