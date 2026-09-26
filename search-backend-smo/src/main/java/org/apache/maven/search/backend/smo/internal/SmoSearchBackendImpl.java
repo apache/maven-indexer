@@ -120,7 +120,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
         String searchUri = toURI(searchRequest);
         String payload = fetch(searchUri, commonHeaders);
         JsonObject raw = JsonParser.parseString(payload).getAsJsonObject();
-        List<Record> page = new ArrayList<>(searchRequest.getPaging().getPageSize());
+        List<Record> page = new ArrayList<>();
         int totalHits = populateFromRaw(raw, page);
         return new SmoSearchResponseImpl(searchRequest, totalHits, page, searchUri, payload);
     }
@@ -143,7 +143,7 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
 
     protected String smoPaging(SearchRequest searchRequest, HashSet<Field> searchedFields) {
         return "&start="
-                + searchRequest.getPaging().getPageSize()
+                + (long) searchRequest.getPaging().getPageSize()
                         * searchRequest.getPaging().getPageOffset() + "&rows="
                 + searchRequest.getPaging().getPageSize();
     }

@@ -279,7 +279,9 @@ public class DefaultSearchEngine implements SearchEngine {
         int topHitCount = getTopDocsCollectorHitNum(request, AbstractSearchRequest.UNDEFINED);
 
         if (AbstractSearchRequest.UNDEFINED != topHitCount) {
-            // count is set, simply just execute it as-is
+            // count is set, execute it as-is, but never collect more than the index holds
+            topHitCount = Math.max(
+                    1, Math.min(topHitCount, indexSearcher.getIndexReader().maxDoc()));
             final TopScoreDocCollector hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
 
             indexSearcher.search(query, hits);
@@ -354,7 +356,7 @@ public class DefaultSearchEngine implements SearchEngine {
 
             if (AbstractSearchRequest.UNDEFINED != prequest.getCount()) {
                 // easy, user knows and tells us how many results he want
-                return prequest.getCount() + prequest.getStart();
+                return (int) Math.min((long) prequest.getCount() + prequest.getStart(), Integer.MAX_VALUE);
             }
         } else {
             if (AbstractSearchRequest.UNDEFINED != request.getCount()) {

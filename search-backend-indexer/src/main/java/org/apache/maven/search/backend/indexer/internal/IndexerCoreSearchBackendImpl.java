@@ -94,8 +94,8 @@ public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implement
     public IndexerCoreSearchResponse search(SearchRequest searchRequest) throws IOException {
         Paging paging = searchRequest.getPaging();
         int totalHitsCount;
-        List<ArtifactInfo> artifactInfos = new ArrayList<>(paging.getPageSize());
-        List<Record> page = new ArrayList<>(paging.getPageSize());
+        List<ArtifactInfo> artifactInfos = new ArrayList<>();
+        List<Record> page = new ArrayList<>();
 
         // if GA present in query: doing flat, otherwise grouped search to mimic SMO
         HashSet<Field> searchedFields = new HashSet<>();
@@ -114,7 +114,8 @@ public class IndexerCoreSearchBackendImpl extends SearchBackendSupport implement
             }
             IteratorSearchRequest iteratorSearchRequest = new IteratorSearchRequest(query, List.of(indexingContext));
             iteratorSearchRequest.setCount(paging.getPageSize());
-            iteratorSearchRequest.setStart(paging.getPageSize() * paging.getPageOffset());
+            iteratorSearchRequest.setStart(
+                    (int) Math.min((long) paging.getPageSize() * paging.getPageOffset(), Integer.MAX_VALUE));
 
             try (IteratorSearchResponse iteratorSearchResponse = indexer.searchIterator(iteratorSearchRequest)) {
                 totalHitsCount = iteratorSearchResponse.getTotalHitsCount();
