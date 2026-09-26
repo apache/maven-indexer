@@ -25,6 +25,7 @@ import javax.inject.Singleton;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -291,13 +292,24 @@ public class DefaultIndexUpdater implements IndexUpdater {
 
     private Properties downloadIndexProperties(final ResourceFetcher fetcher) throws IOException {
         try (InputStream fis = fetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE)) {
+            byte[] data = fis.readNBytes(MAX_PROPERTIES_SIZE + 1);
+            if (data.length > MAX_PROPERTIES_SIZE) {
+                throw new IOException(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE + " is larger than "
+                        + MAX_PROPERTIES_SIZE + " bytes");
+            }
+
             Properties properties = new Properties();
 
-            properties.load(fis);
+            properties.load(new ByteArrayInputStream(data));
 
             return properties;
         }
     }
+
+    /**
+     * The largest index properties file read, in bytes; published ones are a few kilobytes.
+     */
+    private static final int MAX_PROPERTIES_SIZE = 1024 * 1024;
 
     public Date getTimestamp(final Properties properties, final String key) {
         String indexTimestamp = properties.getProperty(key);

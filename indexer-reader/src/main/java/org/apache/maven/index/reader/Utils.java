@@ -18,6 +18,7 @@
  */
 package org.apache.maven.index.reader;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -72,11 +73,20 @@ public final class Utils {
             if (inputStream == null) {
                 return null;
             }
+            byte[] data = inputStream.readNBytes(MAX_PROPERTIES_SIZE + 1);
+            if (data.length > MAX_PROPERTIES_SIZE) {
+                throw new IOException("Properties larger than " + MAX_PROPERTIES_SIZE + " bytes");
+            }
             final Properties properties = new Properties();
-            properties.load(inputStream);
+            properties.load(new ByteArrayInputStream(data));
             return properties;
         }
     }
+
+    /**
+     * The largest index properties file read, in bytes; published ones are a few kilobytes.
+     */
+    private static final int MAX_PROPERTIES_SIZE = 1024 * 1024;
 
     /**
      * Saves {@link Properties} to provided {@link WritableResource} and closes the resource.
