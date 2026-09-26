@@ -22,18 +22,29 @@ package org.apache.maven.index.artifact;
  * Utility methods for basic "detection" of artifact kind in M2 repository.
  */
 public class M2ArtifactRecognizer {
+    private static final String[] CHECKSUM_SUFFIXES = {".sha1", ".md5", ".sha256", ".sha512"};
+
+    private static boolean endsWithChecksumOf(String path, String suffix) {
+        for (String checksum : CHECKSUM_SUFFIXES) {
+            if (path.endsWith(suffix + checksum)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Is this item M2 Checksum?
      */
     public static boolean isChecksum(String path) {
-        return path.endsWith(".sha1") || path.endsWith(".md5");
+        return endsWithChecksumOf(path, "");
     }
 
     /**
      * Is this item M2 POM?
      */
     public static boolean isPom(String path) {
-        return path.endsWith(".pom") || path.endsWith(".pom.sha1") || path.endsWith(".pom.md5");
+        return path.endsWith(".pom") || endsWithChecksumOf(path, ".pom");
     }
 
     /**
@@ -50,9 +61,7 @@ public class M2ArtifactRecognizer {
      * Is this item M2 metadata?
      */
     public static boolean isMetadata(String path) {
-        return path.endsWith("maven-metadata.xml")
-                || path.endsWith("maven-metadata.xml.sha1")
-                || path.endsWith("maven-metadata.xml.md5");
+        return path.endsWith("maven-metadata.xml") || endsWithChecksumOf(path, "maven-metadata.xml");
     }
 
     public static boolean isSignature(String path) {

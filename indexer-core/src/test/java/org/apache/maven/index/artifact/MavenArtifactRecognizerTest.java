@@ -64,4 +64,16 @@ public class MavenArtifactRecognizerTest {
         assertEquals(false, M2ArtifactRecognizer.isMetadata("aven-metadata.xml"));
         assertEquals(false, M2ArtifactRecognizer.isMetadata("/javax/mail/mail/1.4/mail-1.4.jar"));
     }
+
+    @Test
+    public void testChecksums() {
+        for (String checksum : new String[] {".sha1", ".md5", ".sha256", ".sha512"}) {
+            assertEquals(true, M2ArtifactRecognizer.isChecksum("aaa.jar" + checksum));
+            assertEquals(true, M2ArtifactRecognizer.isPom("aaa.pom" + checksum));
+            assertEquals(true, M2ArtifactRecognizer.isMetadata("maven-metadata.xml" + checksum));
+        }
+        assertEquals(false, M2ArtifactRecognizer.isChecksum("aaa.jar"));
+        assertEquals(false, M2ArtifactRecognizer.isChecksum("aaa.jar.asc"));
+        assertEquals(false, M2ArtifactRecognizer.isPom("aaa.jar.sha256"));
+    }
 }

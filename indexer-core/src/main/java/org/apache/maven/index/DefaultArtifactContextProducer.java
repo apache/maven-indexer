@@ -79,6 +79,10 @@ public class DefaultArtifactContextProducer implements ArtifactContextProducer {
             return null; // not an artifact, but rather metadata
         }
 
+        if (gav.isHash() || gav.isSignature()) {
+            return null; // a checksum or signature of an artifact, not the artifact itself
+        }
+
         File pom;
         File artifact;
 
