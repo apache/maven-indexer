@@ -37,7 +37,8 @@ import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopScoreDocCollector;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.TopScoreDocCollectorManager;
 import org.apache.maven.index.context.IndexUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.context.NexusIndexMultiReader;
@@ -138,18 +139,18 @@ public class DefaultSearchEngine implements SearchEngine {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try {
                 final StoredFields storedFields = indexSearcher.storedFields();
-                final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
+                final TopDocs topDocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (collector.getTotalHits() == 0) {
+                if (topDocs.totalHits.value == 0) {
                     // context has no hits, just continue to next one
                     continue;
                 }
 
-                ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+                ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 
                 // uhm btw hitCount contains dups
 
-                hitCount += collector.getTotalHits();
+                hitCount += (int) topDocs.totalHits.value;
 
                 int start = 0; // from == FlatSearchRequest.UNDEFINED ? 0 : from;
 
@@ -196,12 +197,12 @@ public class DefaultSearchEngine implements SearchEngine {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try {
                 final StoredFields storedFields = indexSearcher.storedFields();
-                final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
+                final TopDocs topDocs = doSearchWithCeiling(req, indexSearcher, query);
 
-                if (collector.getTotalHits() > 0) {
-                    ScoreDoc[] scoreDocs = collector.topDocs().scoreDocs;
+                if (topDocs.totalHits.value > 0) {
+                    ScoreDoc[] scoreDocs = topDocs.scoreDocs;
 
-                    hitCount += collector.getTotalHits();
+                    hitCount += (int) topDocs.totalHits.value;
 
                     for (ScoreDoc scoreDoc : scoreDocs) {
                         Document doc = storedFields.document(scoreDoc.doc);
@@ -258,12 +259,12 @@ public class DefaultSearchEngine implements SearchEngine {
         NexusIndexMultiSearcher indexSearcher = new NexusIndexMultiSearcher(multiReader);
 
         try {
-            TopScoreDocCollector hits = doSearchWithCeiling(request, indexSearcher, request.getQuery());
+            TopDocs topDocs = doSearchWithCeiling(request, indexSearcher, request.getQuery());
 
             return new IteratorSearchResponse(
                     request.getQuery(),
-                    hits.getTotalHits(),
-                    new DefaultIteratorResultSet(request, indexSearcher, contexts, hits.topDocs()));
+                    (int) topDocs.totalHits.value,
+                    new DefaultIteratorResultSet(request, indexSearcher, contexts, topDocs));
         } catch (IOException | RuntimeException e) {
             try {
                 indexSearcher.release();
@@ -276,7 +277,7 @@ public class DefaultSearchEngine implements SearchEngine {
 
     // ==
 
-    protected TopScoreDocCollector doSearchWithCeiling(
+    protected TopDocs doSearchWithCeiling(
             final AbstractSearchRequest request, final IndexSearcher indexSearcher, final Query query)
             throws IOException {
         int topHitCount = getTopDocsCollectorHitNum(request, AbstractSearchRequest.UNDEFINED);
@@ -285,22 +286,17 @@ public class DefaultSearchEngine implements SearchEngine {
             // count is set, execute it as-is, but never collect more than the index holds
             topHitCount = Math.max(
                     1, Math.min(topHitCount, indexSearcher.getIndexReader().maxDoc()));
-            final TopScoreDocCollector hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
-
-            indexSearcher.search(query, hits);
-
-            return hits;
+            return indexSearcher.search(query, new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE));
         } else {
             // set something reasonable as 1k
             topHitCount = 1000;
 
             // perform search
-            TopScoreDocCollector hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
-            indexSearcher.search(query, hits);
+            TopDocs hits = indexSearcher.search(query, new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE));
 
             // check total hits against, does it fit?
-            if (topHitCount < hits.getTotalHits()) {
-                topHitCount = hits.getTotalHits();
+            if (topHitCount < hits.totalHits.value) {
+                topHitCount = (int) hits.totalHits.value;
 
                 if (getLogger().isDebugEnabled()) {
                     // warn the user and leave trace just before OOM might happen
@@ -312,8 +308,7 @@ public class DefaultSearchEngine implements SearchEngine {
                 }
 
                 // redo all, but this time with correct numbers
-                hits = TopScoreDocCollector.create(topHitCount, Integer.MAX_VALUE);
-                indexSearcher.search(query, hits);
+                hits = indexSearcher.search(query, new TopScoreDocCollectorManager(topHitCount, Integer.MAX_VALUE));
             }
 
             return hits;
