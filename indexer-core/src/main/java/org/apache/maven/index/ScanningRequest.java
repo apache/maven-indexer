@@ -61,6 +61,8 @@ public class ScanningRequest {
         return startingPath;
     }
 
+    // a caller's IndexingContext may be a proxy or mock without the default Path methods
+    @SuppressWarnings("deprecation")
     public File getStartingDirectory() {
         if (StringUtils.isBlank(startingPath)) {
             return getIndexingContext().getRepository();

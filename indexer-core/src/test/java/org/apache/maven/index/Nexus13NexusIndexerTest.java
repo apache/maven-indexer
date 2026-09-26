@@ -110,7 +110,7 @@ class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -125,7 +125,7 @@ class Nexus13NexusIndexerTest extends AbstractNexusIndexerTest {
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         final IndexUpdateRequest updateRequest =
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile()));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir));
         indexUpdater.fetchAndUpdateIndex(updateRequest);
 
         assertEquals(

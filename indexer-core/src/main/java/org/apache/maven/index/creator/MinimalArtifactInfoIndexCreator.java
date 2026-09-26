@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -175,9 +176,11 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
 
     @Override
     public void populateArtifactInfo(ArtifactContext ac) {
-        File artifact = ac.getArtifact();
+        Path artifactPath = ac.getArtifactPath();
+        File artifact = artifactPath != null ? artifactPath.toFile() : null;
 
-        File pom = ac.getPom();
+        Path pomPath = ac.getPomPath();
+        File pom = pomPath != null ? pomPath.toFile() : null;
 
         ArtifactInfo ai = ac.getArtifactInfo();
 

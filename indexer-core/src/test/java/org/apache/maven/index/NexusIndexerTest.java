@@ -557,7 +557,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -578,7 +578,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
 
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));

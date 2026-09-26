@@ -92,7 +92,7 @@ public class IndexDataReader {
     public IndexDataReader(final InputStream is, final IndexUpdateRequest request) throws IOException {
         this(
                 is,
-                request.getIndexTempDir() != null ? request.getIndexTempDir().toPath() : null,
+                request.getIndexTempPath(),
                 request.getExtractionFilter(),
                 request.getFSDirectoryFactory(),
                 request.getThreads());

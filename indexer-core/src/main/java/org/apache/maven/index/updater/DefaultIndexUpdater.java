@@ -116,7 +116,8 @@ public class DefaultIndexUpdater implements IndexUpdater {
             fetcher.connect(context.getId(), context.getIndexUpdateUrl());
         }
 
-        File cacheDir = updateRequest.getLocalIndexCacheDir();
+        Path localIndexCachePath = updateRequest.getLocalIndexCachePath();
+        File cacheDir = localIndexCachePath != null ? localIndexCachePath.toFile() : null;
         Locker locker = updateRequest.getLocker();
         Lock lock = locker != null && cacheDir != null ? locker.lock(cacheDir) : null;
         try {
@@ -168,9 +169,10 @@ public class DefaultIndexUpdater implements IndexUpdater {
             final String remoteIndexFile)
             throws IOException {
         File indexDir;
-        if (updateRequest.getIndexTempDir() != null) {
-            updateRequest.getIndexTempDir().mkdirs();
-            indexDir = Files.createTempDirectory(updateRequest.getIndexTempDir().toPath(), remoteIndexFile + ".dir")
+        Path indexTempPath = updateRequest.getIndexTempPath();
+        if (indexTempPath != null) {
+            indexTempPath.toFile().mkdirs();
+            indexDir = Files.createTempDirectory(indexTempPath, remoteIndexFile + ".dir")
                     .toFile();
         } else {
             indexDir = Files.createTempDirectory(remoteIndexFile + ".dir").toFile();
@@ -437,6 +439,8 @@ public class DefaultIndexUpdater implements IndexUpdater {
     private class LuceneIndexAdaptor extends IndexAdaptor {
         private final IndexUpdateRequest updateRequest;
 
+        // a caller's IndexingContext may be a proxy or mock without the default Path methods
+        @SuppressWarnings("deprecation")
         LuceneIndexAdaptor(IndexUpdateRequest updateRequest) {
             super(updateRequest.getIndexingContext().getIndexDirectoryFile());
             this.updateRequest = updateRequest;

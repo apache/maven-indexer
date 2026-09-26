@@ -133,8 +133,7 @@ public abstract class AbstractIndexUpdaterTest extends AbstractIndexCreatorHelpe
     protected void packIndex(Path targetDir, IndexingContext context) throws IllegalArgumentException, IOException {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
-            IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
+            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
             request.setUseTargetProperties(true);
             packer.packIndex(request);
         } finally {

@@ -198,7 +198,7 @@ public class DefaultIncrementalHandler implements IncrementalHandler {
     }
 
     private void cleanUpIncrementalChunks(IndexPackingRequest request, Properties properties) {
-        File[] files = request.getTargetDir().listFiles((dir, name) -> {
+        File[] files = request.getTargetPath().toFile().listFiles((dir, name) -> {
             String[] parts = name.split("\\.");
             return parts.length == 3 && parts[0].equals(IndexingContext.INDEX_FILE_PREFIX) && parts[2].equals("gz");
         });

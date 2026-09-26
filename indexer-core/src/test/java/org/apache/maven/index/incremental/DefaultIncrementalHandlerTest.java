@@ -83,8 +83,7 @@ class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
         try {
             Properties properties = new Properties();
 
-            IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir.toFile());
+            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir);
 
             // No properties definite fail
             assertNull(handler.getIncrementalUpdates(request, properties));
@@ -117,8 +116,7 @@ class DefaultIncrementalHandlerTest extends AbstractIndexCreatorHelper {
 
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
-            IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir.toFile());
+            IndexPackingRequest request = new IndexPackingRequest(context, indexSearcher.getIndexReader(), indexDir);
             List<Integer> updates = handler.getIncrementalUpdates(request, properties);
 
             assertEquals(1, updates.size());

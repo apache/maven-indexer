@@ -23,6 +23,7 @@ import javax.inject.Singleton;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -72,7 +73,8 @@ public class JarFileContentsIndexCreator extends AbstractIndexCreator implements
     public void populateArtifactInfo(final ArtifactContext artifactContext) throws IOException {
         ArtifactInfo ai = artifactContext.getArtifactInfo();
 
-        File artifactFile = artifactContext.getArtifact();
+        Path artifactPath = artifactContext.getArtifactPath();
+        File artifactFile = artifactPath != null ? artifactPath.toFile() : null;
 
         if (artifactFile != null
                 && artifactFile.isFile()

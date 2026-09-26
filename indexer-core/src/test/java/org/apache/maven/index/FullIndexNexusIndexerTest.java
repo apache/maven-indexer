@@ -330,7 +330,7 @@ class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -347,7 +347,7 @@ class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
 
         assertEquals(context.getTimestamp().getTime(), newContext.getTimestamp().getTime());
 
@@ -387,7 +387,7 @@ class FullIndexNexusIndexerTest extends DefaultIndexNexusIndexerTest {
                 nexusIndexer.addIndexingContext("test-new", "test", null, newIndexDir, null, null, DEFAULT_CREATORS);
 
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
 
         assertEquals(timestamp, newContext.getTimestamp());
 

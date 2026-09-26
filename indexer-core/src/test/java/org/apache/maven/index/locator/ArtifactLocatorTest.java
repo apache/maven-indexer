@@ -63,8 +63,8 @@ class ArtifactLocatorTest extends AbstractNexusIndexerTest {
 
         final ArtifactContext ac = artifactContextProducer.getArtifactContext(context, pomFile.toFile());
 
-        assertNotNull(ac.getArtifact(), "Artifact file was not found!");
-        assertTrue(ac.getArtifact().exists(), "Artifact file was not found!");
+        assertNotNull(ac.getArtifactPath(), "Artifact file was not found!");
+        assertTrue(Files.exists(ac.getArtifactPath()), "Artifact file was not found!");
     }
 
     @Test

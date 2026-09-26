@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class TrackingFetcher extends DefaultIndexUpdater.FileFetcher {
 
     private final ArrayList<String> resources = new ArrayList<>();
 
-    public TrackingFetcher(File basedir) {
+    public TrackingFetcher(Path basedir) {
         super(basedir);
     }
 

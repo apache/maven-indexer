@@ -61,8 +61,8 @@ class IndexerCoreSearchBackendPagingTest extends InjectedTest {
         context = indexer.createIndexingContext(
                 "paging",
                 "paging",
-                dir.resolve("repo").toFile(),
-                dir.resolve("index").toFile(),
+                dir.resolve("repo"),
+                dir.resolve("index"),
                 null,
                 null,
                 true,

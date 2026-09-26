@@ -120,9 +120,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
         // initial index download (expected: full index download)
         testContext = getNewTempContext();
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(2, fetcher.getRetrievedResources().size());
         assertTrue(Files.exists(localCacheDir.resolve("nexus-maven-repository-index.gz")));
@@ -130,9 +130,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         assertGroupCount(1, "commons-lang", testContext);
 
         // update the same index (expected: no index download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(1, fetcher.getRetrievedResources().size());
         assertEquals(
@@ -142,9 +142,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
         // nuke index but keep the cache (expected: no index download)
         testContext = getNewTempContext();
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(1, fetcher.getRetrievedResources().size());
         assertEquals(
@@ -158,9 +158,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         packIndex(remoteRepo, context);
 
         // update via cache (expected: incremental chunk download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(2, fetcher.getRetrievedResources().size());
         assertEquals(
@@ -173,9 +173,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
         // nuke index but keep the cache (expected: no index download, index contains both initial and delta chunks)
         testContext = getNewTempContext();
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(1, fetcher.getRetrievedResources().size());
         assertEquals(
@@ -186,9 +186,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         // kill the cache, but keep the index (expected: full index download)
         // TODO how to assert if merge==false internally?
         FileUtils.deleteDirectory(localCacheDir.toFile());
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(2, fetcher.getRetrievedResources().size());
         assertTrue(Files.exists(localCacheDir.resolve("nexus-maven-repository-index.gz")));
@@ -213,9 +213,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         IndexUpdateRequest updateRequest;
 
         // initial index download (expected: no index download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
 
         // corrupt local cache
@@ -225,9 +225,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
 
         // try download again (it would have failed if force did not update local cache)
         removeTempContext();
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updateRequest.setForceFullUpdate(true);
         updater.fetchAndUpdateIndex(updateRequest);
     }
@@ -243,9 +243,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         IndexUpdateRequest updateRequest;
 
         // initial forced full index download (expected: successfull download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updateRequest.setForceFullUpdate(true);
         updater.fetchAndUpdateIndex(updateRequest);
         assertTrue(Files.exists(localCacheDir.resolve("nexus-maven-repository-index.gz")));
@@ -263,7 +263,7 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         IndexUpdateRequest updateRequest;
 
         // failed download
-        fetcher = new TrackingFetcher(remoteRepo.toFile()) {
+        fetcher = new TrackingFetcher(remoteRepo) {
             public InputStream retrieve(String name) throws IOException, java.io.FileNotFoundException {
                 if (name.equals(IndexingContext.INDEX_FILE_PREFIX + ".gz")
                         || name.equals(IndexingContext.INDEX_FILE_PREFIX + ".zip")) {
@@ -273,7 +273,7 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
             }
         };
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         try {
             updater.fetchAndUpdateIndex(updateRequest);
             fail();
@@ -282,9 +282,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         }
 
         // try successful download
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
         assertTrue(Files.exists(localCacheDir.resolve("nexus-maven-repository-index.gz")));
         assertTrue(Files.exists(localCacheDir.resolve("nexus-maven-repository-index.properties")));
@@ -301,9 +301,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         IndexUpdateRequest updateRequest;
 
         // initial index download (expected: successfull download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
 
         // new remote index delta
@@ -312,9 +312,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         packIndex(remoteRepo, context);
 
         // delta index download (expected: successfull download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
 
         // sanity check
@@ -339,9 +339,9 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         assertTrue(Files.isDirectory(unknownDirectory));
 
         // forced full update
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(getNewTempContext(), fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updateRequest.setForceFullUpdate(true);
         updater.fetchAndUpdateIndex(updateRequest);
 
@@ -362,24 +362,24 @@ class LocalIndexCacheTest extends AbstractIndexUpdaterTest {
         IndexUpdateRequest updateRequest;
 
         // initial index download (expected: successfull download)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         IndexingContext testContext = getNewTempContext();
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updater.fetchAndUpdateIndex(updateRequest);
 
         // recreate local index from the cache without remote access (and NULL fetcher)
         // fetcher is null, so we no way to assert that
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updateRequest.setOffline(true);
         updater.fetchAndUpdateIndex(updateRequest);
         assertGroupCount(1, "commons-lang", testContext);
 
         // recreate local index from the cache without remote access (and NOT NULL fetcher)
-        fetcher = new TrackingFetcher(remoteRepo.toFile());
+        fetcher = new TrackingFetcher(remoteRepo);
         updateRequest = new IndexUpdateRequest(testContext, fetcher);
-        updateRequest.setLocalIndexCacheDir(localCacheDir.toFile());
+        updateRequest.setLocalIndexCachePath(localCacheDir);
         updateRequest.setOffline(true);
         updater.fetchAndUpdateIndex(updateRequest);
         assertEquals(0, fetcher.getRetrievedResources().size());

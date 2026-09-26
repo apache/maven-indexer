@@ -22,6 +22,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -56,7 +57,8 @@ public class MavenArchetypeArtifactInfoIndexCreator extends AbstractIndexCreator
     }
 
     public void populateArtifactInfo(ArtifactContext ac) {
-        File artifact = ac.getArtifact();
+        Path artifactPath = ac.getArtifactPath();
+        File artifact = artifactPath != null ? artifactPath.toFile() : null;
 
         ArtifactInfo ai = ac.getArtifactInfo();
 

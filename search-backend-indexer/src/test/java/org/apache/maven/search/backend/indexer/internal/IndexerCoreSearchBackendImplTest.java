@@ -145,8 +145,8 @@ class IndexerCoreSearchBackendImplTest extends InjectedTest {
         centralContext = indexer.createIndexingContext(
                 "central-context",
                 "central",
-                centralLocalCache.toFile(),
-                centralIndexDir.toFile(),
+                centralLocalCache,
+                centralIndexDir,
                 "https://repo1.maven.org/maven2",
                 null,
                 true,
@@ -164,7 +164,7 @@ class IndexerCoreSearchBackendImplTest extends InjectedTest {
 
         Date centralContextCurrentTimestamp = centralContext.getTimestamp();
         IndexUpdateRequest updateRequest = new IndexUpdateRequest(centralContext, new Java11HttpClient());
-        updateRequest.setLocalIndexCacheDir(centralLocalCache.toFile());
+        updateRequest.setLocalIndexCachePath(centralLocalCache);
         updateRequest.setThreads(4);
         IndexUpdateResult updateResult = indexUpdater.fetchAndUpdateIndex(updateRequest);
         if (updateResult.isFullUpdate()) {

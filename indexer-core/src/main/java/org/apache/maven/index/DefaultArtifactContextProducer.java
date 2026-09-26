@@ -58,6 +58,8 @@ public class DefaultArtifactContextProducer implements ArtifactContextProducer {
     /**
      * Get ArtifactContext for given pom or artifact (jar, war, etc). A file can be
      */
+    // a caller's IndexingContext may be a proxy or mock without the default Path methods
+    @SuppressWarnings("deprecation")
     public ArtifactContext getArtifactContext(IndexingContext context, File file) {
         // TODO shouldn't this use repository layout instead?
 
