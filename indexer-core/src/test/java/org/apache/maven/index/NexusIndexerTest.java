@@ -69,12 +69,13 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     public void testSingleQuery() throws Exception {
         NexusIndexer indexer = lookup(NexusIndexer.class);
         // Directory indexDir = new RAMDirectory();
-        File indexDir = super.getDirectory("index/test");
-        super.deleteDirectory(indexDir);
+        Path indexDir = getDirectory("index/test");
+        deleteDirectory(indexDir);
 
-        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+        Path repo = getTestPath("src/test/repo");
 
-        context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = indexer.addIndexingContext(
+                "test", "test", repo.toFile(), indexDir.toFile(), null, null, DEFAULT_CREATORS);
         indexer.scan(context);
 
         Query q;
@@ -155,7 +156,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.GROUP_ID, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case01.txt"));
+                MAVEN.GROUP_ID, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case01.txt"));
 
         // case02: "the most usual" case:
         // explanation: commons-logging should top the results, but commons-cli will be at the end too (lower score but
@@ -168,7 +169,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.GROUP_ID, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case02.txt"));
+                MAVEN.GROUP_ID, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case02.txt"));
 
         // case03: "the most usual" case:
         // explanation: all "commons" matches, but commons-cli tops since it's _shorter_! (see Lucene Scoring)
@@ -180,7 +181,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.GROUP_ID, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case03.txt"));
+                MAVEN.GROUP_ID, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case03.txt"));
 
         // case04: "the most usual" case:
         // explanation: only commons-logging matches, no commons-cli
@@ -192,7 +193,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.GROUP_ID, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case04.txt"));
+                MAVEN.GROUP_ID, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case04.txt"));
 
         // case05: "the most usual" case:
         // many matches, but at the top only the _exact_ matches for "1.0", and below all artifacts that have versions
@@ -205,7 +206,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.VERSION, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case05.txt"));
+                MAVEN.VERSION, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case05.txt"));
 
         // case06: "the most usual" case (for apps), "selection":
         // explanation: exactly only those artifacts, that has version "1.0"
@@ -217,7 +218,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         res = indexer.searchIterator(req);
 
         checkResults(
-                MAVEN.VERSION, qstr, q, res, getTestFile("src/test/resources/testQueryCreatorNGSearch/case06.txt"));
+                MAVEN.VERSION, qstr, q, res, getTestPath("src/test/resources/testQueryCreatorNGSearch/case06.txt"));
 
         // and comes the "trick", i will perform single _selection_!
         // I want to ensure there is an artifact present!
@@ -266,13 +267,13 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     public void testQueryCreatorNGSearchOnMergedContext() throws Exception {
         NexusIndexer indexer = prepare();
 
-        File indexMergedDir = super.getDirectory("index/testMerged");
+        Path indexMergedDir = getDirectory("index/testMerged");
 
         IndexingContext mergedContext = new MergedIndexingContext(
                 "test",
                 "merged",
                 context.getRepository(),
-                indexMergedDir,
+                indexMergedDir.toFile(),
                 true,
                 new StaticContextMemberProvider(List.of(context)));
 
@@ -282,7 +283,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
     /**
      * Will "print" the result set, and suck up a file and compare the two
      */
-    public void checkResults(Field field, String query, Query q, IteratorSearchResponse res, File expectedResults)
+    public void checkResults(Field field, String query, Query q, IteratorSearchResponse res, Path expectedResults)
             throws IOException {
         // switch used for easy data collection from console (for saving new "expected" results after you assured they
         // are fine)
@@ -331,7 +332,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         StringWriter ressw = new StringWriter();
         PrintWriter respw = new PrintWriter(ressw);
 
-        BufferedReader reader = Files.newBufferedReader(expectedResults.toPath(), StandardCharsets.UTF_8);
+        BufferedReader reader = Files.newBufferedReader(expectedResults, StandardCharsets.UTF_8);
         String currentline;
 
         while ((currentline = reader.readLine()) != null) {
@@ -476,10 +477,9 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         // Using a file
 
-        File artifact = Path.of(getBasedir(), "src/test/repo/qdox/qdox/1.5/qdox-1.5.jar")
-                .toFile();
+        Path artifact = getTestPath("src/test/repo/qdox/qdox/1.5/qdox-1.5.jar");
 
-        ais = nexus.identify(artifact);
+        ais = nexus.identify(artifact.toFile());
 
         assertEquals(1, ais.size());
 
@@ -552,14 +552,14 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         List<IndexCreator> indexCreators = context.getIndexCreators();
         // Directory directory = context.getIndexDirectory();
 
-        final File targetDir = Files.createTempDirectory("testIndexTimestamp").toFile();
-        targetDir.deleteOnExit();
+        final Path targetDir = Files.createTempDirectory("testIndexTimestamp");
+        targetDir.toFile().deleteOnExit();
 
         final IndexPacker indexPacker = lookup(IndexPacker.class);
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             final IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), targetDir.toFile());
             indexPacker.packIndex(request);
         } finally {
             context.releaseIndexSearcher(indexSearcher);
@@ -580,7 +580,7 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
 
         final IndexUpdater indexUpdater = lookup(IndexUpdater.class);
         indexUpdater.fetchAndUpdateIndex(
-                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir)));
+                new IndexUpdateRequest(newContext, new DefaultIndexUpdater.FileFetcher(targetDir.toFile())));
 
         WildcardQuery q = new WildcardQuery(new Term(ArtifactInfo.PACKAGING, "maven-plugin"));
         FlatSearchResponse response = indexer.searchFlat(new FlatSearchRequest(q));
@@ -593,12 +593,13 @@ public class NexusIndexerTest extends AbstractIndexCreatorHelper {
         NexusIndexer indexer = lookup(NexusIndexer.class);
 
         // Directory indexDir = new RAMDirectory();
-        File indexDir = super.getDirectory("index/test");
-        super.deleteDirectory(indexDir);
+        Path indexDir = getDirectory("index/test");
+        deleteDirectory(indexDir);
 
-        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+        Path repo = getTestPath("src/test/repo");
 
-        context = indexer.addIndexingContext("test", "test", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = indexer.addIndexingContext(
+                "test", "test", repo.toFile(), indexDir.toFile(), null, null, DEFAULT_CREATORS);
         indexer.scan(context);
 
         // IndexReader indexReader = context.getIndexSearcher().getIndexReader();

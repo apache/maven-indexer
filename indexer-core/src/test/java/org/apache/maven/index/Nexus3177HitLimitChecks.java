@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Set;
 
@@ -32,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     protected Directory secondIndexDir = new ByteBuffersDirectory();
 
@@ -41,10 +40,10 @@ public class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         context = nexusIndexer.addIndexingContext(
-                "nexus-3177", "nexus-3177", repo, indexDir, null, null, DEFAULT_CREATORS);
+                "nexus-3177", "nexus-3177", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         secondContext = nexusIndexer.addIndexingContext(
-                "nexus-3177b", "nexus-3177b", repo, secondIndexDir, null, null, DEFAULT_CREATORS);
+                "nexus-3177b", "nexus-3177b", repo.toFile(), secondIndexDir, null, null, DEFAULT_CREATORS);
 
         nexusIndexer.scan(context);
         nexusIndexer.scan(secondContext);

@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.lucene.search.IndexSearcher;
@@ -32,17 +31,17 @@ import org.junit.jupiter.api.Test;
 public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
     protected NexusIndexer nexusIndexer;
 
-    protected File repo = Path.of(getBasedir(), "src/test/nexus-13").toFile();
+    protected Path repo = getTestPath("src/test/nexus-13");
 
     protected IndexingContext context;
 
-    protected File indexDirFile = super.getDirectory("fsdirectorytest/one");
+    protected Path indexDirFile = super.getDirectory("fsdirectorytest/one");
 
     protected Directory indexDir;
 
     protected IndexingContext otherContext;
 
-    protected File otherIndexDirFile = super.getDirectory("fsdirectorytest/other");
+    protected Path otherIndexDirFile = super.getDirectory("fsdirectorytest/other");
 
     protected Directory otherIndexDir;
 
@@ -53,16 +52,17 @@ public class FSDirectoryDeleteTest extends AbstractIndexCreatorHelper {
 
         nexusIndexer = lookup(NexusIndexer.class);
 
-        indexDir = FSDirectory.open(indexDirFile.toPath());
+        indexDir = FSDirectory.open(indexDirFile);
 
-        context = nexusIndexer.addIndexingContext("one", "nexus-13", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "one", "nexus-13", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
 
         nexusIndexer.scan(context);
 
-        otherIndexDir = FSDirectory.open(otherIndexDirFile.toPath());
+        otherIndexDir = FSDirectory.open(otherIndexDirFile);
 
-        otherContext =
-                nexusIndexer.addIndexingContext("other", "nexus-13", repo, otherIndexDir, null, null, DEFAULT_CREATORS);
+        otherContext = nexusIndexer.addIndexingContext(
+                "other", "nexus-13", repo.toFile(), otherIndexDir, null, null, DEFAULT_CREATORS);
 
         nexusIndexer.scan(otherContext);
     }

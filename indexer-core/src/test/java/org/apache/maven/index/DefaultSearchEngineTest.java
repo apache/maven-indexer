@@ -82,9 +82,16 @@ public class DefaultSearchEngineTest extends AbstractNexusIndexerTest {
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+        Path repo = getTestPath("src/test/repo");
         context = new CountingIndexingContext(
-                "test-minimal", "test", repo, indexDir, null, null, IndexCreatorSorter.sort(MIN_CREATORS), false);
+                "test-minimal",
+                "test",
+                repo.toFile(),
+                indexDir,
+                null,
+                null,
+                IndexCreatorSorter.sort(MIN_CREATORS),
+                false);
 
         nexusIndexer.scan(context);
     }

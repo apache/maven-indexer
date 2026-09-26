@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerTest {
 
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     @Test
     public void testRootGroups() throws Exception {
@@ -396,9 +395,9 @@ public abstract class AbstractRepoNexusIndexerTest extends AbstractNexusIndexerT
 
         // Using a file
 
-        File artifact = repo.toPath().resolve("qdox/qdox/1.5/qdox-1.5.jar").toFile();
+        Path artifact = repo.resolve("qdox/qdox/1.5/qdox-1.5.jar");
 
-        ais = nexusIndexer.identify(artifact);
+        ais = nexusIndexer.identify(artifact.toFile());
 
         assertEquals(1, ais.size());
 

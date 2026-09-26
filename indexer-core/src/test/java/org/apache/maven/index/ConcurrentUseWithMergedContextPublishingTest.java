@@ -20,6 +20,7 @@ package org.apache.maven.index;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,7 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseWithMergedContextTest {
     protected IndexPacker packer;
 
-    protected File repoPublish = Path.of(getBasedir(), "target/repo-publish").toFile();
+    protected Path repoPublish = getTestPath("target/repo-publish");
 
     protected final AtomicInteger counter = new AtomicInteger();
 
@@ -54,10 +55,8 @@ public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseW
     @AfterEach
     @Override
     public void tearDown() throws Exception {
-        File props = Path.of(IndexingContext.INDEX_PACKER_PROPERTIES_FILE).toFile();
-        if (props.exists()) {
-            props.delete();
-        }
+        Path props = Path.of(IndexingContext.INDEX_PACKER_PROPERTIES_FILE);
+        Files.deleteIfExists(props);
         super.tearDown();
     }
 
@@ -67,10 +66,8 @@ public class ConcurrentUseWithMergedContextPublishingTest extends ConcurrentUseW
         // This test had multiple threads doing it, and since it was not checking actual results of publish (that was
         // not the goal of the test, but simultaneous publishing of merged context that has member changes happening),
         // it was probably publish rubbish anyway.
-        final File publish = repoPublish
-                .toPath()
-                .resolve("publish-" + counter.getAndIncrement())
-                .toFile();
+        final File publish =
+                repoPublish.resolve("publish-" + counter.getAndIncrement()).toFile();
 
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {

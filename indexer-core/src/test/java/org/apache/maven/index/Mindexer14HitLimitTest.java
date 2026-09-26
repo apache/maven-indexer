@@ -18,8 +18,8 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.lucene.search.Query;
@@ -30,13 +30,14 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Mindexer14HitLimitTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "target/repo/mindexer14").toFile();
+    protected Path repo = getTestPath("target/repo/mindexer14");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        repo.mkdirs();
+        Files.createDirectories(repo);
 
-        context = nexusIndexer.addIndexingContext("mindexer14", "mindexer14", repo, indexDir, null, null, MIN_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "mindexer14", "mindexer14", repo.toFile(), indexDir, null, null, MIN_CREATORS);
 
         nexusIndexer.scan(context, false);
     }

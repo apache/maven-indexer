@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 
@@ -29,12 +28,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /** http://issues.sonatype.org/browse/NEXUS-3233 */
 public class Nexus3233NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/nexus-3233").toFile();
+    protected Path repo = getTestPath("src/test/nexus-3233");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context =
-                nexusIndexer.addIndexingContext("nexus-3233", "nexus-3233", repo, indexDir, null, null, FULL_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "nexus-3233", "nexus-3233", repo.toFile(), indexDir, null, null, FULL_CREATORS);
         nexusIndexer.scan(context);
     }
 

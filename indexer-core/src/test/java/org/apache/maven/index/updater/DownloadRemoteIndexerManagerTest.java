@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.updater;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -42,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     private HttpServerFixture server;
 
-    private File fakeCentral;
+    private Path fakeCentral;
 
     private IndexingContext centralContext;
 
@@ -51,8 +50,8 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        fakeCentral = Path.of(getBasedir(), "target/repos/fake-central").toFile();
-        fakeCentral.mkdirs();
+        fakeCentral = getTestPath("target/repos/fake-central");
+        Files.createDirectories(fakeCentral);
 
         // create proxy server
         ServerSocket s = new ServerSocket(0);
@@ -66,8 +65,8 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
         centralContext = indexer.addIndexingContext(
                 "central",
                 "central",
-                fakeCentral,
-                getDirectory("central"),
+                fakeCentral.toFile(),
+                getDirectory("central").toFile(),
                 "http://localhost:" + port,
                 null,
                 MIN_CREATORS);
@@ -78,7 +77,7 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     public void tearDown() throws Exception {
         server.stop();
 
-        FileUtils.forceDelete(fakeCentral);
+        FileUtils.forceDelete(fakeCentral.toFile());
 
         super.tearDown();
     }
@@ -87,11 +86,9 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
     public void testRepoReindex() throws Exception {
         IndexUpdateRequest iur;
 
-        File index1 =
-                Path.of(getBasedir(), "src/test/resources/repo-index/index").toFile();
-        File index2 =
-                Path.of(getBasedir(), "src/test/resources/repo-index/index2").toFile();
-        File centralIndex = fakeCentral.toPath().resolve(".index").toFile();
+        Path index1 = getTestPath("src/test/resources/repo-index/index");
+        Path index2 = getTestPath("src/test/resources/repo-index/index2");
+        Path centralIndex = fakeCentral.resolve(".index");
 
         // copy index 02
         overwriteIndex(index2, centralIndex);
@@ -126,32 +123,30 @@ public class DownloadRemoteIndexerManagerTest extends AbstractIndexUpdaterTest {
         searchFor("org.sonatype.nexus", 8, centralContext);
     }
 
-    private void overwriteIndex(File source, File destination) throws Exception {
-        File indexFile =
-                destination.toPath().resolve("nexus-maven-repository-index.gz").toFile();
-        File indexProperties = destination
-                .toPath()
-                .resolve("nexus-maven-repository-index.properties")
-                .toFile();
+    private void overwriteIndex(Path source, Path destination) throws Exception {
+        Path indexFile = destination.resolve("nexus-maven-repository-index.gz");
+        Path indexProperties = destination.resolve("nexus-maven-repository-index.properties");
 
         long lastMod = -1;
-        if (destination.exists()) {
-            FileUtils.forceDelete(destination);
-            lastMod = indexFile.lastModified();
+        if (Files.exists(destination)) {
+            FileUtils.forceDelete(destination.toFile());
+            // indexFile no longer exists at this point; File#lastModified() tolerates that (returns 0),
+            // Files.getLastModifiedTime would throw NoSuchFileException, so File is used deliberately here.
+            lastMod = indexFile.toFile().lastModified();
         }
-        FileUtils.copyDirectory(source, destination);
-        long lastMod2 = indexFile.lastModified();
+        FileUtils.copyDirectory(source.toFile(), destination.toFile());
+        long lastMod2 = Files.getLastModifiedTime(indexFile).toMillis();
         assertTrue(lastMod < lastMod2);
 
         Properties p = new Properties();
-        try (InputStream input = Files.newInputStream(indexProperties.toPath())) {
+        try (InputStream input = Files.newInputStream(indexProperties)) {
             p.load(input);
         }
 
         p.setProperty("nexus.index.time", format(new Date()));
         p.setProperty("nexus.index.timestamp", format(new Date()));
 
-        try (OutputStream output = Files.newOutputStream(indexProperties.toPath())) {
+        try (OutputStream output = Files.newOutputStream(indexProperties)) {
             p.store(output, null);
         }
     }

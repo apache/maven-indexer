@@ -19,7 +19,6 @@
 package org.apache.maven.index.packer;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -44,9 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
-    protected File reposBase = Path.of(getBasedir(), "src/test/nexus-4149").toFile();
+    protected Path reposBase = getTestPath("src/test/nexus-4149");
 
-    protected File idxsBase = Path.of(getBasedir(), "target/index/nexus-4149").toFile();
+    protected Path idxsBase = getTestPath("target/index/nexus-4149");
 
     @BeforeEach
     @Override
@@ -59,8 +58,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         IndexingContext ctx1 = nexusIndexer.addIndexingContext(
                 "repo1",
                 "repo1",
-                reposBase.toPath().resolve("repo1").toFile(),
-                idxsBase.toPath().resolve("repo1").toFile(),
+                reposBase.resolve("repo1").toFile(),
+                idxsBase.resolve("repo1").toFile(),
                 null,
                 null,
                 MIN_CREATORS);
@@ -69,8 +68,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         IndexingContext ctx2 = nexusIndexer.addIndexingContext(
                 "repo2",
                 "repo2",
-                reposBase.toPath().resolve("repo2").toFile(),
-                idxsBase.toPath().resolve("repo2").toFile(),
+                reposBase.resolve("repo2").toFile(),
+                idxsBase.resolve("repo2").toFile(),
                 null,
                 null,
                 MIN_CREATORS);
@@ -79,8 +78,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         IndexingContext ctx3 = nexusIndexer.addIndexingContext(
                 "repo3",
                 "repo3",
-                reposBase.toPath().resolve("repo3").toFile(),
-                idxsBase.toPath().resolve("repo3").toFile(),
+                reposBase.resolve("repo3").toFile(),
+                idxsBase.resolve("repo3").toFile(),
                 null,
                 null,
                 MIN_CREATORS);
@@ -89,8 +88,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         IndexingContext ctx4 = nexusIndexer.addIndexingContext(
                 "repo4",
                 "repo4",
-                reposBase.toPath().resolve("repo4").toFile(),
-                idxsBase.toPath().resolve("repo4").toFile(),
+                reposBase.resolve("repo4").toFile(),
+                idxsBase.resolve("repo4").toFile(),
                 null,
                 null,
                 MIN_CREATORS);
@@ -99,12 +98,12 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         context = nexusIndexer.addMergedIndexingContext(
                 "ctx",
                 "ctx",
-                reposBase.toPath().resolve("merged").toFile(),
-                idxsBase.toPath().resolve("merged").toFile(),
+                reposBase.resolve("merged").toFile(),
+                idxsBase.resolve("merged").toFile(),
                 false,
                 Arrays.asList(ctx1, ctx2, ctx3, ctx4));
 
-        context.getIndexDirectoryFile().mkdirs();
+        Files.createDirectories(context.getIndexDirectoryFile().toPath());
     }
 
     @Override
@@ -143,14 +142,14 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
 
     @Test
     public void testTransportFile() throws Exception {
-        File packTargetDir = Path.of(getBasedir(), "target/nexus-4149/packed").toFile();
+        Path packTargetDir = getTestPath("target/nexus-4149/packed");
 
         IndexPacker packer = lookup(IndexPacker.class);
 
         final IndexSearcher indexSearcher = context.acquireIndexSearcher();
         try {
             IndexPackingRequest request =
-                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), packTargetDir);
+                    new IndexPackingRequest(context, indexSearcher.getIndexReader(), packTargetDir.toFile());
             request.setCreateIncrementalChunks(false);
             request.setFormats(Arrays.asList(IndexFormat.FORMAT_V1));
 
@@ -160,11 +159,8 @@ public class NEXUS4149TransferFormatTest extends AbstractNexusIndexerTest {
         }
 
         // read it up and verify, but stay "low level", directly consume the GZ file and count
-        InputStream fis = new BufferedInputStream(Files.newInputStream((packTargetDir
-                        .toPath()
-                        .resolve("nexus-maven-repository-index.gz")
-                        .toFile())
-                .toPath()));
+        InputStream fis =
+                new BufferedInputStream(Files.newInputStream(packTargetDir.resolve("nexus-maven-repository-index.gz")));
         IndexDataReader reader = new IndexDataReader(fis);
         try {
             // read header and neglect it

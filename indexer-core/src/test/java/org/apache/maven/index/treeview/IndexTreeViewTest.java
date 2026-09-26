@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index.treeview;
 
-import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.maven.index.AbstractNexusIndexerTest;
@@ -29,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class IndexTreeViewTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/repo").toFile();
+    protected Path repo = getTestPath("src/test/repo");
 
     protected IndexTreeView indexTreeView;
 
@@ -45,7 +44,8 @@ public class IndexTreeViewTest extends AbstractNexusIndexerTest {
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context = nexusIndexer.addIndexingContext("test-minimal", "test", repo, indexDir, null, null, MIN_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "test-minimal", "test", repo.toFile(), indexDir, null, null, MIN_CREATORS);
         nexusIndexer.scan(context);
     }
 

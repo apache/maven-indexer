@@ -18,7 +18,6 @@
  */
 package org.apache.maven.index;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +32,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Juven Xu http://issues.sonatype.org/browse/NEXUS-687
  */
 public class Nexus687NexusIndexerTest extends AbstractNexusIndexerTest {
-    protected File repo = Path.of(getBasedir(), "src/test/nexus-687").toFile();
+    protected Path repo = getTestPath("src/test/nexus-687");
 
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
-        context =
-                nexusIndexer.addIndexingContext("nexus-687", "nexus-687", repo, indexDir, null, null, DEFAULT_CREATORS);
+        context = nexusIndexer.addIndexingContext(
+                "nexus-687", "nexus-687", repo.toFile(), indexDir, null, null, DEFAULT_CREATORS);
         nexusIndexer.scan(context);
     }
 

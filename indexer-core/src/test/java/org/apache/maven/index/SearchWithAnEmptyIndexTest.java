@@ -20,7 +20,7 @@ package org.apache.maven.index;
 
 import javax.inject.Inject;
 
-import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,13 +73,13 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         String repoPath = "target/test/empty-repo-for-searchtest";
 
-        File emptyRepo = Path.of(getBasedir(), repoPath).toFile();
+        Path emptyRepo = getTestPath(repoPath);
 
-        if (emptyRepo.exists()) {
-            FileUtils.deleteDirectory(emptyRepo);
+        if (Files.exists(emptyRepo)) {
+            FileUtils.deleteDirectory(emptyRepo.toFile());
         }
 
-        emptyRepo.mkdirs();
+        Files.createDirectories(emptyRepo);
 
         // createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
         createIndex(repoPath, repoPath, INDEX_ID2);
@@ -154,13 +154,13 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         String repoPathIndex = "target/test/repo-for-searchdupe";
 
-        File emptyRepo = Path.of(getBasedir(), repoPathIndex).toFile();
+        Path emptyRepo = getTestPath(repoPathIndex);
 
-        if (emptyRepo.exists()) {
-            FileUtils.deleteDirectory(emptyRepo);
+        if (Files.exists(emptyRepo)) {
+            FileUtils.deleteDirectory(emptyRepo.toFile());
         }
 
-        emptyRepo.mkdirs();
+        Files.createDirectories(emptyRepo);
 
         // createIndex( "/src/test/repo", repoPath + "/.index", INDEX_ID2 );
         createIndex("/src/test/repo", repoPathIndex, INDEX_ID2);
@@ -201,23 +201,23 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
     private void createIndex(String filePath, String repoIndex, String contextId) throws Exception {
 
-        File repo = Path.of(getBasedir(), filePath).toFile();
+        Path repo = getTestPath(filePath);
 
-        File repoIndexDir = Path.of(getBasedir(), repoIndex + "/.index").toFile();
+        Path repoIndexDir = getTestPath(repoIndex + "/.index");
 
-        if (repoIndexDir.exists()) {
-            FileUtils.deleteDirectory(repoIndexDir);
+        if (Files.exists(repoIndexDir)) {
+            FileUtils.deleteDirectory(repoIndexDir.toFile());
         }
 
-        repoIndexDir.mkdirs();
+        Files.createDirectories(repoIndexDir);
 
         System.out.println("creating Index with id " + contextId + " path : " + filePath + " , indexPath " + repoIndex);
 
         IndexingContext indexingContext = nexusIndexer.addIndexingContext(
                 contextId,
                 contextId,
-                repo,
-                repoIndexDir,
+                repo.toFile(),
+                repoIndexDir.toFile(),
                 "http://www.apache.org",
                 "http://www.apache.org/.index",
                 indexCreators);
@@ -226,13 +226,12 @@ public class SearchWithAnEmptyIndexTest extends AbstractTestSupport {
 
         indexingContext.optimize();
 
-        File managedRepository = Path.of(repoIndex).toFile();
+        Path managedRepository = Path.of(repoIndex);
         final IndexSearcher indexSearcher = indexingContext.acquireIndexSearcher();
         try {
-            final File indexLocation =
-                    managedRepository.toPath().resolve(".index").toFile();
+            final Path indexLocation = managedRepository.resolve(".index");
             IndexPackingRequest request =
-                    new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation);
+                    new IndexPackingRequest(indexingContext, indexSearcher.getIndexReader(), indexLocation.toFile());
             indexPacker.packIndex(request);
         } finally {
             indexingContext.releaseIndexSearcher(indexSearcher);

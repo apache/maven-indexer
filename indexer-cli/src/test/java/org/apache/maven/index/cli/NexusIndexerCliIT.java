@@ -32,10 +32,12 @@ public class NexusIndexerCliIT extends AbstractNexusIndexerCliTest {
         try {
             Commandline cmd = new Commandline();
             cmd.setExecutable("java");
-            cmd.setWorkingDirectory(Path.of(".").toFile().getCanonicalFile());
+            cmd.setWorkingDirectory(Path.of(".").toRealPath().toFile());
             cmd.createArg().setValue("-jar");
             cmd.createArg()
-                    .setValue(Path.of(System.getProperty("indexerJar")).toFile().getCanonicalPath());
+                    .setValue(Path.of(System.getProperty("indexerJar"))
+                            .toRealPath()
+                            .toString());
             return cmd;
         } catch (IOException e) {
             throw new RuntimeException(e);

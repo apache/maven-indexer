@@ -44,17 +44,17 @@ public class ConcurrentUseWithMergedContextTest extends ConcurrentUseTest {
     @Override
     protected void prepareNexusIndexer(NexusIndexer nexusIndexer) throws Exception {
         context1 = nexusIndexer.addIndexingContext(
-                "test-default-member1", "test1", repo, indexDir1, null, null, DEFAULT_CREATORS);
+                "test-default-member1", "test1", repo.toFile(), indexDir1, null, null, DEFAULT_CREATORS);
 
         nexusIndexer.scan(context1);
 
         context2 = nexusIndexer.addIndexingContext(
-                "test-default-member2", "test2", repo, indexDir2, null, null, DEFAULT_CREATORS);
+                "test-default-member2", "test2", repo.toFile(), indexDir2, null, null, DEFAULT_CREATORS);
 
         nexusIndexer.scan(context2);
 
         context = nexusIndexer.addMergedIndexingContext(
-                "test-default", "test", repo, indexDir, true, Arrays.asList(context1, context2));
+                "test-default", "test", repo.toFile(), indexDir, true, Arrays.asList(context1, context2));
 
         // Group contexts are known, they inherit member timestamp and they are scanned already
         // assertNull( context.getTimestamp() ); // unknown upon creation

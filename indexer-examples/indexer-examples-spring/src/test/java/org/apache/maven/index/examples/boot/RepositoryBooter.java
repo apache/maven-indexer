@@ -18,8 +18,9 @@
  */
 package org.apache.maven.index.examples.boot;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import jakarta.annotation.PostConstruct;
@@ -53,7 +54,7 @@ public class RepositoryBooter {
 
     @PostConstruct
     public void initialize() throws IOException {
-        File repositoriesBaseDir = Path.of("target/repositories").toFile();
+        Path repositoriesBaseDir = Path.of("target/repositories");
 
         if (!lockExists(repositoriesBaseDir)) {
             createLockFile(repositoriesBaseDir);
@@ -65,54 +66,46 @@ public class RepositoryBooter {
         logger.debug("Initialized repositories.");
     }
 
-    private void createLockFile(File repositoriesRootDir) throws IOException {
-        final File lockFile =
-                repositoriesRootDir.toPath().resolve("repositories.lock").toFile();
-        //noinspection ResultOfMethodCallIgnored
-        lockFile.getParentFile().mkdirs();
-        //noinspection ResultOfMethodCallIgnored
-        lockFile.createNewFile();
+    private void createLockFile(Path repositoriesRootDir) throws IOException {
+        final Path lockFile = repositoriesRootDir.resolve("repositories.lock");
+        Files.createDirectories(lockFile.getParent());
+        try {
+            Files.createFile(lockFile);
+        } catch (FileAlreadyExistsException e) {
+            // already created concurrently, nothing to do
+        }
     }
 
-    private boolean lockExists(File repositoriesRootDir) throws IOException {
-        File lockFile =
-                repositoriesRootDir.toPath().resolve("repositories.lock").toFile();
+    private boolean lockExists(Path repositoriesRootDir) throws IOException {
+        Path lockFile = repositoriesRootDir.resolve("repositories.lock");
 
-        return lockFile.exists();
+        return Files.exists(lockFile);
     }
 
-    private void initializeRepositories(File repositoriesBaseDir) throws IOException {
+    private void initializeRepositories(Path repositoriesBaseDir) throws IOException {
         initializeRepository(repositoriesBaseDir, "releases");
         initializeRepository(repositoriesBaseDir, "snapshots");
     }
 
-    private void initializeRepository(File repositoriesBaseDir, String repositoryName) throws IOException {
-        createRepositoryStructure(repositoriesBaseDir.getAbsolutePath(), repositoryName);
+    private void initializeRepository(Path repositoriesBaseDir, String repositoryName) throws IOException {
+        createRepositoryStructure(repositoriesBaseDir.toAbsolutePath(), repositoryName);
 
-        initializeRepositoryIndex(
-                Path.of(repositoriesBaseDir.getAbsoluteFile().getPath(), repositoryName)
-                        .toFile(),
-                repositoryName);
+        initializeRepositoryIndex(repositoriesBaseDir.toAbsolutePath().resolve(repositoryName), repositoryName);
     }
 
-    public void createRepositoryStructure(String repositoriesBaseDir, String repositoryName) throws IOException {
-        final File repositoriesBasedir = Path.of(repositoriesBaseDir).toFile();
-        //noinspection ResultOfMethodCallIgnored
-        Path.of(repositoriesBasedir.getPath(), repositoryName).toFile().mkdirs();
-        //noinspection ResultOfMethodCallIgnored
-        Path.of(repositoriesBasedir.getPath(), repositoryName + File.separatorChar + ".index")
-                .toFile()
-                .mkdirs();
+    public void createRepositoryStructure(Path repositoriesBaseDir, String repositoryName) throws IOException {
+        Files.createDirectories(repositoriesBaseDir.resolve(repositoryName));
+        Files.createDirectories(repositoriesBaseDir.resolve(repositoryName).resolve(".index"));
 
-        logger.debug("Created directory structure for repository '" + repositoriesBasedir.getAbsolutePath()
-                + File.separatorChar + repositoryName + "'.");
+        logger.debug("Created directory structure for repository '"
+                + repositoriesBaseDir.toAbsolutePath().resolve(repositoryName) + "'.");
     }
 
-    private void initializeRepositoryIndex(File repositoryBasedir, String repositoryId) throws IOException {
-        final File indexDir = repositoryBasedir.toPath().resolve(".index").toFile();
+    private void initializeRepositoryIndex(Path repositoryBasedir, String repositoryId) throws IOException {
+        final Path indexDir = repositoryBasedir.resolve(".index");
 
-        RepositoryIndexer repositoryIndexer =
-                repositoryIndexerFactory.createRepositoryIndexer(repositoryId, repositoryBasedir, indexDir);
+        RepositoryIndexer repositoryIndexer = repositoryIndexerFactory.createRepositoryIndexer(
+                repositoryId, repositoryBasedir.toFile(), indexDir.toFile());
 
         repositoryIndexManager.addRepositoryIndex(repositoryId, repositoryIndexer);
     }
