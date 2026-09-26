@@ -20,6 +20,8 @@ package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -38,8 +40,6 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * A Maven Plugin index creator used to provide information about Maven Plugins. It will collect the plugin prefix and
@@ -96,18 +96,29 @@ public class MavenPluginArtifactInfoIndexCreator extends AbstractIndexCreator {
             ZipEntry zipEntry = zipFile.getEntry(pluginDescriptorPath);
             if (zipEntry != null) {
                 try (InputStream is = new BufferedInputStream(zipFile.getInputStream(zipEntry))) {
-                    // here the reader is closed
-                    Xpp3Dom plexusConfig = Xpp3DomBuilder.build(new InputStreamReader(is));
-
-                    ai.setPrefix(plexusConfig.getChild("goalPrefix").getValue());
-
-                    ai.setGoals(new ArrayList<>());
-
-                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild("mojos").getChildren("mojo");
-
-                    for (Xpp3Dom mojoConfig : mojoConfigs) {
-                        ai.getGoals().add(mojoConfig.getChild("goal").getValue());
+                    XMLInputFactory factory = XMLInputFactory.newFactory();
+                    factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+                    factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+                    XMLStreamReader reader = factory.createXMLStreamReader(is);
+                    String prefix = null;
+                    ArrayList<String> goals = new ArrayList<>();
+                    while (reader.hasNext()) {
+                        if (reader.next() == XMLStreamReader.START_ELEMENT) {
+                            switch (reader.getLocalName()) {
+                                case "goalPrefix":
+                                    prefix = reader.getElementText();
+                                    break;
+                                case "goal":
+                                    goals.add(reader.getElementText());
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
                     }
+                    reader.close();
+                    ai.setPrefix(prefix);
+                    ai.setGoals(goals);
                 }
             }
         } catch (Exception e) {
