@@ -18,13 +18,12 @@
  */
 package org.apache.maven.index.examples.indexing;
 
-import javax.annotation.PreDestroy;
-import javax.inject.Singleton;
-
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

@@ -18,11 +18,10 @@
  */
 package org.apache.maven.index.examples.boot;
 
-import javax.annotation.PostConstruct;
-
 import java.io.File;
 import java.io.IOException;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.maven.index.examples.indexing.RepositoryIndexManager;
 import org.apache.maven.index.examples.indexing.RepositoryIndexer;
 import org.apache.maven.index.examples.indexing.RepositoryIndexerFactory;
