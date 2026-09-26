@@ -351,15 +351,8 @@ public class NexusIndexerCli {
     private void displayHelp() {
         System.out.println();
 
-        HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
-        formatter.setSyntaxPrefix("usage:");
-
-        // the table lists options in the order they were added
-        List<Option> sorted = new ArrayList<>(options.getOptions());
-        sorted.sort(HelpFormatter.DEFAULT_COMPARATOR);
-
         try {
-            formatter.printHelp("nexus-indexer [options]", null, sorted, null, false);
+            HelpFormatter.builder().get().printHelp("nexus-indexer [options]", null, options, null, false);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

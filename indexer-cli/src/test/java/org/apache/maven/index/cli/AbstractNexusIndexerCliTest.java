@@ -101,7 +101,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
         int code = execute();
         String output = out.toString();
         assertEquals(1, code, output);
-        assertTrue(output.contains("usage: nexus-indexer [options]"), "Should print usage");
+        assertTrue(output.contains("usage:  nexus-indexer [options]"), "Should print usage");
     }
 
     @Test
@@ -126,7 +126,7 @@ public abstract class AbstractNexusIndexerCliTest extends InjectedTest {
 
     @Test
     public void testMissingArgs() throws IOException {
-        String usage = "usage: nexus-indexer";
+        String usage = "usage:  nexus-indexer";
 
         int code = execute("--repository", "--index", INDEX_DIR, "-d", DEST_DIR);
         String output = out.toString();
