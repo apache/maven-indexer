@@ -28,6 +28,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -178,10 +179,11 @@ public class DefaultScannerListener implements ArtifactScanningListener {
         try {
             final IndexReader r = indexSearcher.getIndexReader();
             Bits liveDocs = MultiBits.getLiveDocs(r);
+            StoredFields storedFields = r.storedFields();
 
             for (int i = 0; i < r.maxDoc(); i++) {
                 if (liveDocs == null || liveDocs.get(i)) {
-                    Document d = r.document(i);
+                    Document d = storedFields.document(i);
 
                     String uinfo = d.get(ArtifactInfo.UINFO);
 

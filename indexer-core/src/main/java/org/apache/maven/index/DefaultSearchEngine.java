@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -136,6 +137,7 @@ public class DefaultSearchEngine implements SearchEngine {
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try {
+                final StoredFields storedFields = indexSearcher.storedFields();
                 final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
 
                 if (collector.getTotalHits() == 0) {
@@ -153,7 +155,7 @@ public class DefaultSearchEngine implements SearchEngine {
 
                 // we have to pack the results as long: a) we have found aiCount ones b) we depleted hits
                 for (int i = start; i < scoreDocs.length; i++) {
-                    Document doc = indexSearcher.doc(scoreDocs[i].doc);
+                    Document doc = storedFields.document(scoreDocs[i].doc);
 
                     ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo(doc, context);
 
@@ -193,6 +195,7 @@ public class DefaultSearchEngine implements SearchEngine {
         for (IndexingContext context : participatingContexts) {
             final IndexSearcher indexSearcher = context.acquireIndexSearcher();
             try {
+                final StoredFields storedFields = indexSearcher.storedFields();
                 final TopScoreDocCollector collector = doSearchWithCeiling(req, indexSearcher, query);
 
                 if (collector.getTotalHits() > 0) {
@@ -201,7 +204,7 @@ public class DefaultSearchEngine implements SearchEngine {
                     hitCount += collector.getTotalHits();
 
                     for (ScoreDoc scoreDoc : scoreDocs) {
-                        Document doc = indexSearcher.doc(scoreDoc.doc);
+                        Document doc = storedFields.document(scoreDoc.doc);
 
                         ArtifactInfo artifactInfo = IndexUtils.constructArtifactInfo(doc, context);
 

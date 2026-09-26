@@ -39,6 +39,7 @@ import java.util.TreeMap;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.MultiBits;
+import org.apache.lucene.index.StoredFields;
 import org.apache.lucene.util.Bits;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
@@ -135,10 +136,11 @@ public class DefaultIncrementalHandler implements IncrementalHandler {
     private List<Integer> getIndexChunk(IndexPackingRequest request, Date timestamp) throws IOException {
         final List<Integer> chunk = new ArrayList<>();
         final IndexReader r = request.getIndexReader();
+        final StoredFields storedFields = r.storedFields();
         Bits liveDocs = MultiBits.getLiveDocs(r);
         for (int i = 0; i < r.maxDoc(); i++) {
             if (liveDocs == null || liveDocs.get(i)) {
-                Document d = r.document(i);
+                Document d = storedFields.document(i);
 
                 String lastModified = d.get(ArtifactInfo.LAST_MODIFIED);
 
