@@ -24,14 +24,31 @@ import static java.util.Objects.requireNonNull;
  * Boolean query.
  */
 public abstract class BooleanQuery extends Query {
+    /**
+     * The maximum nesting depth of a boolean query. Backends and {@link #toString()} walk the tree recursively; the
+     * value matches the default Lucene boolean clause limit.
+     */
+    public static final int MAX_DEPTH = 1024;
+
     protected final Query left;
 
     protected final Query right;
+
+    private final int depth;
 
     protected BooleanQuery(Query left, String op, Query right) {
         super(op);
         this.left = requireNonNull(left);
         this.right = requireNonNull(right);
+        this.depth = 1 + Math.max(depthOf(left), depthOf(right));
+        if (depth > MAX_DEPTH) {
+            throw new IllegalArgumentException(
+                    "boolean query nesting depth " + depth + " exceeds the maximum of " + MAX_DEPTH);
+        }
+    }
+
+    private static int depthOf(Query query) {
+        return query instanceof BooleanQuery ? ((BooleanQuery) query).depth : 0;
     }
 
     /**
