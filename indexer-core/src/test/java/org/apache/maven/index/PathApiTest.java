@@ -22,7 +22,7 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.LeafReader;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.apache.maven.index.updater.DefaultIndexUpdater;
@@ -107,8 +107,7 @@ class PathApiTest {
 
     @Test
     void indexPackingRequestPath() {
-        IndexPackingRequest request =
-                new IndexPackingRequest(mock(IndexingContext.class), mock(IndexReader.class), dir);
+        IndexPackingRequest request = new IndexPackingRequest(mock(IndexingContext.class), mock(LeafReader.class), dir);
 
         assertEquals(dir, request.getTargetPath());
         assertEquals(dir.toFile(), request.getTargetDir());

@@ -34,7 +34,6 @@ under the License.
 
   <properties>
     <!-- Spring Framework 6 requires Java 17; this module is not deployed -->
-    <javaVersion>17</javaVersion>
     <version.spring>6.2.19</version.spring>
   </properties>
 
