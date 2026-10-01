@@ -93,13 +93,46 @@ public class ArtifactContext {
         return pom != null ? pom.toPath() : null;
     }
 
+    /**
+     * Returns the name, description and packaging of the POM of this artifact, read from the local POM file or, if
+     * there is none, from the POM embedded in the artifact.
+     *
+     * @return the POM fields, or {@code null} if no POM is available or it cannot be read
+     * @since 7.2.0
+     */
+    public PomInfo getPomInfo() {
+        return readPom(PomInfo::read);
+    }
+
+    /**
+     * Returns the full POM model of this artifact.
+     *
+     * @deprecated Use {@link #getPomInfo()}, which carries the fields the indexer needs and no Maven model type. This
+     *             method has no replacement and is removed in the Maven 4 API line, where the model type changes.
+     */
+    @Deprecated
     public Model getPomModel() {
+        return readPom(in -> {
+            try {
+                return new MavenXpp3Reader().read(in, false);
+            } catch (XmlPullParserException e) {
+                throw new IOException(e);
+            }
+        });
+    }
+
+    @FunctionalInterface
+    private interface PomReader<T> {
+        T read(InputStream inputStream) throws IOException;
+    }
+
+    private <T> T readPom(PomReader<T> reader) {
         // First check for local pom file
         File pom = getPom();
         if (pom != null && pom.isFile()) {
             try (InputStream inputStream = Files.newInputStream(pom.toPath())) {
-                return new MavenXpp3Reader().read(inputStream, false);
-            } catch (IOException | XmlPullParserException e) {
+                return reader.read(inputStream);
+            } catch (IOException e) {
                 LOGGER.warn("skip error reading pom: " + pom, e);
             }
         }
@@ -115,10 +148,10 @@ public class ArtifactContext {
 
                 if (zipEntry != null) {
                     try (InputStream inputStream = zipFile.getInputStream(zipEntry)) {
-                        return new MavenXpp3Reader().read(inputStream, false);
+                        return reader.read(inputStream);
                     }
                 }
-            } catch (IOException | XmlPullParserException e) {
+            } catch (IOException e) {
                 if (e instanceof ZipException && !isZip) {
                     // ZipFile constructor threw ZipException which means this is no zip file -> ignore
                 } else {
