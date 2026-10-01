@@ -59,10 +59,6 @@ public class ArtifactLocator implements GavHelpedLocator {
             // need to read the pom model to get packaging
             final PomInfo model = PomInfo.read(inputStream);
 
-            if (model == null) {
-                return null;
-            }
-
             // now generate the artifactname
             String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + "."
                     + mapper.getExtensionForPackaging(model.getPackaging());

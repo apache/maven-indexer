@@ -107,8 +107,8 @@ public class ArtifactContext {
     /**
      * Returns the full POM model of this artifact.
      *
-     * @deprecated Use {@link #getPomInfo()}, which carries the fields the indexer needs and no Maven model type. This
-     *             method has no replacement and is removed in the Maven 4 API line, where the model type changes.
+     * @deprecated Use {@link #getPomInfo()}, which carries the fields the indexer needs and no Maven model type. The
+     *             full model is not offered in the Maven 4 API line, where the model type changes.
      */
     @Deprecated
     public Model getPomModel() {
