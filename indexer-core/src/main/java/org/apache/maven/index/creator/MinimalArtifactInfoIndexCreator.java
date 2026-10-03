@@ -37,13 +37,13 @@ import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.NEXUS;
+import org.apache.maven.index.PomInfo;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.locator.JavadocLocator;
 import org.apache.maven.index.locator.Locator;
 import org.apache.maven.index.locator.Sha1Locator;
 import org.apache.maven.index.locator.SignatureLocator;
 import org.apache.maven.index.locator.SourcesLocator;
-import org.apache.maven.model.Model;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -213,7 +213,7 @@ public class MinimalArtifactInfoIndexCreator extends AbstractIndexCreator implem
             }
         }
 
-        Model model = ac.getPomModel();
+        PomInfo model = ac.getPomInfo();
 
         if (model != null) {
             ai.setName(model.getName());

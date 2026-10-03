@@ -23,12 +23,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import org.apache.maven.index.PomInfo;
 import org.apache.maven.index.artifact.ArtifactPackagingMapper;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.index.artifact.GavCalculator;
-import org.apache.maven.model.Model;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +57,7 @@ public class ArtifactLocator implements GavHelpedLocator {
 
         try (InputStream inputStream = Files.newInputStream(source.toPath())) {
             // need to read the pom model to get packaging
-            final Model model = new MavenXpp3Reader().read(inputStream, false);
-
-            if (model == null) {
-                return null;
-            }
+            final PomInfo model = PomInfo.read(inputStream);
 
             // now generate the artifactname
             String artifactName = gav.getArtifactId() + "-" + gav.getVersion() + "."
@@ -81,7 +75,7 @@ public class ArtifactLocator implements GavHelpedLocator {
             }
 
             return artifact;
-        } catch (XmlPullParserException | IOException e) {
+        } catch (IOException e) {
             LOGGER.warn("skip error reading pom from file:" + source, e);
             return null;
         }
