@@ -18,9 +18,13 @@
  */
 package org.apache.maven.index.creator;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.maven.index.AbstractTestSupport;
 import org.apache.maven.index.ArtifactContext;
@@ -85,5 +89,27 @@ class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport {
         goals.add("unpack-dependencies");
 
         assertEquals(goals, artifactContext.getArtifactInfo().getGoals());
+    }
+
+    @Test
+    public void testMavenPluginInfoUsesDeclaredEncoding() throws Exception {
+        Path artifact = Files.createTempFile("maven-plugin", ".jar");
+        String pluginXml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+                + "<plugin><goalPrefix>préfix</goalPrefix><mojos><mojo><goal>café</goal></mojo></mojos></plugin>";
+        try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(artifact))) {
+            zip.putNextEntry(new ZipEntry("META-INF/maven/plugin.xml"));
+            zip.write(pluginXml.getBytes(StandardCharsets.ISO_8859_1));
+            zip.closeEntry();
+        }
+
+        ArtifactInfo artifactInfo = new ArtifactInfo("test", "org.example", "example-plugin", "1.0", null, "jar");
+        artifactInfo.setPackaging("maven-plugin");
+        artifactInfo.setFileExtension("jar");
+
+        ArtifactContext artifactContext = new ArtifactContext(null, artifact.toFile(), null, artifactInfo, null);
+        indexCreator.populateArtifactInfo(artifactContext);
+
+        assertEquals("préfix", artifactContext.getArtifactInfo().getPrefix());
+        assertEquals(List.of("café"), artifactContext.getArtifactInfo().getGoals());
     }
 }
