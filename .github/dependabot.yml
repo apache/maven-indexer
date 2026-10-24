@@ -21,6 +21,10 @@ updates:
   directory: "/"
   schedule:
     interval: "daily"
+  ignore:
+    # Maven 3 so use SLF4J 1.7.x
+    - dependency-name: "org.slf4j:*"
+      versions: [">= 2.0.0"]
 
 - package-ecosystem: "github-actions"
   directory: "/"
