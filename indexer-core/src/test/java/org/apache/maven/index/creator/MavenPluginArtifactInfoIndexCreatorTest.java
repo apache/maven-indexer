@@ -95,7 +95,10 @@ class MavenPluginArtifactInfoIndexCreatorTest extends AbstractTestSupport {
     public void testMavenPluginInfoUsesDeclaredEncoding() throws Exception {
         Path artifact = Files.createTempFile("maven-plugin", ".jar");
         String pluginXml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
-                + "<plugin><goalPrefix>préfix</goalPrefix><mojos><mojo><goal>café</goal></mojo></mojos></plugin>";
+                + "<plugin><goalPrefix>préfix</goalPrefix><mojos><mojo><goal>café</goal>"
+                + "<configuration><goalPrefix>configuration-prefix</goalPrefix>"
+                + "<goal>configuration-value</goal></configuration>"
+                + "</mojo></mojos></plugin>";
         try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(artifact))) {
             zip.putNextEntry(new ZipEntry("META-INF/maven/plugin.xml"));
             zip.write(pluginXml.getBytes(StandardCharsets.ISO_8859_1));

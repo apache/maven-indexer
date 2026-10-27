@@ -101,18 +101,33 @@ public class MavenPluginArtifactInfoIndexCreator extends AbstractIndexCreator {
                     XMLStreamReader reader = factory.createXMLStreamReader(is);
                     String prefix = null;
                     ArrayList<String> goals = new ArrayList<>();
+                    ArrayList<String> elementPath = new ArrayList<>();
                     while (reader.hasNext()) {
-                        if (reader.next() == XMLStreamReader.START_ELEMENT) {
+                        int event = reader.next();
+                        if (event == XMLStreamReader.START_ELEMENT) {
+                            elementPath.add(reader.getLocalName());
+                            int depth = elementPath.size();
                             switch (reader.getLocalName()) {
                                 case "goalPrefix":
-                                    prefix = reader.getElementText();
+                                    if (depth == 2 && "plugin".equals(elementPath.get(0))) {
+                                        prefix = reader.getElementText();
+                                        elementPath.remove(depth - 1);
+                                    }
                                     break;
                                 case "goal":
-                                    goals.add(reader.getElementText());
+                                    if (depth == 4
+                                            && "plugin".equals(elementPath.get(0))
+                                            && "mojos".equals(elementPath.get(1))
+                                            && "mojo".equals(elementPath.get(2))) {
+                                        goals.add(reader.getElementText());
+                                        elementPath.remove(depth - 1);
+                                    }
                                     break;
                                 default:
                                     break;
                             }
+                        } else if (event == XMLStreamReader.END_ELEMENT) {
+                            elementPath.remove(elementPath.size() - 1);
                         }
                     }
                     reader.close();
