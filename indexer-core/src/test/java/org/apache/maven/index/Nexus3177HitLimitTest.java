@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class Nexus3177HitLimitChecks extends AbstractNexusIndexerTest {
+class Nexus3177HitLimitTest extends AbstractNexusIndexerTest {
     protected Path repo = getTestPath("src/test/repo");
 
     protected Directory secondIndexDir = new ByteBuffersDirectory();
