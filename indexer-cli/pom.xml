@@ -44,6 +44,10 @@ under the License.
       <groupId>org.apache.maven.indexer</groupId>
       <artifactId>indexer-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+    </dependency>
 
     <!-- Plexus (as compile since it has to end up in CLI) -->
     <dependency>
