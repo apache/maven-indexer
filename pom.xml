@@ -96,9 +96,6 @@ under the License.
     <checkstyle.includeTestSourceDirectory>false</checkstyle.includeTestSourceDirectory>
 
     <javaVersion>11</javaVersion>
-    <!-- Remove these two below when MPOM-449 fixed -->
-    <maven.compiler.source>${javaVersion}</maven.compiler.source>
-    <maven.compiler.target>${javaVersion}</maven.compiler.target>
     <minimalMavenBuildVersion>[3.9,)</minimalMavenBuildVersion>
     <minimalJavaBuildVersion>[17,)</minimalJavaBuildVersion>
 
