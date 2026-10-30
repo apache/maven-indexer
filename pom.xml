@@ -99,7 +99,6 @@ under the License.
     <!-- Remove these two below when MPOM-449 fixed -->
     <maven.compiler.source>${javaVersion}</maven.compiler.source>
     <maven.compiler.target>${javaVersion}</maven.compiler.target>
-    <maven.compiler.release>${javaVersion}</maven.compiler.release>
     <minimalMavenBuildVersion>[3.9,)</minimalMavenBuildVersion>
     <minimalJavaBuildVersion>[17,)</minimalJavaBuildVersion>
 
