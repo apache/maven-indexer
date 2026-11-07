@@ -20,11 +20,12 @@ package org.apache.maven.index.creator;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamReader;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +39,6 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IndexerField;
 import org.apache.maven.index.IndexerFieldVersion;
 import org.apache.maven.index.MAVEN;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * A Maven Plugin index creator used to provide information about Maven Plugins. It will collect the plugin prefix and
@@ -96,18 +95,44 @@ public class MavenPluginArtifactInfoIndexCreator extends AbstractIndexCreator {
             ZipEntry zipEntry = zipFile.getEntry(pluginDescriptorPath);
             if (zipEntry != null) {
                 try (InputStream is = new BufferedInputStream(zipFile.getInputStream(zipEntry))) {
-                    // here the reader is closed
-                    Xpp3Dom plexusConfig = Xpp3DomBuilder.build(new InputStreamReader(is));
-
-                    ai.setPrefix(plexusConfig.getChild("goalPrefix").getValue());
-
-                    ai.setGoals(new ArrayList<>());
-
-                    Xpp3Dom[] mojoConfigs = plexusConfig.getChild("mojos").getChildren("mojo");
-
-                    for (Xpp3Dom mojoConfig : mojoConfigs) {
-                        ai.getGoals().add(mojoConfig.getChild("goal").getValue());
+                    XMLInputFactory factory = XMLInputFactory.newFactory();
+                    factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+                    factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
+                    XMLStreamReader reader = factory.createXMLStreamReader(is);
+                    String prefix = null;
+                    ArrayList<String> goals = new ArrayList<>();
+                    ArrayList<String> elementPath = new ArrayList<>();
+                    while (reader.hasNext()) {
+                        int event = reader.next();
+                        if (event == XMLStreamReader.START_ELEMENT) {
+                            elementPath.add(reader.getLocalName());
+                            int depth = elementPath.size();
+                            switch (reader.getLocalName()) {
+                                case "goalPrefix":
+                                    if (depth == 2 && "plugin".equals(elementPath.get(0))) {
+                                        prefix = reader.getElementText();
+                                        elementPath.remove(depth - 1);
+                                    }
+                                    break;
+                                case "goal":
+                                    if (depth == 4
+                                            && "plugin".equals(elementPath.get(0))
+                                            && "mojos".equals(elementPath.get(1))
+                                            && "mojo".equals(elementPath.get(2))) {
+                                        goals.add(reader.getElementText());
+                                        elementPath.remove(depth - 1);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else if (event == XMLStreamReader.END_ELEMENT) {
+                            elementPath.remove(elementPath.size() - 1);
+                        }
                     }
+                    reader.close();
+                    ai.setPrefix(prefix);
+                    ai.setGoals(goals);
                 }
             }
         } catch (Exception e) {
