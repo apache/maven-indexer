@@ -81,6 +81,9 @@ names the context and a `ResourceFetcher` that retrieves files from the remote `
 downloads the full index; later updates download only the incremental chunks published since, when they are
 available.
 
+Published indexes are not signed, and the checksum files next to them come from the same server, so they cannot
+show that an index came from the repository you meant. Download indexes over HTTPS from a repository you trust.
+
 **Scan a repository directory.** Pass a `ScanningRequest` to `Scanner.scan`. Each artifact found is turned into an
 `ArtifactContext`, run through the context's index creators and added to the index. To add or remove single artifacts,
 use `Indexer.addArtifactsToIndex` and `Indexer.deleteArtifactsFromIndex`.
