@@ -73,6 +73,11 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
                 "1");
     }
 
+    /**
+     * The largest search response read, in bytes.
+     */
+    private static final int MAX_RESPONSE_SIZE = 64 * 1024 * 1024;
+
     protected final String smoUri;
 
     protected final Transport transport;
@@ -165,7 +170,11 @@ public class SmoSearchBackendImpl extends SearchBackendSupport implements SmoSea
     protected String fetch(String serviceUri, Map<String, String> headers) throws IOException {
         try (Transport.Response response = transport.get(serviceUri, headers)) {
             if (response.getCode() == HttpURLConnection.HTTP_OK) {
-                return new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                byte[] body = response.getBody().readNBytes(MAX_RESPONSE_SIZE + 1);
+                if (body.length > MAX_RESPONSE_SIZE) {
+                    throw new IOException("Response larger than " + MAX_RESPONSE_SIZE + " bytes: " + serviceUri);
+                }
+                return new String(body, StandardCharsets.UTF_8);
             } else {
                 throw new IOException("Unexpected response: " + response);
             }
