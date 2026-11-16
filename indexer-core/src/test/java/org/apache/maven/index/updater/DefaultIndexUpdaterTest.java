@@ -372,6 +372,39 @@ class DefaultIndexUpdaterTest extends AbstractIndexUpdaterTest {
     }
 
     @Test
+    void fullIndexUpdateWhenLocalTimestampIsInTheFuture() throws Exception {
+        String indexUrl = repositoryUrl + ".index";
+        Date contextTimestamp = df.parse("20081125010000.000 -0600");
+
+        ResourceFetcher mockFetcher = mock(ResourceFetcher.class);
+        IndexingContext tempContext = mock(IndexingContext.class);
+
+        Properties localProps = new Properties();
+        localProps.setProperty(IndexingContext.INDEX_TIMESTAMP, "20991231000000.000 -0600");
+
+        when(tempContext.getIndexDirectoryFile()).thenReturn(indexDirectoryWithProperties(localProps, testBasedir));
+        when(tempContext.getTimestamp()).thenReturn(contextTimestamp);
+        when(tempContext.getId()).thenReturn(repositoryId);
+        when(tempContext.getIndexUpdateUrl()).thenReturn(indexUrl);
+        when(tempContext.getIndexCreators()).thenReturn(DEFAULT_CREATORS);
+        doNothing().when(tempContext).commit();
+
+        Properties remoteProps = new Properties();
+        remoteProps.setProperty(IndexingContext.INDEX_ID, "central");
+        remoteProps.setProperty(IndexingContext.INDEX_TIMESTAMP, "20081126010000.000 -0600");
+        when(mockFetcher.retrieve(IndexingContext.INDEX_REMOTE_PROPERTIES_FILE))
+                .thenReturn(propertiesStream(remoteProps));
+        when(mockFetcher.retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz"))
+                .thenReturn(newInputStream("index-updater/server-root/nexus-maven-repository-index.gz"));
+
+        IndexUpdateResult updateResult = updater.fetchAndUpdateIndex(new IndexUpdateRequest(tempContext, mockFetcher));
+
+        verify(mockFetcher).retrieve(IndexingContext.INDEX_FILE_PREFIX + ".gz");
+        verify(tempContext).replace(any(Directory.class), anySet(), anySet());
+        assertIndexUpdateSucceeded(updateResult);
+    }
+
+    @Test
     void fullIndexUpdate() throws Exception {
         String indexUrl = repositoryUrl + ".index";
         Date contextTimestamp = df.parse("20081125010000.000 -0600");

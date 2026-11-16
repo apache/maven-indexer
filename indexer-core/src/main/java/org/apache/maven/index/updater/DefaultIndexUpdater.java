@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -586,6 +587,12 @@ public class DefaultIndexUpdater implements IndexUpdater {
 
             if (localProperties != null) {
                 localTimestamp = getTimestamp(localProperties, IndexingContext.INDEX_TIMESTAMP);
+            }
+
+            // a stored timestamp more than a day ahead of this clock cannot say the index is up to date
+            if (localTimestamp != null
+                    && localTimestamp.getTime() > System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)) {
+                localTimestamp = null;
             }
 
             // this will download and store properties in the target, so next run
